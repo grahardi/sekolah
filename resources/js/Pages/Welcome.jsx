@@ -1,88 +1,196 @@
 import { Link } from '@inertiajs/react';
+import PublicNavbar from '../Components/PublicNavbar';
+import PublicFooter from '../Components/PublicFooter';
 
-const MODULES = [
-    { title: 'Lab Interaktif', desc: 'Simulasi sains interaktif ala PhET — bandul, gerak peluru, rangkaian listrik, dan terus bertambah.', tag: 'Aktif' },
-    { title: 'Server Ujian', desc: 'Ujian online terjadwal, bank soal, dan pengawasan otomatis.', tag: 'Segera' },
-    { title: 'Buku Induk', desc: 'Data induk siswa dan arsip akademik digital.', tag: 'Segera' },
-    { title: 'Program BK', desc: 'Pencatatan konseling dan perkembangan siswa.', tag: 'Segera' },
-    { title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, dan administrasi umum sekolah.', tag: 'Segera' },
+const STATS = [
+    { value: '3+', label: 'Simulasi Interaktif' },
+    { value: '5', label: 'Modul Platform' },
+    { value: '24/7', label: 'Akses Belajar' },
+    { value: '100%', label: 'Berbasis Web' },
+];
+
+const FEATURES = [
+    { title: 'Simulasi Real-time', desc: 'Parameter fisika bisa diubah langsung, hasilnya terlihat seketika di layar.', icon: BeakerIcon },
+    { title: 'Kurikulum Terpadu', desc: 'Modul ajar disusun mengikuti struktur kompetensi dasar per mata pelajaran.', icon: BookIcon },
+    { title: 'Satu Portal Sekolah', desc: 'Simulasi, ujian, buku induk, dan BK terhubung dalam satu akun login.', icon: LayersIcon },
+    { title: 'Akses Kapan Saja', desc: 'Berjalan langsung di browser, tanpa instalasi aplikasi tambahan.', icon: ClockIcon },
+];
+
+const PROGRAMS = [
+    { title: 'Lab Interaktif', desc: 'Simulasi sains bergaya PhET untuk Fisika, Kimia, dan Matematika.', status: 'Aktif', href: '/lab' },
+    { title: 'Server Ujian', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.', status: 'Segera', href: '#' },
+    { title: 'Buku Induk', desc: 'Data induk siswa dan arsip riwayat akademik digital.', status: 'Segera', href: '#' },
+    { title: 'Program BK', desc: 'Pencatatan konseling dan perkembangan siswa secara terstruktur.', status: 'Segera', href: '#' },
+    { title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, dan administrasi umum dalam satu tempat.', status: 'Segera', href: '#' },
+];
+
+const SHOWCASE = [
+    { title: 'Bandul Sederhana', subject: 'Fisika · Getaran', href: '/lab/bandul' },
+    { title: 'Gerak Peluru', subject: 'Fisika · Kinematika', href: '/lab/gerak-peluru' },
+    { title: 'Rangkaian Listrik Seri', subject: 'Fisika · Listrik', href: '/lab/rangkaian-listrik' },
 ];
 
 export default function Welcome({ canLogin = true, canRegister = true }) {
     return (
         <div className="min-h-screen bg-cream text-navy">
-            <header className="flex items-center justify-between px-6 lg:px-10 py-5 border-b border-navy/10">
-                <p className="font-display font-700 text-lg">
-                    sekolah<span className="text-coral">.co.id</span>
-                </p>
-                <div className="flex items-center gap-3">
-                    {canLogin && (
-                        <Link href="/login" className="text-sm font-medium text-navy/80 hover:text-navy">
-                            Masuk
-                        </Link>
-                    )}
-                    {canRegister && (
-                        <Link
-                            href="/register"
-                            className="text-sm font-medium bg-teal text-white rounded-lg px-4 py-2 hover:brightness-110"
-                        >
-                            Daftar
-                        </Link>
-                    )}
-                </div>
-            </header>
+            <PublicNavbar canLogin={canLogin} canRegister={canRegister} />
 
-            <section className="px-6 lg:px-10 py-16 lg:py-24 max-w-4xl mx-auto text-center">
-                <span className="inline-block text-xs font-mono uppercase tracking-wide text-teal bg-teal-light rounded-full px-3 py-1">
-                    Portal Sekolah Terpadu
-                </span>
-                <h1 className="font-display font-700 text-3xl lg:text-5xl mt-5 leading-tight">
-                    Satu portal untuk seluruh<br className="hidden lg:block" /> kegiatan akademik sekolah
-                </h1>
-                <p className="text-navy/60 mt-5 text-base lg:text-lg max-w-2xl mx-auto">
-                    Dari eksplorasi sains interaktif di Lab, ujian online, hingga administrasi
-                    Buku Induk dan BK — semuanya terhubung dalam satu tempat.
-                </p>
-                <div className="flex items-center justify-center gap-3 mt-8">
-                    <Link
-                        href="/register"
-                        className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95"
-                    >
-                        Mulai Sekarang
-                    </Link>
-                    <Link
-                        href="/login"
-                        className="border border-navy/20 text-navy font-medium rounded-lg px-5 py-3 text-sm hover:bg-navy/5"
-                    >
-                        Saya sudah punya akun
-                    </Link>
+            {/* Hero */}
+            <section id="home" className="relative overflow-hidden">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20 lg:py-28 text-center relative z-10">
+                    <span className="inline-block text-xs font-mono uppercase tracking-wide text-teal bg-teal-light rounded-full px-3 py-1">
+                        Portal Sekolah Terpadu
+                    </span>
+                    <h1 className="font-display font-700 text-3xl lg:text-5xl mt-5 leading-tight max-w-3xl mx-auto">
+                        Satu portal untuk seluruh kegiatan akademik sekolah
+                    </h1>
+                    <p className="text-navy/60 mt-5 text-base lg:text-lg max-w-2xl mx-auto">
+                        Dari eksplorasi sains interaktif di Lab, ujian online, hingga administrasi
+                        Buku Induk dan BK — semuanya terhubung dalam satu tempat.
+                    </p>
+                    <div className="flex items-center justify-center gap-3 mt-8">
+                        <Link href="/register" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">
+                            Mulai Sekarang
+                        </Link>
+                        <a href="#program-sekolah" className="border border-navy/20 text-navy font-medium rounded-lg px-5 py-3 text-sm hover:bg-navy/5">
+                            Jelajahi Modul
+                        </a>
+                    </div>
                 </div>
+                <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-teal-light" />
+                <div className="absolute -left-16 bottom-0 w-64 h-64 rounded-full bg-coral/10" />
             </section>
 
-            <section className="px-6 lg:px-10 pb-20 max-w-5xl mx-auto">
-                <h2 className="font-display font-600 text-xl text-center mb-8">Modul yang tersedia</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {MODULES.map((m) => (
-                        <div key={m.title} className="rounded-2xl bg-white border border-navy/10 p-5">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-display font-600 text-navy">{m.title}</h3>
-                                <span
-                                    className={`text-[10px] font-mono uppercase tracking-wide rounded-full px-2 py-0.5 ${
-                                        m.tag === 'Aktif' ? 'bg-teal-light text-teal' : 'bg-navy/5 text-navy/40'
-                                    }`}
-                                >
-                                    {m.tag}
-                                </span>
-                            </div>
-                            <p className="text-sm text-navy/60">{m.desc}</p>
+            {/* Stats bar */}
+            <section className="bg-teal text-cream">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    {STATS.map((s) => (
+                        <div key={s.label}>
+                            <p className="font-display font-700 text-3xl lg:text-4xl text-coral">{s.value}</p>
+                            <p className="text-sm text-cream/70 mt-1">{s.label}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
-            <footer className="border-t border-navy/10 px-6 lg:px-10 py-6 text-center text-xs text-navy/40">
-                &copy; {new Date().getFullYear()} sekolah.co.id &middot; Portal Sekolah Terpadu
-            </footer>
+            {/* Fitur unggulan */}
+            <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
+                <div className="text-center max-w-xl mx-auto mb-10">
+                    <span className="text-xs font-mono uppercase tracking-wide text-teal">Kenapa Kami</span>
+                    <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Dibangun untuk kebutuhan belajar nyata</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {FEATURES.map((f) => (
+                        <div key={f.title} className="rounded-2xl bg-white border border-navy/10 p-5">
+                            <div className="h-10 w-10 rounded-lg bg-teal-light text-teal flex items-center justify-center mb-3">
+                                <f.icon className="w-5 h-5" />
+                            </div>
+                            <h3 className="font-display font-600 text-navy">{f.title}</h3>
+                            <p className="text-sm text-navy/60 mt-1.5">{f.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Modul Ajar (placeholder ringkas, siap diisi konten kurikulum) */}
+            <section id="modul-ajar" className="bg-white border-y border-navy/10">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <div>
+                        <span className="text-xs font-mono uppercase tracking-wide text-teal">Modul Ajar</span>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">
+                            Materi terstruktur, terhubung langsung ke simulasi
+                        </h2>
+                        <p className="text-navy/60 mt-3">
+                            Setiap simulasi di Lab Interaktif dipetakan ke modul ajar per kompetensi
+                            dasar, lengkap dengan tujuan pembelajaran dan lembar kerja siswa.
+                        </p>
+                        <Link href="/lab" className="inline-flex items-center gap-2 mt-5 text-teal font-medium text-sm">
+                            Lihat simulasi terkait &rarr;
+                        </Link>
+                    </div>
+                    <div className="rounded-2xl bg-teal-light p-6 space-y-3">
+                        {['Fisika Kelas X · Getaran & Gelombang', 'Fisika Kelas X · Kinematika', 'Fisika Kelas XI · Listrik Dinamis'].map((m) => (
+                            <div key={m} className="bg-white rounded-lg px-4 py-3 text-sm font-medium text-navy/80 shadow-sm">
+                                {m}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Program Sekolah */}
+            <section id="program-sekolah" className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
+                <div className="text-center max-w-xl mx-auto mb-10">
+                    <span className="text-xs font-mono uppercase tracking-wide text-teal">Program Sekolah</span>
+                    <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Modul yang tersedia di portal</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {PROGRAMS.map((m) => (
+                        <a
+                            key={m.title}
+                            href={m.href}
+                            className={`rounded-2xl bg-white border border-navy/10 p-5 block ${
+                                m.status === 'Segera' ? 'opacity-70 pointer-events-none' : 'hover:shadow-md hover:-translate-y-0.5 transition-all'
+                            }`}
+                        >
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-display font-600 text-navy">{m.title}</h3>
+                                <span className={`text-[10px] font-mono uppercase tracking-wide rounded-full px-2 py-0.5 ${
+                                    m.status === 'Aktif' ? 'bg-teal-light text-teal' : 'bg-navy/5 text-navy/40'
+                                }`}>
+                                    {m.status}
+                                </span>
+                            </div>
+                            <p className="text-sm text-navy/60">{m.desc}</p>
+                        </a>
+                    ))}
+                </div>
+            </section>
+
+            {/* Showcase */}
+            <section id="showcase" className="bg-navy text-cream">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
+                    <div className="text-center max-w-xl mx-auto mb-10">
+                        <span className="text-xs font-mono uppercase tracking-wide text-coral">Showcase</span>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Simulasi yang bisa dicoba langsung</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        {SHOWCASE.map((s) => (
+                            <Link
+                                key={s.title}
+                                href={s.href}
+                                className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col justify-between min-h-[130px] hover:bg-white/10 transition-colors"
+                            >
+                                <span className="text-xs font-mono text-cream/50">{s.subject}</span>
+                                <div className="flex items-end justify-between mt-3">
+                                    <h3 className="font-display font-600 text-white">{s.title}</h3>
+                                    <span className="text-coral text-sm">&rarr;</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA penutup */}
+            <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16 text-center">
+                <h2 className="font-display font-700 text-2xl lg:text-3xl">Siap membawa sekolahmu online?</h2>
+                <p className="text-navy/60 mt-3 max-w-xl mx-auto">
+                    Daftarkan sekolahmu dan mulai gunakan Lab Interaktif serta modul lain
+                    yang menyusul.
+                </p>
+                <Link href="/register" className="inline-block mt-6 bg-coral text-navy font-medium rounded-lg px-6 py-3 text-sm hover:brightness-95">
+                    Daftar Sekarang
+                </Link>
+            </section>
+
+            <PublicFooter />
         </div>
     );
 }
+
+/* Ikon inline ringan, tanpa dependency tambahan */
+function BeakerIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 3h6M10 3v6l-6 10a1 1 0 001 1.5h14a1 1 0 001-1.5L14 9V3" /></svg>; }
+function BookIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 19.5A2.5 2.5 0 016.5 17H20V4H6.5A2.5 2.5 0 004 6.5v13z" /></svg>; }
+function LayersIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5" /></svg>; }
+function ClockIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>; }
