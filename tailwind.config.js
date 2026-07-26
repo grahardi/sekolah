@@ -1,6 +1,10 @@
+import forms from '@tailwindcss/forms';
+
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.jsx',
     ],
@@ -26,6 +30,7 @@ export default {
                 display: ['"Space Grotesk"', 'sans-serif'],
                 body: ['"Inter"', 'sans-serif'],
                 mono: ['"IBM Plex Mono"', 'monospace'],
+                sans: ['"Inter"', 'sans-serif'],
             },
             backgroundImage: {
                 'grid-paper': "linear-gradient(rgba(124,138,165,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(124,138,165,0.08) 1px, transparent 1px)",
@@ -35,5 +40,5 @@ export default {
             },
         },
     },
-    plugins: [],
+    plugins: [forms],
 };
