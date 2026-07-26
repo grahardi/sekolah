@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import PortalLayout from '../../Layouts/PortalLayout';
+import LabLayout from '../../Layouts/LabLayout';
 
-export default function CircuitBuilder() {
+export default function CircuitBuilder({ category = 'Fisika' }) {
     const canvasRef = useRef(null);
     const [voltage, setVoltage] = useState(9);
     const [resistance, setResistance] = useState(30);
@@ -95,7 +95,7 @@ export default function CircuitBuilder() {
     }, [voltage, resistance, current]);
 
     return (
-        <PortalLayout title="Rangkaian Listrik Seri" breadcrumb={['Portal', 'Lab Interaktif', 'Rangkaian Listrik Seri']}>
+        <LabLayout title="Rangkaian Listrik Seri" breadcrumb={['Home', 'Simulasi', category]}>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                 <div className="rounded-2xl bg-[#0F1729] border border-slate/20 flex items-center justify-center p-4">
                     <canvas ref={canvasRef} width={500} height={400} className="max-w-full" />
@@ -137,6 +137,6 @@ export default function CircuitBuilder() {
                     </div>
                 </div>
             </div>
-        </PortalLayout>
+        </LabLayout>
     );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import PortalLayout from '../../Layouts/PortalLayout';
+import LabLayout from '../../Layouts/LabLayout';
 
-export default function ProjectileMotion() {
+export default function ProjectileMotion({ category = 'Fisika' }) {
     const canvasRef = useRef(null);
     const [angle, setAngle] = useState(45);
     const [speed, setSpeed] = useState(40);
@@ -90,7 +90,7 @@ export default function ProjectileMotion() {
     };
 
     return (
-        <PortalLayout title="Gerak Peluru" breadcrumb={['Portal', 'Lab Interaktif', 'Gerak Peluru']}>
+        <LabLayout title="Gerak Peluru" breadcrumb={['Home', 'Simulasi', category]}>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                 <div className="rounded-2xl bg-[#0F1729] border border-slate/20 flex items-center justify-center p-4">
                     <canvas ref={canvasRef} width={560} height={420} className="max-w-full" />
@@ -137,6 +137,6 @@ export default function ProjectileMotion() {
                     </button>
                 </div>
             </div>
-        </PortalLayout>
+        </LabLayout>
     );
 }
