@@ -31,16 +31,16 @@ class SimulationController extends Controller
         'tegangan-permukaan' => ['category' => 'Fisika', 'title' => 'Tegangan Permukaan & Fluida', 'subject' => 'Mekanika Fluida', 'desc' => 'Amati efek tegangan permukaan dan tekanan hidrostatis pada fluida.', 'component' => 'Simulations/SurfaceTension'],
 
         // ---------------- MATEMATIKA ----------------
-        'fungsi-kuadrat' => ['category' => 'Matematika', 'title' => 'Fungsi Kuadrat Interaktif', 'subject' => 'Aljabar', 'desc' => 'Geser koefisien a, b, c dan lihat perubahan bentuk parabola secara langsung.'],
-        'trigonometri-lingkaran' => ['category' => 'Matematika', 'title' => 'Trigonometri Lingkaran Satuan', 'subject' => 'Trigonometri', 'desc' => 'Putar sudut pada lingkaran satuan, amati nilai sin, cos, dan tan berubah.'],
-        'transformasi-geometri' => ['category' => 'Matematika', 'title' => 'Transformasi Geometri', 'subject' => 'Geometri', 'desc' => 'Coba translasi, rotasi, refleksi, dan dilatasi pada bangun datar.'],
-        'vektor-2d' => ['category' => 'Matematika', 'title' => 'Vektor 2D', 'subject' => 'Aljabar Linear', 'desc' => 'Jumlahkan dan kurangkan vektor secara visual, pahami komponen x-y.'],
-        'turunan-garis-singgung' => ['category' => 'Matematika', 'title' => 'Turunan & Garis Singgung', 'subject' => 'Kalkulus', 'desc' => 'Geser titik pada kurva, lihat kemiringan garis singgung berubah real-time.'],
-        'integral-luas' => ['category' => 'Matematika', 'title' => 'Integral sebagai Luas Daerah', 'subject' => 'Kalkulus', 'desc' => 'Visualisasikan integral tentu sebagai luas daerah di bawah kurva.'],
-        'barisan-deret' => ['category' => 'Matematika', 'title' => 'Barisan & Deret', 'subject' => 'Aljabar', 'desc' => 'Eksplorasi pola barisan aritmetika dan geometri secara visual.'],
-        'peluang-statistika' => ['category' => 'Matematika', 'title' => 'Peluang & Statistika', 'subject' => 'Statistika', 'desc' => 'Simulasi lempar dadu/koin berulang, amati distribusi hasil mendekati teori.'],
-        'bangun-ruang-3d' => ['category' => 'Matematika', 'title' => 'Bangun Ruang 3D', 'subject' => 'Geometri Ruang', 'desc' => 'Putar dan potong bangun ruang, hitung volume serta luas permukaan.'],
-        'persamaan-linear-dua-variabel' => ['category' => 'Matematika', 'title' => 'Persamaan Linear Dua Variabel', 'subject' => 'Aljabar', 'desc' => 'Geser dua garis, temukan titik potong sebagai solusi sistem persamaan.'],
+        'fungsi-kuadrat' => ['category' => 'Matematika', 'title' => 'Fungsi Kuadrat Interaktif', 'subject' => 'Aljabar', 'desc' => 'Geser koefisien a, b, c dan lihat perubahan bentuk parabola secara langsung.', 'component' => 'Simulations/QuadraticFunction'],
+        'trigonometri-lingkaran' => ['category' => 'Matematika', 'title' => 'Trigonometri Lingkaran Satuan', 'subject' => 'Trigonometri', 'desc' => 'Putar sudut pada lingkaran satuan, amati nilai sin, cos, dan tan berubah.', 'component' => 'Simulations/UnitCircle'],
+        'transformasi-geometri' => ['category' => 'Matematika', 'title' => 'Transformasi Geometri', 'subject' => 'Geometri', 'desc' => 'Coba translasi, rotasi, refleksi, dan dilatasi pada bangun datar.', 'component' => 'Simulations/GeometricTransform'],
+        'vektor-2d' => ['category' => 'Matematika', 'title' => 'Vektor 2D', 'subject' => 'Aljabar Linear', 'desc' => 'Jumlahkan dan kurangkan vektor secara visual, pahami komponen x-y.', 'component' => 'Simulations/VectorAddition'],
+        'turunan-garis-singgung' => ['category' => 'Matematika', 'title' => 'Turunan & Garis Singgung', 'subject' => 'Kalkulus', 'desc' => 'Geser titik pada kurva, lihat kemiringan garis singgung berubah real-time.', 'component' => 'Simulations/DerivativeTangent'],
+        'integral-luas' => ['category' => 'Matematika', 'title' => 'Integral sebagai Luas Daerah', 'subject' => 'Kalkulus', 'desc' => 'Visualisasikan integral tentu sebagai luas daerah di bawah kurva.', 'component' => 'Simulations/IntegralArea'],
+        'barisan-deret' => ['category' => 'Matematika', 'title' => 'Barisan & Deret', 'subject' => 'Aljabar', 'desc' => 'Eksplorasi pola barisan aritmetika dan geometri secara visual.', 'component' => 'Simulations/SequenceSeries'],
+        'peluang-statistika' => ['category' => 'Matematika', 'title' => 'Peluang & Statistika', 'subject' => 'Statistika', 'desc' => 'Simulasi lempar dadu/koin berulang, amati distribusi hasil mendekati teori.', 'component' => 'Simulations/ProbabilityStats'],
+        'bangun-ruang-3d' => ['category' => 'Matematika', 'title' => 'Bangun Ruang 3D', 'subject' => 'Geometri Ruang', 'desc' => 'Putar dan potong bangun ruang, hitung volume serta luas permukaan.', 'component' => 'Simulations/Solid3D'],
+        'persamaan-linear-dua-variabel' => ['category' => 'Matematika', 'title' => 'Persamaan Linear Dua Variabel', 'subject' => 'Aljabar', 'desc' => 'Geser dua garis, temukan titik potong sebagai solusi sistem persamaan.', 'component' => 'Simulations/LinearSystem'],
 
         // ---------------- BIOLOGI ----------------
         'struktur-sel' => ['category' => 'Biologi', 'title' => 'Struktur Sel Hewan & Tumbuhan', 'subject' => 'Biologi Sel', 'desc' => 'Jelajahi organel sel secara interaktif, bandingkan sel hewan dan tumbuhan.'],
