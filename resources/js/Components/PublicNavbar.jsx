@@ -3,11 +3,11 @@ import { Link } from '@inertiajs/react';
 import Logo from './Logo';
 
 const NAV_ITEMS = [
-    { label: 'Home', href: '#home' },
+    { label: 'Home', href: '/' },
     { label: 'Simulasi', href: '/lab' },
-    { label: 'Modul Ajar', href: '#modul-ajar' },
-    { label: 'Program Sekolah', href: '#program-sekolah' },
-    { label: 'Showcase', href: '#showcase' },
+    { label: 'Modul Ajar', href: '/modul-ajar' },
+    { label: 'Program Sekolah', href: '/#program-sekolah' },
+    { label: 'Showcase', href: '/#showcase' },
 ];
 
 export default function PublicNavbar({ canLogin = true, canRegister = true }) {

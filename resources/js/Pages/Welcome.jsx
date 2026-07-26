@@ -98,18 +98,18 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                     <div>
                         <span className="text-xs font-mono uppercase tracking-wide text-teal">Modul Ajar</span>
                         <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">
-                            Materi terstruktur, terhubung langsung ke simulasi
+                            Perangkat ajar SMP Kurikulum Merdeka, siap unduh
                         </h2>
                         <p className="text-navy/60 mt-3">
-                            Setiap simulasi di Lab Interaktif dipetakan ke modul ajar per kompetensi
-                            dasar, lengkap dengan tujuan pembelajaran dan lembar kerja siswa.
+                            40+ modul ajar Fase D (kelas 7-9) untuk 10 mata pelajaran, lengkap dengan
+                            deskripsi dan pencarian per topik. Format PDF/DOCX.
                         </p>
-                        <Link href="/lab" className="inline-flex items-center gap-2 mt-5 text-teal font-medium text-sm">
-                            Lihat simulasi terkait &rarr;
+                        <Link href="/modul-ajar" className="inline-flex items-center gap-2 mt-5 text-teal font-medium text-sm">
+                            Lihat semua modul ajar &rarr;
                         </Link>
                     </div>
                     <div className="rounded-2xl bg-teal-light p-6 space-y-3">
-                        {['Fisika Kelas X · Getaran & Gelombang', 'Fisika Kelas X · Kinematika', 'Fisika Kelas XI · Listrik Dinamis'].map((m) => (
+                        {['Matematika · Teorema Pythagoras', 'Bahasa Indonesia · Teks Deskripsi', 'IPA · Sistem Organisasi Kehidupan'].map((m) => (
                             <div key={m} className="bg-white rounded-lg px-4 py-3 text-sm font-medium text-navy/80 shadow-sm">
                                 {m}
                             </div>

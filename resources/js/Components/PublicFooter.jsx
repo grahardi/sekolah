@@ -15,11 +15,11 @@ export default function PublicFooter() {
                 <div>
                     <p className="font-display font-600 text-sm text-white mb-3">Navigasi</p>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="#home" className="hover:text-white">Home</a></li>
+                        <li><a href="/" className="hover:text-white">Home</a></li>
                         <li><a href="/lab" className="hover:text-white">Simulasi</a></li>
-                        <li><a href="#modul-ajar" className="hover:text-white">Modul Ajar</a></li>
-                        <li><a href="#program-sekolah" className="hover:text-white">Program Sekolah</a></li>
-                        <li><a href="#showcase" className="hover:text-white">Showcase</a></li>
+                        <li><a href="/modul-ajar" className="hover:text-white">Modul Ajar</a></li>
+                        <li><a href="/#program-sekolah" className="hover:text-white">Program Sekolah</a></li>
+                        <li><a href="/#showcase" className="hover:text-white">Showcase</a></li>
                     </ul>
                 </div>
 

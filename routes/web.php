@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ModulAjarController;
 use App\Http\Controllers\SimulationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,10 @@ Route::middleware(['web'])->prefix('lab')->name('lab.')->group(function () {
     Route::get('/', [SimulationController::class, 'index'])->name('index');
     Route::get('/{slug}', [SimulationController::class, 'show'])->name('show');
 });
+
+// Modul Ajar SMP Kurikulum Merdeka - katalog perangkat ajar per mapel dgn
+// pencarian, dibuka tanpa login sama seperti Lab Interaktif.
+Route::middleware(['web'])->get('/modul-ajar', [ModulAjarController::class, 'index'])->name('modul-ajar.index');
 
 // Modul lain didaftarkan dengan pola yang sama, lalu ditambahkan sebagai
 // entri baru di MENU pada resources/js/Layouts/PortalLayout.jsx:
