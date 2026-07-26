@@ -114,3 +114,32 @@ pendidikan.
 - **Desain "panel instrumen lab"** (font mono untuk angka, warna amber sebagai
   aksen kontrol) dipilih supaya modul ini terasa berbeda dari modul administratif
   lain (buku induk, manajemen sekolah) yang biasanya bergaya tabel/form standar.
+
+## 6. Modul Ajar - file asli, bukan link karangan
+
+Katalog `/modul-ajar` berisi 36 modul (Matematika, IPA, IPS, Informatika, PJOK
+kelas 7) yang **sudah diverifikasi** punya file DOCX asli di Google Drive
+(sumber: modulguruku.com). Supaya file-nya benar-benar ter-host di server
+sendiri (bukan cuma link ke Drive), jalankan:
+
+```bash
+cd /www/wwwroot/sekolah.co.id/sekolahcoid
+bash scripts/download-modul-ajar.sh
+php artisan storage:link   # cuma perlu sekali kalau belum pernah
+```
+
+Script ini men-download 36 file ke `storage/app/public/modul-ajar/`.
+`ModulAjarController` otomatis mendeteksi file lokal itu dan mengganti tombol
+unduh untuk pakai file dari server sendiri - fallback ke link Google Drive
+untuk modul yang belum ter-download, tanpa perlu ubah kode apa pun.
+
+Kalau ada baris "PERINGATAN" saat script jalan, itu tandanya file tersebut
+gagal ke-download langsung (biasanya karena Google Drive minta konfirmasi
+tambahan untuk file besar) - cek link aslinya manual di
+`scripts/download-modul-ajar.sh` (cari ID file-nya) dan download manual kalau
+perlu, lalu taruh manual ke folder yang sama dengan nama file yang sesuai.
+
+**Menambah modul baru:** tambahkan entri baru di `ModulAjarController::CATALOG`
+dengan `file_key` unik, lalu taruh file docx-nya di
+`storage/app/public/modul-ajar/{file_key}.docx` (upload manual, atau lewat
+panel admin kalau nanti sudah dibangun).
