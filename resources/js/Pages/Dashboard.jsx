@@ -1,0 +1,104 @@
+import { Link, usePage } from '@inertiajs/react';
+import PortalLayout from '../Layouts/PortalLayout';
+
+const MODULES = [
+    {
+        key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk kelas Fisika, Kimia, dan Matematika.',
+        href: '/lab', status: 'aktif', color: 'bg-teal',
+    },
+    {
+        key: 'ujian', title: 'Server Ujian', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+    {
+        key: 'induk', title: 'Buku Induk', desc: 'Data induk siswa, riwayat akademik, dan arsip digital sekolah.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+    {
+        key: 'bk', title: 'Program BK', desc: 'Pencatatan konseling, pelanggaran, dan perkembangan siswa.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+    {
+        key: 'manajemen', title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+];
+
+export default function Dashboard() {
+    const { props } = usePage();
+    const user = props?.auth?.user;
+
+    return (
+        <PortalLayout title="Beranda" breadcrumb={['Portal']}>
+            {/* Banner sambutan */}
+            <div className="rounded-2xl bg-teal text-cream p-6 lg:p-8 mb-8 relative overflow-hidden">
+                <div className="relative z-10 max-w-lg">
+                    <p className="text-cream/70 text-sm">Selamat datang kembali,</p>
+                    <h2 className="font-display font-700 text-2xl lg:text-3xl mt-1">
+                        {user?.name ?? 'Warga Sekolah'} 👋
+                    </h2>
+                    <p className="text-cream/80 mt-2 text-sm lg:text-base">
+                        Semua kebutuhan akademik sekolahmu dalam satu portal — mulai dari
+                        eksplorasi Lab Interaktif hingga administrasi harian.
+                    </p>
+                    <Link
+                        href="/lab"
+                        className="inline-flex items-center gap-2 mt-5 bg-coral text-navy font-medium rounded-lg px-4 py-2.5 text-sm hover:brightness-95"
+                    >
+                        Buka Lab Interaktif &rarr;
+                    </Link>
+                </div>
+                {/* Aksen dekoratif */}
+                <div className="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/5" />
+                <div className="absolute right-16 -top-10 w-28 h-28 rounded-full bg-coral/20" />
+            </div>
+
+            {/* Grid modul */}
+            <h3 className="font-display font-600 text-lg text-navy mb-3">Modul Sekolah</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+                {MODULES.map((m) => (
+                    <Link
+                        key={m.key}
+                        href={m.href}
+                        className={`rounded-2xl bg-white border border-navy/10 p-5 flex flex-col justify-between min-h-[150px] transition-all hover:shadow-md hover:-translate-y-0.5 ${
+                            m.status === 'segera' ? 'opacity-60 pointer-events-none' : ''
+                        }`}
+                    >
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <span className={`h-2 w-2 rounded-full ${m.color}`} />
+                                <span className="text-[10px] font-mono uppercase tracking-wide text-navy/40">
+                                    {m.status === 'aktif' ? 'Aktif' : 'Segera hadir'}
+                                </span>
+                            </div>
+                            <h4 className="font-display font-600 text-base text-navy mt-2">{m.title}</h4>
+                            <p className="text-sm text-navy/60 mt-1">{m.desc}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+
+            {/* Pratinjau simulasi Lab */}
+            <h3 className="font-display font-600 text-lg text-navy mb-3">Simulasi Terbaru di Lab</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                    { slug: 'bandul', title: 'Bandul Sederhana', subject: 'Fisika · Getaran' },
+                    { slug: 'gerak-peluru', title: 'Gerak Peluru', subject: 'Fisika · Kinematika' },
+                    { slug: 'rangkaian-listrik', title: 'Rangkaian Listrik Seri', subject: 'Fisika · Listrik' },
+                ].map((s) => (
+                    <Link
+                        key={s.slug}
+                        href={`/lab/${s.slug}`}
+                        className="rounded-2xl bg-ink text-paper p-5 flex flex-col justify-between min-h-[120px] hover:-translate-y-0.5 transition-transform"
+                    >
+                        <span className="text-xs font-mono text-slate">{s.subject}</span>
+                        <div className="flex items-end justify-between mt-3">
+                            <h4 className="font-display font-600">{s.title}</h4>
+                            <span className="text-amber text-sm">&rarr;</span>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </PortalLayout>
+    );
+}

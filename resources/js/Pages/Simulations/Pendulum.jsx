@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import AppLayout from '../../Layouts/AppLayout';
+import PortalLayout from '../../Layouts/PortalLayout';
 
 // Simulasi bandul sederhana dengan integrasi Euler kecil-kecilan.
 // Sengaja tidak pakai physics engine eksternal supaya mudah dibaca & dimodifikasi.
@@ -85,7 +85,7 @@ export default function Pendulum() {
     };
 
     return (
-        <AppLayout title="Bandul Sederhana" subtitle="Fisika · Getaran & Gelombang">
+        <PortalLayout title="Bandul Sederhana" breadcrumb={['Portal', 'Lab Interaktif', 'Bandul Sederhana']}>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                 <div className="rounded-2xl bg-[#0F1729] border border-slate/20 flex items-center justify-center p-4">
                     <canvas ref={canvasRef} width={480} height={420} className="max-w-full" />
@@ -140,6 +140,6 @@ export default function Pendulum() {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </PortalLayout>
     );
 }

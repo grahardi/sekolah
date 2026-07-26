@@ -1,11 +1,33 @@
-# Laboratorium Interaktif — modul sekolah.co.id
+# Portal sekolah.co.id — dengan modul Lab Interaktif
 
-Scaffold Inertia + React di atas Laravel 13, plus 3 contoh simulasi interaktif
-bergaya PhET (Bandul, Gerak Peluru, Rangkaian Listrik). Ini dirancang sebagai
-**satu modul** di antara modul lain (Server Ujian, Buku Induk, Program BK,
-Manajemen Sekolah) yang nanti ada di aplikasi Laravel yang sama — makanya route
-di-prefix `/lab` dan sidebar di `AppLayout.jsx` sudah menyisakan slot untuk
-modul-modul itu.
+Scaffold **portal sekolah lengkap** (Inertia + React di atas Laravel 13):
+landing page publik, dashboard setelah login, dan sidebar navigasi dengan
+modul-modul sekolah. **Lab Interaktif** (3 contoh simulasi bergaya PhET:
+Bandul, Gerak Peluru, Rangkaian Listrik) menyatu sebagai **submenu yang bisa
+expand** di sidebar — bukan aplikasi terpisah. Modul lain (Server Ujian, Buku
+Induk, Program BK, Manajemen Sekolah) sudah punya slot di menu, tinggal
+diaktifkan saat modulnya dibangun.
+
+## Wajib: portal ini butuh Laravel Breeze (untuk login/register)
+
+`routes/web.php` sudah menyertakan `require __DIR__.'/auth.php';` dan halaman
+`Welcome.jsx` mengarah ke `/login` & `/register`. Kalau Breeze belum terpasang,
+route itu akan error. Pasang dulu:
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install react
+```
+Breeze akan generate `routes/auth.php`, halaman login/register React, dan
+migration tabel `users`.
+
+## 0. Struktur menu portal
+
+Menu sidebar didefinisikan di satu tempat: `resources/js/Layouts/PortalLayout.jsx`,
+di dalam array `MENU`. Untuk mengaktifkan modul baru (misal Server Ujian),
+tinggal ubah entri yang sudah ada dari `disabled: true` jadi punya `href` yang
+benar, atau tambah `children` kalau modul itu juga punya beberapa submenu
+seperti Lab.
 
 ## 1. Buat project Laravel 13 (kalau belum ada)
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import AppLayout from '../../Layouts/AppLayout';
+import PortalLayout from '../../Layouts/PortalLayout';
 
 export default function ProjectileMotion() {
     const canvasRef = useRef(null);
@@ -90,7 +90,7 @@ export default function ProjectileMotion() {
     };
 
     return (
-        <AppLayout title="Gerak Peluru" subtitle="Fisika · Kinematika 2D">
+        <PortalLayout title="Gerak Peluru" breadcrumb={['Portal', 'Lab Interaktif', 'Gerak Peluru']}>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                 <div className="rounded-2xl bg-[#0F1729] border border-slate/20 flex items-center justify-center p-4">
                     <canvas ref={canvasRef} width={560} height={420} className="max-w-full" />
@@ -137,6 +137,6 @@ export default function ProjectileMotion() {
                     </button>
                 </div>
             </div>
-        </AppLayout>
+        </PortalLayout>
     );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import AppLayout from '../../Layouts/AppLayout';
+import PortalLayout from '../../Layouts/PortalLayout';
 
 export default function CircuitBuilder() {
     const canvasRef = useRef(null);
@@ -95,7 +95,7 @@ export default function CircuitBuilder() {
     }, [voltage, resistance, current]);
 
     return (
-        <AppLayout title="Rangkaian Listrik Seri" subtitle="Fisika · Listrik & Hukum Ohm">
+        <PortalLayout title="Rangkaian Listrik Seri" breadcrumb={['Portal', 'Lab Interaktif', 'Rangkaian Listrik Seri']}>
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                 <div className="rounded-2xl bg-[#0F1729] border border-slate/20 flex items-center justify-center p-4">
                     <canvas ref={canvasRef} width={500} height={400} className="max-w-full" />
@@ -137,6 +137,6 @@ export default function CircuitBuilder() {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </PortalLayout>
     );
 }
