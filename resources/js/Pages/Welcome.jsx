@@ -37,18 +37,18 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
 
             {/* Hero */}
             <section id="home" className="relative overflow-hidden">
-                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20 lg:py-28 text-center relative z-10">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 lg:py-14 text-center relative z-10">
                     <span className="inline-block text-xs font-mono uppercase tracking-wide text-teal bg-teal-light rounded-full px-3 py-1">
                         Portal Sekolah Terpadu
                     </span>
-                    <h1 className="font-display font-700 text-3xl lg:text-5xl mt-5 leading-tight max-w-3xl mx-auto">
+                    <h1 className="font-display font-700 text-3xl lg:text-5xl mt-3 leading-tight max-w-3xl mx-auto">
                         Satu portal untuk seluruh kegiatan akademik sekolah
                     </h1>
-                    <p className="text-navy/60 mt-5 text-base lg:text-lg max-w-2xl mx-auto">
+                    <p className="text-navy/60 mt-3 text-base lg:text-lg max-w-2xl mx-auto">
                         Dari eksplorasi sains interaktif di Lab, ujian online, hingga administrasi
                         Buku Induk dan BK — semuanya terhubung dalam satu tempat.
                     </p>
-                    <div className="flex items-center justify-center gap-3 mt-8">
+                    <div className="flex items-center justify-center gap-3 mt-6">
                         <Link href="/register" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">
                             Mulai Sekarang
                         </Link>
@@ -57,8 +57,8 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                         </a>
                     </div>
                 </div>
-                <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-teal-light" />
-                <div className="absolute -left-16 bottom-0 w-64 h-64 rounded-full bg-coral/10" />
+                <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-teal-light" />
+                <div className="absolute -left-16 bottom-0 w-48 h-48 rounded-full bg-coral/10" />
             </section>
 
             {/* Stats bar */}
