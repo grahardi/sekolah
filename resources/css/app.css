@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 html, body {
-    @apply bg-ink text-paper font-body antialiased;
+    @apply bg-cream text-navy font-body antialiased;
 }
 
 /* Panel gaya "instrumen lab" yang dipakai berulang di semua modul simulasi */
