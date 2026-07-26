@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+    @apply bg-ink text-paper font-body antialiased;
+}
+
+/* Panel gaya "instrumen lab" yang dipakai berulang di semua modul simulasi */
+.control-panel {
+    @apply bg-[#0F1729] border border-slate/20 rounded-2xl p-4 font-mono text-sm;
+}
+
+.dial-readout {
+    @apply text-amber font-mono text-lg tabular-nums;
+}
+
+/* Hormati preferensi reduced-motion pengguna */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+}
