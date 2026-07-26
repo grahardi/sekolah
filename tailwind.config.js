@@ -11,20 +11,20 @@ export default {
     theme: {
         extend: {
             colors: {
-                // -- Palet portal (tema edukasi, terang, hangat) --
-                cream: '#FBF7EF',      // background utama portal
-                teal: '#0F5132',       // primer - sidebar, header, identitas sekolah
-                'teal-light': '#E8F3EC',
-                coral: '#F4A300',      // aksen CTA - konsisten dgn "amber" di modul Lab
-                navy: '#1F2937',       // teks utama di atas latar terang
+                // -- Palet utama portal: biru muda, kuning, putih --
+                cream: '#F5F9FF',      // background utama - putih kebiruan
+                teal: '#2563EB',       // primer - biru untuk header, tombol, identitas
+                'teal-light': '#DCEAFE', // biru sangat muda - background section/badge
+                coral: '#FBBF24',      // aksen kuning - CTA & sorotan
+                navy: '#1E293B',       // teks utama (gelap, netral, tetap kontras di atas biru muda/putih)
 
-                // -- Palet modul Lab (tema "instrumen lab", gelap) --
-                ink: '#16213E',        // background panel simulasi
-                lab: '#1B4332',        // aksen sekunder - hijau papan lab
-                amber: '#F4A300',      // aksen utama - tombol & sorotan (=coral)
-                paper: '#F7F5EF',      // kartu / area kertas di atas ink
-                slate: '#7C8AA5',      // teks sekunder di atas ink
-                alert: '#E63946',      // reset / peringatan
+                // -- Palet modul Lab (tema "instrumen lab", gelap - khusus panel simulasi) --
+                ink: '#16213E',
+                lab: '#1B4332',
+                amber: '#FBBF24',      // disamakan dgn kuning aksen portal
+                paper: '#F7F5EF',
+                slate: '#7C8AA5',
+                alert: '#E63946',
             },
             fontFamily: {
                 display: ['"Space Grotesk"', 'sans-serif'],

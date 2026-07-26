@@ -23,8 +23,10 @@ Route::middleware(['web', 'auth'])->get('/dashboard', function () {
 })->name('dashboard');
 
 // Modul Laboratorium Interaktif - salah satu fitur di platform sekolah.co.id,
-// tampil sebagai submenu "Lab Interaktif" di dalam PortalLayout.
-Route::middleware(['web', 'auth'])->prefix('lab')->name('lab.')->group(function () {
+// tampil sebagai submenu "Lab Interaktif" di dalam PortalLayout. Dibuka tanpa
+// login (seperti PhET Interactive Simulations) supaya siapa saja bisa coba
+// simulasinya langsung sebelum daftar/masuk ke portal.
+Route::middleware(['web'])->prefix('lab')->name('lab.')->group(function () {
     Route::get('/', [SimulationController::class, 'index'])->name('index');
     Route::get('/{slug}', [SimulationController::class, 'show'])->name('show');
 });

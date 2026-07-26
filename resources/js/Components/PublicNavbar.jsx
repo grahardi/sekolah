@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
+import Logo from './Logo';
 
 const NAV_ITEMS = [
     { label: 'Home', href: '#home' },
@@ -15,8 +16,8 @@ export default function PublicNavbar({ canLogin = true, canRegister = true }) {
     return (
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-navy/10">
             <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-                <Link href="/" className="font-display font-700 text-lg text-navy shrink-0">
-                    sekolah<span className="text-coral">.co.id</span>
+                <Link href="/" className="shrink-0">
+                    <Logo />
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-8">

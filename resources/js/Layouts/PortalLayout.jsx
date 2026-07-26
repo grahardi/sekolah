@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import Logo from '../Components/Logo';
 
 // Struktur menu portal. Tiap modul lain (Ujian, Buku Induk, BK, Manajemen)
 // tinggal ditambah sebagai entri baru di sini dengan pola yang sama seperti
@@ -37,10 +38,8 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
             {/* Sidebar desktop */}
             <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-teal text-cream">
                 <div className="px-5 py-6 border-b border-white/10">
-                    <p className="font-display font-700 text-lg text-white">
-                        sekolah<span className="text-coral">.co.id</span>
-                    </p>
-                    <p className="text-xs text-cream/60 mt-1">Portal Sekolah Terpadu</p>
+                    <Logo light />
+                    <p className="text-xs text-cream/60 mt-2">Portal Sekolah Terpadu</p>
                 </div>
 
                 <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -66,9 +65,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                     <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
                     <aside className="absolute inset-y-0 left-0 w-72 bg-teal text-cream flex flex-col">
                         <div className="px-5 py-6 border-b border-white/10 flex items-center justify-between">
-                            <p className="font-display font-700 text-lg text-white">
-                                sekolah<span className="text-coral">.co.id</span>
-                            </p>
+                            <Logo light />
                             <button onClick={() => setMobileOpen(false)} className="text-cream/70">✕</button>
                         </div>
                         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">

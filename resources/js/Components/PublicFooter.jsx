@@ -1,11 +1,11 @@
+import Logo from './Logo';
+
 export default function PublicFooter() {
     return (
         <footer className="bg-navy text-cream/70">
             <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div>
-                    <p className="font-display font-700 text-lg text-white mb-3">
-                        sekolah<span className="text-coral">.co.id</span>
-                    </p>
+                    <Logo light className="mb-3" />
                     <p className="text-sm">
                         Portal sekolah terpadu — simulasi sains interaktif, modul ajar,
                         dan administrasi sekolah dalam satu platform.
