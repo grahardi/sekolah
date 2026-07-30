@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ModulAjarController;
+use App\Http\Controllers\NpsnLookupController;
+use App\Http\Controllers\SekolahRegistrationController;
 use App\Http\Controllers\SimulationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -42,5 +44,14 @@ Route::middleware(['web'])->get('/modul-ajar', [ModulAjarController::class, 'ind
 // require __DIR__.'/buku-induk.php';
 // require __DIR__.'/bk.php';
 // require __DIR__.'/manajemen.php';
+
+// Registrasi sekolah (2 langkah: cari NPSN -> konfirmasi -> buat akun admin).
+// Terpisah dari /register bawaan Breeze supaya tidak tertimpa saat
+// `breeze:install` dijalankan ulang di masa depan.
+Route::middleware(['web'])->group(function () {
+    Route::get('/npsn-lookup', [NpsnLookupController::class, 'lookup'])->name('npsn.lookup');
+    Route::get('/registrasi-sekolah', [SekolahRegistrationController::class, 'create'])->name('sekolah.register');
+    Route::post('/registrasi-sekolah', [SekolahRegistrationController::class, 'store']);
+});
 
 require __DIR__.'/auth.php';

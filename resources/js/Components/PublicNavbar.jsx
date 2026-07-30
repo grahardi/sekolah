@@ -40,7 +40,7 @@ export default function PublicNavbar({ canLogin = true, canRegister = true }) {
                     )}
                     {canRegister && (
                         <Link
-                            href="/register"
+                            href="/registrasi-sekolah"
                             className="text-sm font-medium bg-teal text-white rounded-lg px-4 py-2.5 hover:brightness-110"
                         >
                             Daftar
@@ -70,7 +70,7 @@ export default function PublicNavbar({ canLogin = true, canRegister = true }) {
                     <div className="flex items-center gap-3 pt-3 border-t border-navy/10">
                         {canLogin && <Link href="/login" className="text-sm font-medium text-navy/80">Masuk</Link>}
                         {canRegister && (
-                            <Link href="/register" className="text-sm font-medium bg-teal text-white rounded-lg px-4 py-2">
+                            <Link href="/registrasi-sekolah" className="text-sm font-medium bg-teal text-white rounded-lg px-4 py-2">
                                 Daftar
                             </Link>
                         )}

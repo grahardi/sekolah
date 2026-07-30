@@ -143,3 +143,41 @@ perlu, lalu taruh manual ke folder yang sama dengan nama file yang sesuai.
 dengan `file_key` unik, lalu taruh file docx-nya di
 `storage/app/public/modul-ajar/{file_key}.docx` (upload manual, atau lewat
 panel admin kalau nanti sudah dibangun).
+
+## 7. Registrasi Sekolah via NPSN
+
+Alur baru di `/registrasi-sekolah`: masukkan NPSN → sistem ambil data sekolah
+otomatis dari data referensi resmi Kemendikdasmen (publik, tanpa API key,
+`https://referensi.data.kemendikdasmen.go.id/pendidikan/npsn/{npsn}`) →
+konfirmasi → lengkapi akun admin.
+
+**Wajib dijalankan setelah pull:**
+```bash
+php artisan migrate
+```
+Ini membuat tabel `sekolahs` dan menambahkan kolom `sekolah_id` + `role` ke
+tabel `users`.
+
+**Wajib diedit manual** (karena `app/Models/User.php` dibuat oleh Breeze, bukan
+oleh scaffold ini, jadi tidak disentuh otomatis lewat git supaya tidak
+tertimpa): tambahkan relasi berikut ke `app/Models/User.php`:
+
+```php
+use App\Models\Sekolah;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+// tambahkan 'sekolah_id' dan 'role' ke array $fillable yang sudah ada, lalu:
+public function sekolah(): BelongsTo
+{
+    return $this->belongsTo(Sekolah::class);
+}
+```
+
+**Catatan soal keandalan lookup NPSN:** `NpsnLookupController` mem-parsing
+halaman HTML publik Kemendikdasmen dengan regex (situs itu tidak
+menyediakan JSON API resmi). Ini cukup stabil selama struktur halaman mereka
+tidak berubah drastis, tapi kalau suatu saat lookup berhenti bekerja
+(misal field yang kembali `null` semua), kemungkinan besar karena format
+halaman referensi berubah - cek ulang pola regex di controller tersebut
+dengan `curl https://referensi.data.kemendikdasmen.go.id/pendidikan/npsn/{npsn}`
+langsung dari server buat lihat HTML terbaru.

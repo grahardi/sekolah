@@ -49,7 +49,7 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                         Buku Induk dan BK — semuanya terhubung dalam satu tempat.
                     </p>
                     <div className="flex items-center justify-center gap-3 mt-6">
-                        <Link href="/register" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">
+                        <Link href="/registrasi-sekolah" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">
                             Mulai Sekarang
                         </Link>
                         <a href="#program-sekolah" className="border border-navy/20 text-navy font-medium rounded-lg px-5 py-3 text-sm hover:bg-navy/5">
@@ -179,7 +179,7 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                     Daftarkan sekolahmu dan mulai gunakan Lab Interaktif serta modul lain
                     yang menyusul.
                 </p>
-                <Link href="/register" className="inline-block mt-6 bg-coral text-navy font-medium rounded-lg px-6 py-3 text-sm hover:brightness-95">
+                <Link href="/registrasi-sekolah" className="inline-block mt-6 bg-coral text-navy font-medium rounded-lg px-6 py-3 text-sm hover:brightness-95">
                     Daftar Sekarang
                 </Link>
             </section>
