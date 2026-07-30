@@ -189,6 +189,10 @@
            class="sb-item {{ request()->routeIs('nilai.import-massal*') ? 'active' : '' }}">
             <i class="ti ti-table-import"></i><span>Import Nilai Massal</span>
         </a>
+        <a href="{{ route('siswa.import.berkas.form') }}"
+           class="sb-item {{ request()->routeIs('siswa.import.berkas.*') ? 'active' : '' }}">
+            <i class="ti ti-folder-plus"></i><span>Import Berkas</span>
+        </a>
         <a href="{{ route('siswa.export.choice') }}"
            class="sb-item {{ request()->routeIs('siswa.export.*') ? 'active' : '' }}">
             <i class="ti ti-download"></i><span>Export</span>

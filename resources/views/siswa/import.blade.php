@@ -3,6 +3,7 @@
 @section('page-title', 'Import Data Siswa')
 
 @section('header-actions')
+    <a href="{{ route('siswa.import.berkas.form') }}" class="btn btn-secondary"><i class="ti ti-folder-plus"></i> Import Berkas</a>
     <a href="{{ route('siswa.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
 @endsection
 
