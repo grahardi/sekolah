@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import Logo from '../Components/Logo';
 
 // Struktur menu portal. Tiap modul lain (Ujian, Buku Induk, BK, Manajemen)
@@ -31,6 +31,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const user = props?.auth?.user;
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [accountOpen, setAccountOpen] = useState(false);
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 
@@ -103,14 +104,45 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                        <div className="hidden sm:flex flex-col items-end leading-tight">
-                            <span className="text-sm font-medium text-navy">{user?.name ?? 'Tamu'}</span>
-                            <span className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</span>
-                        </div>
-                        <div className="h-9 w-9 rounded-full bg-teal text-white flex items-center justify-center font-display text-sm">
-                            {(user?.name ?? 'T').charAt(0).toUpperCase()}
-                        </div>
+                    <div className="flex items-center gap-3 shrink-0 relative">
+                        <button
+                            onClick={() => setAccountOpen((o) => !o)}
+                            className="flex items-center gap-3 focus:outline-none"
+                        >
+                            <div className="hidden sm:flex flex-col items-end leading-tight">
+                                <span className="text-sm font-medium text-navy">{user?.name ?? 'Tamu'}</span>
+                                <span className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</span>
+                            </div>
+                            <div className="h-9 w-9 rounded-full bg-teal text-white flex items-center justify-center font-display text-sm">
+                                {(user?.name ?? 'T').charAt(0).toUpperCase()}
+                            </div>
+                        </button>
+
+                        {accountOpen && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setAccountOpen(false)} />
+                                <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-navy/10 shadow-lg z-50 py-2">
+                                    <div className="px-4 py-2 border-b border-navy/10">
+                                        <p className="text-sm font-medium text-navy truncate">{user?.name ?? 'Tamu'}</p>
+                                        <p className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</p>
+                                    </div>
+                                    <a
+                                        href="/buku-induk/ganti-password"
+                                        className="flex items-center gap-2 px-4 py-2 text-sm text-navy/80 hover:bg-navy/5"
+                                    >
+                                        <KeyIcon className="w-4 h-4" />
+                                        Ganti Password
+                                    </a>
+                                    <button
+                                        onClick={() => router.post('/logout')}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-alert hover:bg-alert/5"
+                                    >
+                                        <LogoutIcon className="w-4 h-4" />
+                                        Keluar
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </header>
 
@@ -204,3 +236,5 @@ function HeartIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="curr
 function GearIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" /></svg>; }
 function ChevronIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 18l6-6-6-6" /></svg>; }
 function MenuIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6" {...p}><path d="M4 6h16M4 12h16M4 18h16" /></svg>; }
+function KeyIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="8" cy="15" r="4" /><path d="M10.5 12.5L20 3M17 6l3 3M14 9l2 2" /></svg>; }
+function LogoutIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
