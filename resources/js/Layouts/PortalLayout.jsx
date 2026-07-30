@@ -31,7 +31,6 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const user = props?.auth?.user;
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [accountOpen, setAccountOpen] = useState(false);
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 
@@ -56,8 +55,30 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                     ))}
                 </nav>
 
-                <div className="px-5 py-4 border-t border-white/10 text-xs text-cream/50">
-                    v0.1 &middot; portal
+                <div className="px-3 py-3 border-t border-white/10">
+                    <div className="flex items-center gap-2.5 px-2 py-2 mb-1">
+                        <div className="h-8 w-8 rounded-full bg-white/15 text-white flex items-center justify-center font-display text-sm shrink-0">
+                            {(user?.name ?? 'T').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Tamu'}</p>
+                            <p className="text-xs text-cream/60 truncate">{user?.role ?? 'Pengunjung'}</p>
+                        </div>
+                    </div>
+                    <a
+                        href="/buku-induk/ganti-password"
+                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
+                    >
+                        <KeyIcon className="w-4 h-4 shrink-0" />
+                        Ganti Password
+                    </a>
+                    <button
+                        onClick={() => router.post('/logout')}
+                        className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-200 hover:bg-white/10"
+                    >
+                        <LogoutIcon className="w-4 h-4 shrink-0" />
+                        Keluar
+                    </button>
                 </div>
             </aside>
 
@@ -81,6 +102,32 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                                 />
                             ))}
                         </nav>
+
+                        <div className="px-3 py-3 border-t border-white/10">
+                            <div className="flex items-center gap-2.5 px-2 py-2 mb-1">
+                                <div className="h-8 w-8 rounded-full bg-white/15 text-white flex items-center justify-center font-display text-sm shrink-0">
+                                    {(user?.name ?? 'T').charAt(0).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Tamu'}</p>
+                                    <p className="text-xs text-cream/60 truncate">{user?.role ?? 'Pengunjung'}</p>
+                                </div>
+                            </div>
+                            <a
+                                href="/buku-induk/ganti-password"
+                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
+                            >
+                                <KeyIcon className="w-4 h-4 shrink-0" />
+                                Ganti Password
+                            </a>
+                            <button
+                                onClick={() => router.post('/logout')}
+                                className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-200 hover:bg-white/10"
+                            >
+                                <LogoutIcon className="w-4 h-4 shrink-0" />
+                                Keluar
+                            </button>
+                        </div>
                     </aside>
                 </div>
             )}
@@ -104,45 +151,14 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0 relative">
-                        <button
-                            onClick={() => setAccountOpen((o) => !o)}
-                            className="flex items-center gap-3 focus:outline-none"
-                        >
-                            <div className="hidden sm:flex flex-col items-end leading-tight">
-                                <span className="text-sm font-medium text-navy">{user?.name ?? 'Tamu'}</span>
-                                <span className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</span>
-                            </div>
-                            <div className="h-9 w-9 rounded-full bg-teal text-white flex items-center justify-center font-display text-sm">
-                                {(user?.name ?? 'T').charAt(0).toUpperCase()}
-                            </div>
-                        </button>
-
-                        {accountOpen && (
-                            <>
-                                <div className="fixed inset-0 z-40" onClick={() => setAccountOpen(false)} />
-                                <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-navy/10 shadow-lg z-50 py-2">
-                                    <div className="px-4 py-2 border-b border-navy/10">
-                                        <p className="text-sm font-medium text-navy truncate">{user?.name ?? 'Tamu'}</p>
-                                        <p className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</p>
-                                    </div>
-                                    <a
-                                        href="/buku-induk/ganti-password"
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-navy/80 hover:bg-navy/5"
-                                    >
-                                        <KeyIcon className="w-4 h-4" />
-                                        Ganti Password
-                                    </a>
-                                    <button
-                                        onClick={() => router.post('/logout')}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-alert hover:bg-alert/5"
-                                    >
-                                        <LogoutIcon className="w-4 h-4" />
-                                        Keluar
-                                    </button>
-                                </div>
-                            </>
-                        )}
+                    <div className="flex items-center gap-3 shrink-0">
+                        <div className="hidden sm:flex flex-col items-end leading-tight">
+                            <span className="text-sm font-medium text-navy">{user?.name ?? 'Tamu'}</span>
+                            <span className="text-xs text-navy/50">{user?.role ?? 'Pengunjung'}</span>
+                        </div>
+                        <div className="h-9 w-9 rounded-full bg-teal text-white flex items-center justify-center font-display text-sm">
+                            {(user?.name ?? 'T').charAt(0).toUpperCase()}
+                        </div>
                     </div>
                 </header>
 
