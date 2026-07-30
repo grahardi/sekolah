@@ -50,10 +50,10 @@ class User extends Authenticatable
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
-            'admin' => 'Administrator',
+            'admin' => 'Admin Sekolah',
             'guru' => 'Guru',
             'siswa' => 'Siswa',
-            'induk' => 'Orang Tua / Wali',
+            'induk' => 'Petugas Induk (Read Only)',
             default => 'Pengguna',
         };
     }
