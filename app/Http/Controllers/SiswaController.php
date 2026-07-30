@@ -75,6 +75,11 @@ class SiswaController extends Controller
     }
 
     // ── Export ────────────────────────────────────────────────────────────────
+    public function exportChoice(Request $request)
+    {
+        return view('siswa.export', ['query' => $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk'])]);
+    }
+
     public function exportExcel(Request $request)
     {
         $filters = $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk']);

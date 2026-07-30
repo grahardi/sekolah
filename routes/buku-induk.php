@@ -33,6 +33,7 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
             Route::put('/{siswa}', [SiswaController::class, 'update'])->name('update');
             Route::delete('/{siswa}', [SiswaController::class, 'destroy'])->name('destroy');
 
+            Route::get('/export/pilih', [SiswaController::class, 'exportChoice'])->name('export.choice');
             Route::get('/export/excel', [SiswaController::class, 'exportExcel'])->name('export.excel');
             Route::get('/export/pdf', [SiswaController::class, 'exportPdfAll'])->name('export.pdf');
 

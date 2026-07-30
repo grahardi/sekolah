@@ -5,40 +5,14 @@
 
 @section('header-actions')
     @if(auth()->user()->isAdmin())
-    <div style="position:relative;">
-        <button type="button" onclick="document.getElementById('export-dropdown').classList.toggle('hidden')" class="btn btn-secondary">
-            <i class="ti ti-download"></i> Export
-            <i class="ti ti-chevron-down" style="font-size:12px;margin-left:2px;"></i>
-        </button>
-        <div id="export-dropdown" class="hidden" style="position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid #e9ecef;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.08);min-width:180px;z-index:50;padding:6px;">
-            <a href="{{ route('siswa.export.excel', request()->query()) }}" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:7px;color:#374151;font-size:13px;text-decoration:none;">
-                <i class="ti ti-table-export" style="color:#16a34a;"></i> Export Excel
-            </a>
-            <a href="{{ route('siswa.export.pdf', request()->query()) }}" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:7px;color:#374151;font-size:13px;text-decoration:none;">
-                <i class="ti ti-file-type-pdf" style="color:#dc2626;"></i> Export PDF
-            </a>
-        </div>
-    </div>
+    <a href="{{ route('siswa.export.choice', request()->query()) }}" class="btn btn-secondary">
+        <i class="ti ti-download"></i> Export
+    </a>
     <a href="{{ route('siswa.create') }}" class="btn btn-primary">
         <i class="ti ti-user-plus"></i> Tambah Siswa
     </a>
     @endif
 @endsection
-
-@push('scripts')
-<script>
-    // Tutup dropdown export kalau klik di luar area dropdown
-    document.addEventListener('click', function (e) {
-        const dropdown = document.getElementById('export-dropdown');
-        if (!dropdown) return;
-        const isButton = e.target.closest('button');
-        const isInsideDropdown = e.target.closest('#export-dropdown');
-        if (!isInsideDropdown && !(isButton && isButton.onclick)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-</script>
-@endpush
 
 @section('content')
 
