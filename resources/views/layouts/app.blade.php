@@ -15,6 +15,7 @@
             width: 248px; background: #2563EB;
             position: fixed; top:0; left:0; bottom:0;
             display: flex; flex-direction: column; z-index: 40;
+            overflow-y: auto;
         }
         .sb-brand {
             padding: 18px 16px;
@@ -39,7 +40,7 @@
         }
         .sb-back a:hover { background: rgba(255,255,255,.14); color: #fff; }
 
-        .sb-nav { flex: 1; padding: 10px 10px; overflow-y: auto; }
+        .sb-nav { padding: 10px 10px; }
 
         .sb-section {
             font-size: 10px; font-weight: 700; color: rgba(255,255,255,.55);
