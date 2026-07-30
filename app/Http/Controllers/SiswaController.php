@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Siswa;
 use App\Exports\SiswaExport;
 use App\Imports\SiswaImport;
+use App\Imports\DapodikImport;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
@@ -146,6 +147,39 @@ class SiswaController extends Controller
     public function downloadTemplate()
     {
         return (new SiswaExport())->downloadTemplate('template-import-siswa.xlsx');
+    }
+
+    // ── Import langsung dari file unduhan Dapodik ──────────────────────────────
+    public function importDapodik(Request $request)
+    {
+        $request->validate(['file_dapodik' => 'required|mimes:xlsx,xls|max:10240']);
+
+        $filePath = $request->file('file_dapodik')->getRealPath();
+        $import   = new DapodikImport();
+        $import->import($filePath);
+
+        $errors   = $import->getErrors();
+        $warnings = $import->getWarnings();
+        $imported = $import->getImportedCount();
+        $skipped  = $import->getSkippedCount();
+
+        if ($imported === 0 && count($errors) > 0) {
+            return redirect()->route('siswa.import.form')
+                ->with('import_errors', $errors)
+                ->with('error', 'Import dari Dapodik gagal. Tidak ada data yang berhasil disimpan.');
+        }
+
+        $msg = "Berhasil mengimport {$imported} siswa dari Dapodik.";
+        if ($skipped > 0)        $msg .= " {$skipped} baris dilewati.";
+        if (count($errors) > 0)  $msg .= " " . count($errors) . " baris error.";
+
+        $type = (count($errors) > 0 || count($warnings) > 0) ? 'warning' : 'success';
+
+        return redirect()->route('siswa.import.form')
+            ->with($type, $msg)
+            ->with('import_errors',   $errors)
+            ->with('import_warnings', $warnings)
+            ->with('import_imported', $imported);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
