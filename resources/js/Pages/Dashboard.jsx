@@ -12,7 +12,7 @@ const MODULES = [
     },
     {
         key: 'induk', title: 'Buku Induk', desc: 'Data induk siswa, riwayat akademik, dan arsip digital sekolah.',
-        href: '#', status: 'segera', color: 'bg-navy',
+        href: '/buku-induk', status: 'aktif', color: 'bg-teal',
     },
     {
         key: 'bk', title: 'Program BK', desc: 'Pencatatan konseling, pelanggaran, dan perkembangan siswa.',

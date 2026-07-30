@@ -35,4 +35,26 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Sekolah::class);
     }
+
+    // ── Role helpers (dipakai modul Buku Induk) ─────────────────────────────
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isInduk(): bool
+    {
+        return $this->role === 'induk';
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Administrator',
+            'guru' => 'Guru',
+            'siswa' => 'Siswa',
+            'induk' => 'Orang Tua / Wali',
+            default => 'Pengguna',
+        };
+    }
 }

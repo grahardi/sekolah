@@ -19,7 +19,7 @@ const FEATURES = [
 const PROGRAMS = [
     { title: 'Lab Interaktif', desc: 'Simulasi sains bergaya PhET untuk Fisika, Kimia, dan Matematika.', status: 'Aktif', href: '/lab' },
     { title: 'Server Ujian', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.', status: 'Segera', href: '#' },
-    { title: 'Buku Induk', desc: 'Data induk siswa dan arsip riwayat akademik digital.', status: 'Segera', href: '#' },
+    { title: 'Buku Induk', desc: 'Data induk siswa dan arsip riwayat akademik digital.', status: 'Aktif', href: '/buku-induk' },
     { title: 'Program BK', desc: 'Pencatatan konseling dan perkembangan siswa secara terstruktur.', status: 'Segera', href: '#' },
     { title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, dan administrasi umum dalam satu tempat.', status: 'Segera', href: '#' },
 ];

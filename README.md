@@ -181,3 +181,42 @@ tidak berubah drastis, tapi kalau suatu saat lookup berhenti bekerja
 halaman referensi berubah - cek ulang pola regex di controller tersebut
 dengan `curl https://referensi.data.kemendikdasmen.go.id/pendidikan/npsn/{npsn}`
 langsung dari server buat lihat HTML terbaru.
+
+## 8. Integrasi modul Buku Induk (dari github.com/grahardi/buku-induk)
+
+Modul Buku Induk Siswa (dari repo terpisah) sudah digabung ke sini dengan
+penyesuaian:
+
+- **Auth disatukan** — modul ini tidak lagi punya login sendiri, pakai Breeze
+  yang sudah ada di portal (route `logout` di layout-nya otomatis nyambung).
+- **Multi-sekolah otomatis** — model `Siswa` punya global scope yang
+  memfilter berdasarkan `sekolah_id` milik user yang login, jadi tidak perlu
+  ubah query di tiap controller satu-satu. Siswa baru otomatis ke-assign ke
+  sekolah admin yang membuatnya.
+- **Tampilan masih terpisah** — modul ini pakai layout Blade sendiri (sidebar
+  biru gelap + Tabler Icons), belum diselaraskan ke tema cream/teal/coral
+  portal utama. Fungsional dulu, polish visual menyusul kalau diperlukan.
+
+**Wajib dijalankan setelah pull:**
+```bash
+composer require rap2hpoutre/fast-excel barryvdh/laravel-dompdf
+php artisan migrate
+php artisan storage:link   # kalau belum pernah
+```
+
+**Wajib ditambahkan manual ke `bootstrap/app.php`** (alias middleware `admin`
+dipakai di `routes/buku-induk.php`):
+```php
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->web(append: [
+        \App\Http\Middleware\HandleInertiaRequests::class,
+    ]);
+    $middleware->alias([
+        'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
+    ]);
+})
+```
+
+Setelah itu, modul bisa diakses di `/buku-induk` (menu sidebar "Buku Induk"
+sudah aktif). Akun admin yang daftar lewat `/registrasi-sekolah` otomatis
+punya `role => 'admin'`, jadi bisa langsung tambah data siswa.

@@ -20,7 +20,7 @@ const MENU = [
         ],
     },
     { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
-    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: true },
+    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: true },
     { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
 ];
