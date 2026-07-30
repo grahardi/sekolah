@@ -34,7 +34,7 @@ tr:nth-child(even) td { background:#f8fafc; }
             <td><strong>{{ $s->nama_lengkap }}</strong></td>
             <td>{{ $s->jenis_kelamin }}</td>
             <td>{{ $s->tempat_lahir }}, {{ $s->tanggal_lahir->format('d/m/Y') }}</td>
-            <td><strong>{{ $s->rombel ?? $s->kelas }}</strong></td>
+            <td><strong>{{ $s->rombel_lengkap }}</strong></td>
             <td>{{ $s->agama }}</td>
             <td><span class="badge {{ $s->status }}">{{ ucfirst($s->status) }}</span></td>
         </tr>

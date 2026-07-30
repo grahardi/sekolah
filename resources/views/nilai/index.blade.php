@@ -27,7 +27,7 @@
     <div class="card-header">
         <div>
             <p style="font-size:14px;font-weight:800;color:#0f172a;margin:0;">{{ $siswa->nama_lengkap }}</p>
-            <p style="font-size:12px;color:#64748b;margin:0;">NISN: {{ $siswa->nisn }} &nbsp;·&nbsp; Kelas {{ $siswa->rombel ?? $siswa->kelas }}</p>
+            <p style="font-size:12px;color:#64748b;margin:0;">NISN: {{ $siswa->nisn }} &nbsp;·&nbsp; Kelas {{ $siswa->rombel_lengkap }}</p>
         </div>
         <a href="{{ route('siswa.buku-induk.pdf', $siswa) }}" class="btn btn-secondary btn-sm"><i class="ti ti-printer"></i> Cetak Buku Induk</a>
     </div>

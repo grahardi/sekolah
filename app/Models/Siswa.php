@@ -65,6 +65,14 @@ class Siswa extends Model
     public function arsipBerkas()   { return $this->hasOne(ArsipBerkas::class); }
     public function prestasis()     { return $this->hasMany(Prestasi::class)->orderByDesc('tanggal_kegiatan'); }
 
+    public function getRombelLengkapAttribute(): string
+    {
+        if ($this->rombel) {
+            return "{$this->kelas} - {$this->rombel}";
+        }
+        return (string) $this->kelas;
+    }
+
     public function getUmurAttribute(): int
     {
         return $this->tanggal_lahir ? $this->tanggal_lahir->age : 0;

@@ -92,7 +92,7 @@
                             </td>
                             <td style="padding:10px 14px;font-family:monospace;font-size:12px;color:#374151;">{{ $s->nisn }}</td>
                             <td style="padding:10px 14px;text-align:center;font-size:12px;font-weight:700;color:{{ $s->jenis_kelamin === 'L' ? '#1d4ed8' : '#be185d' }};">{{ $s->jenis_kelamin }}</td>
-                            <td style="padding:10px 14px;text-align:center;"><span style="background:#f1f5f9;color:#374151;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;">{{ $s->rombel ?? $s->kelas }}</span></td>
+                            <td style="padding:10px 14px;text-align:center;"><span style="background:#f1f5f9;color:#374151;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;">{{ $s->rombel_lengkap }}</span></td>
                             <td style="padding:10px 14px;text-align:center;"><span style="background:{{ $info['bg'] }};color:{{ $info['color'] }};padding:3px 12px;border-radius:6px;font-size:12px;font-weight:800;">{{ $rombelTujuan[$s->id] ?? '—' }}</span></td>
                         </tr>
                         @endforeach

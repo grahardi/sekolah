@@ -25,7 +25,7 @@
             <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;flex-direction:column;gap:8px;text-align:left;">
                 <div style="display:flex;justify-content:space-between;font-size:12px;">
                     <span style="color:#94a3b8;font-weight:500;">Kelas</span>
-                    <span style="font-weight:700;color:#1d4ed8;">{{ $siswa->rombel ?? $siswa->kelas }}</span>
+                    <span style="font-weight:700;color:#1d4ed8;">{{ $siswa->rombel_lengkap }}</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;font-size:12px;">
                     <span style="color:#94a3b8;font-weight:500;">Tahun Masuk</span>

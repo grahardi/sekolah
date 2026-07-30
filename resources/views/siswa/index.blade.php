@@ -156,7 +156,7 @@
                         </td>
                         <td style="padding:12px 16px;">
                             <span style="background:#eff6ff;color:#1d4ed8;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;">
-                                {{ $siswa->rombel ?? $siswa->kelas }}
+                                {{ $siswa->rombel_lengkap }}
                             </span>
                         </td>
                         <td style="padding:12px 16px;font-size:12px;color:#374151;">
