@@ -83,6 +83,11 @@ class SiswaController extends Controller
 
     public function exportPdfAll(Request $request)
     {
+        // Render PDF untuk ratusan siswa sekaligus cukup berat bagi DomPDF -
+        // naikkan batas memori khusus untuk request ini saja (tidak
+        // mempengaruhi request lain), supaya tidak fatal error kehabisan memori.
+        ini_set('memory_limit', '512M');
+
         $filters = $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk']);
         $siswas  = Siswa::filter($filters)->orderBy('nama_lengkap')->get();
         return Pdf::loadView('siswa.pdf-list', compact('siswas'))
