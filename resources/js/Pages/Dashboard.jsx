@@ -12,7 +12,7 @@ const MODULES = [
     },
     {
         key: 'induk', title: 'Buku Induk', desc: 'Data induk siswa, riwayat akademik, dan arsip digital sekolah.',
-        href: '/buku-induk', status: 'aktif', color: 'bg-teal',
+        href: '/buku-induk', status: 'aktif', color: 'bg-teal', external: true,
     },
     {
         key: 'bk', title: 'Program BK', desc: 'Pencatatan konseling, pelanggaran, dan perkembangan siswa.',
@@ -56,14 +56,11 @@ export default function Dashboard() {
             {/* Grid modul */}
             <h3 className="font-display font-600 text-lg text-navy mb-3">Modul Sekolah</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
-                {MODULES.map((m) => (
-                    <Link
-                        key={m.key}
-                        href={m.href}
-                        className={`rounded-2xl bg-white border border-navy/10 p-5 flex flex-col justify-between min-h-[150px] transition-all hover:shadow-md hover:-translate-y-0.5 ${
-                            m.status === 'segera' ? 'opacity-60 pointer-events-none' : ''
-                        }`}
-                    >
+                {MODULES.map((m) => {
+                    const cardClass = `rounded-2xl bg-white border border-navy/10 p-5 flex flex-col justify-between min-h-[150px] transition-all hover:shadow-md hover:-translate-y-0.5 ${
+                        m.status === 'segera' ? 'opacity-60 pointer-events-none' : ''
+                    }`;
+                    const cardContent = (
                         <div>
                             <div className="flex items-center justify-between">
                                 <span className={`h-2 w-2 rounded-full ${m.color}`} />
@@ -74,8 +71,14 @@ export default function Dashboard() {
                             <h4 className="font-display font-600 text-base text-navy mt-2">{m.title}</h4>
                             <p className="text-sm text-navy/60 mt-1">{m.desc}</p>
                         </div>
-                    </Link>
-                ))}
+                    );
+
+                    return m.external ? (
+                        <a key={m.key} href={m.href} className={cardClass}>{cardContent}</a>
+                    ) : (
+                        <Link key={m.key} href={m.href} className={cardClass}>{cardContent}</Link>
+                    );
+                })}
             </div>
 
             {/* Pratinjau simulasi Lab */}

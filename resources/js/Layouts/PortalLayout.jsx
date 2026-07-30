@@ -7,7 +7,7 @@ import Logo from '../Components/Logo';
 // "lab" - kalau perlu submenu, isi array `children`.
 const MENU = [
     { key: 'dashboard', label: 'Beranda', href: '/dashboard', icon: HomeIcon },
-    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false },
+    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false, external: true },
     { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: true },
     { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
@@ -135,12 +135,26 @@ function SidebarItem({ item, isActive, open, onToggle }) {
     }
 
     if (!item.children) {
+        const className = `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+            active ? 'bg-white text-teal font-medium' : 'text-cream/85 hover:bg-white/10'
+        }`;
+
+        // Item non-Inertia (halaman Blade seperti Buku Induk) pakai <a> biasa
+        // supaya browser reload penuh, bukan "SPA-visit" ala Inertia yang
+        // bikin transisi nyangkut/menimpa saat responsnya bukan JSON Inertia.
+        if (item.external) {
+            return (
+                <a href={item.href} className={className}>
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{item.label}</span>
+                </a>
+            );
+        }
+
         return (
             <Link
                 href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                    active ? 'bg-white text-teal font-medium' : 'text-cream/85 hover:bg-white/10'
-                }`}
+                className={className}
             >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.label}</span>
