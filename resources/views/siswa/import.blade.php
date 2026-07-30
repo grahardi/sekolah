@@ -125,9 +125,14 @@
             <p style="font-size:14px;font-weight:700;color:#991b1b;margin:0;">{{ count(session('import_errors')) }} baris gagal:</p>
         </div>
         <div style="background:#fff;border-radius:8px;padding:10px 14px;max-height:220px;overflow-y:auto;">
-            @foreach(session('import_errors') as $err)
+            @foreach(array_slice(session('import_errors'), 0, 15) as $err)
             <p style="font-size:12px;color:#991b1b;margin:0 0 4px;padding-bottom:4px;border-bottom:1px solid #fee2e2;"><i class="ti ti-point-filled" style="font-size:10px;"></i> {{ $err }}</p>
             @endforeach
+            @if(count(session('import_errors')) > 15)
+            <p style="font-size:12px;color:#991b1b;margin:6px 0 0;font-style:italic;">
+                ...dan {{ count(session('import_errors')) - 15 }} error lainnya tidak ditampilkan.
+            </p>
+            @endif
         </div>
     </div>
     @endif
