@@ -220,3 +220,29 @@ dipakai di `routes/buku-induk.php`):
 Setelah itu, modul bisa diakses di `/buku-induk` (menu sidebar "Buku Induk"
 sudah aktif). Akun admin yang daftar lewat `/registrasi-sekolah` otomatis
 punya `role => 'admin'`, jadi bisa langsung tambah data siswa.
+
+## 9. Fix bug tombol panah pagination besar + halaman error import terpisah
+
+**Wajib diedit manual di `app/Providers/AppServiceProvider.php`** (file ini
+punya default Laravel, tidak disentuh otomatis lewat git supaya tidak
+tertimpa) - tambahkan:
+
+```php
+use Illuminate\Pagination\Paginator;
+
+public function boot(): void
+{
+    Paginator::defaultView('vendor.pagination.custom');
+}
+```
+
+Tanpa ini, Laravel pakai tampilan pagination bawaan yang berasumsi Tailwind
+ter-load di halaman - karena Buku Induk pakai CSS sendiri (bukan Tailwind),
+tombol panah/nomor halaman jadi besar tak berbentuk. File
+`resources/views/vendor/pagination/custom.blade.php` sudah disiapkan,
+otomatis dipakai di semua tempat yang pakai `->paginate()` begitu baris di
+atas ditambahkan.
+
+**Halaman error import** sekarang terpisah (bukan ditumpuk di halaman import)
+- disimpan sementara di cache (berlaku 1 jam) dengan token, dipaginasi 20
+baris/halaman lewat `/buku-induk/siswa/import/errors/{token}`.

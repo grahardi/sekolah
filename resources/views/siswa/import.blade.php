@@ -118,22 +118,15 @@
     </div>
     @endif
 
-    @if(session('import_errors') && count(session('import_errors')) > 0)
-    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px 18px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+    @if(session('import_error_count') && session('import_error_count') > 0)
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:10px;">
             <i class="ti ti-circle-x" style="font-size:22px;color:#dc2626;flex-shrink:0;"></i>
-            <p style="font-size:14px;font-weight:700;color:#991b1b;margin:0;">{{ count(session('import_errors')) }} baris gagal:</p>
+            <p style="font-size:14px;font-weight:700;color:#991b1b;margin:0;">{{ session('import_error_count') }} baris gagal</p>
         </div>
-        <div style="background:#fff;border-radius:8px;padding:10px 14px;max-height:220px;overflow-y:auto;">
-            @foreach(array_slice(session('import_errors'), 0, 15) as $err)
-            <p style="font-size:12px;color:#991b1b;margin:0 0 4px;padding-bottom:4px;border-bottom:1px solid #fee2e2;"><i class="ti ti-point-filled" style="font-size:10px;"></i> {{ $err }}</p>
-            @endforeach
-            @if(count(session('import_errors')) > 15)
-            <p style="font-size:12px;color:#991b1b;margin:6px 0 0;font-style:italic;">
-                ...dan {{ count(session('import_errors')) - 15 }} error lainnya tidak ditampilkan.
-            </p>
-            @endif
-        </div>
+        <a href="{{ route('siswa.import.errors', session('import_error_token')) }}" class="btn btn-danger btn-sm">
+            <i class="ti ti-list-details"></i> Tampilkan Baris Error
+        </a>
     </div>
     @endif
 

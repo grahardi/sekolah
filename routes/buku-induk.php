@@ -39,6 +39,7 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
             Route::get('/import/form', [SiswaController::class, 'showImport'])->name('import.form');
             Route::post('/import/process', [SiswaController::class, 'import'])->name('import.process');
             Route::post('/import/dapodik', [SiswaController::class, 'importDapodik'])->name('import.dapodik');
+            Route::get('/import/errors/{token}', [SiswaController::class, 'importErrors'])->name('import.errors');
             Route::get('/import/template', [SiswaController::class, 'downloadTemplate'])->name('import.template');
 
             Route::post('/{siswa}/arsip', [ArsipController::class, 'update'])->name('arsip.update');
