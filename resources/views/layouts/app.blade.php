@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Buku Induk Siswa')</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     {{-- Icon font di-hosting sendiri di /public/vendor — tidak bergantung CDN luar --}}
     <link rel="stylesheet" href="{{ asset('vendor/tabler-icons/tabler-icons.min.css') }}">
     <style>
         * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
-        /* ── Sidebar ─────────────────────────────────── */
+        /* ── Sidebar (disamakan dgn warna portal utama: biru #2563EB / kuning #FBBF24) ── */
         .sidebar {
-            width: 248px; background: #0f1f45;
+            width: 248px; background: #2563EB;
             position: fixed; top:0; left:0; bottom:0;
             display: flex; flex-direction: column; z-index: 40;
         }
@@ -22,18 +22,27 @@
             display: flex; align-items: center; gap: 12px;
         }
         .sb-brand-icon {
-            width: 38px; height: 38px; background: #1e40af;
+            width: 38px; height: 38px; background: rgba(255,255,255,.12);
             border-radius: 10px; display: flex; align-items: center;
             justify-content: center; flex-shrink: 0;
         }
-        .sb-brand-icon i { font-size: 20px; color: #93c5fd; }
-        .sb-brand-name { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.3; }
-        .sb-brand-sub  { font-size: 11px; color: #64a0d4; margin-top: 1px; }
+        .sb-brand-icon i { font-size: 20px; color: #FBBF24; }
+        .sb-brand-name { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3; }
+        .sb-brand-sub  { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 1px; }
+
+        .sb-back { margin: 10px 10px 0; }
+        .sb-back a {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; border-radius: 8px;
+            color: rgba(255,255,255,.8); font-size: 12px; font-weight: 600;
+            text-decoration: none; background: rgba(255,255,255,.08);
+        }
+        .sb-back a:hover { background: rgba(255,255,255,.14); color: #fff; }
 
         .sb-nav { flex: 1; padding: 10px 10px; overflow-y: auto; }
 
         .sb-section {
-            font-size: 10px; font-weight: 700; color: #4a7aa5;
+            font-size: 10px; font-weight: 700; color: rgba(255,255,255,.55);
             text-transform: uppercase; letter-spacing: .08em;
             padding: 12px 10px 5px;
         }
@@ -41,20 +50,20 @@
         .sb-item {
             display: flex; align-items: center; gap: 10px;
             padding: 9px 12px; border-radius: 8px;
-            color: #94b8d8; font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,.85); font-size: 13px; font-weight: 500;
             text-decoration: none; transition: background .12s, color .12s;
             white-space: nowrap; margin-bottom: 1px;
         }
-        .sb-item:hover { background: rgba(255,255,255,.07); color: #e2eeff; }
-        .sb-item.active { background: #1e3a8a; color: #fff; }
+        .sb-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .sb-item.active { background: #fff; color: #2563EB; font-weight: 600; }
         .sb-item i { font-size: 17px; flex-shrink: 0; width: 20px; text-align: center; }
-        .sb-item.active i { color: #93c5fd; }
+        .sb-item.active i { color: #2563EB; }
 
-        .sb-divider { height: 1px; background: rgba(255,255,255,.07); margin: 6px 10px; }
+        .sb-divider { height: 1px; background: rgba(255,255,255,.1); margin: 6px 10px; }
 
         .sb-footer {
             padding: 10px 16px; border-top: 1px solid rgba(255,255,255,.08);
-            font-size: 11px; color: #4a7aa5; text-align: center;
+            font-size: 11px; color: rgba(255,255,255,.5); text-align: center;
         }
 
         /* ── Topbar ──────────────────────────────── */
@@ -65,13 +74,13 @@
             display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 1px 0 #e9ecef;
         }
-        .topbar-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .topbar-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: #1E293B; }
 
         /* ── Buttons ─────────────────────────────── */
         .btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none; transition:all .12s; cursor:pointer; border:none; line-height:1; }
         .btn i { font-size:16px; }
-        .btn-primary   { background:#1d4ed8; color:#fff; }
-        .btn-primary:hover   { background:#1e40af; }
+        .btn-primary   { background:#2563EB; color:#fff; }
+        .btn-primary:hover   { background:#1d4ed8; }
         .btn-secondary { background:#fff; color:#374151; border:1px solid #d1d5db; }
         .btn-secondary:hover { background:#f9fafb; }
         .btn-danger    { background:#ef4444; color:#fff; }
@@ -84,7 +93,7 @@
         /* ── Form ────────────────────────────────── */
         .form-label { display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:5px; }
         .form-input  { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:8px 12px; font-size:13px; background:#fff; outline:none; transition:border .12s, box-shadow .12s; color:#111827; }
-        .form-input:focus { border-color:#1d4ed8; box-shadow:0 0 0 3px rgba(29,78,216,.12); }
+        .form-input:focus { border-color:#2563EB; box-shadow:0 0 0 3px rgba(37,99,235,.12); }
         select.form-input { cursor:pointer; }
         textarea.form-input { resize:vertical; }
 
@@ -108,21 +117,27 @@
         .alert-error   { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
 
         /* ── Layout ──────────────────────────────── */
-        .main-wrap { margin-left: 248px; min-height: 100vh; background: #f6f8fb; display:flex; flex-direction:column; }
+        .main-wrap { margin-left: 248px; min-height: 100vh; background: #F5F9FF; display:flex; flex-direction:column; }
         .page-body { padding: 24px 28px; flex: 1; }
     </style>
     @stack('styles')
 </head>
-<body style="background:#f6f8fb;">
+<body style="background:#F5F9FF;">
 
 {{-- ── Sidebar ─────────────────────────────────────────────────────────── --}}
 <aside class="sidebar">
     <div class="sb-brand">
         <div class="sb-brand-icon"><i class="ti ti-notebook"></i></div>
         <div>
-            <div class="sb-brand-name">Buku Induk</div>
-            <div class="sb-brand-sub">Kurikulum Merdeka SMP</div>
+            <div class="sb-brand-name">sekolah.co.id</div>
+            <div class="sb-brand-sub">Buku Induk · Kurikulum Merdeka</div>
         </div>
+    </div>
+
+    <div class="sb-back">
+        <a href="/dashboard">
+            <i class="ti ti-arrow-left" style="font-size:14px;"></i><span>Kembali ke Portal</span>
+        </a>
     </div>
 
     <nav class="sb-nav">

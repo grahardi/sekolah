@@ -7,6 +7,11 @@ import Logo from '../Components/Logo';
 // "lab" - kalau perlu submenu, isi array `children`.
 const MENU = [
     { key: 'dashboard', label: 'Beranda', href: '/dashboard', icon: HomeIcon },
+    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false },
+    { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
+    { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: true },
+    { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
+    { key: 'modul-ajar', label: 'Modul Ajar', href: '/modul-ajar', icon: DocIcon },
     {
         key: 'lab',
         label: 'Lab Interaktif',
@@ -19,10 +24,6 @@ const MENU = [
             { label: 'Rangkaian Listrik', href: '/lab/rangkaian-listrik' },
         ],
     },
-    { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
-    { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false },
-    { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: true },
-    { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
 ];
 
 export default function PortalLayout({ children, title, breadcrumb = [] }) {
