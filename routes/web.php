@@ -20,6 +20,14 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
+Route::get('/demo', function () {
+    return Inertia::render('DemoProgram', [
+        'canLogin' => true,
+        'canRegister' => true,
+    ]);
+})->name('demo.program');
+
+
 // Beranda portal setelah login.
 Route::middleware(['web', 'auth'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');

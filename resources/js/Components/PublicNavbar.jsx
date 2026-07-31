@@ -5,8 +5,8 @@ import Logo from './Logo';
 const NAV_ITEMS = [
     { label: 'Home', href: '/' },
     { label: 'Simulasi', href: '/lab' },
-    { label: 'Modul Ajar', href: '/modul-ajar' },
     { label: 'Program Sekolah', href: '/#program-sekolah' },
+    { label: 'Demo Program', href: '/demo' },
     { label: 'Showcase', href: '/#showcase' },
 ];
 
