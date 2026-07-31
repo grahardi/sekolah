@@ -27,6 +27,10 @@ Route::get('/demo', function () {
     ]);
 })->name('demo.program');
 
+Route::get('/program/{slug}', function (string $slug) {
+    return Inertia::render('ProgramDetail', ['slug' => $slug]);
+})->name('program.detail');
+
 
 // Beranda portal setelah login.
 Route::middleware(['web', 'auth'])->get('/dashboard', function () {
