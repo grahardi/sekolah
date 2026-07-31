@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sekolah;
-use App\Models\Survey;
-use App\Models\SurveyPertanyaan;
 use App\Models\User;
 use App\Services\SurveyTemplateBk;
 use Illuminate\Auth\Events\Registered;
@@ -72,43 +70,12 @@ class SekolahRegistrationController extends Controller
         // Cuma buat survey default sekali per SEKOLAH (bukan per user) - kalau
         // NPSN ini baru pertama kali didaftarkan, bukan sekolah yang sudah ada.
         if ($sekolah->wasRecentlyCreated) {
-            $this->buatSurveyDefault($sekolah, $user);
+            SurveyTemplateBk::createDefaultSurveyFor($sekolah, $user);
         }
 
         event(new Registered($user));
         Auth::login($user);
 
         return redirect()->route('dashboard');
-    }
-
-    /**
-     * Buat 1 survey DCM default sesuai jenjang sekolah (SD/SMP/SMA), supaya
-     * BK punya starting point tanpa harus bikin dari nol. Statusnya "draft"
-     * dulu - guru BK yang aktifkan & atur peserta sendiri lewat menu Project.
-     */
-    private function buatSurveyDefault(Sekolah $sekolah, User $user): void
-    {
-        $bentuk = $sekolah->bentuk_pendidikan ?: 'SMP';
-        $pertanyaanList = SurveyTemplateBk::forJenjang($bentuk);
-
-        $survey = Survey::create([
-            'sekolah_id' => $sekolah->id,
-            'user_id' => $user->id,
-            'judul' => SurveyTemplateBk::judulUntuk($bentuk),
-            'deskripsi' => 'Template DCM bawaan sekolah.co.id - silakan sesuaikan pertanyaannya sebelum diaktifkan.',
-            'jenis' => 'DCM',
-            'status' => 'draft',
-        ]);
-
-        foreach ($pertanyaanList as $i => $p) {
-            SurveyPertanyaan::create([
-                'survey_id' => $survey->id,
-                'urutan' => $i,
-                'teks_pertanyaan' => $p['teks'],
-                'tipe_jawaban' => 'checklist',
-                'opsi' => ['Ya, saya alami', 'Tidak'],
-                'kategori' => $p['kategori'],
-            ]);
-        }
     }
 }

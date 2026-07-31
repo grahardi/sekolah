@@ -2,8 +2,59 @@
 
 namespace App\Services;
 
+use App\Models\Sekolah;
+use App\Models\Survey;
+use App\Models\SurveyPertanyaan;
+use App\Models\User;
+
 class SurveyTemplateBk
 {
+    /**
+     * Buat survey DCM default utk 1 sekolah, KECUALI sudah ada survey dgn
+     * judul yang sama persis (mencegah duplikat kalau command dijalankan
+     * berkali-kali). Dipakai baik saat registrasi baru maupun backfill
+     * manual lewat `php artisan survey:seed-default`.
+     */
+    public static function createDefaultSurveyFor(Sekolah $sekolah, ?User $user = null): ?Survey
+    {
+        $bentuk = $sekolah->bentuk_pendidikan ?: 'SMP';
+        $judul = self::judulUntuk($bentuk);
+
+        $sudahAda = Survey::withoutGlobalScopes()
+            ->where('sekolah_id', $sekolah->id)
+            ->where('judul', $judul)
+            ->exists();
+
+        if ($sudahAda) {
+            return null;
+        }
+
+        $pertanyaanList = self::forJenjang($bentuk);
+        $userId = $user?->id ?? $sekolah->users()->where('role', 'admin')->value('id');
+
+        $survey = Survey::create([
+            'sekolah_id' => $sekolah->id,
+            'user_id' => $userId,
+            'judul' => $judul,
+            'deskripsi' => 'Template DCM bawaan sekolah.co.id - silakan sesuaikan pertanyaannya sebelum diaktifkan.',
+            'jenis' => 'DCM',
+            'status' => 'draft',
+        ]);
+
+        foreach ($pertanyaanList as $i => $p) {
+            SurveyPertanyaan::create([
+                'survey_id' => $survey->id,
+                'urutan' => $i,
+                'teks_pertanyaan' => $p['teks'],
+                'tipe_jawaban' => 'checklist',
+                'opsi' => ['Ya, saya alami', 'Tidak'],
+                'kategori' => $p['kategori'],
+            ]);
+        }
+
+        return $survey;
+    }
+
     /**
      * Template pertanyaan DCM standar per jenjang. Dipakai untuk auto-buat
      * survey default begitu sekolah selesai registrasi (SekolahRegistrationController).
