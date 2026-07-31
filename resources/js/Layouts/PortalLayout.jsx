@@ -19,12 +19,6 @@ const MENU = [
         label: 'Lab Interaktif',
         href: '/lab',
         icon: FlaskIcon,
-        children: [
-            { label: 'Semua Simulasi', href: '/lab' },
-            { label: 'Bandul Sederhana', href: '/lab/bandul' },
-            { label: 'Gerak Peluru', href: '/lab/gerak-peluru' },
-            { label: 'Rangkaian Listrik', href: '/lab/rangkaian-listrik' },
-        ],
     },
 ];
 

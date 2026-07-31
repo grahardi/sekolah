@@ -5,7 +5,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 createInertiaApp({
-    title: (title) => `${title} - Laboratorium Interaktif`,
+    title: (title) => title ? `${title} - SekolahCoID` : 'SekolahCoID - Bersama Mencerdaskan Bangsa',
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,
