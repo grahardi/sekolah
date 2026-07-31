@@ -76,8 +76,8 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             </section>
 
             {/* Stats bar */}
-            <section className="bg-teal text-cream">
-                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-6 lg:pt-8">
+                <div className="bg-teal text-cream rounded-2xl py-10 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
                     {STATS.map((s) => (
                         <div key={s.label}>
                             <p className="font-display font-700 text-3xl lg:text-4xl text-coral">{s.value}</p>
