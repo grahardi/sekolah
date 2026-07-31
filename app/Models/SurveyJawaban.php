@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class SurveyJawaban extends Model
 {
     protected $table = 'survey_jawabans';
-    protected $fillable = ['survey_id', 'siswa_id', 'data', 'submitted_at'];
+    protected $fillable = ['survey_id', 'peserta_id', 'siswa_id', 'data', 'submitted_at'];
     protected $casts = ['data' => 'array', 'submitted_at' => 'datetime'];
 
     public function survey() { return $this->belongsTo(Survey::class); }
+    public function peserta() { return $this->belongsTo(SurveyPeserta::class, 'peserta_id'); }
     public function siswa() { return $this->belongsTo(Siswa::class); }
 }

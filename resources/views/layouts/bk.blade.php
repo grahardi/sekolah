@@ -185,7 +185,7 @@
         </a>
         <a href="{{ route('bk.peserta.index') }}"
            class="sb-item {{ request()->routeIs('bk.peserta.*') ? 'active' : '' }}">
-            <i class="ti ti-users-group"></i><span>Pilih Peserta</span>
+            <i class="ti ti-users-group"></i><span>Project Survey</span>
         </a>
         @endif
 

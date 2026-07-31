@@ -29,17 +29,22 @@ Route::middleware(['web', 'auth'])->prefix('bk')->name('bk.')->group(function ()
         Route::get('/{survey}/hasil/{siswa}', [SurveyController::class, 'hasilSiswa'])->name('hasil-siswa');
     });
 
-    // Pilih Peserta - assign survey ke kelas, terpisah dari pembuatan survey
+    // Pilih Peserta / "Project" - assign survey ke kelas, terpisah dari
+    // pembuatan survey, punya link publik sendiri per project.
     Route::middleware('admin')->prefix('peserta')->name('peserta.')->group(function () {
         Route::get('/', [SurveyPesertaController::class, 'index'])->name('index');
         Route::get('/create', [SurveyPesertaController::class, 'create'])->name('create');
         Route::post('/', [SurveyPesertaController::class, 'store'])->name('store');
+        Route::get('/{peserta}/hasil/{siswa}', [SurveyPesertaController::class, 'hasilSiswa'])->name('hasil-siswa');
+        Route::get('/{peserta}', [SurveyPesertaController::class, 'show'])->name('show');
         Route::delete('/{peserta}', [SurveyPesertaController::class, 'destroy'])->name('destroy');
     });
 });
 
-// Publik - siswa isi survey via link, TANPA login sama sekali.
-Route::middleware(['web'])->prefix('survey')->name('survey.public.')->group(function () {
+// Publik - siswa isi survey via link PROJECT (bukan link survey langsung),
+// masukkan NISN dulu utk verifikasi, TANPA login sama sekali.
+Route::middleware(['web'])->prefix('isi-survey')->name('survey.public.')->group(function () {
     Route::get('/{token}', [SurveyPublicController::class, 'showForm'])->name('form');
+    Route::post('/{token}/verifikasi', [SurveyPublicController::class, 'verifikasiNisn'])->name('verifikasi');
     Route::post('/{token}', [SurveyPublicController::class, 'submit'])->name('submit');
 });

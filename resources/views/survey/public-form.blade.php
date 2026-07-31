@@ -36,17 +36,13 @@
         @if($survey->deskripsi)<p>{{ $survey->deskripsi }}</p>@endif
     </div>
 
-    <form action="{{ route('survey.public.submit', $survey->token) }}" method="POST">
+    <form action="{{ route('survey.public.submit', $project->token) }}" method="POST">
         @csrf
+        <input type="hidden" name="siswa_id" value="{{ $siswa->id }}">
 
-        <div class="card">
-            <label class="form-label">Pilih Nama Kamu <span style="color:#ef4444">*</span></label>
-            <select name="siswa_id" class="form-input" required>
-                <option value="">-- Pilih nama --</option>
-                @foreach($siswaTarget as $siswa)
-                <option value="{{ $siswa->id }}">{{ $siswa->nama_lengkap }} ({{ $siswa->rombel_lengkap }})</option>
-                @endforeach
-            </select>
+        <div class="card" style="background:#eff6ff;border-color:#bfdbfe;">
+            <p style="font-size:12px;color:#1e40af;margin:0;">Mengisi sebagai:</p>
+            <p style="font-weight:700;color:#1e40af;margin:2px 0 0;">{{ $siswa->nama_lengkap }} ({{ $siswa->rombel_lengkap }})</p>
         </div>
 
         @foreach($survey->pertanyaans as $i => $p)

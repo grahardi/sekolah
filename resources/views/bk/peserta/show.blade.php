@@ -1,39 +1,31 @@
 @extends('layouts.bk')
-@section('title', $survey->judul)
-@section('page-title', $survey->judul)
+@section('title', 'Project - ' . $project->survey->judul)
+@section('page-title', $project->survey->judul)
 
 @section('header-actions')
-    @if(auth()->user()->isAdmin())
-    <a href="{{ route('bk.survey.edit', $survey) }}" class="btn btn-secondary"><i class="ti ti-pencil"></i> Edit</a>
-    @endif
-    <a href="{{ route('bk.survey.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
+    <a href="{{ route('bk.peserta.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
 @endsection
 
 @section('content')
 <div class="card" style="padding:20px;margin-bottom:16px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-        <span class="badge" style="background:#eff6ff;color:#2563EB;">{{ $survey->jenis }}</span>
-        @if($survey->status === 'aktif')<span class="badge badge-aktif">Aktif</span>
-        @elseif($survey->status === 'draft')<span class="badge" style="background:#f1f5f9;color:#64748b;">Draft</span>
-        @else<span class="badge badge-keluar">Ditutup</span>@endif
-        @if(count($survey->target_kelas_array) > 0)
-        <span style="font-size:12px;color:#94a3b8;">Kelas: {{ implode(', ', $survey->target_kelas_array) }}</span>
-        @else
-        <span style="font-size:12px;color:#dc2626;">Belum ada peserta di-assign</span>
-        @endif
-        <a href="{{ route('bk.peserta.create') }}" style="font-size:11px;color:#2563EB;text-decoration:underline;margin-left:8px;">+ Buat Project Baru</a>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        @foreach($project->target_kelas_array as $k)
+        <span class="badge" style="background:#eff6ff;color:#2563EB;">{{ $k }}</span>
+        @endforeach
     </div>
-    @if($survey->deskripsi)<p style="font-size:13px;color:#64748b;margin-bottom:14px;">{{ $survey->deskripsi }}</p>@endif
 
-    @if($survey->status === 'aktif')
+    @if($project->survey->status === 'aktif')
     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <i class="ti ti-link" style="font-size:20px;color:#2563EB;"></i>
-        <input type="text" readonly value="{{ $survey->publicUrl() }}" id="public-link" style="flex:1;min-width:200px;border:none;background:transparent;font-size:13px;color:#1e40af;font-weight:600;">
+        <input type="text" readonly value="{{ $project->publicUrl() }}" id="public-link" style="flex:1;min-width:200px;border:none;background:transparent;font-size:13px;color:#1e40af;font-weight:600;">
         <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('public-link').value); this.textContent='Tersalin!'" class="btn btn-primary btn-sm">Salin Link</button>
     </div>
-    <p style="font-size:11px;color:#94a3b8;margin-top:8px;">Bagikan link ini ke siswa (WhatsApp grup kelas, dsb). Siswa tidak perlu login.</p>
+    <p style="font-size:11px;color:#94a3b8;margin-top:8px;">
+        Link khusus project ini. Siswa isi NISN dulu untuk verifikasi - cuma siswa dari kelas
+        yang dipilih di atas yang bisa mengisi.
+    </p>
     @else
-    <p style="font-size:12px;color:#94a3b8;">Ubah status jadi <strong>Aktif</strong> di halaman edit supaya link bisa diakses & diisi siswa.</p>
+    <p style="font-size:12px;color:#94a3b8;">Survey induk project ini berstatus "{{ $project->survey->status }}" - aktifkan dulu di halaman survey supaya link bisa diisi siswa.</p>
     @endif
 </div>
 
@@ -52,6 +44,26 @@
     </div>
 </div>
 
+@if(count($sudahIsi) > 0)
+<div class="card" style="padding:20px;margin-bottom:16px;">
+    <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 4px;">Analisa Otomatis per Kategori</p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;">Persentase jawaban "Ya, saya alami" dari yang sudah mengisi - kategori paling atas = paling banyak dilaporkan bermasalah.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+        @foreach($analisa as $a)
+        <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                <span style="font-weight:600;color:#0f172a;">{{ $a['kategori'] }}</span>
+                <span style="color:#64748b;">{{ $a['persentase'] }}%</span>
+            </div>
+            <div style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;">
+                <div style="width:{{ $a['persentase'] }}%;height:100%;background:{{ $a['persentase'] >= 50 ? '#dc2626' : ($a['persentase'] >= 25 ? '#d97706' : '#16a34a') }};"></div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 <div class="card">
     <div class="card-header"><p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;">Progress Pengisian per Siswa</p></div>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -69,7 +81,7 @@
                 </td>
                 <td style="padding:10px 18px;text-align:right;">
                     @if(in_array($siswa->id, $sudahIsi))
-                    <a href="{{ route('bk.survey.hasil-siswa', [$survey, $siswa]) }}" class="btn btn-secondary btn-sm"><i class="ti ti-eye"></i> Lihat Jawaban</a>
+                    <a href="{{ route('bk.peserta.hasil-siswa', [$project, $siswa]) }}" class="btn btn-secondary btn-sm"><i class="ti ti-eye"></i> Lihat Jawaban</a>
                     @endif
                 </td>
             </tr>

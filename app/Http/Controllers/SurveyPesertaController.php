@@ -44,6 +44,54 @@ class SurveyPesertaController extends Controller
         return back()->with('success', 'Data peserta dihapus.');
     }
 
+    public function show(SurveyPeserta $peserta)
+    {
+        $peserta->load(['survey.pertanyaans']);
+        $siswaTarget = $peserta->siswaTarget()->orderBy('nama_lengkap')->get();
+        $jawabans = $peserta->jawabans()->get();
+        $sudahIsi = $jawabans->pluck('siswa_id')->toArray();
+
+        // Analisa otomatis: persentase "bermasalah" per kategori pertanyaan
+        // (khusus pertanyaan tipe checklist 2-opsi ala DCM: "Ya, saya alami" vs "Tidak")
+        $analisa = [];
+        foreach ($peserta->survey->pertanyaans->groupBy('kategori') as $kategori => $pertanyaans) {
+            $totalYa = 0;
+            $totalJawaban = 0;
+            foreach ($pertanyaans as $p) {
+                foreach ($jawabans as $j) {
+                    $val = $j->data[$p->id] ?? null;
+                    if ($val === null) continue;
+                    $totalJawaban++;
+                    $isYa = is_array($val) ? in_array('Ya, saya alami', $val) : $val === 'Ya, saya alami';
+                    if ($isYa) $totalYa++;
+                }
+            }
+            $analisa[] = [
+                'kategori' => $kategori ?: 'Umum',
+                'persentase' => $totalJawaban > 0 ? round(($totalYa / $totalJawaban) * 100) : 0,
+                'total_jawaban' => $totalJawaban,
+            ];
+        }
+        usort($analisa, fn ($a, $b) => $b['persentase'] <=> $a['persentase']);
+
+        return view('bk.peserta.show', [
+            'project' => $peserta,
+            'siswaTarget' => $siswaTarget,
+            'sudahIsi' => $sudahIsi,
+            'analisa' => $analisa,
+        ]);
+    }
+
+    public function hasilSiswa(SurveyPeserta $peserta, Siswa $siswa)
+    {
+        $jawaban = $peserta->jawabans()->where('siswa_id', $siswa->id)->firstOrFail();
+        return view('bk.peserta.hasil-siswa', [
+            'project' => $peserta->load('survey.pertanyaans'),
+            'siswa' => $siswa,
+            'jawaban' => $jawaban,
+        ]);
+    }
+
     /** Daftar kombinasi kelas-rombel yang benar-benar ada di data siswa aktif */
     private function kelasRombelList()
     {

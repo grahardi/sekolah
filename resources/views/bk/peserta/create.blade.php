@@ -1,6 +1,6 @@
 @extends('layouts.bk')
-@section('title', 'Tambah Peserta')
-@section('page-title', 'Tambah Peserta Survey')
+@section('title', 'Buat Project Baru')
+@section('page-title', 'Buat Project Baru Survey')
 
 @section('header-actions')
     <a href="{{ route('bk.peserta.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
@@ -36,7 +36,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;margin-top:20px;">
-        <i class="ti ti-device-floppy"></i> Simpan Peserta
+        <i class="ti ti-device-floppy"></i> Simpan Project
     </button>
 </form>
 @endsection
