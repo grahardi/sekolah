@@ -107,22 +107,22 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             </section>
 
             {/* Modul Ajar (placeholder ringkas, siap diisi konten kurikulum) */}
-            <section id="modul-ajar" className="bg-white border-y border-navy/10">
+            <section id="modul-ajar" className="bg-teal text-cream">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                     <div>
-                        <span className="text-xs font-mono uppercase tracking-wide text-teal">Modul Ajar</span>
-                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">
+                        <span className="text-xs font-mono uppercase tracking-wide text-coral">Modul Ajar</span>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">
                             Perangkat ajar SMP Kurikulum Merdeka, siap unduh
                         </h2>
-                        <p className="text-navy/60 mt-3">
+                        <p className="text-cream/70 mt-3">
                             40+ modul ajar Fase D (kelas 7-9) untuk 10 mata pelajaran, lengkap dengan
                             deskripsi dan pencarian per topik. Format PDF/DOCX.
                         </p>
-                        <Link href="/modul-ajar" className="inline-flex items-center gap-2 mt-5 text-teal font-medium text-sm">
+                        <Link href="/modul-ajar" className="inline-flex items-center gap-2 mt-5 text-coral font-medium text-sm">
                             Lihat semua modul ajar &rarr;
                         </Link>
                     </div>
-                    <div className="rounded-2xl bg-teal-light p-6 space-y-3">
+                    <div className="rounded-2xl bg-white/10 p-6 space-y-3">
                         {['Matematika · Teorema Pythagoras', 'Bahasa Indonesia · Teks Deskripsi', 'IPA · Sistem Organisasi Kehidupan'].map((m) => (
                             <div key={m} className="bg-white rounded-lg px-4 py-3 text-sm font-medium text-navy/80 shadow-sm">
                                 {m}
@@ -161,11 +161,11 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             </section>
 
             {/* Showcase */}
-            <section id="showcase" className="bg-navy text-cream">
+            <section id="showcase" className="bg-white">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
                     <div className="text-center max-w-xl mx-auto mb-10">
-                        <span className="text-xs font-mono uppercase tracking-wide text-coral">Showcase</span>
-                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Simulasi yang bisa dicoba langsung</h2>
+                        <span className="text-xs font-mono uppercase tracking-wide text-teal">Showcase</span>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-navy">Simulasi yang bisa dicoba langsung</h2>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -173,12 +173,12 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                             <Link
                                 key={s.title}
                                 href={s.href}
-                                className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col justify-between min-h-[130px] hover:bg-white/10 transition-colors"
+                                className="rounded-2xl bg-cream border border-navy/10 p-5 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:-translate-y-0.5 transition-all"
                             >
-                                <span className="text-xs font-mono text-cream/50">{s.subject}</span>
+                                <span className="text-xs font-mono text-navy/40">{s.subject}</span>
                                 <div className="flex items-end justify-between mt-3">
-                                    <h3 className="font-display font-600 text-white">{s.title}</h3>
-                                    <span className="text-coral text-sm">&rarr;</span>
+                                    <h3 className="font-display font-600 text-navy">{s.title}</h3>
+                                    <span className="text-teal text-sm">&rarr;</span>
                                 </div>
                             </Link>
                         ))}
