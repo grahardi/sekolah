@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Buku Induk Siswa')</title>
 
@@ -185,9 +186,13 @@
 
         <div class="sb-divider"></div>
         <div class="sb-section">Penugasan Guru</div>
+        <a href="{{ route('erapor.guru.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.guru.*') ? 'active' : '' }}">
+            <i class="ti ti-users"></i><span>Guru</span>
+        </a>
         <a href="{{ route('erapor.penugasan') }}"
            class="sb-item {{ request()->routeIs('erapor.penugasan') ? 'active' : '' }}">
-            <i class="ti ti-user-check"></i><span>Wali Kelas & Pengajar</span>
+            <i class="ti ti-user-check"></i><span>Wali Kelas & Lainnya</span>
         </a>
 
         <div class="sb-divider"></div>

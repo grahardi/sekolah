@@ -30,8 +30,16 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/guru-kokurikuler', [EraporController::class, 'storeGuruKokurikuler'])->name('guru-kokurikuler.store');
         Route::delete('/guru-kokurikuler/{guruKokurikuler}', [EraporController::class, 'destroyGuruKokurikuler'])->name('guru-kokurikuler.destroy');
 
-        // Tugas Mengajar (toggle grid) - dipakai dari halaman detail Pegawai di Kepegawaian
-        Route::get('/tugas-mengajar/{pegawai}/data', [EraporController::class, 'tugasMengajarData'])->name('tugas-mengajar.data');
-        Route::post('/tugas-mengajar/{pegawai}/toggle', [EraporController::class, 'tugasMengajarToggle'])->name('tugas-mengajar.toggle');
+        // Roster Guru (Kepegawaian + Guru Bantu non-Kepegawaian)
+        Route::get('/guru', [EraporController::class, 'guruIndex'])->name('guru.index');
+        Route::post('/guru/bantu', [EraporController::class, 'storeGuruBantu'])->name('guru.store-bantu');
+        Route::delete('/guru/{guru}/bantu', [EraporController::class, 'destroyGuruBantu'])->name('guru.destroy-bantu');
+
+        // Tugas Mengajar (toggle grid), diakses langsung dari E-Rapor atau dari
+        // halaman detail Pegawai di Kepegawaian (via redirect find-or-create).
+        Route::get('/dari-pegawai/{pegawai}/tugas-mengajar', [EraporController::class, 'tugasMengajarDariPegawai'])->name('tugas-mengajar.dari-pegawai');
+        Route::get('/guru/{guru}/tugas-mengajar', [EraporController::class, 'tugasMengajarPage'])->name('guru.tugas-mengajar');
+        Route::get('/guru/{guru}/tugas-mengajar/data', [EraporController::class, 'tugasMengajarData'])->name('tugas-mengajar.data');
+        Route::post('/guru/{guru}/tugas-mengajar/toggle', [EraporController::class, 'tugasMengajarToggle'])->name('tugas-mengajar.toggle');
     });
 });

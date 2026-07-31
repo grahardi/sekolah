@@ -37,9 +37,9 @@
             </select>
         </div>
         <div><label class="form-label">Guru</label>
-            <select name="pegawai_id" class="form-input" required>
+            <select name="guru_id" class="form-input" required>
                 <option value="">-- Pilih guru --</option>
-                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama_lengkap }}</option>@endforeach
+                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama }}{{ $g->keterangan ? " (".$g->keterangan.")" : "" }}</option>@endforeach
             </select>
         </div>
         <div><label class="form-label">Kelas - Rombel</label>
@@ -60,7 +60,7 @@
             <tbody>
                 @forelse($waliKelas as $w)
                 <tr style="border-bottom:1px solid #f8fafc;">
-                    <td style="padding:10px 18px;font-weight:700;">{{ $w->pegawai->nama_lengkap }}</td>
+                    <td style="padding:10px 18px;font-weight:700;">{{ $w->guru->nama }}</td>
                     <td style="padding:10px;">{{ $w->kelas_lengkap }}</td>
                     <td style="padding:10px;color:#94a3b8;">{{ $w->tahunAjaran->label }}</td>
                     <td style="padding:10px;text-align:right;">
@@ -84,9 +84,9 @@
             </select>
         </div>
         <div><label class="form-label">Guru</label>
-            <select name="pegawai_id" class="form-input" required>
+            <select name="guru_id" class="form-input" required>
                 <option value="">-- Pilih guru --</option>
-                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama_lengkap }}</option>@endforeach
+                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama }}{{ $g->keterangan ? " (".$g->keterangan.")" : "" }}</option>@endforeach
             </select>
         </div>
         <div><label class="form-label">Mata Pelajaran</label>
@@ -113,7 +113,7 @@
             <tbody>
                 @forelse($guruPengajars as $g)
                 <tr style="border-bottom:1px solid #f8fafc;">
-                    <td style="padding:10px 18px;font-weight:700;">{{ $g->pegawai->nama_lengkap }}</td>
+                    <td style="padding:10px 18px;font-weight:700;">{{ $g->guru->nama }}</td>
                     <td style="padding:10px;">{{ $g->mataPelajaran->nama }}</td>
                     <td style="padding:10px;">{{ $g->kelas_lengkap }}</td>
                     <td style="padding:10px;text-align:right;">
@@ -137,9 +137,9 @@
             </select>
         </div>
         <div><label class="form-label">Guru Pembina</label>
-            <select name="pegawai_id" class="form-input" required>
+            <select name="guru_id" class="form-input" required>
                 <option value="">-- Pilih guru --</option>
-                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama_lengkap }}</option>@endforeach
+                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama }}{{ $g->keterangan ? " (".$g->keterangan.")" : "" }}</option>@endforeach
             </select>
         </div>
         <div><label class="form-label">Nama Ekstrakurikuler</label><input name="nama_ekstrakurikuler" class="form-input" placeholder="mis. Pramuka" required></div>
@@ -153,7 +153,7 @@
             <tbody>
                 @forelse($guruEkstrakurikulers as $e)
                 <tr style="border-bottom:1px solid #f8fafc;">
-                    <td style="padding:10px 18px;font-weight:700;">{{ $e->pegawai->nama_lengkap }}</td>
+                    <td style="padding:10px 18px;font-weight:700;">{{ $e->guru->nama }}</td>
                     <td style="padding:10px;">{{ $e->nama_ekstrakurikuler }}</td>
                     <td style="padding:10px;text-align:right;">
                         <form action="{{ route('erapor.guru-ekstrakurikuler.destroy', $e) }}" method="POST" onsubmit="return confirm('Hapus?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button></form>
@@ -176,9 +176,9 @@
             </select>
         </div>
         <div><label class="form-label">Guru Pembina P5</label>
-            <select name="pegawai_id" class="form-input" required>
+            <select name="guru_id" class="form-input" required>
                 <option value="">-- Pilih guru --</option>
-                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama_lengkap }}</option>@endforeach
+                @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama }}{{ $g->keterangan ? " (".$g->keterangan.")" : "" }}</option>@endforeach
             </select>
         </div>
         <div><label class="form-label">Tema P5 (opsional)</label><input name="tema_p5" class="form-input" placeholder="mis. Gaya Hidup Berkelanjutan"></div>
@@ -200,7 +200,7 @@
             <tbody>
                 @forelse($guruKokurikulers as $k)
                 <tr style="border-bottom:1px solid #f8fafc;">
-                    <td style="padding:10px 18px;font-weight:700;">{{ $k->pegawai->nama_lengkap }}</td>
+                    <td style="padding:10px 18px;font-weight:700;">{{ $k->guru->nama }}</td>
                     <td style="padding:10px;">{{ $k->tema_p5 ?? '-' }}</td>
                     <td style="padding:10px;">{{ $k->kelas_lengkap }}</td>
                     <td style="padding:10px;text-align:right;">

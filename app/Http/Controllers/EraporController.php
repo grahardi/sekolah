@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GuruEkstrakurikuler;
+use App\Models\Guru;
 use App\Models\GuruKokurikuler;
 use App\Models\GuruPengajar;
 use App\Models\MataPelajaran;
@@ -89,15 +90,17 @@ class EraporController extends Controller
     // ── Penugasan Guru (4 tab: Wali Kelas / Pengajar / Ekstrakurikuler / Kokurikuler) ──
     public function penugasan()
     {
+        Guru::syncFromPegawai(auth()->user()->sekolah_id);
+
         return view('erapor.penugasan', [
             'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
-            'guruList' => Pegawai::orderBy('nama_lengkap')->get(['id', 'nama_lengkap', 'jabatan']),
+            'guruList' => Guru::orderBy('nama')->get(['id', 'nama', 'keterangan']),
             'mapelList' => MataPelajaran::orderBy('nama')->get(),
             'kelasList' => $this->kelasRombelList(),
-            'waliKelas' => WaliKelas::with(['pegawai', 'tahunAjaran'])->latest()->get(),
-            'guruPengajars' => GuruPengajar::with(['pegawai', 'mataPelajaran', 'tahunAjaran'])->latest()->get(),
-            'guruEkstrakurikulers' => GuruEkstrakurikuler::with(['pegawai', 'tahunAjaran'])->latest()->get(),
-            'guruKokurikulers' => GuruKokurikuler::with(['pegawai', 'tahunAjaran'])->latest()->get(),
+            'waliKelas' => WaliKelas::with(['guru', 'tahunAjaran'])->latest()->get(),
+            'guruPengajars' => GuruPengajar::with(['guru', 'mataPelajaran', 'tahunAjaran'])->latest()->get(),
+            'guruEkstrakurikulers' => GuruEkstrakurikuler::with(['guru', 'tahunAjaran'])->latest()->get(),
+            'guruKokurikulers' => GuruKokurikuler::with(['guru', 'tahunAjaran'])->latest()->get(),
         ]);
     }
 
@@ -105,7 +108,7 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
-            'pegawai_id' => 'required|exists:pegawais,id',
+            'guru_id' => 'required|exists:gurus,id',
             'kelas' => 'required|string|max:10',
             'rombel' => 'nullable|string|max:5',
         ]);
@@ -123,7 +126,7 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
-            'pegawai_id' => 'required|exists:pegawais,id',
+            'guru_id' => 'required|exists:gurus,id',
             'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
             'kelas' => 'required|string|max:10',
             'rombel' => 'nullable|string|max:5',
@@ -142,7 +145,7 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
-            'pegawai_id' => 'required|exists:pegawais,id',
+            'guru_id' => 'required|exists:gurus,id',
             'nama_ekstrakurikuler' => 'required|string|max:100',
         ]);
         GuruEkstrakurikuler::create($data);
@@ -159,7 +162,7 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
-            'pegawai_id' => 'required|exists:pegawais,id',
+            'guru_id' => 'required|exists:gurus,id',
             'tema_p5' => 'nullable|string|max:150',
             'kelas' => 'required|string|max:10',
             'rombel' => 'nullable|string|max:5',
@@ -186,10 +189,52 @@ class EraporController extends Controller
             ->values();
     }
 
-    // ── Tugas Mengajar (toggle grid per guru, dipakai di halaman detail Pegawai) ──
+    // ── Guru (roster gabungan Pegawai Kepegawaian + Guru Bantu non-Kepegawaian) ──
+
+    public function guruIndex()
+    {
+        Guru::syncFromPegawai(auth()->user()->sekolah_id);
+
+        return view('erapor.guru.index', [
+            'gurus' => Guru::with('pegawai')->orderBy('nama')->get(),
+        ]);
+    }
+
+    public function storeGuruBantu(Request $request)
+    {
+        $data = $request->validate([
+            'nama' => 'required|string|max:150',
+            'nip_nuptk' => 'nullable|string|max:30',
+            'keterangan' => 'nullable|string|max:100',
+        ]);
+        $data['keterangan'] = $data['keterangan'] ?: 'Guru Bantu';
+
+        Guru::create($data);
+        return back()->with('success', 'Guru bantu ditambahkan.');
+    }
+
+    public function destroyGuruBantu(Guru $guru)
+    {
+        abort_if($guru->isDariKepegawaian(), 403, 'Guru ini terhubung ke data Kepegawaian - kelola/hapus dari sana, bukan dari sini.');
+        $guru->delete();
+        return back()->with('success', 'Guru bantu dihapus.');
+    }
+
+    /** Dipanggil dari halaman detail Pegawai (Kepegawaian) - cari/buatkan Guru
+     *  yg terhubung ke pegawai itu, lalu arahkan ke halaman Tugas Mengajar. */
+    public function tugasMengajarDariPegawai(Pegawai $pegawai)
+    {
+        $guru = Guru::findOrCreateForPegawai($pegawai);
+        return redirect()->route('erapor.guru.tugas-mengajar', $guru);
+    }
+
+    public function tugasMengajarPage(Guru $guru)
+    {
+        return view('erapor.guru.tugas-mengajar', ['guru' => $guru]);
+    }
 
     /** Data lengkap semua mapel + status tiap kelas-rombel utk 1 guru tertentu */
-    public function tugasMengajarData(Pegawai $pegawai)
+    public function tugasMengajarData(Guru $guru)
     {
         $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
         if (! $tahunAktif) {
@@ -199,7 +244,7 @@ class EraporController extends Controller
         $kelasList = $this->kelasRombelList();
         $mapelList = MataPelajaran::orderBy('nama')->get();
 
-        $semuaPenugasan = GuruPengajar::with('pegawai')
+        $semuaPenugasan = GuruPengajar::with('guru')
             ->where('tahun_ajaran_id', $tahunAktif->id)
             ->get()
             ->keyBy(fn ($p) => $p->mata_pelajaran_id . '|' . $p->kelas . '|' . ($p->rombel ?? ''));
@@ -216,8 +261,8 @@ class EraporController extends Controller
                     'kelas' => $kelas,
                     'rombel' => $rombel ?: null,
                     'label' => $rombel !== '' ? "{$kelas} - {$rombel}" : $kelas,
-                    'assigned_to_me' => $existing && $existing->pegawai_id === $pegawai->id,
-                    'assigned_to_other' => ($existing && $existing->pegawai_id !== $pegawai->id) ? $existing->pegawai->nama_lengkap : null,
+                    'assigned_to_me' => $existing && $existing->guru_id === $guru->id,
+                    'assigned_to_other' => ($existing && $existing->guru_id !== $guru->id) ? $existing->guru->nama : null,
                 ];
             }
 
@@ -233,7 +278,7 @@ class EraporController extends Controller
     }
 
     /** Toggle satu penugasan: assign kalau kosong, unassign kalau sudah milik guru ini */
-    public function tugasMengajarToggle(Request $request, Pegawai $pegawai)
+    public function tugasMengajarToggle(Request $request, Guru $guru)
     {
         $validated = $request->validate([
             'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
@@ -251,17 +296,18 @@ class EraporController extends Controller
             ->first();
 
         if ($existing) {
-            if ($existing->pegawai_id !== $pegawai->id) {
-                return response()->json(['error' => 'Sudah diampu oleh: ' . $existing->pegawai->nama_lengkap], 422);
+            if ($existing->guru_id !== $guru->id) {
+                return response()->json(['error' => 'Sudah diampu oleh: ' . $existing->guru->nama], 422);
             }
             $existing->delete();
             return response()->json(['status' => 'removed']);
         }
 
         GuruPengajar::create([
-            'sekolah_id' => $pegawai->sekolah_id,
+            'sekolah_id' => $guru->sekolah_id,
             'tahun_ajaran_id' => $tahunAktif->id,
-            'pegawai_id' => $pegawai->id,
+            'guru_id' => $guru->id,
+            'pegawai_id' => $guru->pegawai_id, // tetap dicatat kalau ada, utk kompatibilitas
             'mata_pelajaran_id' => $validated['mata_pelajaran_id'],
             'kelas' => $validated['kelas'],
             'rombel' => $validated['rombel'] ?: null,
