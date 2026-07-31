@@ -42,12 +42,20 @@ class NpsnLookupController extends Controller
         }
 
         $text = strip_tags($response->body());
+        // Decode entity HTML (&nbsp; dkk) SEBELUM di-regex - kalau tidak,
+        // &nbsp; ikut kebawa ke nilai field DAN bikin pola label gagal
+        // cocok (krn spasi antar kata di label jadi "&nbsp;" bukan spasi biasa).
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $text = preg_replace('/\s+/', ' ', $text);
 
         $extract = function (string $label) use ($text) {
             // Pola: "Label : nilai" berhenti di label berikutnya atau baris baru logis
             if (preg_match('/' . preg_quote($label, '/') . '\s*:\s*([^:]+?)(?=\s+[A-Z][a-zA-Z\.\-\/ ]{2,30}\s*:|$)/u', $text, $m)) {
-                return trim($m[1]);
+                $val = trim($m[1]);
+                // Jaga-jaga kalau masih ada &nbsp; literal yang lolos (mis. double-encoded)
+                $val = str_ireplace('&nbsp;', ' ', $val);
+                $val = preg_replace('/\s+/', ' ', $val);
+                return trim($val) ?: null;
             }
             return null;
         };
