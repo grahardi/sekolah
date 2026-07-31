@@ -1,20 +1,13 @@
-import Logo from './Logo';
-
 export default function PublicFooter() {
     return (
         <footer className="bg-navy text-cream/70">
             <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div>
-                    <Logo light className="mb-3" />
-                    <p className="text-sm">
-                        Portal sekolah terpadu — simulasi sains interaktif, modul ajar,
-                        dan administrasi sekolah dalam satu platform.
-                    </p>
                     <a
                         href="https://www.intan.net.id"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-white/95 rounded-lg px-3 py-1.5 mt-4 hover:bg-white transition-colors"
+                        className="inline-flex items-center gap-2 bg-white/95 rounded-lg px-3 py-1.5 hover:bg-white transition-colors"
                     >
                         <img src="/images/sponsor-bella-intan.png" alt="PT Bella Intan Media" className="h-5 w-auto object-contain" />
                     </a>
