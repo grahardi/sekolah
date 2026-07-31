@@ -155,7 +155,7 @@
         <div class="sb-brand-icon"><i class="ti ti-notebook"></i></div>
         <div>
             <div class="sb-brand-name">sekolah.co.id</div>
-            <div class="sb-brand-sub">Buku Induk · Kurikulum Merdeka</div>
+            <div class="sb-brand-sub">Kepegawaian</div>
         </div>
     </div>
 
@@ -167,93 +167,50 @@
 
     <nav class="sb-nav">
         <div class="sb-section">Utama</div>
-        <a href="{{ route('siswa.index') }}"
-           class="sb-item {{ request()->routeIs('siswa.index') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.index') }}"
+           class="sb-item {{ request()->routeIs('pegawai.index') ? 'active' : '' }}">
             <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
         </a>
-        @if(auth()->user()->isAdmin())
-        <a href="{{ route('siswa.create') }}"
-           class="sb-item {{ request()->routeIs('siswa.create') ? 'active' : '' }}">
-            <i class="ti ti-user-plus"></i><span>Tambah Siswa</span>
-        </a>
-        @elseif($isDemoReadonly)
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
-            <i class="ti ti-user-plus"></i><span>Tambah Siswa</span><span class="sb-demo-badge">Demo</span>
-        </div>
-        @endif
 
         <div class="sb-divider"></div>
-        <div class="sb-section">Filter Cepat</div>
-        <a href="{{ route('siswa.index', ['status'=>'aktif']) }}"
-           class="sb-item {{ request()->query('status')==='aktif' ? 'active' : '' }}">
-            <i class="ti ti-users"></i><span>Siswa Aktif</span>
+        <div class="sb-section">Kepegawaian</div>
+        <a href="{{ route('pegawai.index') }}"
+           class="sb-item {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+            <i class="ti ti-users"></i><span>Data Pegawai</span>
         </a>
-        <a href="{{ route('siswa.index', ['status'=>'lulus']) }}"
-           class="sb-item {{ request()->query('status')==='lulus' ? 'active' : '' }}">
-            <i class="ti ti-award"></i><span>Siswa Lulus</span>
-        </a>
-        <a href="{{ route('siswa.index', ['status'=>'pindah']) }}"
-           class="sb-item {{ request()->query('status')==='pindah' ? 'active' : '' }}">
-            <i class="ti ti-transfer"></i><span>Siswa Pindah</span>
-        </a>
-
-        @if(auth()->user()->isAdmin())
-        <div class="sb-divider"></div>
-        <div class="sb-section">Proses Siswa</div>
-        <a href="{{ route('kenaikan.index') }}"
-           class="sb-item {{ request()->routeIs('kenaikan.*') ? 'active' : '' }}">
-            <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span>
-        </a>
-        @elseif($isDemoReadonly)
-        <div class="sb-divider"></div>
-        <div class="sb-section">Proses Siswa</div>
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
-            <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span><span class="sb-demo-badge">Demo</span>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-list-numbers"></i><span>Daftar Urut Kepangkatan</span><span class="sb-demo-badge">Segera</span>
         </div>
-        @endif
-
-        @if(auth()->user()->isAdmin())
-        <div class="sb-divider"></div>
-        <div class="sb-section">Import / Export</div>
-        <a href="{{ route('siswa.import.form') }}"
-           class="sb-item {{ request()->routeIs('siswa.import.*') ? 'active' : '' }}">
-            <i class="ti ti-file-import"></i><span>Import Data Siswa</span>
-        </a>
-        <a href="{{ route('nilai.import-massal') }}"
-           class="sb-item {{ request()->routeIs('nilai.import-massal*') ? 'active' : '' }}">
-            <i class="ti ti-table-import"></i><span>Import Nilai Massal</span>
-        </a>
-        <a href="{{ route('siswa.import.berkas.form') }}"
-           class="sb-item {{ request()->routeIs('siswa.import.berkas.*') ? 'active' : '' }}">
-            <i class="ti ti-folder-plus"></i><span>Import Berkas</span>
-        </a>
-        <a href="{{ route('siswa.export.choice') }}"
-           class="sb-item {{ request()->routeIs('siswa.export.*') ? 'active' : '' }}">
-            <i class="ti ti-download"></i><span>Export</span>
-        </a>
-        @elseif($isDemoReadonly)
-        <div class="sb-divider"></div>
-        <div class="sb-section">Import / Export</div>
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
-            <i class="ti ti-file-import"></i><span>Import Data Siswa</span><span class="sb-demo-badge">Demo</span>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-award"></i><span>Kendali Pangkat</span><span class="sb-demo-badge">Segera</span>
         </div>
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
-            <i class="ti ti-table-import"></i><span>Import Nilai Massal</span><span class="sb-demo-badge">Demo</span>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-cash"></i><span>Gaji Berkala</span><span class="sb-demo-badge">Segera</span>
         </div>
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
-            <i class="ti ti-folder-plus"></i><span>Import Berkas</span><span class="sb-demo-badge">Demo</span>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-calendar-off"></i><span>Rekap Cuti Pegawai</span><span class="sb-demo-badge">Segera</span>
         </div>
-        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
-            <i class="ti ti-download"></i><span>Export</span><span class="sb-demo-badge">Demo</span>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-home-heart"></i><span>Tunjangan Keluarga</span><span class="sb-demo-badge">Segera</span>
         </div>
-        @endif
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-transfer"></i><span>Rekap Mutasi Pegawai</span><span class="sb-demo-badge">Segera</span>
+        </div>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-school"></i><span>Riwayat Pendidikan</span><span class="sb-demo-badge">Segera</span>
+        </div>
 
         <div class="sb-divider"></div>
-        <div class="sb-section">Akun Saya</div>
-        <a href="{{ route('user.change-password') }}"
-           class="sb-item {{ request()->routeIs('user.change-password') ? 'active' : '' }}">
-            <i class="ti ti-key"></i><span>Ganti Password</span>
-        </a>
+        <div class="sb-section">Sistem</div>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-settings"></i><span>Pengaturan</span><span class="sb-demo-badge">Segera</span>
+        </div>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-database-export"></i><span>Backup &amp; Restore</span><span class="sb-demo-badge">Segera</span>
+        </div>
+        <div class="sb-item-demo" title="Segera hadir">
+            <i class="ti ti-history"></i><span>Audit Trail</span><span class="sb-demo-badge">Segera</span>
+        </div>
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">

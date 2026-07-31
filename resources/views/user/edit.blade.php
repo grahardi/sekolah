@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.pengguna')
 @section('title', 'Edit User')
 @section('page-title', 'Edit User — ' . $user->name)
 

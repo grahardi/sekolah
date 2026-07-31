@@ -8,6 +8,8 @@ import Logo from '../Components/Logo';
 const MENU = [
     { key: 'dashboard', label: 'Beranda', href: '/dashboard', icon: HomeIcon },
     { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false, external: true },
+    { key: 'kepegawaian', label: 'Kepegawaian', href: '/kepegawaian', icon: UsersIcon, disabled: false, external: true },
+    { key: 'pengguna', label: 'Manajemen User', href: '/pengguna', icon: ShieldIcon, disabled: false, external: true },
     { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: true },
     { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
@@ -252,6 +254,7 @@ function HomeIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="curre
 function FlaskIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 3h6M10 3v6l-6 10a1 1 0 001 1.5h14a1 1 0 001-1.5L14 9V3" /></svg>; }
 function DocIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6" /></svg>; }
 function BookIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 19.5A2.5 2.5 0 016.5 17H20V4H6.5A2.5 2.5 0 004 6.5v13z" /></svg>; }
+function UsersIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" /><circle cx="17" cy="9" r="2.8" /><path d="M15 20c.2-2.8 2-5 4.5-5.5" /></svg>; }
 function HeartIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 21s-7-4.5-9.5-9C.7 8.3 3 4 7 4c2 0 3.5 1 5 3 1.5-2 3-3 5-3 4 0 6.3 4.3 4.5 8-2.5 4.5-9.5 9-9.5 9z" /></svg>; }
 function GearIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" /></svg>; }
 function ShieldIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 3l8 3v6c0 4.5-3 8-8 9-5-1-8-4.5-8-9V6l8-3z" /><path d="M9.5 12l1.8 1.8L15 10" /></svg>; }

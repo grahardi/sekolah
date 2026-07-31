@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.pengguna')
 @section('title', 'Ganti Password')
 @section('page-title', 'Ganti Password Saya')
 

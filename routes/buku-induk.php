@@ -78,18 +78,6 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
             Route::get('/preview', [KenaikanKelasController::class, 'preview'])->name('preview');
             Route::post('/proses', [KenaikanKelasController::class, 'proses'])->name('proses');
         });
-
-        // Manajemen User internal Buku Induk (peran admin/induk) - beda dari
-        // pengguna umum portal, khusus untuk siapa yang boleh akses modul ini.
-        Route::prefix('user')->name('user.')->group(function () {
-            Route::get('/', [UserController::class, 'index'])->name('index');
-            Route::get('/create', [UserController::class, 'create'])->name('create');
-            Route::post('/', [UserController::class, 'store'])->name('store');
-            Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
-            Route::put('/{user}', [UserController::class, 'update'])->name('update');
-            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
-            Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
-        });
     });
 
     // Ganti Password Sendiri (semua role yang sudah login)

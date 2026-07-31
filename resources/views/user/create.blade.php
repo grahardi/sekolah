@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.pengguna')
 @section('title', 'Tambah User')
 @section('page-title', 'Tambah User Baru')
 
