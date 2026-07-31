@@ -16,7 +16,12 @@
         @if($survey->status === 'aktif')<span class="badge badge-aktif">Aktif</span>
         @elseif($survey->status === 'draft')<span class="badge" style="background:#f1f5f9;color:#64748b;">Draft</span>
         @else<span class="badge badge-keluar">Ditutup</span>@endif
-        <span style="font-size:12px;color:#94a3b8;">{{ $survey->target_kelas ?: 'Semua kelas aktif' }}</span>
+        @if(count($survey->target_kelas_array) > 0)
+        <span style="font-size:12px;color:#94a3b8;">Kelas: {{ implode(', ', $survey->target_kelas_array) }}</span>
+        @else
+        <span style="font-size:12px;color:#dc2626;">Belum ada peserta di-assign</span>
+        @endif
+        <a href="{{ route('bk.peserta.create') }}" style="font-size:11px;color:#2563EB;text-decoration:underline;margin-left:8px;">+ Tambah/Kelola Peserta</a>
     </div>
     @if($survey->deskripsi)<p style="font-size:13px;color:#64748b;margin-bottom:14px;">{{ $survey->deskripsi }}</p>@endif
 

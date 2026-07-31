@@ -30,7 +30,9 @@
                 <tr style="border-bottom:1px solid #f8fafc;">
                     <td style="padding:12px 18px;">
                         <a href="{{ route('bk.survey.show', $s) }}" style="font-weight:700;color:#0f172a;text-decoration:none;">{{ $s->judul }}</a>
-                        <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $s->target_kelas ?: 'Semua kelas' }}</p>
+                        <p style="font-size:11px;color:#94a3b8;margin:0;">
+                            {{ count($s->target_kelas_array) > 0 ? implode(', ', $s->target_kelas_array) : 'Belum ada peserta' }}
+                        </p>
                     </td>
                     <td style="padding:12px 10px;">
                         <span class="badge" style="background:#eff6ff;color:#2563EB;">{{ $s->jenis }}</span>

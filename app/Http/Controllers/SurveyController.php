@@ -12,13 +12,13 @@ class SurveyController extends Controller
 {
     public function index()
     {
-        $surveys = Survey::withCount(['jawabans'])->latest()->paginate(15);
+        $surveys = Survey::withCount(['jawabans'])->with('pesertas')->latest()->paginate(15);
         return view('bk.survey.index', ['surveys' => $surveys]);
     }
 
     public function create()
     {
-        return view('bk.survey.create', ['kelasList' => $this->kelasRombelList()]);
+        return view('bk.survey.create');
     }
 
     public function store(Request $request)
@@ -28,7 +28,6 @@ class SurveyController extends Controller
             'deskripsi' => 'nullable|string|max:1000',
             'jenis' => 'required|in:DCM,AUM,Custom',
             'status' => 'required|in:draft,aktif,ditutup',
-            'target_kelas' => 'nullable|array',
             'pertanyaan' => 'required|array|min:1',
             'pertanyaan.*.teks' => 'required|string',
             'pertanyaan.*.tipe' => 'required|in:pilihan_ganda,checklist,skala,esai',
@@ -41,7 +40,6 @@ class SurveyController extends Controller
             'deskripsi' => $validated['deskripsi'] ?? null,
             'jenis' => $validated['jenis'],
             'status' => $validated['status'],
-            'target_kelas' => isset($validated['target_kelas']) ? implode(',', $validated['target_kelas']) : null,
         ]);
 
         $this->savePertanyaans($survey, $validated['pertanyaan']);
@@ -52,7 +50,7 @@ class SurveyController extends Controller
     public function edit(Survey $survey)
     {
         $survey->load('pertanyaans');
-        return view('bk.survey.edit', ['survey' => $survey, 'kelasList' => $this->kelasRombelList()]);
+        return view('bk.survey.edit', ['survey' => $survey]);
     }
 
     public function update(Request $request, Survey $survey)
@@ -62,7 +60,6 @@ class SurveyController extends Controller
             'deskripsi' => 'nullable|string|max:1000',
             'jenis' => 'required|in:DCM,AUM,Custom',
             'status' => 'required|in:draft,aktif,ditutup',
-            'target_kelas' => 'nullable|array',
             'pertanyaan' => 'required|array|min:1',
             'pertanyaan.*.teks' => 'required|string',
             'pertanyaan.*.tipe' => 'required|in:pilihan_ganda,checklist,skala,esai',
@@ -75,7 +72,6 @@ class SurveyController extends Controller
             'deskripsi' => $validated['deskripsi'] ?? null,
             'jenis' => $validated['jenis'],
             'status' => $validated['status'],
-            'target_kelas' => isset($validated['target_kelas']) ? implode(',', $validated['target_kelas']) : null,
         ]);
 
         // Ganti seluruh pertanyaan (lebih simpel drpd diff - aman krn jawaban
@@ -94,7 +90,7 @@ class SurveyController extends Controller
 
     public function show(Survey $survey)
     {
-        $survey->load('pertanyaans');
+        $survey->load(['pertanyaans', 'pesertas']);
 
         $siswaTarget = $survey->siswaTarget()->orderBy('nama_lengkap')->get();
         $sudahIsi = $survey->jawabans()->pluck('siswa_id')->toArray();
@@ -133,17 +129,5 @@ class SurveyController extends Controller
                 'kategori' => $p['kategori'] ?? null,
             ]);
         }
-    }
-
-    /** Daftar kombinasi kelas-rombel yang benar-benar ada di data siswa aktif */
-    private function kelasRombelList()
-    {
-        return Siswa::where('status', 'aktif')
-            ->whereNotNull('kelas')
-            ->get(['kelas', 'rombel'])
-            ->map(fn ($s) => $s->rombel ? "{$s->kelas}-{$s->rombel}" : $s->kelas)
-            ->unique()
-            ->sort()
-            ->values();
     }
 }

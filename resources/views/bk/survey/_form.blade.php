@@ -1,7 +1,6 @@
 @php
     $s = $survey;
     $existingQuestions = $s ? $s->pertanyaans : collect();
-    $existingTargets = $s ? $s->target_kelas_array : [];
 @endphp
 
 <div class="card" style="padding:20px;margin-bottom:16px;">
@@ -31,19 +30,11 @@
         <label class="form-label">Deskripsi / Petunjuk Pengisian</label>
         <textarea name="deskripsi" class="form-input" rows="2" placeholder="Contoh: Isi sejujur-jujurnya, jawaban dijamin kerahasiaannya.">{{ old('deskripsi', $s->deskripsi ?? '') }}</textarea>
     </div>
-    <div>
-        <label class="form-label">Target Kelas (kosongkan semua = berlaku utk semua kelas aktif)</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
-            @forelse($kelasList as $k)
-            <label style="display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
-                <input type="checkbox" name="target_kelas[]" value="{{ $k }}" {{ in_array($k, old('target_kelas', $existingTargets)) ? 'checked' : '' }}>
-                {{ $k }}
-            </label>
-            @empty
-            <p style="font-size:12px;color:#94a3b8;">Belum ada data kelas siswa aktif di Buku Induk.</p>
-            @endforelse
-        </div>
-    </div>
+    <p style="font-size:12px;color:#94a3b8;background:#f8fafc;border-radius:8px;padding:10px 12px;">
+        <i class="ti ti-info-circle"></i> Target kelas/peserta diatur terpisah lewat menu
+        <strong>"Pilih Peserta"</strong> setelah survey ini disimpan - satu survey bisa
+        di-assign ke beberapa kelas secara bertahap.
+    </p>
 </div>
 
 <div class="card" style="padding:20px;">

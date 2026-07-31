@@ -33,31 +33,38 @@ class Survey extends Model
 
     public function pertanyaans() { return $this->hasMany(SurveyPertanyaan::class)->orderBy('urutan'); }
     public function jawabans() { return $this->hasMany(SurveyJawaban::class); }
+    public function pesertas() { return $this->hasMany(SurveyPeserta::class); }
     public function pembuat() { return $this->belongsTo(User::class, 'user_id'); }
 
-    /** Daftar kelas-rombel target sebagai array, kosong = semua kelas */
+    /** Gabungan semua kelas-rombel target dari SELURUH assignment peserta survey ini */
     public function getTargetKelasArrayAttribute(): array
     {
-        return $this->target_kelas ? explode(',', $this->target_kelas) : [];
+        $all = $this->pesertas->flatMap(fn ($p) => $p->target_kelas_array)->unique()->values();
+        return $all->toArray();
     }
 
-    /** Query siswa yang jadi target survey ini (sesuai kelas-rombel terpilih) */
+    /** Query siswa yang jadi target survey ini (gabungan semua assignment peserta) */
     public function siswaTarget()
     {
         $query = Siswa::where('status', 'aktif');
         $targets = $this->target_kelas_array;
 
-        if (count($targets) > 0) {
-            $query->where(function ($q) use ($targets) {
-                foreach ($targets as $t) {
-                    [$kelas, $rombel] = array_pad(explode('-', $t, 2), 2, null);
-                    $q->orWhere(function ($qq) use ($kelas, $rombel) {
-                        $qq->where('kelas', $kelas);
-                        if ($rombel) $qq->where('rombel', $rombel);
-                    });
-                }
-            });
+        if (count($targets) === 0) {
+            // Belum ada peserta di-assign sama sekali -> jangan kembalikan semua
+            // siswa (beda dari sebelumnya) - biar jelas "Pilih Peserta" wajib
+            // dilakukan dulu sebelum survey punya target.
+            return $query->whereRaw('1 = 0');
         }
+
+        $query->where(function ($q) use ($targets) {
+            foreach ($targets as $t) {
+                [$kelas, $rombel] = array_pad(explode('-', $t, 2), 2, null);
+                $q->orWhere(function ($qq) use ($kelas, $rombel) {
+                    $qq->where('kelas', $kelas);
+                    if ($rombel) $qq->where('rombel', $rombel);
+                });
+            }
+        });
         return $query;
     }
 

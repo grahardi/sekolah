@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SurveyPesertaController;
 use App\Http\Controllers\SurveyPublicController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,14 @@ Route::middleware(['web', 'auth'])->prefix('bk')->name('bk.')->group(function ()
         // Laravel akan mengira "create" adalah ID survey (bikin error bigint).
         Route::get('/{survey}', [SurveyController::class, 'show'])->name('show');
         Route::get('/{survey}/hasil/{siswa}', [SurveyController::class, 'hasilSiswa'])->name('hasil-siswa');
+    });
+
+    // Pilih Peserta - assign survey ke kelas, terpisah dari pembuatan survey
+    Route::middleware('admin')->prefix('peserta')->name('peserta.')->group(function () {
+        Route::get('/', [SurveyPesertaController::class, 'index'])->name('index');
+        Route::get('/create', [SurveyPesertaController::class, 'create'])->name('create');
+        Route::post('/', [SurveyPesertaController::class, 'store'])->name('store');
+        Route::delete('/{peserta}', [SurveyPesertaController::class, 'destroy'])->name('destroy');
     });
 });
 

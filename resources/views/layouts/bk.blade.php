@@ -183,6 +183,10 @@
            class="sb-item {{ request()->routeIs('bk.survey.create') ? 'active' : '' }}">
             <i class="ti ti-square-plus"></i><span>Buat Survey Baru</span>
         </a>
+        <a href="{{ route('bk.peserta.index') }}"
+           class="sb-item {{ request()->routeIs('bk.peserta.*') ? 'active' : '' }}">
+            <i class="ti ti-users-group"></i><span>Pilih Peserta</span>
+        </a>
         @endif
 
         <div class="sb-divider"></div>
