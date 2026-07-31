@@ -26,7 +26,18 @@ const SHOWCASE = [
 
 // Placeholder slide showcase - ganti title/desc/background/href sesuai konten
 // asli nanti (foto sekolah, testimoni guru, dokumentasi kegiatan, dll).
-const SLIDES = [
+const HERO_SLIDES = [
+    {
+        type: 'hero',
+        tag: 'Portal Sekolah Digital #1 untuk Kurikulum Merdeka',
+        title: 'Sekolahmu, satu portal, nol ribet',
+        desc: 'Buku Induk terintegrasi Dapodik, simulasi sains interaktif, modul ajar Kurikulum Merdeka, hingga E-Rapor dan ujian digital — semuanya terhubung dalam satu tempat.',
+        background: 'linear-gradient(135deg, #1E293B, #2563EB)',
+        buttons: [
+            { label: 'Mulai Sekarang', href: '/registrasi-sekolah' },
+            { label: 'Jelajahi Modul', href: '#program-sekolah', variant: 'secondary' },
+        ],
+    },
     {
         tag: 'Buku Induk',
         title: 'Data siswa langsung dari Dapodik, tanpa input ulang',
@@ -55,31 +66,9 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
         <div className="min-h-screen bg-cream text-navy">
             <PublicNavbar canLogin={canLogin} canRegister={canRegister} />
 
-            {/* Hero */}
-            <section id="home" className="relative overflow-hidden">
-                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 lg:py-14 text-center relative z-10">
-                    <span className="inline-block text-xs font-mono uppercase tracking-wide text-teal bg-teal-light rounded-full px-3 py-1">
-                        Portal Sekolah Digital #1 untuk Kurikulum Merdeka
-                    </span>
-                    <h1 className="font-display font-700 text-3xl lg:text-5xl mt-3 leading-tight max-w-3xl mx-auto">
-                        Sekolahmu, satu portal, nol ribet
-                    </h1>
-                    <p className="text-navy/60 mt-3 text-base lg:text-lg max-w-2xl mx-auto">
-                        Buku Induk terintegrasi Dapodik, simulasi sains interaktif, modul ajar
-                        Kurikulum Merdeka, hingga E-Rapor dan ujian digital — semuanya terhubung
-                        dalam satu tempat.
-                    </p>
-                    <div className="flex items-center justify-center gap-3 mt-6">
-                        <Link href="/registrasi-sekolah" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">
-                            Mulai Sekarang
-                        </Link>
-                        <a href="#program-sekolah" className="border border-navy/20 text-navy font-medium rounded-lg px-5 py-3 text-sm hover:bg-navy/5">
-                            Jelajahi Modul
-                        </a>
-                    </div>
-                </div>
-                <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-teal-light" />
-                <div className="absolute -left-16 bottom-0 w-48 h-48 rounded-full bg-coral/10" />
+            {/* Hero + Slider - jadi satu, slide pertama = headline utama */}
+            <section id="home" className="max-w-6xl mx-auto px-6 lg:px-8 pt-6 lg:pt-8">
+                <ShowcaseSlider slides={HERO_SLIDES} />
             </section>
 
             {/* Stats bar */}
@@ -172,14 +161,9 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
                     <div className="text-center max-w-xl mx-auto mb-10">
                         <span className="text-xs font-mono uppercase tracking-wide text-coral">Showcase</span>
-                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Lihat sekolah.co.id beraksi</h2>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Simulasi yang bisa dicoba langsung</h2>
                     </div>
 
-                    <div className="mb-12">
-                        <ShowcaseSlider slides={SLIDES} />
-                    </div>
-
-                    <h3 className="font-display font-600 text-lg text-white mb-4 text-center">Simulasi yang bisa dicoba langsung</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                         {SHOWCASE.map((s) => (
                             <Link

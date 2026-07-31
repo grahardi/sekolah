@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Slider showcase - dibuat generic supaya gampang diisi konten asli nanti.
- * Tinggal ganti array `slides` di Welcome.jsx (judul, deskripsi, gambar/warna
- * aksen, dan link tujuan). Auto-geser tiap 5 detik, bisa juga digeser manual.
+ * Slider showcase / hero. Slide pertama biasanya tipe "hero" (badge + judul
+ * besar + beberapa tombol CTA, konten di tengah), slide lainnya tipe biasa
+ * (satu link, konten di bawah) - keduanya dirender di komponen yang sama.
+ * Auto-geser tiap 6 detik, bisa juga digeser manual.
  */
 export default function ShowcaseSlider({ slides }) {
     const [active, setActive] = useState(0);
@@ -11,7 +12,7 @@ export default function ShowcaseSlider({ slides }) {
     useEffect(() => {
         const timer = setInterval(() => {
             setActive((i) => (i + 1) % slides.length);
-        }, 5000);
+        }, 6000);
         return () => clearInterval(timer);
     }, [slides.length]);
 
@@ -19,24 +20,64 @@ export default function ShowcaseSlider({ slides }) {
     const prev = () => setActive((i) => (i - 1 + slides.length) % slides.length);
     const next = () => setActive((i) => (i + 1) % slides.length);
 
-    const slide = slides[active];
-
     return (
-        <div className="relative rounded-2xl overflow-hidden bg-navy" style={{ minHeight: '340px' }}>
-            {slides.map((s, i) => (
-                <a
-                    key={i}
-                    href={s.href || '#'}
-                    className={`absolute inset-0 transition-opacity duration-700 ${i === active ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
-                    style={{ background: s.background || 'linear-gradient(135deg, #1E293B, #2563EB)' }}
-                >
-                    <div className="flex flex-col justify-end h-full p-8 lg:p-12">
-                        <span className="text-xs font-mono uppercase tracking-wide text-coral mb-2">{s.tag}</span>
-                        <h3 className="font-display font-700 text-2xl lg:text-3xl text-white max-w-lg">{s.title}</h3>
-                        <p className="text-white/70 mt-2 max-w-lg text-sm lg:text-base">{s.desc}</p>
-                    </div>
-                </a>
-            ))}
+        <div className="relative rounded-2xl overflow-hidden bg-navy" style={{ minHeight: '420px' }}>
+            {slides.map((s, i) => {
+                const isActive = i === active;
+                const bg = s.background || 'linear-gradient(135deg, #1E293B, #2563EB)';
+
+                if (s.type === 'hero') {
+                    return (
+                        <div
+                            key={i}
+                            className={`absolute inset-0 transition-opacity duration-700 flex items-center justify-center text-center ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
+                            style={{ background: bg }}
+                        >
+                            <div className="max-w-xl px-6">
+                                {s.tag && (
+                                    <span className="inline-block text-xs font-mono uppercase tracking-wide text-coral bg-white/10 rounded-full px-3 py-1 mb-4">
+                                        {s.tag}
+                                    </span>
+                                )}
+                                <h1 className="font-display font-700 text-3xl lg:text-5xl text-white leading-tight">{s.title}</h1>
+                                {s.desc && <p className="text-white/70 mt-4 text-sm lg:text-base">{s.desc}</p>}
+                                {s.buttons && (
+                                    <div className="flex items-center justify-center gap-3 mt-7">
+                                        {s.buttons.map((b, bi) => (
+                                            <a
+                                                key={bi}
+                                                href={b.href}
+                                                className={`font-medium rounded-lg px-5 py-3 text-sm ${
+                                                    b.variant === 'secondary'
+                                                        ? 'border border-white/30 text-white hover:bg-white/10'
+                                                        : 'bg-coral text-navy hover:brightness-95'
+                                                }`}
+                                            >
+                                                {b.label}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                }
+
+                return (
+                    <a
+                        key={i}
+                        href={s.href || '#'}
+                        className={`absolute inset-0 transition-opacity duration-700 ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
+                        style={{ background: bg }}
+                    >
+                        <div className="flex flex-col justify-end h-full p-8 lg:p-12">
+                            <span className="text-xs font-mono uppercase tracking-wide text-coral mb-2">{s.tag}</span>
+                            <h3 className="font-display font-700 text-2xl lg:text-3xl text-white max-w-lg">{s.title}</h3>
+                            <p className="text-white/70 mt-2 max-w-lg text-sm lg:text-base">{s.desc}</p>
+                        </div>
+                    </a>
+                );
+            })}
 
             {/* Panah navigasi */}
             <button
@@ -55,7 +96,7 @@ export default function ShowcaseSlider({ slides }) {
             </button>
 
             {/* Titik indikator */}
-            <div className="absolute bottom-4 right-6 z-20 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                 {slides.map((_, i) => (
                     <button
                         key={i}
