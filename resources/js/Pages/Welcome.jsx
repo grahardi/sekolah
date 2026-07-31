@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import PublicNavbar from '../Components/PublicNavbar';
 import PublicFooter from '../Components/PublicFooter';
 import ShowcaseSlider from '../Components/ShowcaseSlider';
+import { BukuIndukIllustration, LabIllustration, ModulAjarIllustration } from '../Components/SlideIllustrations';
 import { PROGRAMS as PROGRAM_LIST } from '../constants/programs';
 
 const STATS = [
@@ -42,21 +43,24 @@ const HERO_SLIDES = [
         tag: 'Buku Induk',
         title: 'Data siswa langsung dari Dapodik, tanpa input ulang',
         desc: 'Import file Dapodik asli dalam hitungan detik - biodata, data ayah/ibu/wali, sampai riwayat kelas otomatis tersusun rapi.',
-        image: 'https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?w=1600&q=80&fm=jpg&fit=crop',
+        background: '#1E3A5F',
+        illustration: BukuIndukIllustration,
         href: '/buku-induk',
     },
     {
         tag: 'Lab Interaktif',
         title: '60+ simulasi sains yang bisa dicoba langsung di kelas',
         desc: 'Fisika, Matematika, dan Biologi - siswa bisa eksplorasi konsep abstrak jadi visual dan interaktif, langsung dari browser.',
-        image: 'https://images.unsplash.com/photo-1758685734030-a31d96462eec?w=1600&q=80&fm=jpg&fit=crop',
+        background: '#14432E',
+        illustration: LabIllustration,
         href: '/lab',
     },
     {
         tag: 'Modul Ajar',
         title: 'Perangkat ajar Kurikulum Merdeka, siap pakai',
         desc: 'Modul ajar per mata pelajaran untuk Fase D, tinggal unduh dan sesuaikan dengan kelasmu.',
-        image: 'https://images.unsplash.com/photo-1769794371055-54436b54577e?w=1600&q=80&fm=jpg&fit=crop',
+        background: '#1E293B',
+        illustration: ModulAjarIllustration,
         href: '/modul-ajar',
     },
 ];
