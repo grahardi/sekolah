@@ -41,9 +41,11 @@ export const PROGRAMS = [
     {
         slug: 'e-rapor',
         title: 'E-Rapor',
-        status: 'Segera',
-        summary: 'Pengolahan nilai dan rapor digital.',
-        detail: 'Sedang dikembangkan - pengolahan nilai sesuai Kurikulum Merdeka, terhubung langsung dengan data siswa di Buku Induk.',
+        status: 'Aktif',
+        summary: 'Wali kelas, guru pengajar, ekstrakurikuler, dan kokurikuler (P5).',
+        detail: 'Kelola tahun ajaran dan mata pelajaran, tetapkan wali kelas per rombel, penugasan guru pengajar per mapel, guru pembina ekstrakurikuler, dan guru pembina kokurikuler (Projek P5) - semua terhubung ke data guru dari Kepegawaian dan data kelas dari Buku Induk. Input nilai & cetak rapor menyusul.',
+        href: '/erapor',
+        cta: 'Buka E-Rapor',
     },
     {
         slug: 'manajemen-sekolah',

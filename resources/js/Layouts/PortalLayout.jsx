@@ -9,6 +9,7 @@ const MENU = [
     { key: 'dashboard', label: 'Beranda', href: '/dashboard', icon: HomeIcon },
     { key: 'induk', label: 'Buku Induk', href: '/buku-induk', icon: BookIcon, disabled: false, external: true },
     { key: 'kepegawaian', label: 'Kepegawaian', href: '/kepegawaian', icon: UsersIcon, disabled: false, external: true },
+    { key: 'erapor', label: 'E-Rapor', href: '/erapor', icon: DocIcon, disabled: false, external: true },
     { key: 'pengguna', label: 'Manajemen User', href: '/pengguna', icon: ShieldIcon, disabled: false, external: true },
     { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: false, external: true },

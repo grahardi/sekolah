@@ -23,8 +23,8 @@ const MODULES = [
         href: '/modul-ajar', status: 'aktif', color: 'bg-teal', bg: 'bg-rose-100',
     },
     {
-        key: 'erapor', title: 'E-Rapor', desc: 'Pengolahan nilai dan rapor digital sesuai Kurikulum Merdeka.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-100',
+        key: 'erapor', title: 'E-Rapor', desc: 'Wali kelas, guru pengajar, ekstrakurikuler, dan kokurikuler (P5).',
+        href: '/erapor', status: 'aktif', color: 'bg-teal', bg: 'bg-cyan-100', external: true,
     },
     {
         key: 'ujian', title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',

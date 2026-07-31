@@ -60,6 +60,7 @@ Route::middleware(['web'])->get('/modul-ajar', [ModulAjarController::class, 'ind
 require __DIR__.'/buku-induk.php';
 require __DIR__.'/kepegawaian.php';
 require __DIR__.'/bk.php';
+require __DIR__.'/erapor.php';
 require __DIR__.'/pengguna.php';
 require __DIR__.'/superadmin.php';
 // require __DIR__.'/ujian.php';
