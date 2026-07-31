@@ -3,25 +3,27 @@ import PublicNavbar from '../Components/PublicNavbar';
 import PublicFooter from '../Components/PublicFooter';
 
 const STATS = [
-    { value: '3+', label: 'Simulasi Interaktif' },
-    { value: '5', label: 'Modul Platform' },
+    { value: '60+', label: 'Simulasi Interaktif' },
+    { value: '7', label: 'Program Sekolah' },
     { value: '24/7', label: 'Akses Belajar' },
     { value: '100%', label: 'Berbasis Web' },
 ];
 
 const FEATURES = [
-    { title: 'Simulasi Real-time', desc: 'Parameter fisika bisa diubah langsung, hasilnya terlihat seketika di layar.', icon: BeakerIcon },
-    { title: 'Kurikulum Terpadu', desc: 'Modul ajar disusun mengikuti struktur kompetensi dasar per mata pelajaran.', icon: BookIcon },
-    { title: 'Satu Portal Sekolah', desc: 'Simulasi, ujian, buku induk, dan BK terhubung dalam satu akun login.', icon: LayersIcon },
+    { title: 'Terintegrasi Dapodik', desc: 'Import data siswa langsung dari file Dapodik asli, tanpa perlu ubah format apapun.', icon: LayersIcon },
+    { title: 'Siap Cetak', desc: 'Cetak biodata, kartu siswa, dan dokumen lain langsung dari sistem dalam format PDF.', icon: BookIcon },
+    { title: 'Simulasi Real-time', desc: 'Parameter sains bisa diubah langsung, hasilnya terlihat seketika di layar.', icon: BeakerIcon },
     { title: 'Akses Kapan Saja', desc: 'Berjalan langsung di browser, tanpa instalasi aplikasi tambahan.', icon: ClockIcon },
 ];
 
 const PROGRAMS = [
-    { title: 'Lab Interaktif', desc: 'Simulasi sains bergaya PhET untuk Fisika, Kimia, dan Matematika.', status: 'Aktif', href: '/lab' },
-    { title: 'Server Ujian', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.', status: 'Segera', href: '#' },
-    { title: 'Buku Induk', desc: 'Data induk siswa dan arsip riwayat akademik digital.', status: 'Aktif', href: '/buku-induk' },
-    { title: 'Program BK', desc: 'Pencatatan konseling dan perkembangan siswa secara terstruktur.', status: 'Segera', href: '#' },
-    { title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, dan administrasi umum dalam satu tempat.', status: 'Segera', href: '#' },
+    { title: 'Buku Induk Digital', desc: 'Terintegrasi Dapodik - import langsung tanpa ubah format, cetak biodata siswa, kartu, dan lainnya.', status: 'Aktif', href: '/buku-induk' },
+    { title: 'Lab Interaktif', desc: 'Simulasi sains bergaya PhET untuk Fisika, Matematika, dan Biologi.', status: 'Aktif', href: '/lab' },
+    { title: 'Modul Ajar', desc: 'Perangkat ajar SMP Kurikulum Merdeka per mata pelajaran, siap unduh.', status: 'Aktif', href: '/modul-ajar' },
+    { title: 'E-Rapor', desc: 'Pengolahan nilai dan rapor digital sesuai Kurikulum Merdeka.', status: 'Segera', href: '#' },
+    { title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.', status: 'Segera', href: '#' },
+    { title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum dalam satu tempat.', status: 'Segera', href: '#' },
+    { title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.', status: 'Segera', href: '#' },
 ];
 
 const SHOWCASE = [
@@ -45,8 +47,9 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                         Satu portal untuk seluruh kegiatan akademik sekolah
                     </h1>
                     <p className="text-navy/60 mt-3 text-base lg:text-lg max-w-2xl mx-auto">
-                        Dari eksplorasi sains interaktif di Lab, ujian online, hingga administrasi
-                        Buku Induk dan BK — semuanya terhubung dalam satu tempat.
+                        Buku Induk terintegrasi Dapodik, simulasi sains interaktif, modul ajar
+                        Kurikulum Merdeka, hingga E-Rapor dan ujian digital — semuanya terhubung
+                        dalam satu tempat.
                     </p>
                     <div className="flex items-center justify-center gap-3 mt-6">
                         <Link href="/registrasi-sekolah" className="bg-coral text-navy font-medium rounded-lg px-5 py-3 text-sm hover:brightness-95">

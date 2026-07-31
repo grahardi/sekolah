@@ -3,23 +3,31 @@ import PortalLayout from '../Layouts/PortalLayout';
 
 const MODULES = [
     {
-        key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk kelas Fisika, Kimia, dan Matematika.',
-        href: '/lab', status: 'aktif', color: 'bg-teal',
-    },
-    {
-        key: 'ujian', title: 'Server Ujian', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
-        href: '#', status: 'segera', color: 'bg-navy',
-    },
-    {
-        key: 'induk', title: 'Buku Induk', desc: 'Data induk siswa, riwayat akademik, dan arsip digital sekolah.',
+        key: 'induk', title: 'Buku Induk Digital', desc: 'Terintegrasi Dapodik, siap cetak biodata & kartu siswa.',
         href: '/buku-induk', status: 'aktif', color: 'bg-teal', external: true,
     },
     {
-        key: 'bk', title: 'Program BK', desc: 'Pencatatan konseling, pelanggaran, dan perkembangan siswa.',
+        key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk Fisika, Matematika, dan Biologi.',
+        href: '/lab', status: 'aktif', color: 'bg-teal',
+    },
+    {
+        key: 'modul-ajar', title: 'Modul Ajar', desc: 'Perangkat ajar SMP Kurikulum Merdeka, siap unduh.',
+        href: '/modul-ajar', status: 'aktif', color: 'bg-teal',
+    },
+    {
+        key: 'erapor', title: 'E-Rapor', desc: 'Pengolahan nilai dan rapor digital sesuai Kurikulum Merdeka.',
         href: '#', status: 'segera', color: 'bg-navy',
     },
     {
-        key: 'manajemen', title: 'Manajemen Sekolah', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum.',
+        key: 'ujian', title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+    {
+        key: 'manajemen', title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum.',
+        href: '#', status: 'segera', color: 'bg-navy',
+    },
+    {
+        key: 'sarpras', title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.',
         href: '#', status: 'segera', color: 'bg-navy',
     },
 ];
