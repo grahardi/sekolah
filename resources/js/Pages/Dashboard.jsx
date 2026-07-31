@@ -4,39 +4,39 @@ import PortalLayout from '../Layouts/PortalLayout';
 const MODULES = [
     {
         key: 'induk', title: 'Buku Induk Digital', desc: 'Terintegrasi Dapodik, siap cetak biodata & kartu siswa.',
-        href: '/buku-induk', status: 'aktif', color: 'bg-teal', external: true,
+        href: '/buku-induk', status: 'aktif', color: 'bg-teal', bg: 'bg-sky-50', external: true,
     },
     {
         key: 'kepegawaian', title: 'Kepegawaian', desc: 'Data pegawai, DUK, Kendali Pangkat, Gaji Berkala.',
-        href: '/kepegawaian', status: 'aktif', color: 'bg-teal', external: true,
+        href: '/kepegawaian', status: 'aktif', color: 'bg-teal', bg: 'bg-emerald-50', external: true,
     },
     {
         key: 'bk', title: 'Program BK', desc: 'Survey/asesmen siswa (DCM, AUM), pantau progress pengisian.',
-        href: '/bk', status: 'aktif', color: 'bg-teal', external: true,
+        href: '/bk', status: 'aktif', color: 'bg-teal', bg: 'bg-amber-50', external: true,
     },
     {
         key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk Fisika, Matematika, dan Biologi.',
-        href: '/lab', status: 'aktif', color: 'bg-teal',
+        href: '/lab', status: 'aktif', color: 'bg-teal', bg: 'bg-violet-50',
     },
     {
         key: 'modul-ajar', title: 'Modul Ajar', desc: 'Perangkat ajar SMP Kurikulum Merdeka, siap unduh.',
-        href: '/modul-ajar', status: 'aktif', color: 'bg-teal',
+        href: '/modul-ajar', status: 'aktif', color: 'bg-teal', bg: 'bg-rose-50',
     },
     {
         key: 'erapor', title: 'E-Rapor', desc: 'Pengolahan nilai dan rapor digital sesuai Kurikulum Merdeka.',
-        href: '#', status: 'segera', color: 'bg-navy',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-50',
     },
     {
         key: 'ujian', title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
-        href: '#', status: 'segera', color: 'bg-navy',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-50',
     },
     {
         key: 'manajemen', title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, dan administrasi umum.',
-        href: '#', status: 'segera', color: 'bg-navy',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-50',
     },
     {
         key: 'sarpras', title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.',
-        href: '#', status: 'segera', color: 'bg-navy',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-50',
     },
 ];
 
@@ -45,10 +45,10 @@ export default function Dashboard({ stats }) {
     const user = props?.auth?.user;
 
     const STAT_CARDS = [
-        { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB' },
-        { label: 'Total Pegawai', value: stats?.total_pegawai ?? 0, href: '/kepegawaian', icon: 'ti-id-badge-2', color: '#16A34A' },
-        { label: 'Survey Dibuat', value: stats?.total_survey ?? 0, href: '/bk', icon: 'ti-clipboard-list', color: '#F4A300' },
-        { label: 'Akun Pengguna', value: stats?.total_user ?? 0, href: '/pengguna', icon: 'ti-user-shield', color: '#7C3AED' },
+        { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB', bg: 'bg-sky-50' },
+        { label: 'Total Pegawai', value: stats?.total_pegawai ?? 0, href: '/kepegawaian', icon: 'ti-id-badge-2', color: '#16A34A', bg: 'bg-emerald-50' },
+        { label: 'Survey Dibuat', value: stats?.total_survey ?? 0, href: '/bk', icon: 'ti-clipboard-list', color: '#D97706', bg: 'bg-amber-50' },
+        { label: 'Akun Pengguna', value: stats?.total_user ?? 0, href: '/pengguna', icon: 'ti-user-shield', color: '#7C3AED', bg: 'bg-violet-50' },
     ];
 
     return (
@@ -82,13 +82,13 @@ export default function Dashboard({ stats }) {
                     <a
                         key={s.label}
                         href={s.href}
-                        className="rounded-2xl bg-white border border-navy/10 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                        className={`rounded-2xl ${s.bg} border border-black/5 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all`}
                     >
-                        <div className="h-9 w-9 rounded-lg flex items-center justify-center mb-3" style={{ background: `${s.color}1A` }}>
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center mb-3 bg-white/70">
                             <i className={`ti ${s.icon}`} style={{ color: s.color, fontSize: '18px' }} />
                         </div>
                         <p className="font-display font-700 text-2xl text-navy">{s.value}</p>
-                        <p className="text-xs text-navy/50 mt-0.5">{s.label}</p>
+                        <p className="text-xs text-navy/60 mt-0.5">{s.label}</p>
                     </a>
                 ))}
             </div>
@@ -97,7 +97,7 @@ export default function Dashboard({ stats }) {
             <h3 className="font-display font-600 text-lg text-navy mb-3">Modul Sekolah</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
                 {MODULES.map((m) => {
-                    const cardClass = `rounded-2xl bg-white border border-navy/10 p-5 flex flex-col justify-between min-h-[150px] transition-all hover:shadow-md hover:-translate-y-0.5 ${
+                    const cardClass = `rounded-2xl ${m.bg} border border-black/5 p-5 flex flex-col justify-between min-h-[150px] transition-all hover:shadow-md hover:-translate-y-0.5 ${
                         m.status === 'segera' ? 'opacity-60 pointer-events-none' : ''
                     }`;
                     const cardContent = (
