@@ -32,6 +32,13 @@ Route::get('/program/{slug}', function (string $slug) {
 })->name('program.detail');
 
 
+// Profil Sekolah - bisa diedit oleh admin sekolah (nama, alamat, dll),
+// NPSN tetap read-only karena itu identitas resmi dari Dapodik.
+Route::middleware(['web', 'auth', 'admin'])->group(function () {
+    Route::get('/profil-sekolah', [App\Http\Controllers\SekolahProfilController::class, 'edit'])->name('sekolah.profil.edit');
+    Route::put('/profil-sekolah', [App\Http\Controllers\SekolahProfilController::class, 'update'])->name('sekolah.profil.update');
+});
+
 // Beranda portal setelah login.
 Route::middleware(['web', 'auth'])->get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 

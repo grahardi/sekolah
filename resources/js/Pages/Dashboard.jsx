@@ -40,7 +40,7 @@ const MODULES = [
     },
 ];
 
-export default function Dashboard({ stats }) {
+export default function Dashboard({ stats, sekolah }) {
     const { props } = usePage();
     const user = props?.auth?.user;
 
@@ -60,16 +60,38 @@ export default function Dashboard({ stats }) {
                     <h2 className="font-display font-700 text-2xl lg:text-3xl mt-1">
                         {user?.name ?? 'Warga Sekolah'} 👋
                     </h2>
-                    <p className="text-cream/80 mt-2 text-sm lg:text-base">
-                        Semua kebutuhan akademik sekolahmu dalam satu portal — mulai dari
-                        eksplorasi Lab Interaktif hingga administrasi harian.
+                    <p className="text-cream/70 mt-2 max-w-lg text-sm lg:text-base">
+                        Semua kebutuhan akademik sekolahmu dalam satu portal.
                     </p>
-                    <Link
-                        href="/lab"
-                        className="inline-flex items-center gap-2 mt-5 bg-coral text-navy font-medium rounded-lg px-4 py-2.5 text-sm hover:brightness-95"
-                    >
-                        Buka Lab Interaktif &rarr;
-                    </Link>
+
+                    {(() => {
+                        const isAdmin = user?.role === 'admin';
+                        const Wrapper = isAdmin ? Link : 'div';
+                        const wrapperProps = isAdmin ? { href: '/profil-sekolah' } : {};
+                        return (
+                            <Wrapper
+                                {...wrapperProps}
+                                className={`block mt-5 bg-white/10 rounded-xl px-4 py-3.5 max-w-lg transition-colors ${isAdmin ? 'hover:bg-white/15' : ''}`}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <p className="font-display font-600 text-base">{sekolah?.nama ?? 'Nama sekolah belum diisi'}</p>
+                                    {isAdmin && (
+                                        <span className="text-xs text-cream/60 flex items-center gap-1">
+                                            <i className="ti ti-pencil" style={{ fontSize: '13px' }} /> Edit
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-cream/70 text-xs mt-1">
+                                    {[sekolah?.alamat, sekolah?.kecamatan, sekolah?.kabupaten_kota, sekolah?.provinsi].filter(Boolean).join(', ') || 'Alamat belum diisi'}
+                                </p>
+                                <div className="flex gap-2 mt-2">
+                                    {sekolah?.npsn && <span className="text-[10px] font-mono bg-white/15 rounded-full px-2 py-0.5">NPSN {sekolah.npsn}</span>}
+                                    {sekolah?.status_sekolah && <span className="text-[10px] font-mono bg-white/15 rounded-full px-2 py-0.5">{sekolah.status_sekolah}</span>}
+                                    {sekolah?.bentuk_pendidikan && <span className="text-[10px] font-mono bg-white/15 rounded-full px-2 py-0.5">{sekolah.bentuk_pendidikan}</span>}
+                                </div>
+                            </Wrapper>
+                        );
+                    })()}
                 </div>
                 {/* Aksen dekoratif */}
                 <div className="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/5" />

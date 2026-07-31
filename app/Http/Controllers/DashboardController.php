@@ -17,6 +17,7 @@ class DashboardController extends Controller
         $sekolahId = $request->user()->sekolah_id;
 
         return Inertia::render('Dashboard', [
+            'sekolah' => $request->user()->sekolah,
             'stats' => [
                 // Siswa/Pegawai/Survey model punya global scope sekolah_id
                 // otomatis, jadi count() ini sudah pasti cuma sekolah sendiri.
