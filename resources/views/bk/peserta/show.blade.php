@@ -68,12 +68,13 @@
     <div class="card-header"><p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;">Progress Pengisian per Siswa</p></div>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
-            <th style="padding:10px 18px;">Siswa</th><th style="padding:10px;">Kelas</th><th style="padding:10px;">Status</th><th style="padding:10px 18px;text-align:right;">Aksi</th>
+            <th style="padding:10px 18px;">NISN</th><th style="padding:10px;">Siswa</th><th style="padding:10px;">Kelas</th><th style="padding:10px;">Status</th><th style="padding:10px 18px;text-align:right;">Aksi</th>
         </tr></thead>
         <tbody>
             @forelse($siswaTarget as $siswa)
             <tr style="border-bottom:1px solid #f8fafc;">
-                <td style="padding:10px 18px;font-weight:700;">{{ $siswa->nama_lengkap }}</td>
+                <td style="padding:10px 18px;color:#64748b;font-family:monospace;">{{ $siswa->nisn }}</td>
+                <td style="padding:10px;font-weight:700;">{{ $siswa->nama_lengkap }}</td>
                 <td style="padding:10px;">{{ $siswa->rombel_lengkap }}</td>
                 <td style="padding:10px;">
                     @if(in_array($siswa->id, $sudahIsi))<span class="badge badge-aktif">Sudah Mengisi</span>
@@ -86,7 +87,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8;">Tidak ada siswa yang cocok dengan target kelas ini.</td></tr>
+            <tr><td colspan="5" style="padding:20px;text-align:center;color:#94a3b8;">Tidak ada siswa yang cocok dengan target kelas ini.</td></tr>
             @endforelse
         </tbody>
     </table>
