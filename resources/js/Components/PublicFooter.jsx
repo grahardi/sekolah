@@ -10,6 +10,20 @@ export default function PublicFooter() {
                         Portal sekolah terpadu — simulasi sains interaktif, modul ajar,
                         dan administrasi sekolah dalam satu platform.
                     </p>
+                    <a
+                        href="https://www.intan.net.id"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-white/95 rounded-lg px-3 py-1.5 mt-4 hover:bg-white transition-colors"
+                    >
+                        <img src="/images/sponsor-bella-intan.png" alt="PT Bella Intan Media" className="h-5 w-auto object-contain" />
+                    </a>
+                    <p className="text-xs text-cream/40 mt-2">
+                        Hosting &amp; server disponsori oleh{' '}
+                        <a href="https://www.intan.net.id" target="_blank" rel="noopener noreferrer" className="text-cream/60 hover:text-white underline">
+                            PT Bella Intan Media
+                        </a>
+                    </p>
                 </div>
 
                 <div>
@@ -38,22 +52,6 @@ export default function PublicFooter() {
                     <p className="text-sm">Senin - Jumat: 07.00 - 16.00</p>
                     <p className="text-sm mt-1">Dukungan teknis via WhatsApp setiap hari</p>
                 </div>
-            </div>
-            <div className="border-t border-white/10 px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
-                <a
-                    href="https://www.intan.net.id"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-white/95 rounded-lg px-3 py-1.5 hover:bg-white transition-colors"
-                >
-                    <img src="/images/sponsor-bella-intan.png" alt="PT Bella Intan Media" className="h-6 w-auto object-contain" />
-                </a>
-                <p className="text-xs text-cream/40">
-                    Hosting, IP publik maupun Server dedicated untuk situs ini disponsori oleh{' '}
-                    <a href="https://www.intan.net.id" target="_blank" rel="noopener noreferrer" className="text-cream/60 hover:text-white underline">
-                        PT Bella Intan Media
-                    </a>
-                </p>
             </div>
             <div className="border-t border-white/10 px-6 py-4 text-center text-xs text-cream/40">
                 &copy; {new Date().getFullYear()} sekolah.co.id &middot; Portal Sekolah Terpadu
