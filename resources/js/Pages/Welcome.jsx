@@ -107,8 +107,8 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             </section>
 
             {/* Modul Ajar (placeholder ringkas, siap diisi konten kurikulum) */}
-            <section id="modul-ajar" className="bg-teal text-cream">
-                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <section id="modul-ajar" className="max-w-6xl mx-auto px-6 lg:px-8 py-6 lg:py-8">
+                <div className="bg-teal text-cream rounded-2xl grid grid-cols-1 lg:grid-cols-2 gap-10 items-center p-8 lg:p-12">
                     <div>
                         <span className="text-xs font-mono uppercase tracking-wide text-coral">Modul Ajar</span>
                         <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">
