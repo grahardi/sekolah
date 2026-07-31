@@ -1,0 +1,33 @@
+<?php
+
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SurveyPublicController;
+use Illuminate\Support\Facades\Route;
+
+// Modul Program BK - dimulai dari fitur Survey (DCM/AUM/Custom), Catatan
+// Konseling menyusul di iterasi berikutnya. Sisi guru butuh login, sisi
+// siswa (isi survey) sengaja TANPA login - siswa cukup akses link yang
+// dibagikan guru dan pilih namanya dari daftar kelas target.
+Route::middleware(['web', 'auth'])->prefix('bk')->name('bk.')->group(function () {
+    Route::get('/', function () { return redirect()->route('bk.survey.index'); });
+
+    Route::prefix('survey')->name('survey.')->group(function () {
+        Route::get('/', [SurveyController::class, 'index'])->name('index');
+        Route::get('/{survey}', [SurveyController::class, 'show'])->name('show');
+        Route::get('/{survey}/hasil/{siswa}', [SurveyController::class, 'hasilSiswa'])->name('hasil-siswa');
+
+        Route::middleware('admin')->group(function () {
+            Route::get('/create', [SurveyController::class, 'create'])->name('create');
+            Route::post('/', [SurveyController::class, 'store'])->name('store');
+            Route::get('/{survey}/edit', [SurveyController::class, 'edit'])->name('edit');
+            Route::put('/{survey}', [SurveyController::class, 'update'])->name('update');
+            Route::delete('/{survey}', [SurveyController::class, 'destroy'])->name('destroy');
+        });
+    });
+});
+
+// Publik - siswa isi survey via link, TANPA login sama sekali.
+Route::middleware(['web'])->prefix('survey')->name('survey.public.')->group(function () {
+    Route::get('/{token}', [SurveyPublicController::class, 'showForm'])->name('form');
+    Route::post('/{token}', [SurveyPublicController::class, 'submit'])->name('submit');
+});
