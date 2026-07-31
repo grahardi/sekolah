@@ -16,9 +16,20 @@ export const PROGRAMS = [
     {
         slug: 'kepegawaian',
         title: 'Kepegawaian',
-        status: 'Segera',
-        summary: 'Data guru & tenaga kependidikan dalam satu sistem.',
-        detail: 'Sedang dikembangkan - akan mencakup data induk pegawai, riwayat jabatan, kepangkatan, dan sertifikasi guru.',
+        status: 'Aktif',
+        summary: 'Data pegawai, DUK, Kendali Pangkat, dan Gaji Berkala.',
+        detail: 'Kelola data seluruh pegawai (PNS, PPPK, GTT, PTT, GTY, PTY) lengkap dengan riwayat pendidikan, tunjangan keluarga, cuti, dan mutasi. Laporan otomatis: Daftar Urut Kepangkatan, Kendali Pangkat (jatuh tempo kenaikan pangkat), dan Gaji Berkala - semua dihitung otomatis dari data yang sudah ada.',
+        href: '/kepegawaian',
+        cta: 'Buka Kepegawaian',
+    },
+    {
+        slug: 'bimbingan-konseling',
+        title: 'Bimbingan Konseling',
+        status: 'Aktif',
+        summary: 'Survey/asesmen siswa (DCM, AUM) dengan link isi mandiri.',
+        detail: 'Buat survey atau asesmen (DCM, AUM, atau kuesioner custom), pilih target kelas dari data Buku Induk, lalu bagikan link ke siswa - siswa isi tanpa perlu login. Pantau progress siapa yang sudah/belum mengisi, dan lihat jawaban lengkap per siswa. Catatan Konseling menyusul di iterasi berikutnya.',
+        href: '/bk',
+        cta: 'Buka Program BK',
     },
     {
         slug: 'persuratan',

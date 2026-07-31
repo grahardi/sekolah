@@ -33,9 +33,7 @@ Route::get('/program/{slug}', function (string $slug) {
 
 
 // Beranda portal setelah login.
-Route::middleware(['web', 'auth'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+Route::middleware(['web', 'auth'])->get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
 // Modul Laboratorium Interaktif - salah satu fitur di platform sekolah.co.id,
 // tampil sebagai submenu "Lab Interaktif" di dalam PortalLayout. Dibuka tanpa

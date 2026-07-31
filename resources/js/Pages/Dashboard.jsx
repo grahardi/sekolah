@@ -7,6 +7,14 @@ const MODULES = [
         href: '/buku-induk', status: 'aktif', color: 'bg-teal', external: true,
     },
     {
+        key: 'kepegawaian', title: 'Kepegawaian', desc: 'Data pegawai, DUK, Kendali Pangkat, Gaji Berkala.',
+        href: '/kepegawaian', status: 'aktif', color: 'bg-teal', external: true,
+    },
+    {
+        key: 'bk', title: 'Program BK', desc: 'Survey/asesmen siswa (DCM, AUM), pantau progress pengisian.',
+        href: '/bk', status: 'aktif', color: 'bg-teal', external: true,
+    },
+    {
         key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk Fisika, Matematika, dan Biologi.',
         href: '/lab', status: 'aktif', color: 'bg-teal',
     },
@@ -23,7 +31,7 @@ const MODULES = [
         href: '#', status: 'segera', color: 'bg-navy',
     },
     {
-        key: 'manajemen', title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum.',
+        key: 'manajemen', title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, dan administrasi umum.',
         href: '#', status: 'segera', color: 'bg-navy',
     },
     {
@@ -32,14 +40,21 @@ const MODULES = [
     },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ stats }) {
     const { props } = usePage();
     const user = props?.auth?.user;
+
+    const STAT_CARDS = [
+        { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB' },
+        { label: 'Total Pegawai', value: stats?.total_pegawai ?? 0, href: '/kepegawaian', icon: 'ti-id-badge-2', color: '#16A34A' },
+        { label: 'Survey Dibuat', value: stats?.total_survey ?? 0, href: '/bk', icon: 'ti-clipboard-list', color: '#F4A300' },
+        { label: 'Akun Pengguna', value: stats?.total_user ?? 0, href: '/pengguna', icon: 'ti-user-shield', color: '#7C3AED' },
+    ];
 
     return (
         <PortalLayout title="Beranda" breadcrumb={['Portal']}>
             {/* Banner sambutan */}
-            <div className="rounded-2xl bg-teal text-cream p-6 lg:p-8 mb-8 relative overflow-hidden">
+            <div className="rounded-2xl bg-teal text-cream p-6 lg:p-8 mb-6 relative overflow-hidden">
                 <div className="relative z-10 max-w-lg">
                     <p className="text-cream/70 text-sm">Selamat datang kembali,</p>
                     <h2 className="font-display font-700 text-2xl lg:text-3xl mt-1">
@@ -59,6 +74,23 @@ export default function Dashboard() {
                 {/* Aksen dekoratif */}
                 <div className="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/5" />
                 <div className="absolute right-16 -top-10 w-28 h-28 rounded-full bg-coral/20" />
+            </div>
+
+            {/* Statistik ringkas - data nyata dari sekolah yang login */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                {STAT_CARDS.map((s) => (
+                    <a
+                        key={s.label}
+                        href={s.href}
+                        className="rounded-2xl bg-white border border-navy/10 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                    >
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center mb-3" style={{ background: `${s.color}1A` }}>
+                            <i className={`ti ${s.icon}`} style={{ color: s.color, fontSize: '18px' }} />
+                        </div>
+                        <p className="font-display font-700 text-2xl text-navy">{s.value}</p>
+                        <p className="text-xs text-navy/50 mt-0.5">{s.label}</p>
+                    </a>
+                ))}
             </div>
 
             {/* Grid modul */}
