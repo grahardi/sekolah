@@ -4,6 +4,8 @@
 
 @section('header-actions')
     @if(auth()->user()->isAdmin())
+    <a href="{{ route('pegawai.import.form') }}" class="btn btn-secondary"><i class="ti ti-file-import"></i> Import Excel</a>
+    <a href="{{ route('pegawai.export.choice') }}" class="btn btn-secondary"><i class="ti ti-download"></i> Export</a>
     <a href="{{ route('pegawai.create') }}" class="btn btn-primary"><i class="ti ti-user-plus"></i> Tambah Pegawai</a>
     @endif
 @endsection

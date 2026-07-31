@@ -204,6 +204,17 @@
         </div>
 
         <div class="sb-divider"></div>
+        <div class="sb-section">Import / Export</div>
+        <a href="{{ route('pegawai.import.form') }}"
+           class="sb-item {{ request()->routeIs('pegawai.import.*') ? 'active' : '' }}">
+            <i class="ti ti-file-import"></i><span>Import Data Pegawai</span>
+        </a>
+        <a href="{{ route('pegawai.export.choice') }}"
+           class="sb-item {{ request()->routeIs('pegawai.export.*') ? 'active' : '' }}">
+            <i class="ti ti-download"></i><span>Export</span>
+        </a>
+
+        <div class="sb-divider"></div>
         <div class="sb-section">Sistem</div>
         <div class="sb-item-demo" title="Segera hadir">
             <i class="ti ti-settings"></i><span>Pengaturan</span><span class="sb-demo-badge">Segera</span>

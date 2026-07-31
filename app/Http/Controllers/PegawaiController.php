@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
+use App\Exports\PegawaiExport;
+use App\Imports\PegawaiImport;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class PegawaiController extends Controller
 {
@@ -68,6 +74,99 @@ class PegawaiController extends Controller
     {
         $pegawai->delete();
         return back()->with('success', 'Data pegawai berhasil dihapus.');
+    }
+
+    // ── Export ──────────────────────────────────────────────────────────
+    public function exportChoice(Request $request)
+    {
+        return view('pegawai.export', ['query' => $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja'])]);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja']);
+        return (new PegawaiExport($filters))->download('data-pegawai-' . now()->format('Ymd') . '.xlsx');
+    }
+
+    public function exportPdfAll(Request $request)
+    {
+        ini_set('memory_limit', '512M');
+        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja']);
+        $pegawais = Pegawai::filter($filters)->orderBy('nama_lengkap')->get();
+        return Pdf::loadView('pegawai.pdf-list', compact('pegawais'))
+            ->setPaper('a4', 'landscape')
+            ->download('data-pegawai-' . now()->format('Ymd') . '.pdf');
+    }
+
+    public function downloadTemplate()
+    {
+        return (new PegawaiExport())->downloadTemplate('template-import-pegawai.xlsx');
+    }
+
+    // ── Import ──────────────────────────────────────────────────────────
+    public function showImport()
+    {
+        return view('pegawai.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
+
+        $importer = new PegawaiImport();
+        $importer->import($request->file('file')->getRealPath());
+
+        return $this->handleImportResult(
+            $importer->getErrors(),
+            $importer->getWarnings(),
+            $importer->getImportedCount(),
+            $importer->getSkippedCount()
+        );
+    }
+
+    private function handleImportResult(array $errors, array $warnings, int $imported, int $skipped)
+    {
+        $errorToken = null;
+        if (count($errors) > 0) {
+            $errorToken = uniqid('pegimperr_', true);
+            Cache::put("import_errors_{$errorToken}", $errors, now()->addHour());
+        }
+
+        if ($imported === 0 && count($errors) > 0) {
+            return redirect()->route('pegawai.import.form')
+                ->with('error', 'Import gagal. Tidak ada data yang berhasil disimpan.')
+                ->with('import_error_token', $errorToken)
+                ->with('import_error_count', count($errors));
+        }
+
+        $msg = "Berhasil mengimport {$imported} pegawai.";
+        if ($skipped > 0) $msg .= " {$skipped} baris dilewati.";
+        if (count($errors) > 0) $msg .= " " . count($errors) . " baris error.";
+
+        $type = (count($errors) > 0 || count($warnings) > 0) ? 'warning' : 'success';
+
+        return redirect()->route('pegawai.import.form')
+            ->with($type, $msg)
+            ->with('import_warnings', $warnings)
+            ->with('import_error_token', $errorToken)
+            ->with('import_error_count', count($errors));
+    }
+
+    public function importErrors(string $token, Request $request)
+    {
+        $errors = Cache::get("import_errors_{$token}");
+        abort_if($errors === null, 404, 'Daftar error sudah kedaluwarsa (berlaku 1 jam) atau tidak ditemukan.');
+
+        $perPage = 20;
+        $page = Paginator::resolveCurrentPage('page');
+        $items = array_slice($errors, ($page - 1) * $perPage, $perPage);
+
+        $paginator = new LengthAwarePaginator(
+            $items, count($errors), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('pegawai.import-errors', ['errors' => $paginator, 'total' => count($errors)]);
     }
 
     // ── Laporan (read-only, dihitung otomatis dari data pegawai) ───────────

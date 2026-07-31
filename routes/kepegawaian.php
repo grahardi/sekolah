@@ -27,6 +27,17 @@ Route::middleware(['web', 'auth'])->prefix('kepegawaian')->name('pegawai.')->gro
         Route::put('/{pegawai}', [PegawaiController::class, 'update'])->name('update');
         Route::delete('/{pegawai}', [PegawaiController::class, 'destroy'])->name('destroy');
 
+        // Export
+        Route::get('/export/pilih', [PegawaiController::class, 'exportChoice'])->name('export.choice');
+        Route::get('/export/excel', [PegawaiController::class, 'exportExcel'])->name('export.excel');
+        Route::get('/export/pdf', [PegawaiController::class, 'exportPdfAll'])->name('export.pdf');
+
+        // Import
+        Route::get('/import/form', [PegawaiController::class, 'showImport'])->name('import.form');
+        Route::post('/import/process', [PegawaiController::class, 'import'])->name('import.process');
+        Route::get('/import/template', [PegawaiController::class, 'downloadTemplate'])->name('import.template');
+        Route::get('/import/errors/{token}', [PegawaiController::class, 'importErrors'])->name('import.errors');
+
         // Data tambahan per pegawai
         Route::post('/{pegawai}/pendidikan', [PegawaiRiwayatController::class, 'storePendidikan'])->name('pendidikan.store');
         Route::delete('/{pegawai}/pendidikan/{riwayat}', [PegawaiRiwayatController::class, 'destroyPendidikan'])->name('pendidikan.destroy');
