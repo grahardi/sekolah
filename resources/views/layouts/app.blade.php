@@ -62,6 +62,19 @@
 
         .sb-divider { height: 1px; background: rgba(255,255,255,.1); margin: 6px 10px; }
 
+        .sb-item-demo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 8px;
+            color: rgba(255,255,255,.4); font-size: 13px; font-weight: 500;
+            white-space: nowrap; margin-bottom: 1px; cursor: not-allowed;
+        }
+        .sb-item-demo i { font-size: 17px; flex-shrink: 0; width: 20px; text-align: center; }
+        .sb-demo-badge {
+            margin-left: auto; font-size: 9px; font-weight: 700; text-transform: uppercase;
+            background: rgba(255,255,255,.12); color: rgba(255,255,255,.6);
+            padding: 2px 6px; border-radius: 999px; letter-spacing: .03em;
+        }
+
         .sb-footer {
             padding: 10px 16px; border-top: 1px solid rgba(255,255,255,.08);
             font-size: 11px; color: rgba(255,255,255,.5); text-align: center;
@@ -124,6 +137,13 @@
     @stack('styles')
 </head>
 <body style="background:#F5F9FF;">
+@php
+    // Akun read-only (role 'induk') di sekolah demo tetap melihat menu
+    // import/export/pengaturan, tapi dalam kondisi non-aktif dgn keterangan -
+    // supaya calon pengguna paham fitur itu ADA, cuma dimatikan buat demo.
+    // Untuk sekolah non-demo, non-admin tetap tidak melihat menu itu sama sekali.
+    $isDemoReadonly = ! auth()->user()->isAdmin() && auth()->user()->sekolah?->is_demo;
+@endphp
 
 {{-- ── Sidebar ─────────────────────────────────────────────────────────── --}}
 <aside class="sidebar">
@@ -152,6 +172,10 @@
            class="sb-item {{ request()->routeIs('siswa.create') ? 'active' : '' }}">
             <i class="ti ti-user-plus"></i><span>Tambah Siswa</span>
         </a>
+        @elseif($isDemoReadonly)
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
+            <i class="ti ti-user-plus"></i><span>Tambah Siswa</span><span class="sb-demo-badge">Demo</span>
+        </div>
         @endif
 
         <div class="sb-divider"></div>
@@ -176,6 +200,12 @@
            class="sb-item {{ request()->routeIs('kenaikan.*') ? 'active' : '' }}">
             <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span>
         </a>
+        @elseif($isDemoReadonly)
+        <div class="sb-divider"></div>
+        <div class="sb-section">Proses Siswa</div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
+            <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span><span class="sb-demo-badge">Demo</span>
+        </div>
         @endif
 
         @if(auth()->user()->isAdmin())
@@ -197,6 +227,21 @@
            class="sb-item {{ request()->routeIs('siswa.export.*') ? 'active' : '' }}">
             <i class="ti ti-download"></i><span>Export</span>
         </a>
+        @elseif($isDemoReadonly)
+        <div class="sb-divider"></div>
+        <div class="sb-section">Import / Export</div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
+            <i class="ti ti-file-import"></i><span>Import Data Siswa</span><span class="sb-demo-badge">Demo</span>
+        </div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
+            <i class="ti ti-table-import"></i><span>Import Nilai Massal</span><span class="sb-demo-badge">Demo</span>
+        </div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
+            <i class="ti ti-folder-plus"></i><span>Import Berkas</span><span class="sb-demo-badge">Demo</span>
+        </div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo - akun ini hanya bisa melihat data">
+            <i class="ti ti-download"></i><span>Export</span><span class="sb-demo-badge">Demo</span>
+        </div>
         @endif
 
         @if(auth()->user()->isAdmin())
@@ -206,6 +251,12 @@
            class="sb-item {{ request()->routeIs('user.index') || request()->routeIs('user.create') || request()->routeIs('user.edit') ? 'active' : '' }}">
             <i class="ti ti-users-group"></i><span>Manajemen User</span>
         </a>
+        @elseif($isDemoReadonly)
+        <div class="sb-divider"></div>
+        <div class="sb-section">Pengaturan</div>
+        <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
+            <i class="ti ti-users-group"></i><span>Manajemen User</span><span class="sb-demo-badge">Demo</span>
+        </div>
         @endif
 
         <div class="sb-divider"></div>
@@ -246,6 +297,16 @@
     </header>
 
     <div class="page-body">
+        @if($isDemoReadonly)
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+            <i class="ti ti-eye" style="font-size:18px;color:#2563EB;flex-shrink:0;"></i>
+            <p style="font-size:12.5px;color:#1e40af;margin:0;">
+                <strong>Mode Demo</strong> - akun ini hanya untuk melihat data (read only). Fitur tambah/edit/hapus/import/export
+                dinonaktifkan dan ditandai <span class="sb-demo-badge" style="color:#1e40af;background:#dbeafe;">Demo</span> di sidebar.
+            </p>
+        </div>
+        @endif
+
         @if(session('success'))
         <div class="alert alert-success">
             <i class="ti ti-circle-check"></i> {{ session('success') }}

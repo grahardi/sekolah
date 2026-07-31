@@ -13,6 +13,7 @@ class Sekolah extends Model
     protected $fillable = [
         'npsn',
         'nama',
+        'is_demo',
         'alamat',
         'desa_kelurahan',
         'kecamatan',
@@ -21,6 +22,10 @@ class Sekolah extends Model
         'status_sekolah',
         'bentuk_pendidikan',
         'jenjang_pendidikan',
+    ];
+
+    protected $casts = [
+        'is_demo' => 'boolean',
     ];
 
     public function users(): HasMany
