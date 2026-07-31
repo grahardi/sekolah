@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import PublicNavbar from '../Components/PublicNavbar';
 import PublicFooter from '../Components/PublicFooter';
@@ -18,13 +19,44 @@ const FEATURES = [
 ];
 
 const PROGRAMS = [
-    { title: 'Buku Induk Digital', desc: 'Terintegrasi Dapodik - import langsung tanpa ubah format, cetak biodata siswa, kartu, dan lainnya.', status: 'Aktif', href: '/buku-induk' },
-    { title: 'Lab Interaktif', desc: 'Simulasi sains bergaya PhET untuk Fisika, Matematika, dan Biologi.', status: 'Aktif', href: '/lab' },
-    { title: 'Modul Ajar', desc: 'Perangkat ajar SMP Kurikulum Merdeka per mata pelajaran, siap unduh.', status: 'Aktif', href: '/modul-ajar' },
-    { title: 'E-Rapor', desc: 'Pengolahan nilai dan rapor digital sesuai Kurikulum Merdeka.', status: 'Segera', href: '#' },
-    { title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.', status: 'Segera', href: '#' },
-    { title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, kepegawaian, dan administrasi umum dalam satu tempat.', status: 'Segera', href: '#' },
-    { title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.', status: 'Segera', href: '#' },
+    {
+        title: 'Buku Induk',
+        status: 'Aktif',
+        summary: 'Data induk siswa terintegrasi Dapodik, siap cetak.',
+        detail: 'Import data siswa langsung dari file Dapodik asli (tanpa perlu ubah format), lengkap dengan biodata, data ayah/ibu/wali, riwayat kelas, hingga arsip berkas (KK, akta, ijazah). Cetak biodata dan kartu siswa langsung dalam format PDF. Import berkas massal (foto, KK, akta) juga didukung - tinggal cocokkan nama file dengan NIS/NISN siswa.',
+        href: '/buku-induk',
+        cta: 'Buka Buku Induk',
+    },
+    {
+        title: 'Kepegawaian',
+        status: 'Segera',
+        summary: 'Data guru & tenaga kependidikan dalam satu sistem.',
+        detail: 'Sedang dikembangkan - akan mencakup data induk pegawai, riwayat jabatan, kepangkatan, dan sertifikasi guru.',
+    },
+    {
+        title: 'Persuratan',
+        status: 'Segera',
+        summary: 'Surat masuk-keluar dan arsip digital sekolah.',
+        detail: 'Sedang dikembangkan - akan mencakup pencatatan nomor surat otomatis, template surat resmi, dan pelacakan disposisi.',
+    },
+    {
+        title: 'E-Rapor',
+        status: 'Segera',
+        summary: 'Pengolahan nilai dan rapor digital.',
+        detail: 'Sedang dikembangkan - pengolahan nilai sesuai Kurikulum Merdeka, terhubung langsung dengan data siswa di Buku Induk.',
+    },
+    {
+        title: 'Manajemen Sekolah',
+        status: 'Segera',
+        summary: 'Jadwal, keuangan, dan administrasi umum.',
+        detail: 'Sedang dikembangkan - akan mencakup penjadwalan pelajaran, pencatatan keuangan sekolah, dan administrasi umum lainnya.',
+    },
+    {
+        title: 'Program Ujian',
+        status: 'Segera',
+        summary: 'Ujian online terjadwal dengan bank soal.',
+        detail: 'Sedang dikembangkan - ujian online dengan bank soal, pengacakan otomatis, dan pengawasan digital.',
+    },
 ];
 
 const SHOWCASE = [
@@ -149,32 +181,13 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             </section>
 
             {/* Program Sekolah */}
-            <section id="program-sekolah" className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
+            <section id="program-sekolah" className="max-w-4xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
                 <div className="text-center max-w-xl mx-auto mb-10">
                     <span className="text-xs font-mono uppercase tracking-wide text-teal">Program Sekolah</span>
                     <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Satu akun, semua urusan sekolah beres</h2>
+                    <p className="text-navy/60 mt-2">Klik tiap program untuk lihat detailnya.</p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {PROGRAMS.map((m) => (
-                        <a
-                            key={m.title}
-                            href={m.href}
-                            className={`rounded-2xl bg-white border border-navy/10 p-5 block ${
-                                m.status === 'Segera' ? 'opacity-70 pointer-events-none' : 'hover:shadow-md hover:-translate-y-0.5 transition-all'
-                            }`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-display font-600 text-navy">{m.title}</h3>
-                                <span className={`text-[10px] font-mono uppercase tracking-wide rounded-full px-2 py-0.5 ${
-                                    m.status === 'Aktif' ? 'bg-teal-light text-teal' : 'bg-navy/5 text-navy/40'
-                                }`}>
-                                    {m.status}
-                                </span>
-                            </div>
-                            <p className="text-sm text-navy/60">{m.desc}</p>
-                        </a>
-                    ))}
-                </div>
+                <ProgramAccordion programs={PROGRAMS} />
             </section>
 
             {/* Showcase */}
@@ -226,6 +239,56 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
 }
 
 /* Ikon inline ringan, tanpa dependency tambahan */
+function ProgramAccordion({ programs }) {
+    const [openIndex, setOpenIndex] = useState(0);
+
+    return (
+        <div className="rounded-2xl bg-white border border-navy/10 overflow-hidden divide-y divide-navy/10">
+            {programs.map((p, i) => {
+                const isOpen = openIndex === i;
+                return (
+                    <div key={p.title}>
+                        <button
+                            onClick={() => setOpenIndex(isOpen ? -1 : i)}
+                            className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-navy/[0.02] transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className={`text-[10px] font-mono uppercase tracking-wide rounded-full px-2 py-0.5 shrink-0 ${
+                                    p.status === 'Aktif' ? 'bg-teal-light text-teal' : 'bg-navy/5 text-navy/40'
+                                }`}>
+                                    {p.status}
+                                </span>
+                                <span className="font-display font-600 text-navy">{p.title}</span>
+                            </div>
+                            <svg
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                className={`w-4 h-4 text-navy/40 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                            >
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+
+                        {isOpen && (
+                            <div className="px-5 pb-5 -mt-1">
+                                <p className="text-sm text-navy/40 mb-2">{p.summary}</p>
+                                <p className="text-sm text-navy/70">{p.detail}</p>
+                                {p.href && (
+                                    <a
+                                        href={p.href}
+                                        className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium bg-teal text-white rounded-lg px-4 py-2 hover:brightness-110"
+                                    >
+                                        {p.cta || 'Buka'} &rarr;
+                                    </a>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 function BeakerIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 3h6M10 3v6l-6 10a1 1 0 001 1.5h14a1 1 0 001-1.5L14 9V3" /></svg>; }
 function BookIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 19.5A2.5 2.5 0 016.5 17H20V4H6.5A2.5 2.5 0 004 6.5v13z" /></svg>; }
 function LayersIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5" /></svg>; }
