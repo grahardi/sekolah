@@ -13,8 +13,6 @@ Route::middleware(['web', 'auth'])->prefix('bk')->name('bk.')->group(function ()
 
     Route::prefix('survey')->name('survey.')->group(function () {
         Route::get('/', [SurveyController::class, 'index'])->name('index');
-        Route::get('/{survey}', [SurveyController::class, 'show'])->name('show');
-        Route::get('/{survey}/hasil/{siswa}', [SurveyController::class, 'hasilSiswa'])->name('hasil-siswa');
 
         Route::middleware('admin')->group(function () {
             Route::get('/create', [SurveyController::class, 'create'])->name('create');
@@ -23,6 +21,11 @@ Route::middleware(['web', 'auth'])->prefix('bk')->name('bk.')->group(function ()
             Route::put('/{survey}', [SurveyController::class, 'update'])->name('update');
             Route::delete('/{survey}', [SurveyController::class, 'destroy'])->name('destroy');
         });
+
+        // Wildcard /{survey} PALING BAWAH - kalau didaftarkan di atas /create,
+        // Laravel akan mengira "create" adalah ID survey (bikin error bigint).
+        Route::get('/{survey}', [SurveyController::class, 'show'])->name('show');
+        Route::get('/{survey}/hasil/{siswa}', [SurveyController::class, 'hasilSiswa'])->name('hasil-siswa');
     });
 });
 
