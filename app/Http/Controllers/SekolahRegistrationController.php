@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sekolah;
 use App\Models\User;
+use App\Services\MataPelajaranTemplate;
 use App\Services\SurveyTemplateBk;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -71,6 +72,7 @@ class SekolahRegistrationController extends Controller
         // NPSN ini baru pertama kali didaftarkan, bukan sekolah yang sudah ada.
         if ($sekolah->wasRecentlyCreated) {
             SurveyTemplateBk::createDefaultSurveyFor($sekolah, $user);
+            MataPelajaranTemplate::seedFor($sekolah);
         }
 
         event(new Registered($user));
