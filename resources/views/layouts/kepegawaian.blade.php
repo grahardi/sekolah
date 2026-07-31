@@ -178,15 +178,18 @@
            class="sb-item {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
             <i class="ti ti-users"></i><span>Data Pegawai</span>
         </a>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-list-numbers"></i><span>Daftar Urut Kepangkatan</span><span class="sb-demo-badge">Segera</span>
-        </div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-award"></i><span>Kendali Pangkat</span><span class="sb-demo-badge">Segera</span>
-        </div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-cash"></i><span>Gaji Berkala</span><span class="sb-demo-badge">Segera</span>
-        </div>
+        <a href="{{ route('pegawai.duk') }}"
+           class="sb-item {{ request()->routeIs('pegawai.duk') ? 'active' : '' }}">
+            <i class="ti ti-list-numbers"></i><span>Daftar Urut Kepangkatan</span>
+        </a>
+        <a href="{{ route('pegawai.kendali-pangkat') }}"
+           class="sb-item {{ request()->routeIs('pegawai.kendali-pangkat') ? 'active' : '' }}">
+            <i class="ti ti-award"></i><span>Kendali Pangkat</span>
+        </a>
+        <a href="{{ route('pegawai.gaji-berkala') }}"
+           class="sb-item {{ request()->routeIs('pegawai.gaji-berkala') ? 'active' : '' }}">
+            <i class="ti ti-cash"></i><span>Gaji Berkala</span>
+        </a>
         <div class="sb-item-demo" title="Segera hadir">
             <i class="ti ti-calendar-off"></i><span>Rekap Cuti Pegawai</span><span class="sb-demo-badge">Segera</span>
         </div>

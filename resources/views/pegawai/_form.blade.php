@@ -78,6 +78,16 @@
             <label class="form-label">No. SK Pangkat Terakhir</label>
             <input type="text" name="no_sk_pangkat" value="{{ $fv('no_sk_pangkat') }}" class="form-input">
         </div>
+        <div>
+            <label class="form-label">TMT Pangkat Terakhir</label>
+            <input type="date" name="tmt_pangkat_terakhir" value="{{ $fv('tmt_pangkat_terakhir') }}" class="form-input">
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Dipakai utk hitung jatuh tempo Kendali Pangkat (+4 tahun)</p>
+        </div>
+        <div>
+            <label class="form-label">TMT Gaji Berkala Terakhir</label>
+            <input type="date" name="tmt_gaji_berkala_terakhir" value="{{ $fv('tmt_gaji_berkala_terakhir') }}" class="form-input">
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Dipakai utk hitung jatuh tempo Gaji Berkala (+2 tahun)</p>
+        </div>
     </div>
 </div>
 

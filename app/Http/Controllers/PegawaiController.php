@@ -50,6 +50,12 @@ class PegawaiController extends Controller
         return view('pegawai.edit', ['pegawai' => $pegawai, 'jenisList' => self::JENIS_KEPEGAWAIAN]);
     }
 
+    public function show(Pegawai $pegawai)
+    {
+        $pegawai->load(['riwayatPendidikan', 'keluarga', 'cuti', 'mutasi']);
+        return view('pegawai.show', ['pegawai' => $pegawai]);
+    }
+
     public function update(Request $request, Pegawai $pegawai)
     {
         $data = $this->validated($request, $pegawai->id);
@@ -62,6 +68,44 @@ class PegawaiController extends Controller
     {
         $pegawai->delete();
         return back()->with('success', 'Data pegawai berhasil dihapus.');
+    }
+
+    // ── Laporan (read-only, dihitung otomatis dari data pegawai) ───────────
+
+    /** Daftar Urut Kepangkatan - urut berdasarkan golongan lalu TMT pangkat */
+    public function duk()
+    {
+        $pegawais = Pegawai::where('status_aktif', 'Aktif')
+            ->whereIn('jenis_kepegawaian', Pegawai::STATUS_ASN)
+            ->orderByDesc('golongan')
+            ->orderBy('tmt_pangkat_terakhir')
+            ->get();
+
+        return view('pegawai.duk', ['pegawais' => $pegawais]);
+    }
+
+    /** Kendali Pangkat - siapa yang jatuh tempo kenaikan pangkat reguler (+4 tahun) */
+    public function kendaliPangkat()
+    {
+        $pegawais = Pegawai::where('status_aktif', 'Aktif')
+            ->whereIn('jenis_kepegawaian', Pegawai::STATUS_ASN)
+            ->whereNotNull('tmt_pangkat_terakhir')
+            ->get()
+            ->sortBy(fn ($p) => $p->jatuh_tempo_pangkat);
+
+        return view('pegawai.kendali-pangkat', ['pegawais' => $pegawais]);
+    }
+
+    /** Gaji Berkala - siapa yang jatuh tempo KGB (+2 tahun) */
+    public function gajiBerkala()
+    {
+        $pegawais = Pegawai::where('status_aktif', 'Aktif')
+            ->whereIn('jenis_kepegawaian', Pegawai::STATUS_ASN)
+            ->whereNotNull('tmt_gaji_berkala_terakhir')
+            ->get()
+            ->sortBy(fn ($p) => $p->jatuh_tempo_gaji_berkala);
+
+        return view('pegawai.gaji-berkala', ['pegawais' => $pegawais]);
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array
@@ -80,6 +124,8 @@ class PegawaiController extends Controller
             'tmt_cpns' => 'nullable|date',
             'tmt_pns' => 'nullable|date',
             'no_sk_pangkat' => 'nullable|string|max:100',
+            'tmt_pangkat_terakhir' => 'nullable|date',
+            'tmt_gaji_berkala_terakhir' => 'nullable|date',
             'pendidikan_terakhir' => 'nullable|string|max:100',
             'no_hp' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:150',

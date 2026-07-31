@@ -16,6 +16,7 @@ class Pegawai extends Model
         'nip_nuptk', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir',
         'jenis_kepegawaian', 'jabatan', 'unit_kerja',
         'golongan', 'pangkat', 'tmt_cpns', 'tmt_pns', 'no_sk_pangkat',
+        'tmt_pangkat_terakhir', 'tmt_gaji_berkala_terakhir',
         'pendidikan_terakhir', 'no_hp', 'email', 'alamat', 'foto',
         'status_aktif', 'tanggal_masuk',
     ];
@@ -24,8 +25,15 @@ class Pegawai extends Model
         'tanggal_lahir' => 'date',
         'tmt_cpns' => 'date',
         'tmt_pns' => 'date',
+        'tmt_pangkat_terakhir' => 'date',
+        'tmt_gaji_berkala_terakhir' => 'date',
         'tanggal_masuk' => 'date',
     ];
+
+    public function riwayatPendidikan() { return $this->hasMany(RiwayatPendidikanPegawai::class); }
+    public function keluarga() { return $this->hasMany(KeluargaPegawai::class); }
+    public function cuti() { return $this->hasMany(CutiPegawai::class); }
+    public function mutasi() { return $this->hasMany(MutasiPegawai::class); }
 
     /** Status yang tergolong ASN - field golongan/pangkat/TMT hanya relevan untuk ini */
     public const STATUS_ASN = ['PNS', 'PPPK'];
@@ -48,6 +56,24 @@ class Pegawai extends Model
     public function isAsn(): bool
     {
         return in_array($this->jenis_kepegawaian, self::STATUS_ASN);
+    }
+
+    /** Kenaikan pangkat reguler PNS/PPPK setiap 4 tahun dari TMT pangkat terakhir */
+    public function getJatuhTempoPangkatAttribute(): ?\Carbon\Carbon
+    {
+        if (! $this->isAsn() || ! $this->tmt_pangkat_terakhir) {
+            return null;
+        }
+        return $this->tmt_pangkat_terakhir->copy()->addYears(4);
+    }
+
+    /** Kenaikan Gaji Berkala (KGB) setiap 2 tahun dari TMT terakhir */
+    public function getJatuhTempoGajiBerkalaAttribute(): ?\Carbon\Carbon
+    {
+        if (! $this->isAsn() || ! $this->tmt_gaji_berkala_terakhir) {
+            return null;
+        }
+        return $this->tmt_gaji_berkala_terakhir->copy()->addYears(2);
     }
 
     public function getFotoUrlAttribute(): string

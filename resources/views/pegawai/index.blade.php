@@ -77,7 +77,7 @@
                                 <img src="{{ $p->foto_url }}" style="width:100%;height:100%;object-fit:cover;">
                             </div>
                             <div>
-                                <p style="font-weight:700;color:#0f172a;margin:0;">{{ $p->nama_lengkap }}</p>
+                                <a href="{{ route('pegawai.show', $p) }}" style="font-weight:700;color:#0f172a;text-decoration:none;">{{ $p->nama_lengkap }}</a>
                                 <p style="font-size:11px;color:#94a3b8;margin:0;">NIP: {{ $p->nip_nuptk ?? '-' }}</p>
                             </div>
                         </div>
