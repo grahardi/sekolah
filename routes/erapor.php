@@ -29,5 +29,9 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
 
         Route::post('/guru-kokurikuler', [EraporController::class, 'storeGuruKokurikuler'])->name('guru-kokurikuler.store');
         Route::delete('/guru-kokurikuler/{guruKokurikuler}', [EraporController::class, 'destroyGuruKokurikuler'])->name('guru-kokurikuler.destroy');
+
+        // Tugas Mengajar (toggle grid) - dipakai dari halaman detail Pegawai di Kepegawaian
+        Route::get('/tugas-mengajar/{pegawai}/data', [EraporController::class, 'tugasMengajarData'])->name('tugas-mengajar.data');
+        Route::post('/tugas-mengajar/{pegawai}/toggle', [EraporController::class, 'tugasMengajarToggle'])->name('tugas-mengajar.toggle');
     });
 });

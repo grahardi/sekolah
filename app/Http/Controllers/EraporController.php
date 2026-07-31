@@ -185,4 +185,88 @@ class EraporController extends Controller
             ->sort()
             ->values();
     }
+
+    // ── Tugas Mengajar (toggle grid per guru, dipakai di halaman detail Pegawai) ──
+
+    /** Data lengkap semua mapel + status tiap kelas-rombel utk 1 guru tertentu */
+    public function tugasMengajarData(Pegawai $pegawai)
+    {
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        if (! $tahunAktif) {
+            return response()->json(['error' => 'Belum ada tahun ajaran aktif. Atur dulu di menu Tahun Ajaran.'], 422);
+        }
+
+        $kelasList = $this->kelasRombelList();
+        $mapelList = MataPelajaran::orderBy('nama')->get();
+
+        $semuaPenugasan = GuruPengajar::with('pegawai')
+            ->where('tahun_ajaran_id', $tahunAktif->id)
+            ->get()
+            ->keyBy(fn ($p) => $p->mata_pelajaran_id . '|' . $p->kelas . '|' . ($p->rombel ?? ''));
+
+        $data = [];
+        foreach ($mapelList as $mapel) {
+            $kelasData = [];
+            foreach ($kelasList as $k) {
+                [$kelas, $rombel] = explode('|', $k);
+                $key = $mapel->id . '|' . $kelas . '|' . $rombel;
+                $existing = $semuaPenugasan->get($key);
+
+                $kelasData[] = [
+                    'kelas' => $kelas,
+                    'rombel' => $rombel ?: null,
+                    'label' => $rombel !== '' ? "{$kelas} - {$rombel}" : $kelas,
+                    'assigned_to_me' => $existing && $existing->pegawai_id === $pegawai->id,
+                    'assigned_to_other' => ($existing && $existing->pegawai_id !== $pegawai->id) ? $existing->pegawai->nama_lengkap : null,
+                ];
+            }
+
+            $data[] = [
+                'mapel_id' => $mapel->id,
+                'nama' => $mapel->nama,
+                'jumlah_diampu' => collect($kelasData)->where('assigned_to_me', true)->count(),
+                'kelas_list' => $kelasData,
+            ];
+        }
+
+        return response()->json(['mapels' => $data, 'tahun_ajaran' => $tahunAktif->label]);
+    }
+
+    /** Toggle satu penugasan: assign kalau kosong, unassign kalau sudah milik guru ini */
+    public function tugasMengajarToggle(Request $request, Pegawai $pegawai)
+    {
+        $validated = $request->validate([
+            'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
+            'kelas' => 'required|string',
+            'rombel' => 'nullable|string',
+        ]);
+
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+
+        $existing = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)
+            ->where('mata_pelajaran_id', $validated['mata_pelajaran_id'])
+            ->where('kelas', $validated['kelas'])
+            ->where('rombel', $validated['rombel'] ?: null)
+            ->first();
+
+        if ($existing) {
+            if ($existing->pegawai_id !== $pegawai->id) {
+                return response()->json(['error' => 'Sudah diampu oleh: ' . $existing->pegawai->nama_lengkap], 422);
+            }
+            $existing->delete();
+            return response()->json(['status' => 'removed']);
+        }
+
+        GuruPengajar::create([
+            'sekolah_id' => $pegawai->sekolah_id,
+            'tahun_ajaran_id' => $tahunAktif->id,
+            'pegawai_id' => $pegawai->id,
+            'mata_pelajaran_id' => $validated['mata_pelajaran_id'],
+            'kelas' => $validated['kelas'],
+            'rombel' => $validated['rombel'] ?: null,
+        ]);
+
+        return response()->json(['status' => 'added']);
+    }
 }
