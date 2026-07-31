@@ -32,7 +32,7 @@ const HERO_SLIDES = [
         tag: 'Portal Sekolah Digital #1 untuk Kurikulum Merdeka',
         title: 'Sekolahmu, satu portal, nol ribet',
         desc: 'Buku Induk terintegrasi Dapodik, simulasi sains interaktif, modul ajar Kurikulum Merdeka, hingga E-Rapor dan ujian digital — semuanya terhubung dalam satu tempat.',
-        background: 'linear-gradient(135deg, #1E293B, #2563EB)',
+        background: '#1E293B',
         buttons: [
             { label: 'Mulai Sekarang', href: '/registrasi-sekolah' },
             { label: 'Jelajahi Modul', href: '#program-sekolah', variant: 'secondary' },
@@ -42,21 +42,21 @@ const HERO_SLIDES = [
         tag: 'Buku Induk',
         title: 'Data siswa langsung dari Dapodik, tanpa input ulang',
         desc: 'Import file Dapodik asli dalam hitungan detik - biodata, data ayah/ibu/wali, sampai riwayat kelas otomatis tersusun rapi.',
-        background: 'linear-gradient(135deg, #1E293B, #2563EB)',
+        image: 'https://images.unsplash.com/photo-1741699428220-65f37f3fbbcb?w=1600&q=80&fm=jpg&fit=crop',
         href: '/buku-induk',
     },
     {
         tag: 'Lab Interaktif',
         title: '60+ simulasi sains yang bisa dicoba langsung di kelas',
         desc: 'Fisika, Matematika, dan Biologi - siswa bisa eksplorasi konsep abstrak jadi visual dan interaktif, langsung dari browser.',
-        background: 'linear-gradient(135deg, #1E293B, #16A34A)',
+        image: 'https://images.unsplash.com/photo-1758685734030-a31d96462eec?w=1600&q=80&fm=jpg&fit=crop',
         href: '/lab',
     },
     {
         tag: 'Modul Ajar',
         title: 'Perangkat ajar Kurikulum Merdeka, siap pakai',
         desc: 'Modul ajar per mata pelajaran untuk Fase D, tinggal unduh dan sesuaikan dengan kelasmu.',
-        background: 'linear-gradient(135deg, #1E293B, #FBBF24)',
+        image: 'https://images.unsplash.com/photo-1769794371055-54436b54577e?w=1600&q=80&fm=jpg&fit=crop',
         href: '/modul-ajar',
     },
 ];

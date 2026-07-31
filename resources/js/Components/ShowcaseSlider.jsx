@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 
 /**
  * Slider showcase / hero. Slide pertama biasanya tipe "hero" (badge + judul
- * besar + beberapa tombol CTA, konten di tengah), slide lainnya tipe biasa
- * (satu link, konten di bawah) - keduanya dirender di komponen yang sama.
- * Auto-geser tiap 6 detik, bisa juga digeser manual.
+ * besar + beberapa tombol CTA, konten di tengah, background warna solid -
+ * sengaja TIDAK pakai gradient dua warna biar tidak belang/kotor). Slide
+ * lainnya pakai foto asli (field `image`) dengan overlay gelap di bawah
+ * konten supaya teks tetap kebaca di atas foto apa pun.
  */
 export default function ShowcaseSlider({ slides }) {
     const [active, setActive] = useState(0);
@@ -24,14 +25,13 @@ export default function ShowcaseSlider({ slides }) {
         <div className="relative rounded-2xl overflow-hidden bg-navy" style={{ minHeight: '420px' }}>
             {slides.map((s, i) => {
                 const isActive = i === active;
-                const bg = s.background || 'linear-gradient(135deg, #1E293B, #2563EB)';
 
                 if (s.type === 'hero') {
                     return (
                         <div
                             key={i}
                             className={`absolute inset-0 transition-opacity duration-700 flex items-center justify-center text-center ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
-                            style={{ background: bg }}
+                            style={{ background: s.background || '#1E293B' }}
                         >
                             <div className="max-w-xl px-6">
                                 {s.tag && (
@@ -67,13 +67,15 @@ export default function ShowcaseSlider({ slides }) {
                     <a
                         key={i}
                         href={s.href || '#'}
-                        className={`absolute inset-0 transition-opacity duration-700 ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
-                        style={{ background: bg }}
+                        className={`absolute inset-0 transition-opacity duration-700 bg-cover bg-center ${isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
+                        style={{ backgroundImage: s.image ? `url(${s.image})` : undefined, backgroundColor: '#1E293B' }}
                     >
-                        <div className="flex flex-col justify-end h-full p-8 lg:p-12">
+                        {/* Overlay gelap dari bawah ke atas, biar teks selalu kebaca di atas foto apa pun */}
+                        <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.55) 45%, rgba(15,23,42,0.15) 100%)' }} />
+                        <div className="relative flex flex-col justify-end h-full p-8 lg:p-12">
                             <span className="text-xs font-mono uppercase tracking-wide text-coral mb-2">{s.tag}</span>
                             <h3 className="font-display font-700 text-2xl lg:text-3xl text-white max-w-lg">{s.title}</h3>
-                            <p className="text-white/70 mt-2 max-w-lg text-sm lg:text-base">{s.desc}</p>
+                            <p className="text-white/80 mt-2 max-w-lg text-sm lg:text-base">{s.desc}</p>
                         </div>
                     </a>
                 );
