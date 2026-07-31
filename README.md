@@ -246,3 +246,34 @@ atas ditambahkan.
 **Halaman error import** sekarang terpisah (bukan ditumpuk di halaman import)
 - disimpan sementara di cache (berlaku 1 jam) dengan token, dipaginasi 20
 baris/halaman lewat `/buku-induk/siswa/import/errors/{token}`.
+
+## 10. Panel Super-Admin (kelola seluruh portal)
+
+Beda dengan Buku Induk (per-sekolah), panel ini untuk mengelola **seluruh
+sekolah yang terdaftar** di sekolah.co.id - lihat daftar sekolah, jumlah
+pengguna, jumlah siswa per sekolah.
+
+**Wajib dijalankan setelah pull:**
+```bash
+php artisan migrate
+```
+
+**Wajib ditambahkan manual ke `bootstrap/app.php`** (alias middleware baru):
+```php
+$middleware->alias([
+    'admin' => \App\Http\Middleware\EnsureIsAdmin::class,
+    'super-admin' => \App\Http\Middleware\EnsureIsSuperAdmin::class,
+]);
+```
+
+**Jadikan `admin@mail.co.id` (atau email manapun) sebagai super-admin:**
+```bash
+php artisan user:make-super-admin admin@mail.co.id
+```
+Setelah itu, akun tersebut akan melihat menu **"Admin Portal"** tambahan di
+sidebar, dan bisa akses `/admin-portal`. User biasa (admin sekolah/guru/induk)
+sama sekali tidak melihat menu ini.
+
+**Catatan:** `is_super_admin` ini terpisah total dari kolom `role` yang dipakai
+Buku Induk (admin/induk) - satu akun bisa jadi admin sekolah SEKALIGUS
+super-admin portal kalau kamu mau (tidak saling menghapus).

@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import PublicNavbar from '../Components/PublicNavbar';
 import PublicFooter from '../Components/PublicFooter';
+import ShowcaseSlider from '../Components/ShowcaseSlider';
 
 const STATS = [
     { value: '60+', label: 'Simulasi Interaktif' },
@@ -32,6 +33,32 @@ const SHOWCASE = [
     { title: 'Rangkaian Listrik Seri', subject: 'Fisika · Listrik', href: '/lab/rangkaian-listrik' },
 ];
 
+// Placeholder slide showcase - ganti title/desc/background/href sesuai konten
+// asli nanti (foto sekolah, testimoni guru, dokumentasi kegiatan, dll).
+const SLIDES = [
+    {
+        tag: 'Buku Induk',
+        title: 'Data siswa langsung dari Dapodik, tanpa input ulang',
+        desc: 'Import file Dapodik asli dalam hitungan detik - biodata, data ayah/ibu/wali, sampai riwayat kelas otomatis tersusun rapi.',
+        background: 'linear-gradient(135deg, #1E293B, #2563EB)',
+        href: '/buku-induk',
+    },
+    {
+        tag: 'Lab Interaktif',
+        title: '60+ simulasi sains yang bisa dicoba langsung di kelas',
+        desc: 'Fisika, Matematika, dan Biologi - siswa bisa eksplorasi konsep abstrak jadi visual dan interaktif, langsung dari browser.',
+        background: 'linear-gradient(135deg, #1E293B, #16A34A)',
+        href: '/lab',
+    },
+    {
+        tag: 'Modul Ajar',
+        title: 'Perangkat ajar Kurikulum Merdeka, siap pakai',
+        desc: 'Modul ajar per mata pelajaran untuk Fase D, tinggal unduh dan sesuaikan dengan kelasmu.',
+        background: 'linear-gradient(135deg, #1E293B, #FBBF24)',
+        href: '/modul-ajar',
+    },
+];
+
 export default function Welcome({ canLogin = true, canRegister = true }) {
     return (
         <div className="min-h-screen bg-cream text-navy">
@@ -41,10 +68,10 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             <section id="home" className="relative overflow-hidden">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 lg:py-14 text-center relative z-10">
                     <span className="inline-block text-xs font-mono uppercase tracking-wide text-teal bg-teal-light rounded-full px-3 py-1">
-                        Portal Sekolah Terpadu
+                        Portal Sekolah Digital #1 untuk Kurikulum Merdeka
                     </span>
                     <h1 className="font-display font-700 text-3xl lg:text-5xl mt-3 leading-tight max-w-3xl mx-auto">
-                        Satu portal untuk seluruh kegiatan akademik sekolah
+                        Sekolahmu, satu portal, nol ribet
                     </h1>
                     <p className="text-navy/60 mt-3 text-base lg:text-lg max-w-2xl mx-auto">
                         Buku Induk terintegrasi Dapodik, simulasi sains interaktif, modul ajar
@@ -125,7 +152,7 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
             <section id="program-sekolah" className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
                 <div className="text-center max-w-xl mx-auto mb-10">
                     <span className="text-xs font-mono uppercase tracking-wide text-teal">Program Sekolah</span>
-                    <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Modul yang tersedia di portal</h2>
+                    <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Satu akun, semua urusan sekolah beres</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {PROGRAMS.map((m) => (
@@ -155,8 +182,14 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 lg:py-20">
                     <div className="text-center max-w-xl mx-auto mb-10">
                         <span className="text-xs font-mono uppercase tracking-wide text-coral">Showcase</span>
-                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Simulasi yang bisa dicoba langsung</h2>
+                        <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2 text-white">Lihat sekolah.co.id beraksi</h2>
                     </div>
+
+                    <div className="mb-12">
+                        <ShowcaseSlider slides={SLIDES} />
+                    </div>
+
+                    <h3 className="font-display font-600 text-lg text-white mb-4 text-center">Simulasi yang bisa dicoba langsung</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                         {SHOWCASE.map((s) => (
                             <Link
@@ -177,13 +210,13 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
 
             {/* CTA penutup */}
             <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16 text-center">
-                <h2 className="font-display font-700 text-2xl lg:text-3xl">Siap membawa sekolahmu online?</h2>
+                <h2 className="font-display font-700 text-2xl lg:text-3xl">Cukup masukkan NPSN, kami urus sisanya</h2>
                 <p className="text-navy/60 mt-3 max-w-xl mx-auto">
-                    Daftarkan sekolahmu dan mulai gunakan Lab Interaktif serta modul lain
-                    yang menyusul.
+                    Data sekolahmu terisi otomatis, Buku Induk siap diisi dari Dapodik,
+                    dan Lab Interaktif langsung bisa dipakai hari ini juga.
                 </p>
                 <Link href="/registrasi-sekolah" className="inline-block mt-6 bg-coral text-navy font-medium rounded-lg px-6 py-3 text-sm hover:brightness-95">
-                    Daftar Sekarang
+                    Daftarkan Sekolahmu, Gratis
                 </Link>
             </section>
 

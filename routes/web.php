@@ -41,6 +41,7 @@ Route::middleware(['web'])->get('/modul-ajar', [ModulAjarController::class, 'ind
 // Modul lain didaftarkan dengan pola yang sama, lalu ditambahkan sebagai
 // entri baru di MENU pada resources/js/Layouts/PortalLayout.jsx:
 require __DIR__.'/buku-induk.php';
+require __DIR__.'/superadmin.php';
 // require __DIR__.'/ujian.php';
 // require __DIR__.'/bk.php';
 // require __DIR__.'/manajemen.php';

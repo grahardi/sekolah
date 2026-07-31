@@ -26,11 +26,15 @@ const MENU = [
     },
 ];
 
+// Cuma muncul untuk user dengan is_super_admin = true (bukan admin sekolah biasa)
+const SUPERADMIN_ITEM = { key: 'superadmin', label: 'Admin Portal', href: '/admin-portal', icon: ShieldIcon };
+
 export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const { url, props } = usePage();
     const user = props?.auth?.user;
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
+    const menuItems = user?.is_super_admin ? [...MENU, SUPERADMIN_ITEM] : MENU;
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 
@@ -44,7 +48,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                 </div>
 
                 <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                    {MENU.map((item) => (
+                    {menuItems.map((item) => (
                         <SidebarItem
                             key={item.key}
                             item={item}
@@ -92,7 +96,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                             <button onClick={() => setMobileOpen(false)} className="text-cream/70">✕</button>
                         </div>
                         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                            {MENU.map((item) => (
+                            {menuItems.map((item) => (
                                 <SidebarItem
                                     key={item.key}
                                     item={item}
@@ -250,6 +254,7 @@ function DocIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="curren
 function BookIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 19.5A2.5 2.5 0 016.5 17H20V4H6.5A2.5 2.5 0 004 6.5v13z" /></svg>; }
 function HeartIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 21s-7-4.5-9.5-9C.7 8.3 3 4 7 4c2 0 3.5 1 5 3 1.5-2 3-3 5-3 4 0 6.3 4.3 4.5 8-2.5 4.5-9.5 9-9.5 9z" /></svg>; }
 function GearIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" /></svg>; }
+function ShieldIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 3l8 3v6c0 4.5-3 8-8 9-5-1-8-4.5-8-9V6l8-3z" /><path d="M9.5 12l1.8 1.8L15 10" /></svg>; }
 function ChevronIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 18l6-6-6-6" /></svg>; }
 function MenuIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6" {...p}><path d="M4 6h16M4 12h16M4 18h16" /></svg>; }
 function KeyIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="8" cy="15" r="4" /><path d="M10.5 12.5L20 3M17 6l3 3M14 9l2 2" /></svg>; }
