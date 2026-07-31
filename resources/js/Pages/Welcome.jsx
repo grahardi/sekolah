@@ -186,18 +186,6 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                 </div>
             </section>
 
-            {/* CTA penutup */}
-            <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16 text-center">
-                <h2 className="font-display font-700 text-2xl lg:text-3xl">Cukup masukkan NPSN, kami urus sisanya</h2>
-                <p className="text-navy/60 mt-3 max-w-xl mx-auto">
-                    Data sekolahmu terisi otomatis, Buku Induk siap diisi dari Dapodik,
-                    dan Lab Interaktif langsung bisa dipakai hari ini juga.
-                </p>
-                <Link href="/registrasi-sekolah" className="inline-block mt-6 bg-coral text-navy font-medium rounded-lg px-6 py-3 text-sm hover:brightness-95">
-                    Daftarkan Sekolahmu, Gratis
-                </Link>
-            </section>
-
             <PublicFooter />
         </div>
     );

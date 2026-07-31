@@ -17,6 +17,11 @@ export default function PublicFooter() {
                             PT Bella Intan Media
                         </a>
                     </p>
+                    <p className="text-xs text-cream/40 mt-2">
+                        PT Bella Intan Media adalah perusahaan yang bergerak di bidang penyedia
+                        layanan internet (Internet Service Provider/ISP), Hosting, IP Transit,
+                        dan Web Design.
+                    </p>
                 </div>
 
                 <div>
