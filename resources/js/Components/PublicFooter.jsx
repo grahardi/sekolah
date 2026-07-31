@@ -39,8 +39,7 @@ export default function PublicFooter() {
                 <div>
                     <p className="font-display font-600 text-sm text-white mb-3">Kontak</p>
                     <ul className="space-y-2 text-sm">
-                        <li>admin@sekolah.co.id</li>
-                        <li>+62 8xx-xxxx-xxxx</li>
+                        <li>admin@mail.co.id</li>
                         <li>Malang, Jawa Timur</li>
                     </ul>
                 </div>
