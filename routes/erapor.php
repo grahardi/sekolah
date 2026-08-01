@@ -81,6 +81,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         // Cetak Rapor
         Route::get('/rapor', [RaporController::class, 'index'])->name('rapor.index');
         Route::post('/rapor/generate', [RaporController::class, 'generateKelas'])->name('rapor.generate');
+        Route::get('/rapor/template-absensi', [RaporController::class, 'downloadTemplateAbsensi'])->name('rapor.template-absensi');
+        Route::post('/rapor/import-absensi', [RaporController::class, 'importAbsensi'])->name('rapor.import-absensi');
         Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');
         Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
         Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');

@@ -179,6 +179,79 @@ class RaporController extends Controller
         return $pdf->download('rapor-' . str_replace(' ', '-', $rapor->siswa->nama_lengkap) . '.pdf');
     }
 
+    /** Download template absensi: siswa 1 kelas, kolom NISN/Nama/Kelas/S/I/A kosong, urut kelas-no induk-nama */
+    public function downloadTemplateAbsensi(Request $request)
+    {
+        $request->validate(['kelas_rombel' => 'required|string', 'semester' => 'required|integer|in:1,2']);
+        [$kelas, $rombel] = array_pad(explode('|', $request->kelas_rombel), 2, null);
+
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422, 'Belum ada tahun ajaran aktif.');
+
+        $siswaList = Siswa::where('status', 'aktif')
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('kelas')->orderBy('nis')->orderBy('nama_lengkap')
+            ->get();
+
+        $raporMap = Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $request->semester)
+            ->whereIn('siswa_id', $siswaList->pluck('id'))->get()->keyBy('siswa_id');
+
+        $rows = $siswaList->map(function ($s) use ($raporMap) {
+            $r = $raporMap->get($s->id);
+            return [
+                'nisn' => $s->nisn,
+                'nama' => $s->nama_lengkap,
+                'kelas' => $s->rombel_lengkap,
+                'S' => $r->sakit ?? 0,
+                'I' => $r->izin ?? 0,
+                'A' => $r->tanpa_keterangan ?? 0,
+            ];
+        });
+
+        $namaFile = 'template-absensi-' . str_replace(' ', '-', ($rombel ? "$kelas-$rombel" : $kelas)) . '.xlsx';
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download($namaFile);
+    }
+
+    /** Import absensi massal dari template terisi - cocokkan berdasarkan NISN */
+    public function importAbsensi(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120', 'semester' => 'required|integer|in:1,2']);
+
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422, 'Belum ada tahun ajaran aktif.');
+
+        $diperbarui = 0;
+        $errors = [];
+
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($tahunAjaran, $request, &$diperbarui, &$errors) {
+            $nisn = trim($row['nisn'] ?? '');
+            if ($nisn === '') return;
+
+            $siswa = Siswa::where('nisn', $nisn)->where('status', 'aktif')->first();
+            if (! $siswa) {
+                $errors[] = "NISN {$nisn} tidak ditemukan.";
+                return;
+            }
+
+            Rapor::updateOrCreate(
+                ['siswa_id' => $siswa->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'semester' => $request->semester],
+                [
+                    'kelas' => $siswa->kelas,
+                    'rombel' => $siswa->rombel,
+                    'sakit' => (int) ($row['S'] ?? 0),
+                    'izin' => (int) ($row['I'] ?? 0),
+                    'tanpa_keterangan' => (int) ($row['A'] ?? 0),
+                ]
+            );
+            $diperbarui++;
+        });
+
+        $msg = "Absensi {$diperbarui} siswa berhasil diperbarui.";
+        if (count($errors) > 0) $msg .= ' ' . count($errors) . ' baris bermasalah: ' . implode(' ', array_slice($errors, 0, 5));
+
+        return back()->with(count($errors) > 0 ? 'warning' : 'success', $msg);
+    }
+
     private function kelasRombelList()
     {
         return Siswa::where('status', 'aktif')
