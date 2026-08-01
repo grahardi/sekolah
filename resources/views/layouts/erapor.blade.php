@@ -207,6 +207,10 @@
            class="sb-item {{ request()->routeIs('erapor.penugasan') ? 'active' : '' }}">
             <i class="ti ti-user-check"></i><span>Wali Kelas & Lainnya</span>
         </a>
+        <a href="{{ route('erapor.rekap-pengajar') }}"
+           class="sb-item {{ request()->routeIs('erapor.rekap-pengajar') ? 'active' : '' }}">
+            <i class="ti ti-table"></i><span>Rekap Pengajar</span>
+        </a>
         @endif
 
         <div class="sb-divider"></div>

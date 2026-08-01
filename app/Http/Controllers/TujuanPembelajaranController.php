@@ -60,10 +60,27 @@ class TujuanPembelajaranController extends Controller
 
     public function create()
     {
+        $user = auth()->user();
+
+        if ($user->role === 'guru') {
+            $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+            $penugasan = $guru
+                ? \App\Models\GuruPengajar::with('mataPelajaran')->where('guru_id', $guru->id)->get()
+                : collect();
+
+            return view('erapor.tp.create', [
+                'mapelList' => $penugasan->pluck('mataPelajaran')->unique('id')->values(),
+                'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+                'kelasList' => $penugasan->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")->unique()->values(),
+                'penugasanSaya' => $penugasan, // dipakai buat batasi kombinasi mapel+kelas di JS
+            ]);
+        }
+
         return view('erapor.tp.create', [
             'mapelList' => MataPelajaran::orderBy('nama')->get(),
             'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
             'kelasList' => $this->kelasRombelList(),
+            'penugasanSaya' => null,
         ]);
     }
 
@@ -78,6 +95,23 @@ class TujuanPembelajaranController extends Controller
             'semester' => 'required|integer|in:1,2',
             'kelas_rombel' => 'required|array|min:1',
         ]);
+
+        // Kalau yg buat guru, pastikan mapel & SEMUA kelas yg dipilih memang
+        // ada di penugasan mengajarnya - jangan cuma percaya UI, guru nakal
+        // bisa saja kirim request manual.
+        $user = auth()->user();
+        if ($user->role === 'guru') {
+            $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+            $kombinasiValid = \App\Models\GuruPengajar::where('guru_id', $guru?->id ?? 0)
+                ->where('mata_pelajaran_id', $data['mata_pelajaran_id'])
+                ->get()
+                ->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")
+                ->unique();
+
+            foreach ($data['kelas_rombel'] as $kr) {
+                abort_unless($kombinasiValid->contains($kr), 403, 'Kamu tidak ditugaskan mengajar mapel/kelas ini.');
+            }
+        }
 
         $tp = TujuanPembelajaran::create([
             'mata_pelajaran_id' => $data['mata_pelajaran_id'],

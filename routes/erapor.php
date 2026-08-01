@@ -28,6 +28,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::delete('/kegiatan-p5/{kegiatan}', [EraporController::class, 'destroyKegiatanP5'])->name('kegiatan-p5.destroy');
 
         Route::get('/penugasan', [EraporController::class, 'penugasan'])->name('penugasan');
+        Route::get('/rekap-pengajar', [EraporController::class, 'rekapPengajar'])->name('rekap-pengajar');
 
         Route::post('/wali-kelas', [EraporController::class, 'storeWaliKelas'])->name('wali-kelas.store');
         Route::delete('/wali-kelas/{waliKelas}', [EraporController::class, 'destroyWaliKelas'])->name('wali-kelas.destroy');

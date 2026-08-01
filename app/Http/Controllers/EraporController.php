@@ -251,6 +251,33 @@ class EraporController extends Controller
     }
 
     /** Daftar kombinasi kelas-rombel yang ada di data siswa aktif (dari Buku Induk) */
+    public function rekapPengajar(Request $request)
+    {
+        $kelasList = $this->kelasRombelList();
+        $kelasDipilih = $request->input('kelas_rombel', $kelasList->first());
+        $mapelList = MataPelajaran::orderBy('nama')->get();
+
+        $rekap = collect();
+        if ($kelasDipilih) {
+            [$kelas, $rombel] = array_pad(explode('|', $kelasDipilih), 2, null);
+
+            $penugasan = GuruPengajar::with('guru')
+                ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+                ->get()->keyBy('mata_pelajaran_id');
+
+            $rekap = $mapelList->map(fn ($m) => [
+                'mapel' => $m->nama,
+                'guru' => $penugasan->get($m->id)?->guru?->nama,
+            ]);
+        }
+
+        return view('erapor.rekap-pengajar', [
+            'kelasList' => $kelasList,
+            'kelasDipilih' => $kelasDipilih,
+            'rekap' => $rekap,
+        ]);
+    }
+
     private function kelasRombelList()
     {
         return Siswa::where('status', 'aktif')

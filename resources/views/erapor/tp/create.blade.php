@@ -12,9 +12,12 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
         <div>
             <label class="form-label">Mata Pelajaran <span style="color:#ef4444">*</span></label>
-            <select name="mata_pelajaran_id" class="form-input" required>
+            <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-input" required onchange="saringKelas()">
                 @foreach($mapelList as $m)<option value="{{ $m->id }}">{{ $m->nama }}</option>@endforeach
             </select>
+            @if($penugasanSaya !== null && $mapelList->isEmpty())
+            <p style="font-size:11px;color:#dc2626;margin-top:4px;">Kamu belum ditugaskan mengajar mapel apapun. Hubungi admin sekolah.</p>
+            @endif
         </div>
         <div>
             <label class="form-label">Tahun Ajaran <span style="color:#ef4444">*</span></label>
@@ -46,10 +49,10 @@
 
     <div style="margin-bottom:20px;">
         <label class="form-label">Berlaku untuk Kelas <span style="color:#ef4444">*</span></label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+        <div id="kelas-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
             @forelse($kelasList as $k)
             @php [$kl,$rb] = explode('|', $k); @endphp
-            <label style="display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
+            <label class="kelas-opt" data-kelasrombel="{{ $k }}" style="display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
                 <input type="checkbox" name="kelas_rombel[]" value="{{ $k }}">
                 {{ $rb ? "$kl - $rb" : $kl }}
             </label>
@@ -61,4 +64,23 @@
 
     <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-device-floppy"></i> Simpan TP</button>
 </form>
+
+@if($penugasanSaya !== null)
+<script>
+    // Guru: cuma tampilkan checkbox kelas yg memang ditugaskan utk mapel yg dipilih
+    const PENUGASAN_SAYA = {!! $penugasanSaya->map(fn($p) => ['mapel_id' => $p->mata_pelajaran_id, 'kelas_rombel' => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|"])->toJson() !!};
+
+    function saringKelas() {
+        const mapelId = parseInt(document.getElementById('mata_pelajaran_id').value);
+        const valid = PENUGASAN_SAYA.filter(p => p.mapel_id === mapelId).map(p => p.kelas_rombel);
+
+        document.querySelectorAll('.kelas-opt').forEach(el => {
+            const cocok = valid.includes(el.dataset.kelasrombel);
+            el.style.display = cocok ? 'flex' : 'none';
+            el.querySelector('input').checked = false;
+        });
+    }
+    document.addEventListener('DOMContentLoaded', saringKelas);
+</script>
+@endif
 @endsection
