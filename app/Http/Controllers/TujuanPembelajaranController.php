@@ -136,15 +136,10 @@ class TujuanPembelajaranController extends Controller
 
     public function edit(TujuanPembelajaran $tp)
     {
-        $tp->load('kelasList');
-        $kelasTerpilih = $tp->kelasList->map(fn ($k) => $k->rombel ? "{$k->kelas}|{$k->rombel}" : "{$k->kelas}|")->toArray();
-
         return view('erapor.tp.edit', [
             'tp' => $tp,
             'mapelList' => MataPelajaran::orderBy('nama')->get(),
             'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
-            'kelasList' => $this->kelasRombelList(),
-            'kelasTerpilih' => $kelasTerpilih,
         ]);
     }
 
@@ -157,17 +152,50 @@ class TujuanPembelajaranController extends Controller
             'kode_tp' => 'nullable|string|max:20',
             'deskripsi_tp' => 'required|string',
             'semester' => 'required|integer|in:1,2',
-            'kelas_rombel' => 'required|array|min:1',
         ]);
 
-        $tp->update([
-            'mata_pelajaran_id' => $data['mata_pelajaran_id'],
-            'tahun_ajaran_id' => $data['tahun_ajaran_id'],
-            'fase' => $data['fase'] ?? null,
-            'kode_tp' => $data['kode_tp'] ?? null,
-            'deskripsi_tp' => $data['deskripsi_tp'],
-            'semester' => $data['semester'],
-        ]);
+        $tp->update($data);
+
+        return redirect()->route('erapor.tp.index')->with('success', 'Tujuan Pembelajaran diperbarui.');
+    }
+
+    /** Halaman terpisah khusus atur kelas mana TP ini berlaku (bukan bagian dari Edit) */
+    public function penugasanKelas(TujuanPembelajaran $tp)
+    {
+        $tp->load('kelasList');
+        $kelasTerpilih = $tp->kelasList->map(fn ($k) => $k->rombel ? "{$k->kelas}|{$k->rombel}" : "{$k->kelas}|")->toArray();
+
+        $user = auth()->user();
+        $kelasList = $this->kelasRombelList();
+
+        // Guru cuma bisa tugaskan TP ke kelas yg memang dia ajar utk mapel TP ini
+        if ($user->role === 'guru') {
+            $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+            $kelasList = $guru
+                ? \App\Models\GuruPengajar::where('guru_id', $guru->id)->where('mata_pelajaran_id', $tp->mata_pelajaran_id)
+                    ->get()->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")->unique()->values()
+                : collect();
+        }
+
+        return view('erapor.tp.penugasan-kelas', ['tp' => $tp, 'kelasList' => $kelasList, 'kelasTerpilih' => $kelasTerpilih]);
+    }
+
+    public function updatePenugasanKelas(Request $request, TujuanPembelajaran $tp)
+    {
+        $data = $request->validate(['kelas_rombel' => 'required|array|min:1']);
+
+        // Guru cuma boleh assign ke kelas yg memang dia ajar utk mapel ini
+        $user = auth()->user();
+        if ($user->role === 'guru') {
+            $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+            $valid = $guru
+                ? \App\Models\GuruPengajar::where('guru_id', $guru->id)->where('mata_pelajaran_id', $tp->mata_pelajaran_id)
+                    ->get()->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")->unique()
+                : collect();
+            foreach ($data['kelas_rombel'] as $kr) {
+                abort_unless($valid->contains($kr), 403, 'Kamu tidak ditugaskan mengajar mapel ini di kelas tsb.');
+            }
+        }
 
         $tp->kelasList()->delete();
         foreach ($data['kelas_rombel'] as $kr) {
@@ -175,7 +203,7 @@ class TujuanPembelajaranController extends Controller
             TpKelas::create(['tujuan_pembelajaran_id' => $tp->id, 'kelas' => $kelas, 'rombel' => $rombel ?: null]);
         }
 
-        return redirect()->route('erapor.tp.index')->with('success', 'Tujuan Pembelajaran diperbarui.');
+        return redirect()->route('erapor.tp.index')->with('success', 'Penugasan kelas TP diperbarui.');
     }
 
     public function destroyMassal(Request $request)

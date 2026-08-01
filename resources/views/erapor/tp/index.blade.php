@@ -71,6 +71,7 @@
                     </td>
                     <td style="padding:10px 14px;text-align:right;white-space:nowrap;">
                         <a href="{{ route('erapor.tp.edit', $tp) }}" class="btn btn-secondary btn-sm" title="Edit"><i class="ti ti-pencil"></i></a>
+                        <a href="{{ route('erapor.tp.penugasan-kelas', $tp) }}" class="btn btn-sm" style="background:#eff6ff;color:#2563EB;" title="Penugasan Kelas"><i class="ti ti-school"></i></a>
                         <button type="button" onclick="if(confirm('Hapus TP ini?')){document.getElementById('hapus-{{ $tp->id }}').submit();}" class="btn btn-danger btn-sm" title="Hapus"><i class="ti ti-trash"></i></button>
                     </td>
                 </tr>

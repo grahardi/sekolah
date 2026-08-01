@@ -51,21 +51,6 @@
         </div>
     </div>
 
-    <div style="margin-bottom:20px;">
-        <label class="form-label">Berlaku untuk Kelas <span style="color:#ef4444">*</span></label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
-            @forelse($kelasList as $k)
-            @php [$kl,$rb] = explode('|', $k); @endphp
-            <label style="display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
-                <input type="checkbox" name="kelas_rombel[]" value="{{ $k }}" {{ in_array($k, $kelasTerpilih) ? 'checked' : '' }}>
-                {{ $rb ? "$kl - $rb" : $kl }}
-            </label>
-            @empty
-            <p style="font-size:12px;color:#94a3b8;">Belum ada data kelas siswa aktif.</p>
-            @endforelse
-        </div>
-    </div>
-
     <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-device-floppy"></i> Simpan Perubahan</button>
 </form>
 @endsection
