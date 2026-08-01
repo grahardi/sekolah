@@ -47,11 +47,31 @@ class PenilaianController extends Controller
 
     public function create()
     {
+        $user = auth()->user();
+
+        if ($user->role === 'guru') {
+            $guruSaya = Guru::where('user_id', $user->id)->first();
+            $penugasan = $guruSaya
+                ? GuruPengajar::with('mataPelajaran')->where('guru_id', $guruSaya->id)->get()
+                : collect();
+
+            return view('erapor.penilaian.create', [
+                'guruSaya' => $guruSaya,
+                'guruList' => null,
+                'mapelList' => $penugasan->pluck('mataPelajaran')->unique('id')->values(),
+                'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+                'kelasList' => $penugasan->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")->unique()->values(),
+                'penugasanSaya' => $penugasan,
+            ]);
+        }
+
         return view('erapor.penilaian.create', [
+            'guruSaya' => null,
             'guruList' => Guru::orderBy('nama')->get(),
             'mapelList' => MataPelajaran::orderBy('nama')->get(),
             'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
             'kelasList' => $this->kelasRombelList(),
+            'penugasanSaya' => null,
         ]);
     }
 
@@ -85,8 +105,7 @@ class PenilaianController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
             'kelas_rombel' => 'required|string',
             'nama_penilaian' => 'required|string|max:150',
-            'jenis_penilaian' => 'required|in:Formatif,Sumatif',
-            'subjenis_penilaian' => 'nullable|in:Sumatif TP,Sumatif Tengah Semester,Sumatif Akhir Semester,Sumatif Akhir Tahun',
+            'subjenis_penilaian' => 'required|in:Sumatif TP,Sumatif Tengah Semester,Sumatif Akhir Semester',
             'bobot_penilaian' => 'required|integer|min:1|max:100',
             'semester' => 'required|integer|in:1,2',
             'tanggal_penilaian' => 'nullable|date',
@@ -95,6 +114,20 @@ class PenilaianController extends Controller
 
         [$kelas, $rombel] = array_pad(explode('|', $data['kelas_rombel']), 2, null);
 
+        // Guru cuma boleh buat penilaian utk dirinya sendiri, di mapel+kelas
+        // yg memang ditugaskan admin - jangan cuma percaya UI.
+        $user = auth()->user();
+        if ($user->role === 'guru') {
+            $guruSaya = Guru::where('user_id', $user->id)->first();
+            abort_unless($guruSaya && $guruSaya->id == $data['guru_id'], 403, 'Kamu cuma bisa membuat penilaian atas namamu sendiri.');
+
+            $adaPenugasan = GuruPengajar::where('guru_id', $guruSaya->id)
+                ->where('mata_pelajaran_id', $data['mata_pelajaran_id'])
+                ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+                ->exists();
+            abort_unless($adaPenugasan, 403, 'Kamu tidak ditugaskan mengajar mapel/kelas ini.');
+        }
+
         $penilaian = Penilaian::create([
             'tahun_ajaran_id' => $data['tahun_ajaran_id'],
             'guru_id' => $data['guru_id'],
@@ -102,8 +135,8 @@ class PenilaianController extends Controller
             'kelas' => $kelas,
             'rombel' => $rombel ?: null,
             'nama_penilaian' => $data['nama_penilaian'],
-            'jenis_penilaian' => $data['jenis_penilaian'],
-            'subjenis_penilaian' => $data['subjenis_penilaian'] ?? null,
+            'jenis_penilaian' => 'Sumatif', // Formatif dinonaktifkan sementara
+            'subjenis_penilaian' => $data['subjenis_penilaian'],
             'bobot_penilaian' => $data['bobot_penilaian'],
             'semester' => $data['semester'],
             'tanggal_penilaian' => $data['tanggal_penilaian'] ?? null,

@@ -16,6 +16,14 @@
                 @foreach($tahunAjarans as $t)<option value="{{ $t->id }}" {{ $t->is_aktif ? 'selected' : '' }}>{{ $t->label }}</option>@endforeach
             </select>
         </div>
+
+        @if($guruSaya)
+        <input type="hidden" name="guru_id" value="{{ $guruSaya->id }}">
+        <div>
+            <label class="form-label">Guru</label>
+            <input type="text" value="{{ $guruSaya->nama }} (kamu)" class="form-input" disabled style="background:#f8fafc;">
+        </div>
+        @else
         <div>
             <label class="form-label">Guru <span style="color:#ef4444">*</span></label>
             <select name="guru_id" class="form-input" required>
@@ -23,18 +31,23 @@
                 @foreach($guruList as $g)<option value="{{ $g->id }}">{{ $g->nama }}</option>@endforeach
             </select>
         </div>
+        @endif
+
         <div>
             <label class="form-label">Mata Pelajaran <span style="color:#ef4444">*</span></label>
-            <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-input" required onchange="muatTp()">
+            <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-input" required onchange="muatTp(); saringKelas();">
                 <option value="">-- Pilih mapel --</option>
                 @foreach($mapelList as $m)<option value="{{ $m->id }}">{{ $m->nama }}</option>@endforeach
             </select>
+            @if($penugasanSaya !== null && $mapelList->isEmpty())
+            <p style="font-size:11px;color:#dc2626;margin-top:4px;">Kamu belum ditugaskan mengajar mapel apapun. Hubungi admin sekolah.</p>
+            @endif
         </div>
         <div>
             <label class="form-label">Kelas - Rombel <span style="color:#ef4444">*</span></label>
             <select name="kelas_rombel" id="kelas_rombel" class="form-input" required onchange="muatTp()">
                 <option value="">-- Pilih kelas --</option>
-                @foreach($kelasList as $k)@php [$kl,$rb]=explode('|',$k);@endphp<option value="{{ $k }}">{{ $rb ? "$kl - $rb" : $kl }}</option>@endforeach
+                @foreach($kelasList as $k)@php [$kl,$rb]=explode('|',$k);@endphp<option value="{{ $k }}" data-mapel="{{ $penugasanSaya !== null ? $penugasanSaya->where('kelas', $kl)->where('rombel', $rb ?: null)->pluck('mata_pelajaran_id')->implode(',') : '' }}">{{ $rb ? "$kl - $rb" : $kl }}</option>@endforeach
             </select>
         </div>
         <div>
@@ -55,26 +68,19 @@
         <input type="text" name="nama_penilaian" class="form-input" placeholder="mis. Ulangan Harian Bab 1" required>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
         <div>
-            <label class="form-label">Jenis <span style="color:#ef4444">*</span></label>
-            <select name="jenis_penilaian" id="jenis_penilaian" class="form-input" required onchange="toggleSubjenis()">
-                <option value="Formatif">Formatif</option>
-                <option value="Sumatif">Sumatif</option>
-            </select>
-        </div>
-        <div id="wrap-subjenis" style="display:none;">
-            <label class="form-label">Sub-jenis Sumatif</label>
-            <select name="subjenis_penilaian" id="subjenis_penilaian" class="form-input" onchange="muatTp()">
-                <option value="Sumatif TP">Sumatif TP</option>
-                <option value="Sumatif Tengah Semester">Sumatif Tengah Semester</option>
-                <option value="Sumatif Akhir Semester">Sumatif Akhir Semester</option>
-                <option value="Sumatif Akhir Tahun">Sumatif Akhir Tahun</option>
+            <label class="form-label">Jenis Penilaian <span style="color:#ef4444">*</span></label>
+            <select name="subjenis_penilaian" id="subjenis_penilaian" class="form-input" required onchange="muatTp(); aturBobotOtomatis();">
+                <option value="Sumatif TP">Sumatif - TP</option>
+                <option value="Sumatif Tengah Semester">Penilaian Tengah Semester</option>
+                <option value="Sumatif Akhir Semester">Penilaian Semester Akhir</option>
             </select>
         </div>
         <div>
             <label class="form-label">Bobot <span style="color:#ef4444">*</span></label>
-            <input type="number" name="bobot_penilaian" class="form-input" value="1" min="1" max="100" required>
+            <input type="number" name="bobot_penilaian" id="bobot_penilaian" class="form-input" value="1" min="1" max="100" required>
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Penilaian Semester Akhir otomatis diisi 2 (boleh diubah manual).</p>
         </div>
     </div>
 
@@ -88,21 +94,22 @@
         </p>
     </div>
 
-    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-device-floppy"></i> Simpan & Lanjut Input Nilai</button>
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-device-floppy"></i> Simpan &amp; Lanjut Input Nilai</button>
 </form>
 
 <script>
-    function toggleSubjenis() {
-        const jenis = document.getElementById('jenis_penilaian').value;
-        document.getElementById('wrap-subjenis').style.display = jenis === 'Sumatif' ? 'block' : 'none';
-        document.getElementById('wrap-tp').style.display = 'none';
-        if (jenis === 'Sumatif') muatTp();
+    function toggleSubjenis() { muatTp(); }
+
+    function aturBobotOtomatis() {
+        const subjenis = document.getElementById('subjenis_penilaian').value;
+        if (subjenis === 'Sumatif Akhir Semester') {
+            document.getElementById('bobot_penilaian').value = 2;
+        }
     }
 
     function muatTp() {
-        const jenis = document.getElementById('jenis_penilaian').value;
-        const subjenis = document.getElementById('subjenis_penilaian')?.value;
-        if (jenis !== 'Sumatif' || subjenis !== 'Sumatif TP') {
+        const subjenis = document.getElementById('subjenis_penilaian').value;
+        if (subjenis !== 'Sumatif TP') {
             document.getElementById('wrap-tp').style.display = 'none';
             return;
         }
@@ -132,6 +139,19 @@
                     </label>
                 `).join('');
             });
+    }
+
+    // Guru: cuma tampilkan pilihan kelas yg sesuai dgn mapel yg dipilih
+    function saringKelas() {
+        const kelasSelect = document.getElementById('kelas_rombel');
+        const mapelId = document.getElementById('mata_pelajaran_id').value;
+        if (!mapelId) return;
+        Array.from(kelasSelect.options).forEach(opt => {
+            if (!opt.value) return;
+            const mapelValid = (opt.dataset.mapel || '').split(',');
+            opt.hidden = mapelValid.length > 0 && mapelValid[0] !== '' && !mapelValid.includes(mapelId);
+        });
+        kelasSelect.value = '';
     }
 </script>
 @endsection

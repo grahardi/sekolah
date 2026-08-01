@@ -27,4 +27,14 @@ class Penilaian extends Model
     {
         return $this->rombel ? "{$this->kelas} - {$this->rombel}" : $this->kelas;
     }
+
+    public function getSubjenisLabelAttribute(): string
+    {
+        return match ($this->subjenis_penilaian) {
+            'Sumatif TP' => 'Sumatif - TP',
+            'Sumatif Tengah Semester' => 'Penilaian Tengah Semester',
+            'Sumatif Akhir Semester' => 'Penilaian Semester Akhir',
+            default => $this->subjenis_penilaian ?? $this->jenis_penilaian,
+        };
+    }
 }

@@ -9,7 +9,7 @@
 @section('content')
 <div class="card" style="padding:16px;margin-bottom:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
     <span class="badge" style="background:{{ $penilaian->jenis_penilaian === 'Sumatif' ? '#fef3c7' : '#eff6ff' }};color:{{ $penilaian->jenis_penilaian === 'Sumatif' ? '#92400e' : '#2563EB' }};">
-        {{ $penilaian->subjenis_penilaian ?? $penilaian->jenis_penilaian }}
+        {{ $penilaian->subjenis_label }}
     </span>
     <span style="font-size:13px;color:#64748b;">{{ $penilaian->mataPelajaran->nama }} &middot; {{ $penilaian->kelas_lengkap }} &middot; Bobot {{ $penilaian->bobot_penilaian }}</span>
     @if($penilaian->tujuanPembelajarans->count() > 0)

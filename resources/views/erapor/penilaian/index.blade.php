@@ -40,7 +40,7 @@
                 <td style="padding:10px;">{{ $p->kelas_lengkap }}</td>
                 <td style="padding:10px;">
                     <span class="badge" style="background:{{ $p->jenis_penilaian === 'Sumatif' ? '#fef3c7' : '#eff6ff' }};color:{{ $p->jenis_penilaian === 'Sumatif' ? '#92400e' : '#2563EB' }};">
-                        {{ $p->subjenis_penilaian ?? $p->jenis_penilaian }}
+                        {{ $p->subjenis_label }}
                     </span>
                 </td>
                 <td style="padding:10px;">{{ $p->nilais_count }} siswa</td>
