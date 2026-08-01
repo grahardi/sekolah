@@ -39,6 +39,7 @@ class UserController extends Controller
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
             'password_plain' => $data['password'],
+            'is_password_generated' => true,
             'role'     => $data['role'],
             'aktif'    => true,
         ]);
@@ -81,7 +82,7 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user->update(['password' => Hash::make($data['password']), 'password_plain' => $data['password']]);
+        $user->update(['password' => Hash::make($data['password']), 'password_plain' => $data['password'], 'is_password_generated' => true]);
 
         return back()->with('success', "Password untuk {$user->name} berhasil direset.");
     }

@@ -79,8 +79,12 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
             Route::post('/proses', [KenaikanKelasController::class, 'proses'])->name('proses');
         });
     });
+});
 
-    // Ganti Password Sendiri (semua role yang sudah login)
+// Ganti Password Sendiri (semua role yang sudah login, TERMASUK guru) -
+// sengaja TIDAK ikut middleware 'not_guru' di atas, krn guru juga wajib bisa
+// akses ini utk alur paksa-ganti-password pertama kali login.
+Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
     Route::get('/ganti-password', [UserController::class, 'showChangePassword'])->name('user.change-password');
     Route::post('/ganti-password', [UserController::class, 'changePassword'])->name('user.change-password.update');
 });

@@ -319,6 +319,7 @@ class EraporController extends Controller
                 'email' => $email,
                 'password' => bcrypt($password),
                 'password_plain' => $password,
+                'is_password_generated' => true,
                 'sekolah_id' => $guru->sekolah_id,
                 'role' => 'guru',
                 'aktif' => true,
@@ -349,6 +350,7 @@ class EraporController extends Controller
                 'email' => $email,
                 'password' => bcrypt($passwordAsli),
                 'password_plain' => $passwordAsli,
+                'is_password_generated' => true,
                 'sekolah_id' => auth()->user()->sekolah_id,
                 'role' => 'guru',
                 'aktif' => true,
@@ -379,6 +381,35 @@ class EraporController extends Controller
         auth()->loginUsingId($adminId);
 
         return redirect()->route('erapor.guru.index')->with('success', 'Kembali ke akun admin.');
+    }
+
+    /** Export User - daftar guru + akun (password kalau masih bawaan, atau catatan kalau sudah diganti) */
+    public function exportUser()
+    {
+        $gurus = Guru::with('user')->orderBy('nama')->get();
+
+        $rows = $gurus->map(function ($g) {
+            $status = '-';
+            if ($g->user) {
+                if ($g->user->password_plain) {
+                    $status = $g->user->password_plain;
+                } elseif ($g->user->is_password_generated) {
+                    $status = 'Sudah diganti user';
+                } else {
+                    $status = '-';
+                }
+            }
+
+            return [
+                'nama_guru' => $g->nama,
+                'nip_nuptk' => $g->nip_nuptk,
+                'email' => $g->user?->email ?? '-',
+                'password' => $status,
+                'status_akun' => $g->user ? 'Aktif' : 'Belum ada akun',
+            ];
+        });
+
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download('export-user-guru-' . now()->format('Ymd') . '.xlsx');
     }
 
     /** Download template Excel: daftar guru + kolom Email & Password kosong utk diisi manual */

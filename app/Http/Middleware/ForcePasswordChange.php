@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class ForcePasswordChange
+{
+    /**
+     * Kalau akun ini masih pakai password hasil generate (belum pernah
+     * diganti sendiri), paksa ke halaman ganti password dulu sebelum bisa
+     * akses apapun - kecuali halaman ganti password itu sendiri & logout.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = $request->user();
+
+        if ($user && $user->is_password_generated && $user->password_plain) {
+            $rutePengecualian = ['user.change-password', 'logout'];
+            if (! in_array($request->route()?->getName(), $rutePengecualian)) {
+                return redirect()->route('user.change-password')
+                    ->with('warning', 'Demi keamanan, kamu wajib ganti password bawaan ini terlebih dahulu sebelum melanjutkan.');
+            }
+        }
+
+        return $next($request);
+    }
+}

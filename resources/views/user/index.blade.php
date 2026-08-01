@@ -52,6 +52,8 @@
                                 <i class="ti ti-eye" id="pw-icon-{{ $user->id }}"></i>
                             </button>
                         </span>
+                        @elseif($user->is_password_generated)
+                        <span class="badge badge-aktif" title="Password bawaan sudah diganti sendiri oleh user"><i class="ti ti-shield-check"></i> Sudah Diganti</span>
                         @else
                         <span style="font-size:11px;color:#cbd5e1;">-</span>
                         @endif

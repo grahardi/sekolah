@@ -45,6 +45,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/guru/generate-user-massal', [EraporController::class, 'generateUserMassal'])->name('guru.generate-user-massal');
         Route::get('/guru/template-user', [EraporController::class, 'downloadTemplateUser'])->name('guru.template-user');
         Route::post('/guru/import-user', [EraporController::class, 'importUser'])->name('guru.import-user');
+        Route::get('/guru/export-user', [EraporController::class, 'exportUser'])->name('guru.export-user');
 
         Route::get('/dari-pegawai/{pegawai}/tugas-mengajar', [EraporController::class, 'tugasMengajarDariPegawai'])->name('tugas-mengajar.dari-pegawai');
     });

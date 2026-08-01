@@ -23,10 +23,11 @@
 </div>
 @endif
 
-<form action="{{ route('erapor.guru.generate-user-massal') }}" method="POST" style="margin-bottom:18px;" onsubmit="return confirm('Generate akun untuk semua guru yang belum punya akun?')">
+<form action="{{ route('erapor.guru.generate-user-massal') }}" method="POST" style="margin-bottom:18px;display:inline-block;" onsubmit="return confirm('Generate akun untuk semua guru yang belum punya akun?')">
     @csrf
     <button type="submit" class="btn btn-primary"><i class="ti ti-users-plus"></i> Generate Akun untuk Semua Guru Baru</button>
 </form>
+<a href="{{ route('erapor.guru.export-user') }}" class="btn btn-secondary" style="margin-left:8px;"><i class="ti ti-download"></i> Export User</a>
 
 <div class="card" style="padding:16px;margin-bottom:20px;">
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Atau Import User (kalau guru sudah punya email sendiri)</p>
