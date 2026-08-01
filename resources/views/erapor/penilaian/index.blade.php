@@ -7,6 +7,15 @@
 @endsection
 
 @section('content')
+@if(auth()->user()->role === 'guru' && $mapelList->isEmpty())
+<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px;margin-bottom:16px;">
+    <p style="font-size:13px;color:#92400e;margin:0;">
+        Belum ada Tujuan Pembelajaran/penugasan mengajar yang ditetapkan admin untuk kelas yang kamu ajar.
+        Hubungi admin sekolah untuk menetapkan penugasan mengajarmu dulu.
+    </p>
+</div>
+@endif
+
 <form method="GET" class="card" style="padding:14px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
     <div>
         <label class="form-label">Mata Pelajaran</label>

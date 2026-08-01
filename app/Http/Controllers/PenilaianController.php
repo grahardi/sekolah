@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru;
+use App\Models\GuruPengajar;
 use App\Models\MataPelajaran;
 use App\Models\Penilaian;
 use App\Models\PenilaianDetailNilai;

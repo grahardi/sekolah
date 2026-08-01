@@ -129,7 +129,7 @@
             .then(tps => {
                 const container = document.getElementById('tp-list');
                 if (tps.length === 0) {
-                    container.innerHTML = '<p style="font-size:12px;color:#94a3b8;">Belum ada TP untuk kombinasi mapel/kelas/semester ini.</p>';
+                    container.innerHTML = '<p style="font-size:12px;color:#dc2626;">Belum ada Tujuan Pembelajaran yang ditetapkan untuk kelas ini. Buat TP dulu, atau pilih jenis penilaian lain.</p>';
                     return;
                 }
                 container.innerHTML = tps.map(tp => `
