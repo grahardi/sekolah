@@ -32,7 +32,7 @@
         <p style="font-weight:700;color:#0f172a;margin:0 0 4px;font-size:14px;">{{ $g->nama }}</p>
         <p style="font-size:11px;color:#94a3b8;margin:0 0 8px;font-family:monospace;">{{ $g->nip_nuptk ?? '-' }}</p>
         @if($g->isDariKepegawaian())
-        <span class="badge" style="background:#eff6ff;color:#2563EB;">Kepegawaian</span>
+        <span class="badge" style="background:#eff6ff;color:#1E3A5F;">Kepegawaian</span>
         @else
         <span class="badge" style="background:#fef3c7;color:#92400e;">{{ $g->keterangan ?? 'Guru Bantu' }}</span>
         @endif

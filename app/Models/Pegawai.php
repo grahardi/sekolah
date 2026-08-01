@@ -94,9 +94,9 @@ class Pegawai extends Model
     {
         return $query
             ->when($filters['search'] ?? null, fn ($q, $v) => $q->where(fn ($qq) => $qq
-                ->where('nama_lengkap', 'like', "%{$v}%")
-                ->orWhere('nip_nuptk', 'like', "%{$v}%")
-                ->orWhere('jabatan', 'like', "%{$v}%")))
+                ->where('nama_lengkap', 'ilike', "%{$v}%")
+                ->orWhere('nip_nuptk', 'ilike', "%{$v}%")
+                ->orWhere('jabatan', 'ilike', "%{$v}%")))
             ->when($filters['status_aktif'] ?? null, fn ($q, $v) => $q->where('status_aktif', $v))
             ->when($filters['jenis_kepegawaian'] ?? null, fn ($q, $v) => $q->where('jenis_kepegawaian', $v))
             ->when($filters['unit_kerja'] ?? null, fn ($q, $v) => $q->where('unit_kerja', $v));

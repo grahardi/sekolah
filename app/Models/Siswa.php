@@ -110,9 +110,9 @@ class Siswa extends Model
     {
         $query->when($filters['search'] ?? null, function ($q, $s) {
             $q->where(function ($q) use ($s) {
-                $q->where('nama_lengkap','like',"%{$s}%")
-                  ->orWhere('nisn','like',"%{$s}%")
-                  ->orWhere('nis','like',"%{$s}%");
+                $q->where('nama_lengkap','ilike',"%{$s}%")
+                  ->orWhere('nisn','ilike',"%{$s}%")
+                  ->orWhere('nis','ilike',"%{$s}%");
             });
         });
         $query->when($filters['kelas']         ?? null, fn($q,$v) => $q->where('kelas',$v));

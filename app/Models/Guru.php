@@ -26,7 +26,7 @@ class Guru extends Model
             return asset('storage/' . $this->pegawai->foto);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama)
-             . '&background=2563EB&color=fff&size=128&bold=true';
+             . '&background=1E3A5F&color=fff&size=128&bold=true';
     }
 
     /**

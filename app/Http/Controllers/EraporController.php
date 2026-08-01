@@ -140,7 +140,7 @@ class EraporController extends Controller
     {
         $search = $request->input('search');
 
-        $mapels = MataPelajaran::when($search, fn ($q) => $q->where('nama', 'like', "%{$search}%"))
+        $mapels = MataPelajaran::when($search, fn ($q) => $q->where('nama', 'ilike', "%{$search}%"))
             ->orderBy('nama')->get();
 
         $mapels->each(function ($m) {
@@ -458,7 +458,7 @@ class EraporController extends Controller
         $search = $request->input('search');
 
         $gurus = Guru::with('pegawai')
-            ->when($search, fn ($q) => $q->where('nama', 'like', "%{$search}%"))
+            ->when($search, fn ($q) => $q->where('nama', 'ilike', "%{$search}%"))
             ->orderBy('nama')
             ->get();
 
