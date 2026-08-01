@@ -238,8 +238,32 @@ class EraporController extends Controller
      */
     private function generateEmailGuru(Guru $guru, int $urutGuru): string
     {
-        $namaDepan = strtolower(preg_replace('/[^a-zA-Z]/', '', explode(' ', trim($guru->nama))[0] ?? 'guru'));
+        $namaDepan = strtolower($this->ambilNamaDepanBersih($guru->nama));
         return "{$namaDepan}{$guru->sekolah_id}.{$urutGuru}@guru.sekolah.co.id";
+    }
+
+    /**
+     * Bersihkan gelar di depan nama (Drs., Dra., Ir., Prof., Dr., H., Hj., dst)
+     * sebelum ambil kata pertama sebagai "nama depan" - gelar di BELAKANG nama
+     * (S.Pd., M.Pd., Gr., dst setelah koma) otomatis aman krn cuma ambil kata
+     * pertama sebelum koma manapun.
+     */
+    private function ambilNamaDepanBersih(string $namaLengkap): string
+    {
+        $gelarDepan = ['drs', 'dra', 'ir', 'prof', 'dr', 'h', 'hj', 'kh', 'k.h', 'tb', 'raden', 'r'];
+
+        // Ambil bagian sebelum koma pertama saja (gelar belakang biasanya setelah koma)
+        $nama = trim(explode(',', $namaLengkap)[0]);
+        $kataKata = preg_split('/\s+/', trim($nama));
+
+        foreach ($kataKata as $kata) {
+            $bersih = strtolower(preg_replace('/[^a-zA-Z]/', '', $kata));
+            if (! in_array($bersih, $gelarDepan) && $bersih !== '') {
+                return preg_replace('/[^a-zA-Z]/', '', $kata);
+            }
+        }
+
+        return 'guru'; // fallback kalau semua kata ternyata gelar (jarang terjadi)
     }
 
     /** Halaman Generate User massal - lihat status akun semua guru sekaligus */
