@@ -200,6 +200,56 @@ class EraporController extends Controller
         return back()->with('success', 'Guru kokurikuler dihapus.');
     }
 
+    // ── Pengaturan Cetak Rapor ──────────────────────────────────────────
+    public function pengaturanCetak()
+    {
+        return view('erapor.pengaturan-cetak', ['sekolah' => auth()->user()->sekolah]);
+    }
+
+    public function updatePengaturanCetak(Request $request)
+    {
+        $data = $request->validate([
+            'rapor_ukuran_kertas' => 'required|in:A4,F4,Legal',
+            'rapor_orientasi' => 'required|in:portrait,landscape',
+            'rapor_font_size' => 'required|in:kecil,normal,besar',
+            'rapor_tanggal_manual' => 'nullable|date',
+            'rapor_tampilkan_logo' => 'nullable|boolean',
+            'rapor_kota_ttd' => 'nullable|string|max:100',
+        ]);
+        $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
+
+        auth()->user()->sekolah->update($data);
+
+        return back()->with('success', 'Pengaturan cetak rapor berhasil disimpan.');
+    }
+
+    // ── Kegiatan P5 (Kokurikuler) - master list template deskripsi ──────
+    public function kegiatanP5Index()
+    {
+        return view('erapor.kegiatan-p5.index', [
+            'kegiatans' => \App\Models\KokurikulerKegiatan::with('tahunAjaran')->orderByDesc('id')->get(),
+            'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+        ]);
+    }
+
+    public function storeKegiatanP5(Request $request)
+    {
+        $data = $request->validate([
+            'tahun_ajaran_id' => 'nullable|exists:tahun_ajarans,id',
+            'nama_kegiatan' => 'required|string|max:150',
+            'tema' => 'nullable|string|max:150',
+            'deskripsi_template' => 'nullable|string',
+        ]);
+        \App\Models\KokurikulerKegiatan::create($data);
+        return back()->with('success', 'Kegiatan P5 ditambahkan.');
+    }
+
+    public function destroyKegiatanP5(\App\Models\KokurikulerKegiatan $kegiatan)
+    {
+        $kegiatan->delete();
+        return back()->with('success', 'Kegiatan P5 dihapus.');
+    }
+
     /** Daftar kombinasi kelas-rombel yang ada di data siswa aktif (dari Buku Induk) */
     private function kelasRombelList()
     {

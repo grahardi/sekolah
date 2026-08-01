@@ -34,7 +34,15 @@
 
     <div class="card" style="padding:20px;margin-bottom:16px;">
         <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">B. Kokurikuler (Projek P5)</p>
-        <textarea name="deskripsi_kokurikuler" class="form-input" rows="3" placeholder="mis. Dalam projek '...', ananda menunjukkan perkembangan yang sangat baik terutama pada...">{{ $rapor->deskripsi_kokurikuler }}</textarea>
+        @if($daftarKegiatanP5->count() > 0)
+        <select id="pilih-kegiatan-p5" class="form-input" style="margin-bottom:10px;" onchange="isiDeskripsiP5(this)">
+            <option value="">-- Pilih dari daftar Kegiatan P5 (opsional, isi otomatis di bawah) --</option>
+            @foreach($daftarKegiatanP5 as $k)
+            <option value="{{ $k->deskripsi_template }}">{{ $k->nama_kegiatan }}{{ $k->tema ? " ($k->tema)" : '' }}</option>
+            @endforeach
+        </select>
+        @endif
+        <textarea name="deskripsi_kokurikuler" id="deskripsi_kokurikuler" class="form-input" rows="3" placeholder="mis. Dalam projek '...', ananda menunjukkan perkembangan yang sangat baik terutama pada...">{{ $rapor->deskripsi_kokurikuler }}</textarea>
     </div>
 
     <div class="card" style="padding:20px;margin-bottom:16px;">
@@ -45,13 +53,18 @@
         <div id="ekskul-rows">
             @forelse($rapor->detailEkskul as $e)
             <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:8px;">
-                <input type="text" name="ekskul_nama[]" value="{{ $e->nama_ekskul }}" class="form-input" placeholder="Nama ekskul">
+                <input type="text" name="ekskul_nama[]" value="{{ $e->nama_ekskul }}" class="form-input" placeholder="Nama ekskul" list="daftar-ekskul">
                 <input type="text" name="ekskul_keterangan[]" value="{{ $e->keterangan }}" class="form-input" placeholder="Keterangan">
                 <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>
             </div>
             @empty
             @endforelse
         </div>
+        <datalist id="daftar-ekskul">
+            @foreach($daftarEkskul as $nama)
+            <option value="{{ $nama }}">
+            @endforeach
+        </datalist>
         <p style="font-size:11px;color:#94a3b8;margin-top:6px;">Kosongkan semua baris kalau siswa tidak mengikuti ekstrakurikuler.</p>
     </div>
 
@@ -96,8 +109,14 @@
     function tambahBarisEkskul() {
         const div = document.createElement('div');
         div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:8px;';
-        div.innerHTML = '<input type="text" name="ekskul_nama[]" class="form-input" placeholder="Nama ekskul"><input type="text" name="ekskul_keterangan[]" class="form-input" placeholder="Keterangan"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>';
+        div.innerHTML = '<input type="text" name="ekskul_nama[]" class="form-input" placeholder="Nama ekskul" list="daftar-ekskul"><input type="text" name="ekskul_keterangan[]" class="form-input" placeholder="Keterangan"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>';
         document.getElementById('ekskul-rows').appendChild(div);
+    }
+
+    function isiDeskripsiP5(select) {
+        if (select.value) {
+            document.getElementById('deskripsi_kokurikuler').value = select.value;
+        }
     }
 </script>
 @endsection

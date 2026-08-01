@@ -29,10 +29,18 @@ class Sekolah extends Model
         'bentuk_pendidikan',
         'jenjang_pendidikan',
         'kkm',
+        'rapor_ukuran_kertas',
+        'rapor_orientasi',
+        'rapor_font_size',
+        'rapor_tanggal_manual',
+        'rapor_tampilkan_logo',
+        'rapor_kota_ttd',
     ];
 
     protected $casts = [
         'is_demo' => 'boolean',
+        'rapor_tampilkan_logo' => 'boolean',
+        'rapor_tanggal_manual' => 'date',
     ];
 
     public function users(): HasMany

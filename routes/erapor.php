@@ -20,6 +20,13 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/mata-pelajaran', [EraporController::class, 'storeMataPelajaran'])->name('mata-pelajaran.store');
         Route::delete('/mata-pelajaran/{mataPelajaran}', [EraporController::class, 'destroyMataPelajaran'])->name('mata-pelajaran.destroy');
 
+        Route::get('/pengaturan-cetak', [EraporController::class, 'pengaturanCetak'])->name('pengaturan-cetak');
+        Route::put('/pengaturan-cetak', [EraporController::class, 'updatePengaturanCetak'])->name('pengaturan-cetak.update');
+
+        Route::get('/kegiatan-p5', [EraporController::class, 'kegiatanP5Index'])->name('kegiatan-p5.index');
+        Route::post('/kegiatan-p5', [EraporController::class, 'storeKegiatanP5'])->name('kegiatan-p5.store');
+        Route::delete('/kegiatan-p5/{kegiatan}', [EraporController::class, 'destroyKegiatanP5'])->name('kegiatan-p5.destroy');
+
         Route::get('/penugasan', [EraporController::class, 'penugasan'])->name('penugasan');
 
         Route::post('/wali-kelas', [EraporController::class, 'storeWaliKelas'])->name('wali-kelas.store');

@@ -93,7 +93,9 @@ class RaporController extends Controller
     public function edit(Rapor $rapor)
     {
         $rapor->load(['siswa', 'detailAkademik.mataPelajaran', 'detailEkskul']);
-        return view('erapor.rapor.edit', ['rapor' => $rapor]);
+        $daftarEkskul = \App\Models\GuruEkstrakurikuler::distinct()->pluck('nama_ekstrakurikuler');
+        $daftarKegiatanP5 = \App\Models\KokurikulerKegiatan::orderByDesc('id')->get();
+        return view('erapor.rapor.edit', ['rapor' => $rapor, 'daftarEkskul' => $daftarEkskul, 'daftarKegiatanP5' => $daftarKegiatanP5]);
     }
 
     public function update(Request $request, Rapor $rapor)
@@ -158,11 +160,21 @@ class RaporController extends Controller
             ->where('kelas', $rapor->kelas)->where('rombel', $rapor->rombel)
             ->first();
 
+        // Tanggal cetak: pakai setelan manual sekolah kalau diisi, else tanggal_rapor
+        // per-siswa, else hari ini.
+        $tanggalCetak = $sekolah->rapor_tanggal_manual ?? $rapor->tanggal_rapor ?? now();
+        $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
+
+        // DomPDF tidak kenal nama "F4" - ukuran itu setara dgn "folio" (~210x330mm)
+        $ukuranKertas = strtolower($sekolah->rapor_ukuran_kertas) === 'f4' ? 'folio' : strtolower($sekolah->rapor_ukuran_kertas);
+
         $pdf = Pdf::loadView('erapor.rapor.pdf', [
             'rapor' => $rapor,
             'sekolah' => $sekolah,
             'waliKelas' => $waliKelas?->guru,
-        ])->setPaper('a4', 'portrait');
+            'tanggalCetak' => $tanggalCetak,
+            'kotaTtd' => $kotaTtd,
+        ])->setPaper($ukuranKertas, $sekolah->rapor_orientasi);
 
         return $pdf->download('rapor-' . str_replace(' ', '-', $rapor->siswa->nama_lengkap) . '.pdf');
     }

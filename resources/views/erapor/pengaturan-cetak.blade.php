@@ -1,0 +1,61 @@
+@extends('layouts.erapor')
+@section('title', 'Pengaturan Cetak Rapor')
+@section('page-title', 'Pengaturan Cetak Rapor')
+
+@section('content')
+<p style="font-size:13px;color:#64748b;margin:-10px 0 18px;">
+    Berlaku untuk semua rapor yang dicetak dari sekolah ini. Data kop surat (nama sekolah, alamat,
+    kepala sekolah, dll) diatur di <a href="/profil-sekolah" style="color:#2563EB;">Profil Sekolah</a>, terpisah dari halaman ini.
+</p>
+
+<form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;">
+    @csrf
+
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Kertas & Tata Letak</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+        <div>
+            <label class="form-label">Ukuran Kertas</label>
+            <select name="rapor_ukuran_kertas" class="form-input">
+                @foreach(['A4','F4','Legal'] as $u)
+                <option value="{{ $u }}" {{ $sekolah->rapor_ukuran_kertas === $u ? 'selected' : '' }}>{{ $u }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Orientasi</label>
+            <select name="rapor_orientasi" class="form-input">
+                <option value="portrait" {{ $sekolah->rapor_orientasi === 'portrait' ? 'selected' : '' }}>Potret (Portrait)</option>
+                <option value="landscape" {{ $sekolah->rapor_orientasi === 'landscape' ? 'selected' : '' }}>Lanskap (Landscape)</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Ukuran Font</label>
+            <select name="rapor_font_size" class="form-input">
+                <option value="kecil" {{ $sekolah->rapor_font_size === 'kecil' ? 'selected' : '' }}>Kecil (muat lebih banyak teks)</option>
+                <option value="normal" {{ $sekolah->rapor_font_size === 'normal' ? 'selected' : '' }}>Normal</option>
+                <option value="besar" {{ $sekolah->rapor_font_size === 'besar' ? 'selected' : '' }}>Besar (lebih mudah dibaca)</option>
+            </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-top:26px;">
+            <input type="checkbox" name="rapor_tampilkan_logo" value="1" id="tampilkan_logo" {{ $sekolah->rapor_tampilkan_logo ? 'checked' : '' }}>
+            <label for="tampilkan_logo" style="font-size:13px;">Tampilkan logo di kop surat</label>
+        </div>
+    </div>
+
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Tanggal & Tanda Tangan</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;">
+        <div>
+            <label class="form-label">Tanggal Cetak (opsional)</label>
+            <input type="date" name="rapor_tanggal_manual" value="{{ $sekolah->rapor_tanggal_manual?->format('Y-m-d') }}" class="form-input">
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Kosongkan supaya otomatis pakai tanggal hari ini saat dicetak. Isi kalau mau tanggal seragam (mis. tanggal pembagian rapor).</p>
+        </div>
+        <div>
+            <label class="form-label">Kota (baris tanda tangan)</label>
+            <input type="text" name="rapor_kota_ttd" value="{{ $sekolah->rapor_kota_ttd }}" class="form-input" placeholder="mis. Turen">
+            <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Kosongkan supaya otomatis pakai nama kecamatan dari Profil Sekolah.</p>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:12px;"><i class="ti ti-device-floppy"></i> Simpan Pengaturan</button>
+</form>
+@endsection

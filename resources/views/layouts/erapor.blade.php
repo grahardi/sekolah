@@ -183,6 +183,14 @@
            class="sb-item {{ request()->routeIs('erapor.mata-pelajaran*') ? 'active' : '' }}">
             <i class="ti ti-book-2"></i><span>Mata Pelajaran</span>
         </a>
+        <a href="{{ route('erapor.pengaturan-cetak') }}"
+           class="sb-item {{ request()->routeIs('erapor.pengaturan-cetak') ? 'active' : '' }}">
+            <i class="ti ti-settings"></i><span>Pengaturan Cetak</span>
+        </a>
+        <a href="{{ route('erapor.kegiatan-p5.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.kegiatan-p5.*') ? 'active' : '' }}">
+            <i class="ti ti-puzzle"></i><span>Kegiatan P5</span>
+        </a>
 
         <div class="sb-divider"></div>
         <div class="sb-section">Penugasan Guru</div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <style>
     * { font-family: 'DejaVu Sans', sans-serif; box-sizing: border-box; }
-    body { font-size: 10px; color: #1a1a1a; margin: 0; }
+    body { font-size: {{ $sekolah->rapor_font_size === 'kecil' ? '9px' : ($sekolah->rapor_font_size === 'besar' ? '11px' : '10px') }}; color: #1a1a1a; margin: 0; }
     .kop { display: table; width: 100%; margin-bottom: 6px; }
     .kop-row { display: table-row; }
     .kop-cell { display: table-cell; vertical-align: middle; }
@@ -66,7 +66,7 @@
 {{-- ================= HALAMAN 1 ================= --}}
 <div class="kop">
     <div class="kop-row">
-        <div class="kop-cell kop-logo"></div>
+        @if($sekolah->rapor_tampilkan_logo)<div class="kop-cell kop-logo"></div>@endif
         <div class="kop-cell kop-text">
             @if($kabupatenText)<h1>{{ $kabupatenText }}</h1>@endif
             <h2>DINAS PENDIDIKAN</h2>
@@ -78,7 +78,7 @@
             </p>
             @if($sekolah->website)<p>Laman: {{ $sekolah->website }}</p>@endif
         </div>
-        <div class="kop-cell kop-logo"></div>
+        @if($sekolah->rapor_tampilkan_logo)<div class="kop-cell kop-logo"></div>@endif
     </div>
 </div>
 <div class="garis-tebal"></div>
@@ -177,7 +177,7 @@
         <div>NIP {{ $sekolah->kepala_sekolah_nip }}</div>
     </div>
     <div class="ttd-col">
-        {{ $sekolah->kecamatan ?? '' }}, {{ $rapor->tanggal_rapor?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}<br>Wali Kelas
+        {{ $kotaTtd ?? '' }}, {{ $tanggalCetak->translatedFormat('d F Y') }}<br>Wali Kelas
         <div class="ttd-space"></div>
         <div class="ttd-nama">{{ $waliKelas->nama ?? '-' }}</div>
         <div>{{ $waliKelas && $waliKelas->nip_nuptk ? 'NIP ' . $waliKelas->nip_nuptk : '' }}</div>
