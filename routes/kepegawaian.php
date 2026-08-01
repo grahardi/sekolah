@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 // PENTING: route /laporan/* dan /{pegawai} bisa bentrok kalau urutan salah -
 // Laravel mencocokkan route dari atas ke bawah, jadi /laporan/duk HARUS
 // didaftarkan SEBELUM /{pegawai} supaya tidak dianggap sebagai ID pegawai.
-Route::middleware(['web', 'auth'])->prefix('kepegawaian')->name('pegawai.')->group(function () {
+Route::middleware(['web', 'auth', 'not_guru'])->prefix('kepegawaian')->name('pegawai.')->group(function () {
     Route::get('/', [PegawaiController::class, 'index'])->name('index');
 
     // Laporan (read-only, dihitung otomatis dari data pegawai) - didaftarkan

@@ -230,15 +230,76 @@ class EraporController extends Controller
      * sendiri, otomatis dibuatkan (role 'guru', username & password random).
      * Sesi admin disimpan supaya bisa kembali kapan saja.
      */
-    public function loginSebagaiGuru(Guru $guru)
+    /**
+     * Format email login guru: {namadepan}{kodesekolah}.{urutguru}@guru.sekolah.co.id
+     * - kodesekolah = ID sekolah di sistem (unik antar sekolah)
+     * - urutguru = nomor urut guru DI SEKOLAH ITU (unik per sekolah, jadi
+     *   kombinasinya otomatis unik tanpa perlu cek tabrakan nama).
+     */
+    private function generateEmailGuru(Guru $guru, int $urutGuru): string
     {
-        if (! $guru->user_id) {
-            $emailUnik = 'guru' . $guru->id . '.' . auth()->user()->sekolah_id . '@guru.sekolah.local';
-            $passwordAsli = \Illuminate\Support\Str::random(10);
+        $namaDepan = strtolower(preg_replace('/[^a-zA-Z]/', '', explode(' ', trim($guru->nama))[0] ?? 'guru'));
+        return "{$namaDepan}{$guru->sekolah_id}.{$urutGuru}@guru.sekolah.co.id";
+    }
+
+    /** Halaman Generate User massal - lihat status akun semua guru sekaligus */
+    public function generateUserIndex()
+    {
+        Guru::syncFromPegawai(auth()->user()->sekolah_id);
+
+        $gurus = Guru::orderBy('id')->get();
+        $gurus->each(function ($g, $i) {
+            $g->urutan = $i + 1;
+        });
+
+        return view('erapor.guru.generate-user', ['gurus' => $gurus]);
+    }
+
+    /** Generate akun sekaligus utk SEMUA guru yang belum punya akun */
+    public function generateUserMassal()
+    {
+        $gurus = Guru::orderBy('id')->get();
+        $hasilBaru = [];
+
+        foreach ($gurus as $i => $guru) {
+            if ($guru->user_id) continue; // sudah ada, lewati
+
+            $urutan = $i + 1;
+            $email = $this->generateEmailGuru($guru, $urutan);
+            $password = \Illuminate\Support\Str::random(8);
 
             $user = \App\Models\User::create([
                 'name' => $guru->nama,
-                'email' => $emailUnik,
+                'email' => $email,
+                'password' => bcrypt($password),
+                'sekolah_id' => $guru->sekolah_id,
+                'role' => 'guru',
+                'aktif' => true,
+                'email_verified_at' => now(),
+            ]);
+
+            $guru->update(['user_id' => $user->id]);
+            $hasilBaru[] = ['nama' => $guru->nama, 'email' => $email, 'password' => $password];
+        }
+
+        if (empty($hasilBaru)) {
+            return back()->with('success', 'Semua guru sudah punya akun, tidak ada yang baru dibuat.');
+        }
+
+        session()->flash('akun_massal_baru', $hasilBaru);
+        return back()->with('success', count($hasilBaru) . ' akun guru baru berhasil dibuat.');
+    }
+
+    public function loginSebagaiGuru(Guru $guru)
+    {
+        if (! $guru->user_id) {
+            $urutan = Guru::where('sekolah_id', $guru->sekolah_id)->where('id', '<=', $guru->id)->count();
+            $email = $this->generateEmailGuru($guru, $urutan);
+            $passwordAsli = \Illuminate\Support\Str::random(8);
+
+            $user = \App\Models\User::create([
+                'name' => $guru->nama,
+                'email' => $email,
                 'password' => bcrypt($passwordAsli),
                 'sekolah_id' => auth()->user()->sekolah_id,
                 'role' => 'guru',
@@ -249,7 +310,7 @@ class EraporController extends Controller
             $guru->update(['user_id' => $user->id]);
 
             session()->flash('akun_guru_baru', [
-                'email' => $emailUnik,
+                'email' => $email,
                 'password' => $passwordAsli,
             ]);
         }

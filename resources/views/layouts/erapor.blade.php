@@ -187,8 +187,12 @@
         <div class="sb-divider"></div>
         <div class="sb-section">Penugasan Guru</div>
         <a href="{{ route('erapor.guru.index') }}"
-           class="sb-item {{ request()->routeIs('erapor.guru.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('erapor.guru.index') ? 'active' : '' }}">
             <i class="ti ti-users"></i><span>Guru</span>
+        </a>
+        <a href="{{ route('erapor.guru.generate-user') }}"
+           class="sb-item {{ request()->routeIs('erapor.guru.generate-user') ? 'active' : '' }}">
+            <i class="ti ti-users-plus"></i><span>Generate User</span>
         </a>
         <a href="{{ route('erapor.penugasan') }}"
            class="sb-item {{ request()->routeIs('erapor.penugasan') ? 'active' : '' }}">

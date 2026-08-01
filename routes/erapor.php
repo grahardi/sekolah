@@ -40,6 +40,10 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::delete('/guru/{guru}/bantu', [EraporController::class, 'destroyGuruBantu'])->name('guru.destroy-bantu');
         Route::get('/guru/{guru}/login-sebagai', [EraporController::class, 'loginSebagaiGuru'])->name('guru.login-sebagai');
 
+        // Generate User massal
+        Route::get('/guru/generate-user', [EraporController::class, 'generateUserIndex'])->name('guru.generate-user');
+        Route::post('/guru/generate-user-massal', [EraporController::class, 'generateUserMassal'])->name('guru.generate-user-massal');
+
         Route::get('/dari-pegawai/{pegawai}/tugas-mengajar', [EraporController::class, 'tugasMengajarDariPegawai'])->name('tugas-mengajar.dari-pegawai');
     });
 

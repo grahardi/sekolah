@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 // Modul Buku Induk Siswa. Login/logout PAKAI Breeze yang sudah ada di portal
 // (bukan AuthController milik modul ini) supaya satu akun berlaku untuk
 // seluruh sekolah.co.id, bukan sistem login terpisah.
-Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
+Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(function () {
 
     Route::get('/', fn () => redirect()->route('siswa.index'));
 
