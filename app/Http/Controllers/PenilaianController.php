@@ -9,6 +9,7 @@ use App\Models\Penilaian;
 use App\Models\PenilaianDetailNilai;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
+use App\Models\TpKelas;
 use App\Models\TujuanPembelajaran;
 use Illuminate\Http\Request;
 
@@ -19,36 +20,84 @@ class PenilaianController extends Controller
         $filters = $request->only(['kelas_rombel', 'mata_pelajaran_id']);
         $user = auth()->user();
 
-        $query = Penilaian::with(['mataPelajaran', 'guru', 'tahunAjaran']);
-        $mapelListUntukFilter = MataPelajaran::orderBy('nama')->get();
-
-        // Guru cuma lihat penilaian yg dia buat sendiri, dan dropdown filter
-        // mapel-nya juga cuma nampilin mapel yg dia ajar (bukan semua mapel sekolah)
-        if ($user->role === 'guru') {
-            $guru = Guru::where('user_id', $user->id)->first();
-            $query->where('guru_id', $guru?->id ?? 0);
-
-            $mapelListUntukFilter = $guru
-                ? GuruPengajar::where('guru_id', $guru->id)->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->values()
-                : collect();
+        // ── Kalau mapel+kelas sudah dipilih -> tampilkan "Bank Nilai" lengkap ──
+        if (($filters['mata_pelajaran_id'] ?? null) && ($filters['kelas_rombel'] ?? null)) {
+            return $this->bankNilai($filters['mata_pelajaran_id'], $filters['kelas_rombel']);
         }
 
-        $penilaians = $query
-            ->when($filters['mata_pelajaran_id'] ?? null, fn ($q, $v) => $q->where('mata_pelajaran_id', $v))
-            ->when($filters['kelas_rombel'] ?? null, function ($q, $v) {
-                [$kelas, $rombel] = array_pad(explode('|', $v), 2, null);
-                $q->where('kelas', $kelas)->where('rombel', $rombel ?: null);
-            })
-            ->withCount('nilais')
-            ->orderByDesc('id')
-            ->paginate(20)
-            ->withQueryString();
+        // ── Kalau belum -> tampilkan kartu kelas (landing page) ──
+        $kombinasiQuery = GuruPengajar::query();
+        if ($user->role === 'guru') {
+            $guru = Guru::where('user_id', $user->id)->first();
+            $kombinasiQuery->where('guru_id', $guru?->id ?? 0);
+        }
 
-        return view('erapor.penilaian.index', [
-            'penilaians' => $penilaians,
-            'mapelList' => $mapelListUntukFilter,
-            'kelasList' => $this->kelasRombelList(),
-            'filters' => $filters,
+        $kombinasi = $kombinasiQuery->with('mataPelajaran')->get()
+            ->unique(fn ($p) => $p->mata_pelajaran_id . '|' . $p->kelas . '|' . $p->rombel)
+            ->map(function ($p) {
+                $kelasRombel = $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|";
+                return [
+                    'mapel_id' => $p->mata_pelajaran_id,
+                    'mapel_nama' => $p->mataPelajaran->nama,
+                    'kelas' => $p->kelas,
+                    'rombel' => $p->rombel,
+                    'kelas_rombel' => $kelasRombel,
+                    'jumlah_penilaian' => Penilaian::where('mata_pelajaran_id', $p->mata_pelajaran_id)->where('kelas', $p->kelas)->where('rombel', $p->rombel)->count(),
+                    'jumlah_tp' => TpKelas::where('kelas', $p->kelas)->where('rombel', $p->rombel)
+                        ->whereHas('tujuanPembelajaran', fn ($q) => $q->where('mata_pelajaran_id', $p->mata_pelajaran_id))->count(),
+                ];
+            })->values();
+
+        return view('erapor.penilaian.kartu-kelas', ['kombinasi' => $kombinasi]);
+    }
+
+    /** "Bank Nilai" - rekap penilaian + ringkasan nilai akhir & deskripsi 1 kelas+mapel */
+    private function bankNilai($mapelId, $kelasRombel)
+    {
+        [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
+        $mapel = MataPelajaran::findOrFail($mapelId);
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+        $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
+
+        $penilaianList = Penilaian::where('mata_pelajaran_id', $mapelId)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->with('tujuanPembelajarans')
+            ->withCount('nilais')
+            ->orderByRaw("CASE subjenis_penilaian
+                WHEN 'Sumatif TP' THEN 1
+                WHEN 'Sumatif Tengah Semester' THEN 2
+                WHEN 'Sumatif Akhir Semester' THEN 3
+                ELSE 4 END")
+            ->get();
+
+        $sumatif = $penilaianList->where('jenis_penilaian', 'Sumatif');
+        $formatif = $penilaianList->where('jenis_penilaian', 'Formatif');
+
+        $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('nis')->orderBy('nama_lengkap')->get();
+
+        $nilaiMap = PenilaianDetailNilai::whereIn('penilaian_id', $sumatif->pluck('id'))
+            ->get()->groupBy('penilaian_id')->map(fn ($g) => $g->pluck('nilai', 'siswa_id'));
+
+        $rekap = $siswaList->map(function ($s) use ($sumatif, $nilaiMap, $kelas, $rombel, $mapelId, $tahunAktif, $semester) {
+            $hasil = \App\Services\RaporCalculator::hitung($s->id, $kelas, $rombel, $mapelId, $tahunAktif->id, $semester);
+            return [
+                'siswa' => $s,
+                'nilai_per_penilaian' => $sumatif->mapWithKeys(fn ($p) => [$p->id => $nilaiMap->get($p->id)?->get($s->id)]),
+                'nilai_rapor' => $hasil['nilai_akhir'],
+                'deskripsi' => $hasil['deskripsi'],
+            ];
+        });
+
+        return view('erapor.penilaian.bank-nilai', [
+            'mapel' => $mapel,
+            'kelas' => $kelas,
+            'rombel' => $rombel,
+            'kelasRombel' => $kelasRombel,
+            'sumatif' => $sumatif,
+            'formatif' => $formatif,
+            'rekap' => $rekap,
         ]);
     }
 
