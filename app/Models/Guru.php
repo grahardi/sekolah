@@ -10,13 +10,23 @@ class Guru extends Model
     use BelongsToSekolah;
 
     protected $table = 'gurus';
-    protected $fillable = ['sekolah_id', 'pegawai_id', 'nama', 'nip_nuptk', 'keterangan'];
+    protected $fillable = ['sekolah_id', 'pegawai_id', 'user_id', 'nama', 'nip_nuptk', 'keterangan'];
 
     public function pegawai() { return $this->belongsTo(Pegawai::class); }
+    public function user() { return $this->belongsTo(User::class); }
 
     public function isDariKepegawaian(): bool
     {
         return ! is_null($this->pegawai_id);
+    }
+
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->pegawai && $this->pegawai->foto) {
+            return asset('storage/' . $this->pegawai->foto);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama)
+             . '&background=2563EB&color=fff&size=128&bold=true';
     }
 
     /**

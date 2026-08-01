@@ -29,6 +29,7 @@ const SUPERADMIN_ITEM = { key: 'superadmin', label: 'Admin Portal', href: '/admi
 export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const { url, props } = usePage();
     const user = props?.auth?.user;
+    const isImpersonating = props?.impersonating;
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
     const menuItems = user?.is_super_admin ? [...MENU, SUPERADMIN_ITEM] : MENU;
@@ -139,6 +140,12 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
 
             {/* Konten utama */}
             <div className="flex-1 min-w-0 flex flex-col">
+                {isImpersonating && (
+                    <div className="bg-amber-400 text-navy text-sm font-medium px-5 py-2 flex items-center justify-between gap-3">
+                        <span><i className="ti ti-user-shield" /> Sedang login sebagai <strong>{user?.name}</strong> (mode guru)</span>
+                        <a href="/erapor/kembali-admin" className="underline font-semibold shrink-0">Kembali ke Admin</a>
+                    </div>
+                )}
                 <header className="sticky top-0 z-30 bg-cream/90 backdrop-blur border-b border-navy/10 px-5 lg:px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0">
                         <button className="lg:hidden text-navy/70" onClick={() => setMobileOpen(true)}>

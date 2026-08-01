@@ -191,13 +191,18 @@ class EraporController extends Controller
 
     // ── Guru (roster gabungan Pegawai Kepegawaian + Guru Bantu non-Kepegawaian) ──
 
-    public function guruIndex()
+    public function guruIndex(Request $request)
     {
         Guru::syncFromPegawai(auth()->user()->sekolah_id);
 
-        return view('erapor.guru.index', [
-            'gurus' => Guru::with('pegawai')->orderBy('nama')->get(),
-        ]);
+        $search = $request->input('search');
+
+        $gurus = Guru::with('pegawai')
+            ->when($search, fn ($q) => $q->where('nama', 'like', "%{$search}%"))
+            ->orderBy('nama')
+            ->get();
+
+        return view('erapor.guru.index', ['gurus' => $gurus, 'search' => $search]);
     }
 
     public function storeGuruBantu(Request $request)
@@ -218,6 +223,52 @@ class EraporController extends Controller
         abort_if($guru->isDariKepegawaian(), 403, 'Guru ini terhubung ke data Kepegawaian - kelola/hapus dari sana, bukan dari sini.');
         $guru->delete();
         return back()->with('success', 'Guru bantu dihapus.');
+    }
+
+    /**
+     * Admin "login sebagai" guru ini - kalau guru belum punya akun User
+     * sendiri, otomatis dibuatkan (role 'guru', username & password random).
+     * Sesi admin disimpan supaya bisa kembali kapan saja.
+     */
+    public function loginSebagaiGuru(Guru $guru)
+    {
+        if (! $guru->user_id) {
+            $emailUnik = 'guru' . $guru->id . '.' . auth()->user()->sekolah_id . '@guru.sekolah.local';
+            $passwordAsli = \Illuminate\Support\Str::random(10);
+
+            $user = \App\Models\User::create([
+                'name' => $guru->nama,
+                'email' => $emailUnik,
+                'password' => bcrypt($passwordAsli),
+                'sekolah_id' => auth()->user()->sekolah_id,
+                'role' => 'guru',
+                'aktif' => true,
+                'email_verified_at' => now(),
+            ]);
+
+            $guru->update(['user_id' => $user->id]);
+
+            session()->flash('akun_guru_baru', [
+                'email' => $emailUnik,
+                'password' => $passwordAsli,
+            ]);
+        }
+
+        session(['impersonating_admin_id' => auth()->id()]);
+        auth()->loginUsingId($guru->user_id);
+
+        return redirect()->route('dashboard')->with('success', "Sedang login sebagai {$guru->nama}.");
+    }
+
+    public function kembaliKeAdmin()
+    {
+        $adminId = session('impersonating_admin_id');
+        abort_unless($adminId, 404);
+
+        session()->forget('impersonating_admin_id');
+        auth()->loginUsingId($adminId);
+
+        return redirect()->route('erapor.guru.index')->with('success', 'Kembali ke akun admin.');
     }
 
     /** Dipanggil dari halaman detail Pegawai (Kepegawaian) - cari/buatkan Guru
