@@ -197,9 +197,14 @@
 
         <div class="sb-divider"></div>
         <div class="sb-section">Nilai & Rapor</div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-report"></i><span>Input Nilai</span><span class="sb-demo-badge">Segera</span>
-        </div>
+        <a href="{{ route('erapor.tp.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.tp.*') ? 'active' : '' }}">
+            <i class="ti ti-target-arrow"></i><span>Tujuan Pembelajaran</span>
+        </a>
+        <a href="{{ route('erapor.penilaian.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.penilaian.*') ? 'active' : '' }}">
+            <i class="ti ti-report"></i><span>Input Nilai</span>
+        </a>
         <div class="sb-item-demo" title="Segera hadir">
             <i class="ti ti-printer"></i><span>Cetak Rapor</span><span class="sb-demo-badge">Segera</span>
         </div>

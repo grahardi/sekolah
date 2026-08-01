@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\EraporController;
+use App\Http\Controllers\PenilaianController;
+use App\Http\Controllers\TujuanPembelajaranController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(function () {
@@ -15,6 +17,21 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/mata-pelajaran', [EraporController::class, 'mataPelajaran'])->name('mata-pelajaran');
         Route::post('/mata-pelajaran', [EraporController::class, 'storeMataPelajaran'])->name('mata-pelajaran.store');
         Route::delete('/mata-pelajaran/{mataPelajaran}', [EraporController::class, 'destroyMataPelajaran'])->name('mata-pelajaran.destroy');
+
+        // Tujuan Pembelajaran (TP)
+        Route::get('/tp', [TujuanPembelajaranController::class, 'index'])->name('tp.index');
+        Route::get('/tp/create', [TujuanPembelajaranController::class, 'create'])->name('tp.create');
+        Route::post('/tp', [TujuanPembelajaranController::class, 'store'])->name('tp.store');
+        Route::delete('/tp/{tp}', [TujuanPembelajaranController::class, 'destroy'])->name('tp.destroy');
+
+        // Penilaian & Input Nilai
+        Route::get('/penilaian', [PenilaianController::class, 'index'])->name('penilaian.index');
+        Route::get('/penilaian/create', [PenilaianController::class, 'create'])->name('penilaian.create');
+        Route::get('/penilaian/tp-untuk-konteks', [PenilaianController::class, 'tpUntukKonteks'])->name('penilaian.tp-untuk-konteks');
+        Route::post('/penilaian', [PenilaianController::class, 'store'])->name('penilaian.store');
+        Route::get('/penilaian/{penilaian}', [PenilaianController::class, 'show'])->name('penilaian.show');
+        Route::post('/penilaian/{penilaian}/nilai', [PenilaianController::class, 'saveNilai'])->name('penilaian.save-nilai');
+        Route::delete('/penilaian/{penilaian}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy');
 
         Route::get('/penugasan', [EraporController::class, 'penugasan'])->name('penugasan');
 
