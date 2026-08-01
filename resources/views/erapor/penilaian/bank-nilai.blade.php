@@ -114,7 +114,7 @@
                     @php
                         $nr = $r['nilai_rapor'];
                         if ($nr < $kkm) { $bg = '#fef9c3'; $fg = '#854d0e'; }
-                        elseif ($nr > 95) { $bg = '#dbeafe'; $fg = '#1e40af'; }
+                        elseif ($nr > 95) { $bg = '#1e40af'; $fg = '#fff'; }
                         else { $bg = '#16a34a'; $fg = '#fff'; }
                     @endphp
                     <span style="display:inline-block;background:{{ $bg }};color:{{ $fg }};font-size:16px;font-weight:800;padding:6px 14px;border-radius:8px;">{{ $nr }}</span>

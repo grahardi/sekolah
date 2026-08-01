@@ -405,7 +405,7 @@ class EraporController extends Controller
         $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
 
         foreach ($siswaList as $siswa) {
-            $siswa->rapor = \App\Models\Rapor::firstOrCreate(
+            $siswa->rapor = \App\Models\Rapor::with('detailEkskul')->firstOrCreate(
                 ['siswa_id' => $siswa->id, 'tahun_ajaran_id' => $tahunAktif->id, 'semester' => $semester],
                 ['kelas' => $kelas, 'rombel' => $rombel]
             );
@@ -416,12 +416,23 @@ class EraporController extends Controller
 
     public function catatanWaliStore(Request $request)
     {
-        $data = $request->validate(['catatan' => 'required|array']);
+        $data = $request->validate([
+            'catatan' => 'nullable|array',
+            'sakit' => 'nullable|array',
+            'izin' => 'nullable|array',
+            'alpa' => 'nullable|array',
+        ]);
 
-        foreach ($data['catatan'] as $raporId => $teks) {
+        foreach ($data['catatan'] ?? [] as $raporId => $teks) {
             $rapor = \App\Models\Rapor::find($raporId);
             if (! $rapor || $rapor->status === 'Final') continue; // lewati yg sudah final/terkunci
-            $rapor->update(['catatan_wali_kelas' => $teks]);
+
+            $rapor->update([
+                'catatan_wali_kelas' => $teks,
+                'sakit' => $data['sakit'][$raporId] ?? 0,
+                'izin' => $data['izin'][$raporId] ?? 0,
+                'tanpa_keterangan' => $data['alpa'][$raporId] ?? 0,
+            ]);
         }
 
         return back()->with('success', 'Catatan wali kelas berhasil disimpan.');

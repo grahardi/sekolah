@@ -52,8 +52,16 @@
         </div>
         <div id="ekskul-rows">
             @forelse($rapor->detailEkskul as $e)
-            <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:8px;">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.5fr auto;gap:8px;margin-bottom:8px;">
                 <input type="text" name="ekskul_nama[]" value="{{ $e->nama_ekskul }}" class="form-input" placeholder="Nama ekskul" list="daftar-ekskul">
+                <input type="number" name="ekskul_hadir[]" value="{{ $e->kehadiran_hadir }}" class="form-input" placeholder="Hadir" min="0">
+                <input type="number" name="ekskul_total[]" value="{{ $e->kehadiran_total }}" class="form-input" placeholder="Total" min="0">
+                <select name="ekskul_evaluasi[]" class="form-input">
+                    <option value="">Evaluasi</option>
+                    @foreach(['Sangat Baik','Baik','Cukup','Kurang'] as $ev)
+                    <option value="{{ $ev }}" {{ $e->evaluasi === $ev ? 'selected' : '' }}>{{ $ev }}</option>
+                    @endforeach
+                </select>
                 <input type="text" name="ekskul_keterangan[]" value="{{ $e->keterangan }}" class="form-input" placeholder="Keterangan">
                 <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>
             </div>
@@ -108,8 +116,13 @@
 <script>
     function tambahBarisEkskul() {
         const div = document.createElement('div');
-        div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr auto;gap:8px;margin-bottom:8px;';
-        div.innerHTML = '<input type="text" name="ekskul_nama[]" class="form-input" placeholder="Nama ekskul" list="daftar-ekskul"><input type="text" name="ekskul_keterangan[]" class="form-input" placeholder="Keterangan"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>';
+        div.style.cssText = 'display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.5fr auto;gap:8px;margin-bottom:8px;';
+        div.innerHTML = '<input type="text" name="ekskul_nama[]" class="form-input" placeholder="Nama ekskul" list="daftar-ekskul">'
+            + '<input type="number" name="ekskul_hadir[]" class="form-input" placeholder="Hadir" min="0">'
+            + '<input type="number" name="ekskul_total[]" class="form-input" placeholder="Total" min="0">'
+            + '<select name="ekskul_evaluasi[]" class="form-input"><option value="">Evaluasi</option><option>Sangat Baik</option><option>Baik</option><option>Cukup</option><option>Kurang</option></select>'
+            + '<input type="text" name="ekskul_keterangan[]" class="form-input" placeholder="Keterangan">'
+            + '<button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>';
         document.getElementById('ekskul-rows').appendChild(div);
     }
 

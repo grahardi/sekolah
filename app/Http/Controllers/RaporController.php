@@ -165,12 +165,39 @@ class RaporController extends Controller
                 RaporDetailEkskul::create([
                     'rapor_id' => $rapor->id,
                     'nama_ekskul' => $nama,
+                    'kehadiran_hadir' => $request->input("ekskul_hadir.$i") ?: null,
+                    'kehadiran_total' => $request->input("ekskul_total.$i") ?: null,
+                    'evaluasi' => $request->input("ekskul_evaluasi.$i") ?: null,
                     'keterangan' => $data['ekskul_keterangan'][$i] ?? null,
                 ]);
             }
         }
 
         return redirect()->route('erapor.rapor.edit', $rapor)->with('success', 'Rapor berhasil disimpan.');
+    }
+
+    /**
+     * "Buat Otomatis" - generate teks catatan wali kelas berdasarkan mapel
+     * dengan nilai tertinggi + kalimat dorongan umum, siap diedit lagi.
+     */
+    public function catatanOtomatis(Rapor $rapor)
+    {
+        $rapor->load(['siswa', 'detailAkademik.mataPelajaran']);
+
+        $terbaik = $rapor->detailAkademik->sortByDesc('nilai_akhir')->first();
+        $namaSiswa = trim(explode(' ', $rapor->siswa->nama_lengkap)[array_key_last(explode(' ', $rapor->siswa->nama_lengkap))] ?? $rapor->siswa->nama_lengkap);
+
+        if ($terbaik) {
+            $teks = "Secara keseluruhan, Ananda {$namaSiswa} telah menunjukkan perkembangan yang positif pada semester ini. "
+                . "Ananda menunjukkan kompetensi yang sangat baik dalam mata pelajaran {$terbaik->mataPelajaran->nama} dengan nilai akhir {$terbaik->nilai_akhir}. "
+                . "Terus pertahankan semangat belajar dan tingkatkan potensi yang dimiliki. "
+                . "Dengan dukungan dari rumah dan sekolah, kami yakin Ananda {$namaSiswa} dapat meraih prestasi yang lebih gemilang.";
+        } else {
+            $teks = "Secara keseluruhan, Ananda {$namaSiswa} telah menunjukkan perkembangan yang positif pada semester ini. "
+                . "Terus pertahankan semangat belajar dan tingkatkan potensi yang dimiliki.";
+        }
+
+        return response()->json(['teks' => $teks]);
     }
 
     /** Entry point Cetak Rapor khusus Wali Kelas - otomatis pilih kelasnya sendiri, gaya Cetak Massal */

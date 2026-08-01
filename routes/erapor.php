@@ -97,6 +97,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/rapor/finalisasi-semua', [RaporController::class, 'finalisasiSemua'])->name('rapor.finalisasi-semua');
         Route::post('/rapor/batalkan-finalisasi-semua', [RaporController::class, 'batalkanFinalisasiSemua'])->name('rapor.batalkan-finalisasi-semua');
         Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');
+        Route::get('/rapor/{rapor}/catatan-otomatis', [RaporController::class, 'catatanOtomatis'])->name('rapor.catatan-otomatis');
         Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
         Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');
 
