@@ -236,34 +236,56 @@ class EraporController extends Controller
      * - urutguru = nomor urut guru DI SEKOLAH ITU (unik per sekolah, jadi
      *   kombinasinya otomatis unik tanpa perlu cek tabrakan nama).
      */
-    private function generateEmailGuru(Guru $guru, int $urutGuru): string
+    /**
+     * Tentukan email login guru:
+     * 1. Kalau guru ini terhubung ke Pegawai DAN pegawai itu sudah punya email
+     *    (dari Kepegawaian/Dapodik) - pakai itu langsung, jangan generate baru.
+     * 2. Kalau tidak ada, generate: {namadepan}{kodesekolah}.{urutguru}@guru.sekolah.co.id
+     *    - kalau nama depan < 5 huruf, gabung dgn nama belakang (mis. "Moch. Gibran" -> "mochgibran")
+     */
+    private function tentukanEmailGuru(Guru $guru, int $urutGuru): string
     {
-        $namaDepan = strtolower($this->ambilNamaDepanBersih($guru->nama));
+        if ($guru->pegawai && ! empty($guru->pegawai->email)) {
+            return $guru->pegawai->email;
+        }
+
+        $namaBelakang = null;
+        $namaDepan = strtolower($this->ambilNamaDepanBersih($guru->nama, $namaBelakang));
+        if (strlen($namaDepan) < 5 && ! empty($namaBelakang)) {
+            $namaDepan .= strtolower(preg_replace('/[^a-zA-Z]/', '', $namaBelakang));
+        }
+
         return "{$namaDepan}{$guru->sekolah_id}.{$urutGuru}@guru.sekolah.co.id";
     }
 
     /**
      * Bersihkan gelar di depan nama (Drs., Dra., Ir., Prof., Dr., H., Hj., dst)
-     * sebelum ambil kata pertama sebagai "nama depan" - gelar di BELAKANG nama
-     * (S.Pd., M.Pd., Gr., dst setelah koma) otomatis aman krn cuma ambil kata
-     * pertama sebelum koma manapun.
+     * sebelum ambil kata pertama sbg "nama depan" - gelar di BELAKANG nama
+     * (S.Pd., M.Pd., Gr., dst setelah koma) otomatis aman krn cuma ambil bagian
+     * sebelum koma manapun. $namaBelakang diisi lewat referensi (kata terakhir
+     * sebelum koma), dipakai kalau nama depan terlalu pendek (<5 huruf).
      */
-    private function ambilNamaDepanBersih(string $namaLengkap): string
+    private function ambilNamaDepanBersih(string $namaLengkap, ?string &$namaBelakang = null): string
     {
         $gelarDepan = ['drs', 'dra', 'ir', 'prof', 'dr', 'h', 'hj', 'kh', 'k.h', 'tb', 'raden', 'r'];
 
-        // Ambil bagian sebelum koma pertama saja (gelar belakang biasanya setelah koma)
         $nama = trim(explode(',', $namaLengkap)[0]);
-        $kataKata = preg_split('/\s+/', trim($nama));
+        $kataKata = array_values(array_filter(preg_split('/\s+/', trim($nama))));
 
+        // Buang kata2 gelar depan dari awal list
+        $kataKataBersih = [];
+        $mulaiNama = false;
         foreach ($kataKata as $kata) {
             $bersih = strtolower(preg_replace('/[^a-zA-Z]/', '', $kata));
-            if (! in_array($bersih, $gelarDepan) && $bersih !== '') {
-                return preg_replace('/[^a-zA-Z]/', '', $kata);
-            }
+            if (! $mulaiNama && in_array($bersih, $gelarDepan)) continue;
+            $mulaiNama = true;
+            if ($bersih !== '') $kataKataBersih[] = preg_replace('/[^a-zA-Z]/', '', $kata);
         }
 
-        return 'guru'; // fallback kalau semua kata ternyata gelar (jarang terjadi)
+        if (empty($kataKataBersih)) return 'guru';
+
+        $namaBelakang = count($kataKataBersih) > 1 ? end($kataKataBersih) : null;
+        return $kataKataBersih[0];
     }
 
     /** Halaman Generate User massal - lihat status akun semua guru sekaligus */
@@ -289,13 +311,14 @@ class EraporController extends Controller
             if ($guru->user_id) continue; // sudah ada, lewati
 
             $urutan = $i + 1;
-            $email = $this->generateEmailGuru($guru, $urutan);
+            $email = $this->tentukanEmailGuru($guru, $urutan);
             $password = \Illuminate\Support\Str::random(8);
 
             $user = \App\Models\User::create([
                 'name' => $guru->nama,
                 'email' => $email,
                 'password' => bcrypt($password),
+                'password_plain' => $password,
                 'sekolah_id' => $guru->sekolah_id,
                 'role' => 'guru',
                 'aktif' => true,
@@ -318,13 +341,14 @@ class EraporController extends Controller
     {
         if (! $guru->user_id) {
             $urutan = Guru::where('sekolah_id', $guru->sekolah_id)->where('id', '<=', $guru->id)->count();
-            $email = $this->generateEmailGuru($guru, $urutan);
+            $email = $this->tentukanEmailGuru($guru, $urutan);
             $passwordAsli = \Illuminate\Support\Str::random(8);
 
             $user = \App\Models\User::create([
                 'name' => $guru->nama,
                 'email' => $email,
                 'password' => bcrypt($passwordAsli),
+                'password_plain' => $passwordAsli,
                 'sekolah_id' => auth()->user()->sekolah_id,
                 'role' => 'guru',
                 'aktif' => true,
@@ -345,6 +369,7 @@ class EraporController extends Controller
         return redirect()->route('dashboard')->with('success', "Sedang login sebagai {$guru->nama}.");
     }
 
+    /** Kembali ke akun admin dari mode impersonate */
     public function kembaliKeAdmin()
     {
         $adminId = session('impersonating_admin_id');
@@ -354,6 +379,65 @@ class EraporController extends Controller
         auth()->loginUsingId($adminId);
 
         return redirect()->route('erapor.guru.index')->with('success', 'Kembali ke akun admin.');
+    }
+
+    /** Download template Excel: daftar guru + kolom Email & Password kosong utk diisi manual */
+    public function downloadTemplateUser()
+    {
+        $gurus = Guru::orderBy('id')->get();
+        $rows = $gurus->map(fn ($g) => [
+            'nama_guru' => $g->nama,
+            'nip_nuptk' => $g->nip_nuptk,
+            'email' => $g->user?->email ?? $g->pegawai?->email ?? '',
+            'password' => '',
+        ]);
+
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download('template-user-guru.xlsx');
+    }
+
+    /** Import User dari template terisi - cocokkan guru berdasarkan nama, buat/update akun */
+    public function importUser(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
+
+        $sekolahId = auth()->user()->sekolah_id;
+        $imported = 0;
+        $errors = [];
+
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($sekolahId, &$imported, &$errors) {
+            $namaGuru = trim($row['nama_guru'] ?? '');
+            $email = trim($row['email'] ?? '');
+            $password = trim($row['password'] ?? '');
+
+            if ($namaGuru === '' || $email === '' || $password === '') return; // baris kosong/belum diisi, lewati
+
+            $guru = Guru::where('sekolah_id', $sekolahId)->where('nama', $namaGuru)->first();
+            if (! $guru) {
+                $errors[] = "Guru \"{$namaGuru}\" tidak ditemukan di data guru sekolah ini.";
+                return;
+            }
+
+            $user = \App\Models\User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $guru->nama,
+                    'password' => bcrypt($password),
+                    'password_plain' => $password,
+                    'sekolah_id' => $sekolahId,
+                    'role' => 'guru',
+                    'aktif' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            $guru->update(['user_id' => $user->id]);
+            $imported++;
+        });
+
+        $msg = "{$imported} akun guru berhasil di-import.";
+        if (count($errors) > 0) $msg .= ' ' . count($errors) . ' baris bermasalah: ' . implode(' ', array_slice($errors, 0, 5));
+
+        return back()->with(count($errors) > 0 ? 'warning' : 'success', $msg);
     }
 
     /** Dipanggil dari halaman detail Pegawai (Kepegawaian) - cari/buatkan Guru

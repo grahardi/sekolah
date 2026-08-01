@@ -28,6 +28,19 @@
     <button type="submit" class="btn btn-primary"><i class="ti ti-users-plus"></i> Generate Akun untuk Semua Guru Baru</button>
 </form>
 
+<div class="card" style="padding:16px;margin-bottom:20px;">
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Atau Import User (kalau guru sudah punya email sendiri)</p>
+    <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Download template, isi kolom Email &amp; Password sesuai akun yang sudah ada, lalu upload lagi di sini.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <a href="{{ route('erapor.guru.template-user') }}" class="btn btn-secondary btn-sm"><i class="ti ti-download"></i> Download Template</a>
+        <form action="{{ route('erapor.guru.import-user') }}" method="POST" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;">
+            @csrf
+            <input type="file" name="file" accept=".xlsx,.xls,.csv" required style="font-size:12px;">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-upload"></i> Import</button>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
