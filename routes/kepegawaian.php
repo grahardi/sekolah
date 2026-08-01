@@ -35,6 +35,7 @@ Route::middleware(['web', 'auth'])->prefix('kepegawaian')->name('pegawai.')->gro
         // Import
         Route::get('/import/form', [PegawaiController::class, 'showImport'])->name('import.form');
         Route::post('/import/process', [PegawaiController::class, 'import'])->name('import.process');
+        Route::post('/import/dapodik', [PegawaiController::class, 'importDapodik'])->name('import.dapodik');
         Route::get('/import/template', [PegawaiController::class, 'downloadTemplate'])->name('import.template');
         Route::get('/import/errors/{token}', [PegawaiController::class, 'importErrors'])->name('import.errors');
 

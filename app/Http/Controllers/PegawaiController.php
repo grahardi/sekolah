@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pegawai;
 use App\Exports\PegawaiExport;
 use App\Imports\PegawaiImport;
+use App\Imports\PegawaiDapodikImport;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Cache;
@@ -115,6 +116,21 @@ class PegawaiController extends Controller
 
         $importer = new PegawaiImport();
         $importer->import($request->file('file')->getRealPath());
+
+        return $this->handleImportResult(
+            $importer->getErrors(),
+            $importer->getWarnings(),
+            $importer->getImportedCount(),
+            $importer->getSkippedCount()
+        );
+    }
+
+    public function importDapodik(Request $request)
+    {
+        $request->validate(['file_dapodik' => 'required|mimes:xlsx,xls|max:10240']);
+
+        $importer = new PegawaiDapodikImport();
+        $importer->import($request->file('file_dapodik')->getRealPath());
 
         return $this->handleImportResult(
             $importer->getErrors(),

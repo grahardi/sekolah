@@ -14,6 +14,44 @@
             <div style="width:56px;height:56px;background:#eff6ff;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                 <i class="ti ti-file-import" style="font-size:28px;color:#1d4ed8;"></i>
             </div>
+            <h2 style="font-size:17px;font-weight:800;color:#0f172a;margin:0 0 6px;">Import Langsung dari Dapodik</h2>
+            <p style="font-size:13px;color:#64748b;margin:0;">Upload file "Daftar Guru/PTK" asli hasil unduhan Dapodik, tanpa perlu diubah dulu</p>
+        </div>
+
+        <div style="padding:0 28px 28px;">
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:20px;display:flex;gap:10px;">
+                <i class="ti ti-info-circle" style="font-size:20px;color:#2563EB;flex-shrink:0;margin-top:1px;"></i>
+                <div>
+                    <p style="font-size:12px;color:#1e40af;margin:0;">
+                        Ambil file dari Dapodik: menu <strong>PTK</strong> &rarr; tombol <strong>Unduh</strong> &rarr; <strong>Daftar Guru</strong>.
+                        File-nya bernama <code>daftar-guru-NAMA_SEKOLAH-tanggal.xlsx</code> - upload persis seperti itu,
+                        tidak perlu diedit kolomnya.
+                    </p>
+                </div>
+            </div>
+
+            <form action="{{ route('pegawai.import.dapodik') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div style="margin-bottom:18px;">
+                    <label class="form-label">File Dapodik (daftar-guru-....xlsx)</label>
+                    <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #93c5fd;border-radius:10px;padding:28px;text-align:center;cursor:pointer;background:#f8fbff;">
+                        <i class="ti ti-cloud-upload" style="font-size:36px;color:#60a5fa;margin-bottom:8px;"></i>
+                        <p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 4px;" id="file-label-dapodik">Klik untuk pilih file Dapodik</p>
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">atau drag &amp; drop di sini</p>
+                        <input type="file" name="file_dapodik" accept=".xlsx,.xls" required style="display:none;"
+                               onchange="document.getElementById('file-label-dapodik').textContent = this.files[0]?.name ?? 'Klik untuk pilih file Dapodik'">
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;background:#2563EB;"><i class="ti ti-upload"></i> Import dari Dapodik</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="text-align:center;padding:32px 28px 20px;">
+            <div style="width:56px;height:56px;background:#eff6ff;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                <i class="ti ti-file-import" style="font-size:28px;color:#1d4ed8;"></i>
+            </div>
             <h2 style="font-size:17px;font-weight:800;color:#0f172a;margin:0 0 6px;">Import dari Template Excel</h2>
             <p style="font-size:13px;color:#64748b;margin:0;">Upload data pegawai secara massal pakai template kolom kita</p>
         </div>
