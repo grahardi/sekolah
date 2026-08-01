@@ -14,13 +14,13 @@
         @foreach($siswaList as $i => $siswa)
         @php $rapor = $siswa->rapor; $terkunci = $rapor->status === 'Final'; @endphp
         <div class="card" style="overflow:hidden;">
-            <button type="button" onclick="toggleAkordeon({{ $siswa->id }})" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#eff6ff;border:none;cursor:pointer;text-align:left;">
+            <button type="button" onclick="toggleAkordeon({{ $siswa->id }})" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f1f5f9;border:none;cursor:pointer;text-align:left;">
                 <span style="display:flex;align-items:center;gap:10px;">
-                    <span style="width:26px;height:26px;border-radius:50%;background:#2563EB;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">{{ $i + 1 }}</span>
-                    <span style="font-weight:700;color:#1e40af;font-size:14px;">{{ strtoupper($siswa->nama_lengkap) }}</span>
+                    <span style="width:26px;height:26px;border-radius:50%;background:#1E3A5F;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">{{ $i + 1 }}</span>
+                    <span style="font-weight:700;color:#1E3A5F;font-size:14px;">{{ strtoupper($siswa->nama_lengkap) }}</span>
                     @if($terkunci)<span class="badge badge-aktif">Final</span>@endif
                 </span>
-                <i class="ti ti-chevron-down" id="chev-{{ $siswa->id }}"></i>
+                <i class="ti ti-chevron-down" id="chev-{{ $siswa->id }}" style="transition:transform .15s;{{ $i === 0 ? 'transform:rotate(180deg);' : '' }}"></i>
             </button>
 
             <div id="body-{{ $siswa->id }}" style="display:{{ $i === 0 ? 'block' : 'none' }};padding:18px;">
@@ -75,12 +75,24 @@
 </form>
 
 <script>
+    const SEMUA_SISWA_ID = {!! $siswaList->pluck('id')->toJson() !!};
+
     function toggleAkordeon(id) {
         const body = document.getElementById('body-' + id);
-        const chev = document.getElementById('chev-' + id);
-        const isOpen = body.style.display !== 'none';
-        body.style.display = isOpen ? 'none' : 'block';
-        chev.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        const sedangTerbuka = body.style.display !== 'none';
+
+        // Tutup semua dulu supaya cuma 1 yang terbuka (halaman gak memanjang)
+        SEMUA_SISWA_ID.forEach((sid) => {
+            document.getElementById('body-' + sid).style.display = 'none';
+            document.getElementById('chev-' + sid).style.transform = 'rotate(0deg)';
+        });
+
+        // Kalau yg diklik sebelumnya TERTUTUP -> buka. Kalau sebelumnya
+        // TERBUKA -> biarkan tertutup (klik lagi = tutup).
+        if (!sedangTerbuka) {
+            body.style.display = 'block';
+            document.getElementById('chev-' + id).style.transform = 'rotate(180deg)';
+        }
     }
 
     function buatOtomatis(siswaId, raporId) {
