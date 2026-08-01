@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EraporController;
 use App\Http\Controllers\PenilaianController;
+use App\Http\Controllers\RaporController;
 use App\Http\Controllers\TujuanPembelajaranController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,14 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/penilaian/{penilaian}', [PenilaianController::class, 'show'])->name('penilaian.show');
         Route::post('/penilaian/{penilaian}/nilai', [PenilaianController::class, 'saveNilai'])->name('penilaian.save-nilai');
         Route::delete('/penilaian/{penilaian}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy');
+
+
+        // Cetak Rapor
+        Route::get('/rapor', [RaporController::class, 'index'])->name('rapor.index');
+        Route::post('/rapor/generate', [RaporController::class, 'generateKelas'])->name('rapor.generate');
+        Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');
+        Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
+        Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');
 
         Route::get('/penugasan', [EraporController::class, 'penugasan'])->name('penugasan');
 

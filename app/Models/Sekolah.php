@@ -15,6 +15,12 @@ class Sekolah extends Model
         'nama',
         'is_demo',
         'alamat',
+        'telepon',
+        'email',
+        'website',
+        'kepala_sekolah_nama',
+        'kepala_sekolah_nip',
+        'kepala_sekolah_pangkat',
         'desa_kelurahan',
         'kecamatan',
         'kabupaten_kota',
@@ -22,6 +28,7 @@ class Sekolah extends Model
         'status_sekolah',
         'bentuk_pendidikan',
         'jenjang_pendidikan',
+        'kkm',
     ];
 
     protected $casts = [

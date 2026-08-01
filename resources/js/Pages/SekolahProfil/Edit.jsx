@@ -5,11 +5,18 @@ export default function Edit({ sekolah }) {
     const { data, setData, put, processing, errors } = useForm({
         nama: sekolah?.nama ?? '',
         alamat: sekolah?.alamat ?? '',
+        telepon: sekolah?.telepon ?? '',
+        email: sekolah?.email ?? '',
+        website: sekolah?.website ?? '',
+        kepala_sekolah_nama: sekolah?.kepala_sekolah_nama ?? '',
+        kepala_sekolah_nip: sekolah?.kepala_sekolah_nip ?? '',
+        kepala_sekolah_pangkat: sekolah?.kepala_sekolah_pangkat ?? '',
         kecamatan: sekolah?.kecamatan ?? '',
         kabupaten_kota: sekolah?.kabupaten_kota ?? '',
         provinsi: sekolah?.provinsi ?? '',
         status_sekolah: sekolah?.status_sekolah ?? '',
         bentuk_pendidikan: sekolah?.bentuk_pendidikan ?? '',
+        kkm: sekolah?.kkm ?? 75,
     });
 
     const submit = (e) => {
@@ -62,6 +69,29 @@ export default function Edit({ sekolah }) {
                     {field('Status Sekolah', 'status_sekolah', { placeholder: 'Negeri / Swasta' })}
                     {field('Bentuk Pendidikan', 'bentuk_pendidikan', { placeholder: 'SMP' })}
                 </div>
+
+                <div className="pt-4 mt-2 border-t border-navy/10">
+                    <p className="text-sm font-semibold text-navy mb-3">Untuk Kop Surat Rapor</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {field('Telepon Sekolah', 'telepon')}
+                    {field('Email Sekolah', 'email')}
+                </div>
+                {field('Website Sekolah', 'website', { placeholder: 'contoh: sekolahku.sch.id' })}
+
+                <div className="pt-4 mt-2 border-t border-navy/10">
+                    <p className="text-sm font-semibold text-navy mb-3">Kepala Sekolah (utk tanda tangan rapor)</p>
+                </div>
+                {field('Nama Kepala Sekolah', 'kepala_sekolah_nama')}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {field('NIP', 'kepala_sekolah_nip')}
+                    {field('Pangkat/Golongan', 'kepala_sekolah_pangkat', { placeholder: 'mis. Pembina Utama Muda' })}
+                </div>
+
+                <div className="pt-4 mt-2 border-t border-navy/10">
+                    <p className="text-sm font-semibold text-navy mb-3">Kriteria Ketuntasan Minimal (KKM)</p>
+                </div>
+                {field('KKM', 'kkm')}
 
                 <div className="flex gap-3 pt-2">
                     <button

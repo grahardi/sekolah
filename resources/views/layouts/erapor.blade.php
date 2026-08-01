@@ -205,9 +205,10 @@
            class="sb-item {{ request()->routeIs('erapor.penilaian.*') ? 'active' : '' }}">
             <i class="ti ti-report"></i><span>Input Nilai</span>
         </a>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-printer"></i><span>Cetak Rapor</span><span class="sb-demo-badge">Segera</span>
-        </div>
+        <a href="{{ route('erapor.rapor.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.rapor.*') ? 'active' : '' }}">
+            <i class="ti ti-printer"></i><span>Cetak Rapor</span>
+        </a>
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">
