@@ -340,12 +340,17 @@ class PenilaianController extends Controller
         ]);
         [$kelas, $rombel] = array_pad(explode('|', $request->kelas_rombel), 2, null);
 
-        $penilaianList = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
-            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-            ->get()->keyBy('nama_penilaian');
+        // FastExcel otomatis snake_case-kan header kolom pas import (mis. "SAS
+        // Genap" jadi "sas_genap") - siapkan 2 peta lookup (asli & slug) biar
+        // tetap ketemu apapun format yang dihasilkan library saat baca file.
+        $penilaianAsli = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)->get();
+        $penilaianSlug = $penilaianAsli->keyBy(fn ($p) => \Illuminate\Support\Str::slug($p->nama_penilaian, '_'));
+        $penilaianRaw = $penilaianAsli->keyBy('nama_penilaian');
 
         $diperbarui = 0;
-        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($kelas, $rombel, $penilaianList, &$diperbarui) {
+        $kolomTakDikenali = collect();
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($kelas, $rombel, $penilaianSlug, $penilaianRaw, &$diperbarui, &$kolomTakDikenali) {
             $noInduk = trim($row['no_induk'] ?? '');
             if ($noInduk === '') return;
 
@@ -354,8 +359,8 @@ class PenilaianController extends Controller
 
             foreach ($row as $kolom => $nilai) {
                 if (in_array($kolom, ['no_induk', 'nama']) || $nilai === null || $nilai === '') continue;
-                $penilaian = $penilaianList->get($kolom);
-                if (! $penilaian) continue; // nama kolom tidak cocok penilaian manapun, lewati
+                $penilaian = $penilaianSlug->get($kolom) ?? $penilaianRaw->get($kolom);
+                if (! $penilaian) { $kolomTakDikenali->push($kolom); continue; }
 
                 PenilaianDetailNilai::updateOrCreate(
                     ['penilaian_id' => $penilaian->id, 'siswa_id' => $siswa->id],
@@ -365,7 +370,13 @@ class PenilaianController extends Controller
             }
         });
 
-        return redirect()->route('erapor.penilaian.index')->with('success', "{$diperbarui} nilai berhasil diimport dari template kelas.");
+        $pesan = "{$diperbarui} nilai berhasil diimport dari template kelas.";
+        if ($diperbarui === 0 && $kolomTakDikenali->isNotEmpty()) {
+            $pesan .= ' Kolom yang tidak dikenali: ' . $kolomTakDikenali->unique()->implode(', ') . '. Pastikan tidak mengubah nama header kolom di template.';
+        }
+
+        return redirect()->route('erapor.penilaian.index', ['mata_pelajaran_id' => $request->mata_pelajaran_id, 'kelas_rombel' => $request->kelas_rombel])
+            ->with($diperbarui > 0 ? 'success' : 'warning', $pesan);
     }
 
     public function destroy(Penilaian $penilaian)
