@@ -33,6 +33,26 @@
     </div>
 </form>
 
+@if(($filters['mata_pelajaran_id'] ?? null) && ($filters['kelas_rombel'] ?? null))
+<div class="card" style="padding:16px;margin-bottom:16px;">
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Template Kelas (Semua Penilaian Sekaligus)</p>
+    <p style="font-size:12px;color:#64748b;margin:0 0 10px;">
+        Download 1 file berisi SEMUA penilaian untuk mapel &amp; kelas yang dipilih (termasuk PTS/UAS) - tiap
+        penilaian jadi kolom sendiri. Isi semua nilai sekaligus, lalu upload lagi.
+    </p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <a href="{{ route('erapor.penilaian.template-kelas', ['mata_pelajaran_id' => $filters['mata_pelajaran_id'], 'kelas_rombel' => $filters['kelas_rombel']]) }}" class="btn btn-secondary btn-sm"><i class="ti ti-download"></i> Download Template Kelas</a>
+        <form action="{{ route('erapor.penilaian.import-kelas') }}" method="POST" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;">
+            @csrf
+            <input type="hidden" name="mata_pelajaran_id" value="{{ $filters['mata_pelajaran_id'] }}">
+            <input type="hidden" name="kelas_rombel" value="{{ $filters['kelas_rombel'] }}">
+            <input type="file" name="file" accept=".xlsx,.xls,.csv" required style="font-size:12px;">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-upload"></i> Import</button>
+        </form>
+    </div>
+</div>
+@endif
+
 <div class="card">
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">

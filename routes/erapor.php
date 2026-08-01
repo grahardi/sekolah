@@ -79,8 +79,12 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/penilaian', [PenilaianController::class, 'index'])->name('penilaian.index');
         Route::get('/penilaian/create', [PenilaianController::class, 'create'])->name('penilaian.create');
         Route::get('/penilaian/tp-untuk-konteks', [PenilaianController::class, 'tpUntukKonteks'])->name('penilaian.tp-untuk-konteks');
+        Route::get('/penilaian/template-kelas', [PenilaianController::class, 'downloadTemplateKelas'])->name('penilaian.template-kelas');
+        Route::post('/penilaian/import-kelas', [PenilaianController::class, 'importTemplateKelas'])->name('penilaian.import-kelas');
         Route::post('/penilaian', [PenilaianController::class, 'store'])->name('penilaian.store');
         Route::get('/penilaian/{penilaian}', [PenilaianController::class, 'show'])->name('penilaian.show');
+        Route::get('/penilaian/{penilaian}/template-nilai', [PenilaianController::class, 'downloadTemplateNilai'])->name('penilaian.template-nilai');
+        Route::post('/penilaian/{penilaian}/import-nilai', [PenilaianController::class, 'importNilai'])->name('penilaian.import-nilai');
         Route::post('/penilaian/{penilaian}/nilai', [PenilaianController::class, 'saveNilai'])->name('penilaian.save-nilai');
         Route::delete('/penilaian/{penilaian}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy');
 

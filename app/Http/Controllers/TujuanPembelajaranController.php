@@ -100,10 +100,15 @@ class TujuanPembelajaranController extends Controller
             'kelas_rombel' => 'required|array|min:1',
         ]);
 
+        $user = auth()->user();
+        $guruId = null;
+        if ($user->role === 'guru') {
+            $guruId = \App\Models\Guru::where('user_id', $user->id)->value('id');
+        }
+
         // Kalau yg buat guru, pastikan mapel & SEMUA kelas yg dipilih memang
         // ada di penugasan mengajarnya - jangan cuma percaya UI, guru nakal
         // bisa saja kirim request manual.
-        $user = auth()->user();
         if ($user->role === 'guru') {
             $guru = \App\Models\Guru::where('user_id', $user->id)->first();
             $kombinasiValid = \App\Models\GuruPengajar::where('guru_id', $guru?->id ?? 0)
@@ -117,9 +122,19 @@ class TujuanPembelajaranController extends Controller
             }
         }
 
+        // Kode TP harus unik PER GURU (guru yg sama gak boleh punya 2 TP dgn
+        // kode sama persis, mis. dua-duanya "1.1" - harus "1.1" lalu "1.2" dst)
+        if (! empty($data['kode_tp']) && $guruId) {
+            $sudahAda = TujuanPembelajaran::where('guru_id', $guruId)->where('kode_tp', $data['kode_tp'])->exists();
+            if ($sudahAda) {
+                return back()->withInput()->withErrors(['kode_tp' => "Kode TP \"{$data['kode_tp']}\" sudah kamu pakai sebelumnya. Gunakan kode lain, mis. urutan berikutnya."]);
+            }
+        }
+
         $tp = TujuanPembelajaran::create([
             'mata_pelajaran_id' => $data['mata_pelajaran_id'],
             'tahun_ajaran_id' => $data['tahun_ajaran_id'],
+            'guru_id' => $guruId,
             'fase' => $data['fase'] ?? null,
             'kode_tp' => $data['kode_tp'] ?? null,
             'deskripsi_tp' => $data['deskripsi_tp'],
@@ -153,6 +168,16 @@ class TujuanPembelajaranController extends Controller
             'deskripsi_tp' => 'required|string',
             'semester' => 'required|integer|in:1,2',
         ]);
+
+        if (! empty($data['kode_tp']) && $tp->guru_id) {
+            $sudahAda = TujuanPembelajaran::where('guru_id', $tp->guru_id)
+                ->where('kode_tp', $data['kode_tp'])
+                ->where('id', '!=', $tp->id)
+                ->exists();
+            if ($sudahAda) {
+                return back()->withInput()->withErrors(['kode_tp' => "Kode TP \"{$data['kode_tp']}\" sudah kamu pakai di TP lain."]);
+            }
+        }
 
         $tp->update($data);
 

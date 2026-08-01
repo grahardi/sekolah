@@ -121,6 +121,23 @@ class PenilaianController extends Controller
 
         [$kelas, $rombel] = array_pad(explode('|', $data['kelas_rombel']), 2, null);
 
+        // PTS (Sumatif Tengah Semester) & UAS (Sumatif Akhir Semester) maks 1
+        // per guru+mapel+kelas+semester - gak boleh dobel.
+        if (in_array($data['subjenis_penilaian'], ['Sumatif Tengah Semester', 'Sumatif Akhir Semester'])) {
+            $sudahAda = Penilaian::where('guru_id', $data['guru_id'])
+                ->where('mata_pelajaran_id', $data['mata_pelajaran_id'])
+                ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+                ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
+                ->where('semester', $data['semester'])
+                ->where('subjenis_penilaian', $data['subjenis_penilaian'])
+                ->exists();
+
+            if ($sudahAda) {
+                $label = $data['subjenis_penilaian'] === 'Sumatif Tengah Semester' ? 'Penilaian Tengah Semester (PTS)' : 'Penilaian Semester Akhir (UAS)';
+                return back()->withInput()->withErrors(['subjenis_penilaian' => "{$label} untuk mapel & kelas ini di semester tsb sudah ada. Maksimal 1, edit yang sudah ada saja."]);
+            }
+        }
+
         // Guru cuma boleh buat penilaian utk dirinya sendiri, di mapel+kelas
         // yg memang ditugaskan admin - jangan cuma percaya UI.
         $user = auth()->user();
@@ -163,7 +180,7 @@ class PenilaianController extends Controller
         $siswaList = Siswa::where('status', 'aktif')
             ->where('kelas', $penilaian->kelas)
             ->where('rombel', $penilaian->rombel)
-            ->orderBy('nama_lengkap')
+            ->orderBy('nis')->orderBy('nama_lengkap')
             ->get();
 
         $nilaiExisting = PenilaianDetailNilai::where('penilaian_id', $penilaian->id)
@@ -173,6 +190,7 @@ class PenilaianController extends Controller
             'penilaian' => $penilaian,
             'siswaList' => $siswaList,
             'nilaiExisting' => $nilaiExisting,
+            'kkm' => auth()->user()->sekolah->kkm ?? 75,
         ]);
     }
 
@@ -192,6 +210,113 @@ class PenilaianController extends Controller
         }
 
         return back()->with('success', 'Nilai berhasil disimpan.');
+    }
+
+    // ── Import/Export Nilai (per-penilaian & multi-kolom per-kelas) ─────
+
+    /** Download template nilai utk 1 penilaian - sudah ada nama, tinggal isi nilai */
+    public function downloadTemplateNilai(Penilaian $penilaian)
+    {
+        $siswaList = Siswa::where('status', 'aktif')
+            ->where('kelas', $penilaian->kelas)->where('rombel', $penilaian->rombel)
+            ->orderBy('nis')->orderBy('nama_lengkap')->get();
+
+        $nilaiExisting = PenilaianDetailNilai::where('penilaian_id', $penilaian->id)->pluck('nilai', 'siswa_id');
+
+        $rows = $siswaList->map(fn ($s) => [
+            'no_induk' => $s->nis,
+            'nama' => $s->nama_lengkap,
+            'nilai' => $nilaiExisting[$s->id] ?? '',
+        ]);
+
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download('template-nilai-' . str_replace(' ', '-', $penilaian->nama_penilaian) . '.xlsx');
+    }
+
+    public function importNilai(Request $request, Penilaian $penilaian)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv|max:5120']);
+
+        $diperbarui = 0;
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($penilaian, &$diperbarui) {
+            $noInduk = trim($row['no_induk'] ?? '');
+            $nilai = $row['nilai'] ?? null;
+            if ($noInduk === '' || $nilai === null || $nilai === '') return;
+
+            $siswa = Siswa::where('nis', $noInduk)->where('kelas', $penilaian->kelas)->where('rombel', $penilaian->rombel)->first();
+            if (! $siswa) return;
+
+            PenilaianDetailNilai::updateOrCreate(
+                ['penilaian_id' => $penilaian->id, 'siswa_id' => $siswa->id],
+                ['nilai' => (int) $nilai]
+            );
+            $diperbarui++;
+        });
+
+        return redirect()->route('erapor.penilaian.show', $penilaian)->with('success', "{$diperbarui} nilai berhasil diimport.");
+    }
+
+    /** Download template SEMUA penilaian 1 kelas+mapel sekaligus (multi-kolom, termasuk PTS/UAS) */
+    public function downloadTemplateKelas(Request $request)
+    {
+        $request->validate(['mata_pelajaran_id' => 'required|exists:mata_pelajarans,id', 'kelas_rombel' => 'required|string']);
+        [$kelas, $rombel] = array_pad(explode('|', $request->kelas_rombel), 2, null);
+
+        $penilaianList = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('jenis_penilaian')->orderBy('id')->get();
+
+        $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('nis')->orderBy('nama_lengkap')->get();
+
+        $nilaiMap = PenilaianDetailNilai::whereIn('penilaian_id', $penilaianList->pluck('id'))
+            ->get()->groupBy('penilaian_id')->map(fn ($g) => $g->pluck('nilai', 'siswa_id'));
+
+        $rows = $siswaList->map(function ($s) use ($penilaianList, $nilaiMap) {
+            $row = ['no_induk' => $s->nis, 'nama' => $s->nama_lengkap];
+            foreach ($penilaianList as $p) {
+                $row[$p->nama_penilaian] = $nilaiMap->get($p->id)?->get($s->id) ?? '';
+            }
+            return $row;
+        });
+
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download('template-nilai-kelas-' . str_replace('|', '-', $request->kelas_rombel) . '.xlsx');
+    }
+
+    public function importTemplateKelas(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+            'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
+            'kelas_rombel' => 'required|string',
+        ]);
+        [$kelas, $rombel] = array_pad(explode('|', $request->kelas_rombel), 2, null);
+
+        $penilaianList = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->get()->keyBy('nama_penilaian');
+
+        $diperbarui = 0;
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use ($kelas, $rombel, $penilaianList, &$diperbarui) {
+            $noInduk = trim($row['no_induk'] ?? '');
+            if ($noInduk === '') return;
+
+            $siswa = Siswa::where('nis', $noInduk)->where('kelas', $kelas)->where('rombel', $rombel ?: null)->first();
+            if (! $siswa) return;
+
+            foreach ($row as $kolom => $nilai) {
+                if (in_array($kolom, ['no_induk', 'nama']) || $nilai === null || $nilai === '') continue;
+                $penilaian = $penilaianList->get($kolom);
+                if (! $penilaian) continue; // nama kolom tidak cocok penilaian manapun, lewati
+
+                PenilaianDetailNilai::updateOrCreate(
+                    ['penilaian_id' => $penilaian->id, 'siswa_id' => $siswa->id],
+                    ['nilai' => (int) $nilai]
+                );
+                $diperbarui++;
+            }
+        });
+
+        return redirect()->route('erapor.penilaian.index')->with('success', "{$diperbarui} nilai berhasil diimport dari template kelas.");
     }
 
     public function destroy(Penilaian $penilaian)
