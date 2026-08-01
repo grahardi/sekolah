@@ -153,7 +153,7 @@
     </div>
 </div>
 
-@if($rapor->keterangan_kelulusan)
+@if($rapor->keterangan_kelulusan && $rapor->semester == 2)
 <p style="font-size:10px;font-weight:bold;margin:12px 0 4px;">Keterangan Kelulusan</p>
 <div class="box">
     Berdasarkan hasil penilaian semester 1 dan 2, maka ananda {{ strtoupper($siswa->nama_lengkap) }} ditetapkan <strong>{{ strtoupper($rapor->keterangan_kelulusan) }}</strong>

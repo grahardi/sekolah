@@ -91,10 +91,15 @@
         </div>
     </div>
 
+    @if($rapor->semester == 2)
     <div class="card" style="padding:20px;margin-bottom:16px;">
         <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">Keterangan Kelulusan / Kenaikan Kelas</p>
-        <input type="text" name="keterangan_kelulusan" value="{{ $rapor->keterangan_kelulusan }}" class="form-input" placeholder="mis. NAIK KE KELAS VIII, atau LULUS (kosongkan kalau semester ganjil)">
+        <input type="text" name="keterangan_kelulusan" value="{{ $rapor->keterangan_kelulusan }}" class="form-input" placeholder="mis. NAIK KE KELAS VIII, atau LULUS">
+        <p style="font-size:11px;color:#94a3b8;margin-top:6px;">Cuma muncul di semester Genap (akhir tahun ajaran), sesuai kapan kenaikan kelas ditetapkan.</p>
     </div>
+    @else
+    <input type="hidden" name="keterangan_kelulusan" value="">
+    @endif
 
     <div class="card" style="padding:20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div>

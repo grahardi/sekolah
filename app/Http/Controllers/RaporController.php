@@ -145,7 +145,7 @@ class RaporController extends Controller
             'catatan_wali_kelas' => $data['catatan_wali_kelas'] ?? null,
             'deskripsi_kokurikuler' => $data['deskripsi_kokurikuler'] ?? null,
             'status' => $data['status'],
-            'keterangan_kelulusan' => $data['keterangan_kelulusan'] ?? null,
+            'keterangan_kelulusan' => $rapor->semester == 2 ? ($data['keterangan_kelulusan'] ?? null) : null,
             'tanggal_rapor' => $data['tanggal_rapor'] ?? null,
         ]);
 

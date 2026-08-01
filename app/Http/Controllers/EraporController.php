@@ -129,10 +129,26 @@ class EraporController extends Controller
         return back()->with('success', "{$tahunAjaran->label} diaktifkan.");
     }
 
-    public function destroyTahunAjaran(TahunAjaran $tahunAjaran)
+    public function nonaktifkanTahunAjaran(TahunAjaran $tahunAjaran)
     {
-        $tahunAjaran->delete();
-        return back()->with('success', 'Tahun ajaran dihapus.');
+        $tahunAjaran->update(['is_aktif' => false]);
+        return back()->with('success', "{$tahunAjaran->label} dinonaktifkan.");
+    }
+
+    public function editTahunAjaran(TahunAjaran $tahunAjaran)
+    {
+        return view('erapor.tahun-ajaran-edit', ['tahunAjaran' => $tahunAjaran]);
+    }
+
+    public function updateTahunAjaran(Request $request, TahunAjaran $tahunAjaran)
+    {
+        $data = $request->validate([
+            'nama' => 'required|string|max:20',
+            'semester' => 'required|in:Ganjil,Genap',
+        ]);
+
+        $tahunAjaran->update($data);
+        return redirect()->route('erapor.tahun-ajaran')->with('success', 'Tahun ajaran berhasil diperbarui.');
     }
 
     // ── Mata Pelajaran ──────────────────────────────────────────────────

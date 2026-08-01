@@ -3,6 +3,10 @@
 @section('page-title', 'Tahun Ajaran')
 
 @section('content')
+<p style="font-size:12px;color:#94a3b8;margin:-10px 0 16px;">
+    Demi keamanan data (nilai, TP, rapor semuanya terhubung ke tahun ajaran), tahun ajaran tidak bisa
+    dihapus - cuma bisa diedit atau dinonaktifkan.
+</p>
 <form action="{{ route('erapor.tahun-ajaran.store') }}" method="POST" class="card" style="padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;">
     @csrf
     <div><label class="form-label">Nama (mis. 2025/2026)</label><input name="nama" class="form-input" placeholder="2025/2026" required></div>
@@ -33,14 +37,16 @@
                     @if($t->is_aktif)<span class="badge badge-aktif">Aktif</span>@else<span class="badge" style="background:#f1f5f9;color:#94a3b8;">Nonaktif</span>@endif
                 </td>
                 <td style="padding:10px 18px;text-align:right;">
-                    @if(!$t->is_aktif)
+                    @if($t->is_aktif)
+                    <form action="{{ route('erapor.tahun-ajaran.nonaktifkan', $t) }}" method="POST" style="display:inline;">
+                        @csrf<button class="btn btn-secondary btn-sm">Non-aktifkan</button>
+                    </form>
+                    @else
                     <form action="{{ route('erapor.tahun-ajaran.aktifkan', $t) }}" method="POST" style="display:inline;">
                         @csrf<button class="btn btn-secondary btn-sm">Aktifkan</button>
                     </form>
                     @endif
-                    <form action="{{ route('erapor.tahun-ajaran.destroy', $t) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus?')">
-                        @csrf @method('DELETE')<button class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button>
-                    </form>
+                    <a href="{{ route('erapor.tahun-ajaran.edit', $t) }}" class="btn btn-primary btn-sm"><i class="ti ti-pencil"></i></a>
                 </td>
             </tr>
             @empty

@@ -14,7 +14,9 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/tahun-ajaran', [EraporController::class, 'tahunAjaran'])->name('tahun-ajaran');
         Route::post('/tahun-ajaran', [EraporController::class, 'storeTahunAjaran'])->name('tahun-ajaran.store');
         Route::post('/tahun-ajaran/{tahunAjaran}/aktifkan', [EraporController::class, 'aktifkanTahunAjaran'])->name('tahun-ajaran.aktifkan');
-        Route::delete('/tahun-ajaran/{tahunAjaran}', [EraporController::class, 'destroyTahunAjaran'])->name('tahun-ajaran.destroy');
+        Route::post('/tahun-ajaran/{tahunAjaran}/nonaktifkan', [EraporController::class, 'nonaktifkanTahunAjaran'])->name('tahun-ajaran.nonaktifkan');
+        Route::get('/tahun-ajaran/{tahunAjaran}/edit', [EraporController::class, 'editTahunAjaran'])->name('tahun-ajaran.edit');
+        Route::put('/tahun-ajaran/{tahunAjaran}', [EraporController::class, 'updateTahunAjaran'])->name('tahun-ajaran.update');
 
         Route::get('/mata-pelajaran', [EraporController::class, 'mataPelajaran'])->name('mata-pelajaran');
         Route::post('/mata-pelajaran', [EraporController::class, 'storeMataPelajaran'])->name('mata-pelajaran.store');
