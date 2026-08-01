@@ -52,9 +52,8 @@ class TujuanPembelajaranController extends Controller
 
         $tps = $query
             ->when($mapelId, fn ($q) => $q->where('mata_pelajaran_id', $mapelId))
-            ->orderByDesc('id')
-            ->paginate(20)
-            ->withQueryString();
+            ->orderBy('mata_pelajaran_id')->orderByDesc('id')
+            ->get();
 
         return view('erapor.tp.index', [
             'tps' => $tps,
@@ -133,6 +132,57 @@ class TujuanPembelajaranController extends Controller
         }
 
         return redirect()->route('erapor.tp.index')->with('success', 'Tujuan Pembelajaran ditambahkan.');
+    }
+
+    public function edit(TujuanPembelajaran $tp)
+    {
+        $tp->load('kelasList');
+        $kelasTerpilih = $tp->kelasList->map(fn ($k) => $k->rombel ? "{$k->kelas}|{$k->rombel}" : "{$k->kelas}|")->toArray();
+
+        return view('erapor.tp.edit', [
+            'tp' => $tp,
+            'mapelList' => MataPelajaran::orderBy('nama')->get(),
+            'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+            'kelasList' => $this->kelasRombelList(),
+            'kelasTerpilih' => $kelasTerpilih,
+        ]);
+    }
+
+    public function update(Request $request, TujuanPembelajaran $tp)
+    {
+        $data = $request->validate([
+            'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+            'fase' => 'nullable|string|max:5',
+            'kode_tp' => 'nullable|string|max:20',
+            'deskripsi_tp' => 'required|string',
+            'semester' => 'required|integer|in:1,2',
+            'kelas_rombel' => 'required|array|min:1',
+        ]);
+
+        $tp->update([
+            'mata_pelajaran_id' => $data['mata_pelajaran_id'],
+            'tahun_ajaran_id' => $data['tahun_ajaran_id'],
+            'fase' => $data['fase'] ?? null,
+            'kode_tp' => $data['kode_tp'] ?? null,
+            'deskripsi_tp' => $data['deskripsi_tp'],
+            'semester' => $data['semester'],
+        ]);
+
+        $tp->kelasList()->delete();
+        foreach ($data['kelas_rombel'] as $kr) {
+            [$kelas, $rombel] = array_pad(explode('|', $kr), 2, null);
+            TpKelas::create(['tujuan_pembelajaran_id' => $tp->id, 'kelas' => $kelas, 'rombel' => $rombel ?: null]);
+        }
+
+        return redirect()->route('erapor.tp.index')->with('success', 'Tujuan Pembelajaran diperbarui.');
+    }
+
+    public function destroyMassal(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        TujuanPembelajaran::whereIn('id', $ids)->delete();
+        return back()->with('success', count($ids) . ' Tujuan Pembelajaran dihapus.');
     }
 
     public function destroy(TujuanPembelajaran $tp)

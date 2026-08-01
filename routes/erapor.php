@@ -68,6 +68,9 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/tp', [TujuanPembelajaranController::class, 'index'])->name('tp.index');
         Route::get('/tp/create', [TujuanPembelajaranController::class, 'create'])->name('tp.create');
         Route::post('/tp', [TujuanPembelajaranController::class, 'store'])->name('tp.store');
+        Route::delete('/tp/massal', [TujuanPembelajaranController::class, 'destroyMassal'])->name('tp.destroy-massal');
+        Route::get('/tp/{tp}/edit', [TujuanPembelajaranController::class, 'edit'])->name('tp.edit');
+        Route::put('/tp/{tp}', [TujuanPembelajaranController::class, 'update'])->name('tp.update');
         Route::delete('/tp/{tp}', [TujuanPembelajaranController::class, 'destroy'])->name('tp.destroy');
 
         // Penilaian & Input Nilai
