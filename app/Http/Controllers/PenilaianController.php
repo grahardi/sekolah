@@ -98,6 +98,7 @@ class PenilaianController extends Controller
             'sumatif' => $sumatif,
             'formatif' => $formatif,
             'rekap' => $rekap,
+            'kkm' => auth()->user()->sekolah->kkm ?? 75,
         ]);
     }
 

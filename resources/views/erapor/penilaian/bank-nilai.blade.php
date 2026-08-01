@@ -88,35 +88,41 @@
 <div class="card">
     <div class="card-header"><p style="font-size:14px;font-weight:700;color:#0f172a;margin:0;"><i class="ti ti-report"></i> Ringkasan Nilai Akhir &amp; Rapor (Satu Kelas)</p></div>
     <div style="overflow-x:auto;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead>
-            <tr style="text-align:center;color:#64748b;font-size:10px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;background:#f8fafc;">
-                <th rowspan="2" style="padding:8px;">No</th>
-                <th rowspan="2" style="padding:8px;text-align:left;">Nama Siswa</th>
-                <th colspan="{{ $sumatif->count() }}" style="padding:8px;border-bottom:1px solid #e2e8f0;">Nilai Sumatif</th>
-                <th rowspan="2" style="padding:8px;">Nilai Rapor</th>
-                <th rowspan="2" style="padding:8px;text-align:left;">Deskripsi Capaian Kompetensi (Rapor)</th>
+            <tr style="text-align:center;color:#374151;font-size:11px;text-transform:uppercase;background:#f1f5f9;">
+                <th rowspan="2" style="padding:10px;border:1px solid #e2e8f0;">No</th>
+                <th rowspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0;">Nama Siswa</th>
+                <th colspan="{{ $sumatif->count() }}" style="padding:10px;border:1px solid #e2e8f0;background:#e2e8f0;">Nilai Sumatif</th>
+                <th rowspan="2" style="padding:10px;border:1px solid #e2e8f0;background:#dcfce7;">Nilai Rapor</th>
+                <th rowspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0;background:#dcfce7;">Deskripsi Capaian Kompetensi (Rapor)</th>
             </tr>
-            <tr style="text-align:center;color:#64748b;font-size:10px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
-                @foreach($sumatif as $p)<th style="padding:6px;">{{ $p->nama_penilaian }}</th>@endforeach
+            <tr style="text-align:center;color:#374151;font-size:11px;text-transform:uppercase;background:#f8fafc;">
+                @foreach($sumatif as $p)<th style="padding:8px;border:1px solid #e2e8f0;">{{ $p->nama_penilaian }}</th>@endforeach
             </tr>
         </thead>
         <tbody>
             @forelse($rekap as $i => $r)
-            <tr style="border-bottom:1px solid #f8fafc;">
-                <td style="padding:8px;text-align:center;color:#94a3b8;">{{ $i + 1 }}</td>
-                <td style="padding:8px;font-weight:700;white-space:nowrap;">{{ $r['siswa']->nama_lengkap }}</td>
+            <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px;text-align:center;color:#94a3b8;border:1px solid #f1f5f9;">{{ $i + 1 }}</td>
+                <td style="padding:10px;font-weight:700;white-space:nowrap;border:1px solid #f1f5f9;">{{ $r['siswa']->nama_lengkap }}</td>
                 @foreach($sumatif as $p)
-                <td style="padding:8px;text-align:center;">{{ $r['nilai_per_penilaian'][$p->id] ?? '-' }}</td>
+                <td style="padding:10px;text-align:center;font-size:16px;font-weight:700;color:#0f172a;border:1px solid #f1f5f9;">{{ $r['nilai_per_penilaian'][$p->id] ?? '-' }}</td>
                 @endforeach
-                <td style="padding:8px;text-align:center;">
+                <td style="padding:10px;text-align:center;border:1px solid #f1f5f9;">
                     @if($r['nilai_rapor'] !== null)
-                    <span class="badge badge-aktif" style="font-size:12px;padding:4px 10px;">{{ $r['nilai_rapor'] }}</span>
+                    @php
+                        $nr = $r['nilai_rapor'];
+                        if ($nr < $kkm) { $bg = '#fef9c3'; $fg = '#854d0e'; }
+                        elseif ($nr > 95) { $bg = '#dbeafe'; $fg = '#1e40af'; }
+                        else { $bg = '#16a34a'; $fg = '#fff'; }
+                    @endphp
+                    <span style="display:inline-block;background:{{ $bg }};color:{{ $fg }};font-size:16px;font-weight:800;padding:6px 14px;border-radius:8px;">{{ $nr }}</span>
                     @else
                     <span style="color:#cbd5e1;">-</span>
                     @endif
                 </td>
-                <td style="padding:8px;color:#374151;max-width:340px;">{{ $r['deskripsi'] ?: '-' }}</td>
+                <td style="padding:10px;color:#374151;max-width:340px;border:1px solid #f1f5f9;">{{ $r['deskripsi'] ?: '-' }}</td>
             </tr>
             @empty
             <tr><td colspan="{{ 4 + $sumatif->count() }}" style="padding:20px;text-align:center;color:#94a3b8;">Tidak ada siswa aktif di kelas ini.</td></tr>
