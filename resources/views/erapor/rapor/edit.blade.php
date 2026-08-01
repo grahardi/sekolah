@@ -36,9 +36,9 @@
         <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">B. Kokurikuler (Projek P5)</p>
         @if($daftarKegiatanP5->count() > 0)
         <select id="pilih-kegiatan-p5" class="form-input" style="margin-bottom:10px;" onchange="isiDeskripsiP5(this)">
-            <option value="">-- Pilih dari daftar Kegiatan P5 (opsional, isi otomatis di bawah) --</option>
+            <option value="">-- Generate otomatis dari hasil Asesmen Kokurikuler --</option>
             @foreach($daftarKegiatanP5 as $k)
-            <option value="{{ $k->deskripsi_template }}">{{ $k->nama_kegiatan }}{{ $k->tema ? " ($k->tema)" : '' }}</option>
+            <option value="{{ $k->id }}">{{ $k->nama_kegiatan }}{{ $k->tema ? " ($k->tema)" : '' }}</option>
             @endforeach
         </select>
         @endif
@@ -132,9 +132,10 @@
     }
 
     function isiDeskripsiP5(select) {
-        if (select.value) {
-            document.getElementById('deskripsi_kokurikuler').value = select.value;
-        }
+        if (!select.value) return;
+        fetch(`/erapor/kokurikuler/deskripsi-otomatis?kegiatan=${select.value}&siswa={{ $rapor->siswa_id }}`)
+            .then(r => r.json())
+            .then(json => { document.getElementById('deskripsi_kokurikuler').value = json.teks; });
     }
 </script>
 @endsection

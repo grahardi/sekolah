@@ -301,33 +301,6 @@ class EraporController extends Controller
         return back()->with('success', 'Pengaturan cetak rapor berhasil disimpan.');
     }
 
-    // ── Kegiatan P5 (Kokurikuler) - master list template deskripsi ──────
-    public function kegiatanP5Index()
-    {
-        return view('erapor.kegiatan-p5.index', [
-            'kegiatans' => \App\Models\KokurikulerKegiatan::with('tahunAjaran')->orderByDesc('id')->get(),
-            'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
-        ]);
-    }
-
-    public function storeKegiatanP5(Request $request)
-    {
-        $data = $request->validate([
-            'tahun_ajaran_id' => 'nullable|exists:tahun_ajarans,id',
-            'nama_kegiatan' => 'required|string|max:150',
-            'tema' => 'nullable|string|max:150',
-            'deskripsi_template' => 'nullable|string',
-        ]);
-        \App\Models\KokurikulerKegiatan::create($data);
-        return back()->with('success', 'Kegiatan P5 ditambahkan.');
-    }
-
-    public function destroyKegiatanP5(\App\Models\KokurikulerKegiatan $kegiatan)
-    {
-        $kegiatan->delete();
-        return back()->with('success', 'Kegiatan P5 dihapus.');
-    }
-
     /** Daftar kombinasi kelas-rombel yang ada di data siswa aktif (dari Buku Induk) */
     public function rekapPengajar(Request $request)
     {

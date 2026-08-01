@@ -188,9 +188,9 @@
            class="sb-item {{ request()->routeIs('erapor.pengaturan-cetak') ? 'active' : '' }}">
             <i class="ti ti-settings"></i><span>Pengaturan Cetak</span>
         </a>
-        <a href="{{ route('erapor.kegiatan-p5.index') }}"
-           class="sb-item {{ request()->routeIs('erapor.kegiatan-p5.*') ? 'active' : '' }}">
-            <i class="ti ti-puzzle"></i><span>Kegiatan P5</span>
+        <a href="{{ route('erapor.kokurikuler.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.kokurikuler.*') ? 'active' : '' }}">
+            <i class="ti ti-puzzle"></i><span>Kokurikuler (P5)</span>
         </a>
 
         <div class="sb-divider"></div>

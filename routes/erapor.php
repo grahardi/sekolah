@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EraporController;
+use App\Http\Controllers\KokurikulerController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\RaporController;
 use App\Http\Controllers\TujuanPembelajaranController;
@@ -25,9 +26,13 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/pengaturan-cetak', [EraporController::class, 'pengaturanCetak'])->name('pengaturan-cetak');
         Route::put('/pengaturan-cetak', [EraporController::class, 'updatePengaturanCetak'])->name('pengaturan-cetak.update');
 
-        Route::get('/kegiatan-p5', [EraporController::class, 'kegiatanP5Index'])->name('kegiatan-p5.index');
-        Route::post('/kegiatan-p5', [EraporController::class, 'storeKegiatanP5'])->name('kegiatan-p5.store');
-        Route::delete('/kegiatan-p5/{kegiatan}', [EraporController::class, 'destroyKegiatanP5'])->name('kegiatan-p5.destroy');
+        Route::get('/kokurikuler', [KokurikulerController::class, 'index'])->name('kokurikuler.index');
+        Route::get('/kokurikuler/create', [KokurikulerController::class, 'create'])->name('kokurikuler.create');
+        Route::post('/kokurikuler', [KokurikulerController::class, 'store'])->name('kokurikuler.store');
+        Route::get('/kokurikuler/{kegiatan}/edit', [KokurikulerController::class, 'edit'])->name('kokurikuler.edit');
+        Route::put('/kokurikuler/{kegiatan}', [KokurikulerController::class, 'update'])->name('kokurikuler.update');
+        Route::delete('/kokurikuler/{kegiatan}', [KokurikulerController::class, 'destroy'])->name('kokurikuler.destroy');
+        Route::get('/kokurikuler/deskripsi-otomatis', [KokurikulerController::class, 'deskripsiOtomatis'])->name('kokurikuler.deskripsi-otomatis');
 
         Route::get('/penugasan', [EraporController::class, 'penugasan'])->name('penugasan');
         Route::get('/rekap-pengajar', [EraporController::class, 'rekapPengajar'])->name('rekap-pengajar');
@@ -66,6 +71,10 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
 
     // ── Admin ATAU Guru (guru login sendiri butuh akses ini) ────────────
     Route::middleware('admin_or_guru')->group(function () {
+        // Kokurikuler - Input Asesmen (koordinator guru bisa akses)
+        Route::get('/kokurikuler/pilih-asesmen', [KokurikulerController::class, 'pilihAsesmen'])->name('kokurikuler.pilih-asesmen');
+        Route::post('/kokurikuler/save-asesmen', [KokurikulerController::class, 'saveAsesmen'])->name('kokurikuler.save-asesmen');
+
         // Tujuan Pembelajaran (TP)
         Route::get('/tp', [TujuanPembelajaranController::class, 'index'])->name('tp.index');
         Route::get('/tp/create', [TujuanPembelajaranController::class, 'create'])->name('tp.create');
