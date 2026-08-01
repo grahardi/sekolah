@@ -39,7 +39,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     return (
         <div className="min-h-screen bg-cream text-navy flex">
             {/* Sidebar desktop */}
-            <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-teal text-cream">
+            <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-[#1E3A5F] text-cream">
                 <div className="px-5 py-6 border-b border-white/10">
                     <div className="bg-white rounded-xl px-3 py-2.5 inline-block">
                         <Logo />
@@ -90,7 +90,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
             {mobileOpen && (
                 <div className="fixed inset-0 z-40 lg:hidden">
                     <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-                    <aside className="absolute inset-y-0 left-0 w-72 bg-teal text-cream flex flex-col">
+                    <aside className="absolute inset-y-0 left-0 w-72 bg-[#1E3A5F] text-cream flex flex-col">
                         <div className="px-5 py-6 border-b border-white/10 flex items-center justify-between">
                             <div className="bg-white rounded-xl px-3 py-2.5 inline-block">
                                 <Logo />
