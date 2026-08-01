@@ -18,6 +18,22 @@ class EraporController extends Controller
     public function index()
     {
         $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        $sekolahId = auth()->user()->sekolah_id;
+
+        $totalSiswaAktif = \App\Models\Siswa::where('status', 'aktif')->count();
+        $totalKelas = \App\Models\Siswa::where('status', 'aktif')->whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}-{$s->rombel}" : $s->kelas)
+            ->unique()->count();
+
+        $totalRaporSemester = 0;
+        $kelengkapanRapor = 0;
+        if ($tahunAktif) {
+            $semesterAktif = $tahunAktif->semester === 'Genap' ? 2 : 1;
+            $totalRaporSemester = \App\Models\Rapor::where('tahun_ajaran_id', $tahunAktif->id)
+                ->where('semester', $semesterAktif)->count();
+            $kelengkapanRapor = $totalSiswaAktif > 0 ? round(($totalRaporSemester / $totalSiswaAktif) * 100) : 0;
+        }
 
         return view('erapor.dashboard', [
             'tahunAktif' => $tahunAktif,
@@ -26,6 +42,13 @@ class EraporController extends Controller
             'totalGuruPengajar' => GuruPengajar::count(),
             'totalGuruEkstrakurikuler' => GuruEkstrakurikuler::count(),
             'totalGuruKokurikuler' => GuruKokurikuler::count(),
+            'totalPengguna' => \App\Models\User::where('sekolah_id', $sekolahId)->count(),
+            'totalSiswa' => $totalSiswaAktif,
+            'totalKelas' => $totalKelas,
+            'totalTp' => \App\Models\TujuanPembelajaran::count(),
+            'totalPenilaian' => \App\Models\Penilaian::count(),
+            'kelengkapanRapor' => $kelengkapanRapor,
+            'totalRaporSemester' => $totalRaporSemester,
         ]);
     }
 
