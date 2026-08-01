@@ -16,7 +16,7 @@
 
         /* ── Sidebar (disamakan dgn warna portal utama: biru #2563EB / kuning #FBBF24) ── */
         .sidebar {
-            width: 248px; background: #2563EB;
+            width: 248px; background: #1E3A5F;
             position: fixed; top:0; left:0; bottom:0;
             display: flex; flex-direction: column; z-index: 40;
             overflow-y: auto;
