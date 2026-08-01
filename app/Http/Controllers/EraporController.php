@@ -274,6 +274,9 @@ class EraporController extends Controller
             'rapor_tanggal_manual' => 'nullable|date',
             'rapor_tampilkan_logo' => 'nullable|boolean',
             'rapor_kota_ttd' => 'nullable|string|max:100',
+            'rapor_threshold_sangat_baik' => 'required|integer|min:0|max:100',
+            'rapor_threshold_baik' => 'required|integer|min:0|max:100',
+            'rapor_threshold_cukup' => 'required|integer|min:0|max:100',
         ]);
         $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
 

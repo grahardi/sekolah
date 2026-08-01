@@ -62,12 +62,13 @@ class RaporCalculator
 
         $nilaiAkhir = $totalBobot > 0 ? (int) round($totalNilaiXBobot / $totalBobot) : null;
 
-        $deskripsi = self::buatDeskripsi($nilaiAkhir, $skorPerTp);
+        $sekolah = \App\Models\Siswa::find($siswaId)?->sekolah;
+        $deskripsi = self::buatDeskripsi($nilaiAkhir, $skorPerTp, $sekolah);
 
         return ['nilai_akhir' => $nilaiAkhir, 'deskripsi' => $deskripsi];
     }
 
-    private static function buatDeskripsi(?int $nilaiAkhir, array $skorPerTp): string
+    private static function buatDeskripsi(?int $nilaiAkhir, array $skorPerTp, ?\App\Models\Sekolah $sekolah = null): string
     {
         if ($nilaiAkhir === null) {
             return '';
@@ -99,19 +100,23 @@ class RaporCalculator
             $dataMin['nama'] = null;
         }
 
-        $kalimatMax = $dataMax['skor'] > -1 ? self::kalimatCapaian($dataMax['rata'], $dataMax['nama']) : '';
-        $kalimatMin = ($dataMin['nama'] !== null && $dataMin['skor'] < 101) ? self::kalimatCapaian($dataMin['rata'], $dataMin['nama']) : '';
+        $kalimatMax = $dataMax['skor'] > -1 ? self::kalimatCapaian($dataMax['rata'], $dataMax['nama'], $sekolah) : '';
+        $kalimatMin = ($dataMin['nama'] !== null && $dataMin['skor'] < 101) ? self::kalimatCapaian($dataMin['rata'], $dataMin['nama'], $sekolah) : '';
 
         $final = trim($kalimatMax . '. ' . $kalimatMin);
         $final = ltrim($final, '. ');
         return str_replace('..', '.', $final);
     }
 
-    private static function kalimatCapaian(float $rata, string $namaTp): string
+    private static function kalimatCapaian(float $rata, string $namaTp, ?\App\Models\Sekolah $sekolah = null): string
     {
-        if ($rata >= 93) return "Menunjukkan penguasaan yang sangat baik dalam {$namaTp}";
-        if ($rata >= 84) return "Menunjukkan penguasaan yang baik dalam {$namaTp}";
-        if ($rata >= 75) return "Menunjukkan penguasaan yang cukup dalam {$namaTp}";
+        $sangatBaik = $sekolah->rapor_threshold_sangat_baik ?? 93;
+        $baik = $sekolah->rapor_threshold_baik ?? 84;
+        $cukup = $sekolah->rapor_threshold_cukup ?? 75;
+
+        if ($rata >= $sangatBaik) return "Menunjukkan penguasaan yang sangat baik dalam {$namaTp}";
+        if ($rata >= $baik) return "Menunjukkan penguasaan yang baik dalam {$namaTp}";
+        if ($rata >= $cukup) return "Menunjukkan penguasaan yang cukup dalam {$namaTp}";
         return "Perlu penguatan dalam {$namaTp}";
     }
 }

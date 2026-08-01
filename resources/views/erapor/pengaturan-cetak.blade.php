@@ -58,4 +58,39 @@
 
     <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:12px;"><i class="ti ti-device-floppy"></i> Simpan Pengaturan</button>
 </form>
+
+<form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;margin-top:16px;">
+    @csrf
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Ambang Batas Deskripsi Capaian Kompetensi</p>
+    <p style="font-size:12px;color:#64748b;margin:0 0 14px;">
+        Menentukan kata "sangat baik/baik/cukup/perlu penguatan" di deskripsi rapor berdasarkan rata-rata
+        skor TP. Default persis sesuai sistem lama (93/84/75) - berlaku otomatis, ubah kalau perlu.
+    </p>
+
+    {{-- field tersembunyi supaya form ini submit ke route yg sama tanpa duplikasi input lain --}}
+    <input type="hidden" name="rapor_ukuran_kertas" value="{{ $sekolah->rapor_ukuran_kertas }}">
+    <input type="hidden" name="rapor_orientasi" value="{{ $sekolah->rapor_orientasi }}">
+    <input type="hidden" name="rapor_font_size" value="{{ $sekolah->rapor_font_size }}">
+    <input type="hidden" name="rapor_tanggal_manual" value="{{ $sekolah->rapor_tanggal_manual?->format('Y-m-d') }}">
+    <input type="hidden" name="rapor_tampilkan_logo" value="{{ $sekolah->rapor_tampilkan_logo ? '1' : '0' }}">
+    <input type="hidden" name="rapor_kota_ttd" value="{{ $sekolah->rapor_kota_ttd }}">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+        <div>
+            <label class="form-label">Sangat Baik (≥)</label>
+            <input type="number" name="rapor_threshold_sangat_baik" value="{{ $sekolah->rapor_threshold_sangat_baik }}" min="0" max="100" class="form-input" required>
+        </div>
+        <div>
+            <label class="form-label">Baik (≥)</label>
+            <input type="number" name="rapor_threshold_baik" value="{{ $sekolah->rapor_threshold_baik }}" min="0" max="100" class="form-input" required>
+        </div>
+        <div>
+            <label class="form-label">Cukup (≥)</label>
+            <input type="number" name="rapor_threshold_cukup" value="{{ $sekolah->rapor_threshold_cukup }}" min="0" max="100" class="form-input" required>
+        </div>
+    </div>
+    <p style="font-size:11px;color:#94a3b8;margin-top:8px;">Di bawah angka "Cukup" otomatis jadi "Perlu penguatan dalam ...".</p>
+
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;margin-top:16px;"><i class="ti ti-device-floppy"></i> Simpan Ambang Batas</button>
+</form>
 @endsection

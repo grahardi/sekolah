@@ -35,6 +35,9 @@ class Sekolah extends Model
         'rapor_tanggal_manual',
         'rapor_tampilkan_logo',
         'rapor_kota_ttd',
+        'rapor_threshold_sangat_baik',
+        'rapor_threshold_baik',
+        'rapor_threshold_cukup',
     ];
 
     protected $casts = [
