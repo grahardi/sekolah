@@ -17,11 +17,18 @@ class RaporController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $waliKelas = EraporController::waliKelasSayaAtauNull();
+        abort_if($user->role === 'guru' && ! $waliKelas, 403, 'Halaman ini khusus wali kelas.');
+
         $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
         $semester = (int) $request->input('semester', $tahunAjaran?->semester === 'Genap' ? 2 : 1);
-        $kelasRombel = $request->input('kelas_rombel');
 
-        $kelasList = $this->kelasRombelList();
+        $kelasList = $waliKelas
+            ? collect([$waliKelas->rombel ? "{$waliKelas->kelas}|{$waliKelas->rombel}" : "{$waliKelas->kelas}|"])
+            : $this->kelasRombelList();
+
+        $kelasRombel = $request->input('kelas_rombel', $waliKelas ? $kelasList->first() : null);
         $siswaList = collect();
 
         if ($tahunAjaran && $kelasRombel) {
@@ -73,6 +80,12 @@ class RaporController extends Controller
             ['kelas' => $kelas, 'rombel' => $rombel]
         );
 
+        // Rapor yg statusnya sudah Final = terkunci. Nilai TIDAK dihitung ulang
+        // sampai admin/wali kelas batalkan finalisasi dulu.
+        if ($rapor->status === 'Final') {
+            return $rapor;
+        }
+
         // Mapel yang diajarkan di kelas ini pada tahun ajaran ini (dari Guru Pengajar)
         $mapelIds = GuruPengajar::where('tahun_ajaran_id', $tahunAjaran->id)
             ->where('kelas', $kelas)->where('rombel', $rombel)
@@ -114,6 +127,17 @@ class RaporController extends Controller
             'ekskul_keterangan' => 'nullable|array',
         ]);
 
+        // Rapor yg SUDAH Final terkunci - perubahan apapun diabaikan KECUALI
+        // memang sedang membatalkan finalisasi (status dikirim balik ke Draft).
+        // Ini memaksa alur 2 langkah: batalkan dulu, baru bisa edit isinya.
+        if ($rapor->status === 'Final') {
+            if ($data['status'] === 'Draft') {
+                $rapor->update(['status' => 'Draft']);
+                return redirect()->route('erapor.rapor.edit', $rapor)->with('success', 'Rapor dibuka kembali (jadi Draft). Silakan edit, lalu simpan lagi.');
+            }
+            return redirect()->route('erapor.rapor.edit', $rapor)->with('warning', 'Rapor ini berstatus Final (terkunci). Batalkan finalisasi dulu kalau mau mengedit.');
+        }
+
         $rapor->update([
             'sakit' => $data['sakit'] ?? 0,
             'izin' => $data['izin'] ?? 0,
@@ -147,6 +171,62 @@ class RaporController extends Controller
         }
 
         return redirect()->route('erapor.rapor.edit', $rapor)->with('success', 'Rapor berhasil disimpan.');
+    }
+
+    /** Entry point Cetak Rapor khusus Wali Kelas - otomatis pilih kelasnya sendiri, gaya Cetak Massal */
+    public function cetakKelas(Request $request)
+    {
+        $waliKelas = EraporController::waliKelasSayaAtauNull();
+        abort_unless($waliKelas || auth()->user()->isAdmin(), 403);
+
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422, 'Belum ada tahun ajaran aktif.');
+
+        $kelas = $waliKelas?->kelas ?? $request->input('kelas');
+        $rombel = $waliKelas?->rombel ?? $request->input('rombel');
+        $semester = (int) ($request->input('semester', $tahunAjaran->semester === 'Genap' ? 2 : 1));
+
+        $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)
+            ->orderBy('nama_lengkap')->get();
+
+        $raporMap = Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $semester)
+            ->whereIn('siswa_id', $siswaList->pluck('id'))->get()->keyBy('siswa_id');
+
+        return view('erapor.rapor.cetak-kelas', [
+            'siswaList' => $siswaList,
+            'raporMap' => $raporMap,
+            'kelas' => $kelas,
+            'rombel' => $rombel,
+            'semester' => $semester,
+        ]);
+    }
+
+    /** Finalisasi semua rapor 1 kelas sekaligus (kunci - nilai tidak berubah lagi) */
+    public function finalisasiSemua(Request $request)
+    {
+        $request->validate(['kelas' => 'required|string', 'semester' => 'required|integer']);
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422);
+
+        Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $request->semester)
+            ->where('kelas', $request->kelas)->where('rombel', $request->input('rombel') ?: null)
+            ->update(['status' => 'Final']);
+
+        return back()->with('success', 'Semua rapor di kelas ini sudah difinalisasi (terkunci).');
+    }
+
+    /** Batalkan finalisasi semua rapor 1 kelas sekaligus (buka kunci lagi) */
+    public function batalkanFinalisasiSemua(Request $request)
+    {
+        $request->validate(['kelas' => 'required|string', 'semester' => 'required|integer']);
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422);
+
+        Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $request->semester)
+            ->where('kelas', $request->kelas)->where('rombel', $request->input('rombel') ?: null)
+            ->update(['status' => 'Draft']);
+
+        return back()->with('success', 'Finalisasi seluruh rapor di kelas ini dibatalkan (kembali Draft).');
     }
 
     public function cetak(Rapor $rapor)

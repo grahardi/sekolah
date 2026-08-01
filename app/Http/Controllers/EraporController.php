@@ -278,6 +278,93 @@ class EraporController extends Controller
         ]);
     }
 
+    // ── Deteksi Wali Kelas (dipakai buat pisah menu Guru biasa vs Wali Kelas) ──
+    public static function waliKelasSayaAtauNull(): ?\App\Models\WaliKelas
+    {
+        $user = auth()->user();
+        if (! $user || $user->role !== 'guru') return null;
+
+        $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+        if (! $guru) return null;
+
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        if (! $tahunAktif) return null;
+
+        return \App\Models\WaliKelas::where('guru_id', $guru->id)
+            ->where('tahun_ajaran_id', $tahunAktif->id)
+            ->first();
+    }
+
+    // ── Progres Penilaian (khusus Wali Kelas - pantau kelengkapan nilai kelasnya) ──
+    public function progresPenilaian()
+    {
+        $waliKelas = self::waliKelasSayaAtauNull();
+        abort_unless($waliKelas || auth()->user()->isAdmin(), 403, 'Halaman ini khusus wali kelas.');
+
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+
+        $kelas = $waliKelas->kelas ?? null;
+        $rombel = $waliKelas->rombel ?? null;
+        abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
+
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+        $mapelIds = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)->where('kelas', $kelas)->where('rombel', $rombel)->pluck('mata_pelajaran_id')->unique();
+        $totalMapel = $mapelIds->count();
+
+        $progres = $siswaList->map(function ($s) use ($totalMapel) {
+            $sudahAda = \App\Models\RaporDetailAkademik::whereHas('rapor', fn ($q) => $q->where('siswa_id', $s->id))
+                ->whereNotNull('nilai_akhir')->count();
+            return [
+                'siswa' => $s,
+                'sudah' => $sudahAda,
+                'total' => $totalMapel,
+                'persen' => $totalMapel > 0 ? round(($sudahAda / $totalMapel) * 100) : 0,
+            ];
+        });
+
+        return view('erapor.progres-penilaian', ['progres' => $progres, 'kelas' => $kelas, 'rombel' => $rombel]);
+    }
+
+    // ── Catatan Wali Kelas (halaman khusus, isi cepat utk semua siswa 1 kelas) ──
+    public function catatanWaliIndex()
+    {
+        $waliKelas = self::waliKelasSayaAtauNull();
+        abort_unless($waliKelas || auth()->user()->isAdmin(), 403, 'Halaman ini khusus wali kelas.');
+
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+
+        $kelas = $waliKelas->kelas ?? null;
+        $rombel = $waliKelas->rombel ?? null;
+        abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
+
+        $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+
+        foreach ($siswaList as $siswa) {
+            $siswa->rapor = \App\Models\Rapor::firstOrCreate(
+                ['siswa_id' => $siswa->id, 'tahun_ajaran_id' => $tahunAktif->id, 'semester' => $semester],
+                ['kelas' => $kelas, 'rombel' => $rombel]
+            );
+        }
+
+        return view('erapor.catatan-wali.index', ['siswaList' => $siswaList]);
+    }
+
+    public function catatanWaliStore(Request $request)
+    {
+        $data = $request->validate(['catatan' => 'required|array']);
+
+        foreach ($data['catatan'] as $raporId => $teks) {
+            $rapor = \App\Models\Rapor::find($raporId);
+            if (! $rapor || $rapor->status === 'Final') continue; // lewati yg sudah final/terkunci
+            $rapor->update(['catatan_wali_kelas' => $teks]);
+        }
+
+        return back()->with('success', 'Catatan wali kelas berhasil disimpan.');
+    }
+
     private function kelasRombelList()
     {
         return Siswa::where('status', 'aktif')

@@ -84,9 +84,17 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/rapor/generate', [RaporController::class, 'generateKelas'])->name('rapor.generate');
         Route::get('/rapor/template-absensi', [RaporController::class, 'downloadTemplateAbsensi'])->name('rapor.template-absensi');
         Route::post('/rapor/import-absensi', [RaporController::class, 'importAbsensi'])->name('rapor.import-absensi');
+        Route::get('/rapor/cetak-kelas', [RaporController::class, 'cetakKelas'])->name('rapor.cetak-kelas');
+        Route::post('/rapor/finalisasi-semua', [RaporController::class, 'finalisasiSemua'])->name('rapor.finalisasi-semua');
+        Route::post('/rapor/batalkan-finalisasi-semua', [RaporController::class, 'batalkanFinalisasiSemua'])->name('rapor.batalkan-finalisasi-semua');
         Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');
         Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
         Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');
+
+        // Wali Kelas
+        Route::get('/progres-penilaian', [EraporController::class, 'progresPenilaian'])->name('progres-penilaian');
+        Route::get('/catatan-wali', [EraporController::class, 'catatanWaliIndex'])->name('catatan-wali.index');
+        Route::post('/catatan-wali', [EraporController::class, 'catatanWaliStore'])->name('catatan-wali.store');
 
         // Tugas Mengajar (toggle grid) - guru lihat/atur tugas mengajarnya sendiri
         Route::get('/guru/{guru}/tugas-mengajar', [EraporController::class, 'tugasMengajarPage'])->name('guru.tugas-mengajar');

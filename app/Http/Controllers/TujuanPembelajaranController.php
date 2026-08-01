@@ -17,12 +17,17 @@ class TujuanPembelajaranController extends Controller
         $user = auth()->user();
 
         $query = TujuanPembelajaran::with(['mataPelajaran', 'kelasList']);
+        $mapelListUntukFilter = MataPelajaran::orderBy('nama')->get();
 
         // Guru cuma lihat TP yg cocok dgn mapel & kelas yg benar-benar dia ajar
         if ($user->role === 'guru') {
             $guru = \App\Models\Guru::where('user_id', $user->id)->first();
             $penugasan = $guru
                 ? \App\Models\GuruPengajar::where('guru_id', $guru->id)->get(['mata_pelajaran_id', 'kelas', 'rombel'])
+                : collect();
+
+            $mapelListUntukFilter = $guru
+                ? \App\Models\GuruPengajar::where('guru_id', $guru->id)->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->values()
                 : collect();
 
             if ($penugasan->isEmpty()) {
@@ -53,7 +58,7 @@ class TujuanPembelajaranController extends Controller
 
         return view('erapor.tp.index', [
             'tps' => $tps,
-            'mapelList' => MataPelajaran::orderBy('nama')->get(),
+            'mapelList' => $mapelListUntukFilter,
             'filterMapel' => $mapelId,
         ]);
     }

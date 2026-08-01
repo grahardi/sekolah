@@ -213,6 +213,8 @@
         </a>
         @endif
 
+        @php $waliKelasSaya = \App\Http\Controllers\EraporController::waliKelasSayaAtauNull(); @endphp
+
         <div class="sb-divider"></div>
         <div class="sb-section">Nilai & Rapor</div>
         <a href="{{ route('erapor.tp.index') }}"
@@ -223,10 +225,27 @@
            class="sb-item {{ request()->routeIs('erapor.penilaian.*') ? 'active' : '' }}">
             <i class="ti ti-report"></i><span>Input Nilai</span>
         </a>
+
+        @if(auth()->user()->isAdmin() || $waliKelasSaya)
+        <div class="sb-divider"></div>
+        <div class="sb-section">Wali Kelas</div>
+        <a href="{{ route('erapor.progres-penilaian') }}"
+           class="sb-item {{ request()->routeIs('erapor.progres-penilaian') ? 'active' : '' }}">
+            <i class="ti ti-progress-check"></i><span>Progres Penilaian</span>
+        </a>
         <a href="{{ route('erapor.rapor.index') }}"
-           class="sb-item {{ request()->routeIs('erapor.rapor.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('erapor.rapor.index') ? 'active' : '' }}">
+            <i class="ti ti-calendar-stats"></i><span>Rekap Absensi</span>
+        </a>
+        <a href="{{ route('erapor.catatan-wali.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.catatan-wali.*') ? 'active' : '' }}">
+            <i class="ti ti-notes"></i><span>Catatan Wali Kelas</span>
+        </a>
+        <a href="{{ route('erapor.rapor.cetak-kelas') }}"
+           class="sb-item {{ request()->routeIs('erapor.rapor.cetak-kelas') || request()->routeIs('erapor.rapor.edit') ? 'active' : '' }}">
             <i class="ti ti-printer"></i><span>Cetak Rapor</span>
         </a>
+        @endif
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">

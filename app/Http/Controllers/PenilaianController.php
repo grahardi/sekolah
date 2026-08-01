@@ -19,11 +19,17 @@ class PenilaianController extends Controller
         $user = auth()->user();
 
         $query = Penilaian::with(['mataPelajaran', 'guru', 'tahunAjaran']);
+        $mapelListUntukFilter = MataPelajaran::orderBy('nama')->get();
 
-        // Guru cuma lihat penilaian yg dia buat sendiri
+        // Guru cuma lihat penilaian yg dia buat sendiri, dan dropdown filter
+        // mapel-nya juga cuma nampilin mapel yg dia ajar (bukan semua mapel sekolah)
         if ($user->role === 'guru') {
             $guru = Guru::where('user_id', $user->id)->first();
             $query->where('guru_id', $guru?->id ?? 0);
+
+            $mapelListUntukFilter = $guru
+                ? GuruPengajar::where('guru_id', $guru->id)->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->values()
+                : collect();
         }
 
         $penilaians = $query
@@ -39,7 +45,7 @@ class PenilaianController extends Controller
 
         return view('erapor.penilaian.index', [
             'penilaians' => $penilaians,
-            'mapelList' => MataPelajaran::orderBy('nama')->get(),
+            'mapelList' => $mapelListUntukFilter,
             'kelasList' => $this->kelasRombelList(),
             'filters' => $filters,
         ]);
