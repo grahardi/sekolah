@@ -173,6 +173,7 @@
             <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
         </a>
 
+        @if(auth()->user()->isAdmin())
         <div class="sb-divider"></div>
         <div class="sb-section">Master Data</div>
         <a href="{{ route('erapor.tahun-ajaran') }}"
@@ -206,6 +207,7 @@
            class="sb-item {{ request()->routeIs('erapor.penugasan') ? 'active' : '' }}">
             <i class="ti ti-user-check"></i><span>Wali Kelas & Lainnya</span>
         </a>
+        @endif
 
         <div class="sb-divider"></div>
         <div class="sb-section">Nilai & Rapor</div>

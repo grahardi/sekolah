@@ -14,8 +14,38 @@ class TujuanPembelajaranController extends Controller
     public function index(Request $request)
     {
         $mapelId = $request->input('mapel_id');
+        $user = auth()->user();
 
-        $tps = TujuanPembelajaran::with(['mataPelajaran', 'kelasList'])
+        $query = TujuanPembelajaran::with(['mataPelajaran', 'kelasList']);
+
+        // Guru cuma lihat TP yg cocok dgn mapel & kelas yg benar-benar dia ajar
+        if ($user->role === 'guru') {
+            $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+            $penugasan = $guru
+                ? \App\Models\GuruPengajar::where('guru_id', $guru->id)->get(['mata_pelajaran_id', 'kelas', 'rombel'])
+                : collect();
+
+            if ($penugasan->isEmpty()) {
+                $query->whereRaw('1 = 0'); // belum ada penugasan mengajar sama sekali
+            } else {
+                $mapelIds = $penugasan->pluck('mata_pelajaran_id')->unique();
+                $kelasRombelSaya = $penugasan->map(fn ($p) => $p->kelas . '|' . ($p->rombel ?? ''))->unique();
+
+                $query->whereIn('mata_pelajaran_id', $mapelIds)
+                    ->whereHas('kelasList', function ($q) use ($kelasRombelSaya) {
+                        $q->where(function ($qq) use ($kelasRombelSaya) {
+                            foreach ($kelasRombelSaya as $kr) {
+                                [$kelas, $rombel] = explode('|', $kr);
+                                $qq->orWhere(function ($q3) use ($kelas, $rombel) {
+                                    $q3->where('kelas', $kelas)->where('rombel', $rombel ?: null);
+                                });
+                            }
+                        });
+                    });
+            }
+        }
+
+        $tps = $query
             ->when($mapelId, fn ($q) => $q->where('mata_pelajaran_id', $mapelId))
             ->orderByDesc('id')
             ->paginate(20)

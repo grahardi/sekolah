@@ -16,8 +16,17 @@ class PenilaianController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['kelas_rombel', 'mata_pelajaran_id']);
+        $user = auth()->user();
 
-        $penilaians = Penilaian::with(['mataPelajaran', 'guru', 'tahunAjaran'])
+        $query = Penilaian::with(['mataPelajaran', 'guru', 'tahunAjaran']);
+
+        // Guru cuma lihat penilaian yg dia buat sendiri
+        if ($user->role === 'guru') {
+            $guru = Guru::where('user_id', $user->id)->first();
+            $query->where('guru_id', $guru?->id ?? 0);
+        }
+
+        $penilaians = $query
             ->when($filters['mata_pelajaran_id'] ?? null, fn ($q, $v) => $q->where('mata_pelajaran_id', $v))
             ->when($filters['kelas_rombel'] ?? null, function ($q, $v) {
                 [$kelas, $rombel] = array_pad(explode('|', $v), 2, null);

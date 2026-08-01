@@ -32,7 +32,12 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const isImpersonating = props?.impersonating;
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
-    const menuItems = user?.is_super_admin ? [...MENU, SUPERADMIN_ITEM] : MENU;
+    // Guru cuma boleh akses E-Rapor - sembunyikan menu lain yg bakal 403
+    const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna'];
+    const menuBerdasarkanRole = user?.role === 'guru'
+        ? MENU.filter((m) => !HIDDEN_UNTUK_GURU.includes(m.key))
+        : MENU;
+    const menuItems = user?.is_super_admin ? [...menuBerdasarkanRole, SUPERADMIN_ITEM] : menuBerdasarkanRole;
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 
