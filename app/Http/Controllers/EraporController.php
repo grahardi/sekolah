@@ -17,6 +17,12 @@ class EraporController extends Controller
 {
     public function index()
     {
+        $waliKelas = self::waliKelasSayaAtauNull();
+
+        if ($waliKelas) {
+            return $this->dashboardWaliKelas($waliKelas);
+        }
+
         $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
         $sekolahId = auth()->user()->sekolah_id;
 
@@ -49,6 +55,47 @@ class EraporController extends Controller
             'totalPenilaian' => \App\Models\Penilaian::count(),
             'kelengkapanRapor' => $kelengkapanRapor,
             'totalRaporSemester' => $totalRaporSemester,
+        ]);
+    }
+
+    /** Dashboard khusus wali kelas - fokus statistik kelasnya sendiri */
+    private function dashboardWaliKelas(\App\Models\WaliKelas $waliKelas)
+    {
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        $semester = $tahunAktif?->semester === 'Genap' ? 2 : 1;
+        $kelas = $waliKelas->kelas;
+        $rombel = $waliKelas->rombel;
+
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->get();
+        $totalSiswa = $siswaList->count();
+
+        $raporList = $tahunAktif
+            ? \App\Models\Rapor::where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)
+                ->whereIn('siswa_id', $siswaList->pluck('id'))->get()
+            : collect();
+
+        $absensiTinggi = $raporList->filter(fn ($r) => ($r->sakit + $r->izin + $r->tanpa_keterangan) > 10)->count();
+        $belumLengkap = $siswaList->count() - $raporList->filter(fn ($r) => ! empty($r->catatan_wali_kelas))->count();
+        $sudahFinal = $raporList->where('status', 'Final')->count();
+        $progresFinalisasi = $totalSiswa > 0 ? round(($sudahFinal / $totalSiswa) * 100) : 0;
+
+        // Mapel yg diajar guru ini SENDIRI (kalau dia juga guru pengajar, tidak cuma wali kelas)
+        $guruMengajar = GuruPengajar::where('guru_id', $waliKelas->guru_id)
+            ->with('mataPelajaran')
+            ->get()
+            ->groupBy(fn ($p) => $p->kelas . '|' . ($p->rombel ?? ''));
+
+        return view('erapor.dashboard-wali-kelas', [
+            'waliKelas' => $waliKelas,
+            'tahunAktif' => $tahunAktif,
+            'kelas' => $kelas,
+            'rombel' => $rombel,
+            'totalSiswa' => $totalSiswa,
+            'absensiTinggi' => $absensiTinggi,
+            'belumLengkap' => $belumLengkap,
+            'progresFinalisasi' => $progresFinalisasi,
+            'sudahFinal' => $sudahFinal,
+            'guruMengajar' => $guruMengajar,
         ]);
     }
 
@@ -89,9 +136,21 @@ class EraporController extends Controller
     }
 
     // ── Mata Pelajaran ──────────────────────────────────────────────────
-    public function mataPelajaran()
+    public function mataPelajaran(Request $request)
     {
-        return view('erapor.mata-pelajaran', ['mapels' => MataPelajaran::orderBy('nama')->get()]);
+        $search = $request->input('search');
+
+        $mapels = MataPelajaran::when($search, fn ($q) => $q->where('nama', 'like', "%{$search}%"))
+            ->orderBy('nama')->get();
+
+        $mapels->each(function ($m) {
+            $guruList = GuruPengajar::where('mata_pelajaran_id', $m->id)->with('guru')->get()->pluck('guru')->filter()->unique('id')->values();
+            $m->guru_pengampu = $guruList;
+            $m->jumlah_guru = $guruList->count();
+            $m->jumlah_tp = \App\Models\TujuanPembelajaran::where('mata_pelajaran_id', $m->id)->count();
+        });
+
+        return view('erapor.mata-pelajaran', ['mapels' => $mapels, 'search' => $search]);
     }
 
     public function storeMataPelajaran(Request $request)
