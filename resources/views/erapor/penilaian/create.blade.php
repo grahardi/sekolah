@@ -37,7 +37,7 @@
             <label class="form-label">Mata Pelajaran <span style="color:#ef4444">*</span></label>
             <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="form-input" required onchange="muatTp(); saringKelas();">
                 <option value="">-- Pilih mapel --</option>
-                @foreach($mapelList as $m)<option value="{{ $m->id }}">{{ $m->nama }}</option>@endforeach
+                @foreach($mapelList as $m)<option value="{{ $m->id }}" {{ (string)$prefillMapel === (string)$m->id ? 'selected' : '' }}>{{ $m->nama }}</option>@endforeach
             </select>
             @if($penugasanSaya !== null && $mapelList->isEmpty())
             <p style="font-size:11px;color:#dc2626;margin-top:4px;">Kamu belum ditugaskan mengajar mapel apapun. Hubungi admin sekolah.</p>
@@ -47,7 +47,7 @@
             <label class="form-label">Kelas - Rombel <span style="color:#ef4444">*</span></label>
             <select name="kelas_rombel" id="kelas_rombel" class="form-input" required onchange="muatTp()">
                 <option value="">-- Pilih kelas --</option>
-                @foreach($kelasList as $k)@php [$kl,$rb]=explode('|',$k);@endphp<option value="{{ $k }}" data-mapel="{{ $penugasanSaya !== null ? $penugasanSaya->where('kelas', $kl)->where('rombel', $rb ?: null)->pluck('mata_pelajaran_id')->implode(',') : '' }}">{{ $rb ? "$kl - $rb" : $kl }}</option>@endforeach
+                @foreach($kelasList as $k)@php [$kl,$rb]=explode('|',$k);@endphp<option value="{{ $k }}" {{ $prefillKelas === $k ? 'selected' : '' }} data-mapel="{{ $penugasanSaya !== null ? $penugasanSaya->where('kelas', $kl)->where('rombel', $rb ?: null)->pluck('mata_pelajaran_id')->implode(',') : '' }}">{{ $rb ? "$kl - $rb" : $kl }}</option>@endforeach
             </select>
         </div>
         <div>

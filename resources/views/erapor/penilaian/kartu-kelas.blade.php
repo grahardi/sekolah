@@ -2,10 +2,6 @@
 @section('title', 'Input Nilai')
 @section('page-title', 'Penilaian & Input Nilai')
 
-@section('header-actions')
-    <a href="{{ route('erapor.penilaian.create') }}" class="btn btn-primary"><i class="ti ti-square-plus"></i> Buat Penilaian</a>
-@endsection
-
 @section('content')
 <p style="font-size:13px;color:#64748b;margin:-10px 0 18px;">
     Pilih kelas &amp; mapel untuk lihat rekap penilaian dan nilai akhir.

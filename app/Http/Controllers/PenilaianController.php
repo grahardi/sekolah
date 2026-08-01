@@ -101,9 +101,11 @@ class PenilaianController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $user = auth()->user();
+        $prefillMapel = $request->input('mata_pelajaran_id');
+        $prefillKelas = $request->input('kelas_rombel');
 
         if ($user->role === 'guru') {
             $guruSaya = Guru::where('user_id', $user->id)->first();
@@ -118,6 +120,8 @@ class PenilaianController extends Controller
                 'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
                 'kelasList' => $penugasan->map(fn ($p) => $p->rombel ? "{$p->kelas}|{$p->rombel}" : "{$p->kelas}|")->unique()->values(),
                 'penugasanSaya' => $penugasan,
+                'prefillMapel' => $prefillMapel,
+                'prefillKelas' => $prefillKelas,
             ]);
         }
 
@@ -127,6 +131,8 @@ class PenilaianController extends Controller
             'mapelList' => MataPelajaran::orderBy('nama')->get(),
             'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
             'kelasList' => $this->kelasRombelList(),
+            'prefillMapel' => $prefillMapel,
+            'prefillKelas' => $prefillKelas,
             'penugasanSaya' => null,
         ]);
     }

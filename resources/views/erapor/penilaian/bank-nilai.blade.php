@@ -2,28 +2,45 @@
 @section('title', 'Bank Nilai - ' . $mapel->nama)
 @section('page-title', $mapel->nama)
 
-@section('header-actions')
-    <a href="{{ route('erapor.penilaian.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Ganti Kelas</a>
-    <a href="{{ route('erapor.penilaian.create') }}" class="btn btn-primary"><i class="ti ti-square-plus"></i> Buat Penilaian</a>
-@endsection
-
 @section('content')
-<div style="background:linear-gradient(135deg,#1E3A5F,#2563EB);border-radius:14px;padding:20px 24px;margin-bottom:20px;color:#fff;">
-    <p style="font-size:12px;opacity:.8;margin:0;">Bank Nilai</p>
-    <p style="font-size:20px;font-weight:800;margin:0;">Kelas {{ $rombel ? "$kelas - $rombel" : $kelas }}</p>
+<div style="background:linear-gradient(135deg,#1E3A5F,#2563EB);border-radius:14px;padding:24px 28px;margin-bottom:20px;color:#fff;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+        <div>
+            <h2 style="font-size:24px;font-weight:800;margin:0 0 4px;">{{ $mapel->nama }}</h2>
+            <p style="font-size:13px;opacity:.85;margin:0;">Bank Nilai - Kelas {{ $rombel ? "$kelas - $rombel" : $kelas }}</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <a href="{{ route('erapor.penilaian.index') }}" class="btn btn-sm" style="background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;">
+                <i class="ti ti-arrows-exchange"></i> Ganti
+            </a>
+            <a href="{{ route('erapor.penilaian.create', ['mata_pelajaran_id' => $mapel->id, 'kelas_rombel' => $kelasRombel]) }}" class="btn btn-sm" style="background:#fff;color:#1E3A5F;font-weight:700;">
+                <i class="ti ti-square-plus"></i> Buat Penilaian
+            </a>
+        </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.2);padding-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{{ route('erapor.penilaian.template-kelas', ['mata_pelajaran_id' => $mapel->id, 'kelas_rombel' => $kelasRombel]) }}" class="btn" style="background:#fff;color:#1E3A5F;font-weight:600;padding:10px 18px;">
+            <i class="ti ti-download"></i> Download Template Kelas
+        </a>
+        <button type="button" onclick="document.getElementById('modal-import').style.display='flex'" class="btn" style="background:#fff;color:#1E3A5F;font-weight:600;padding:10px 18px;">
+            <i class="ti ti-upload"></i> Import Nilai Kelas
+        </button>
+    </div>
 </div>
 
-<div class="card" style="padding:16px;margin-bottom:20px;">
-    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Template Kelas (Semua Penilaian Sekaligus)</p>
-    <p style="font-size:12px;color:#64748b;margin:0 0 10px;">Download 1 file berisi SEMUA penilaian (termasuk PTS/UAS) sebagai kolom terpisah, isi semua nilai sekaligus, upload lagi.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <a href="{{ route('erapor.penilaian.template-kelas', ['mata_pelajaran_id' => $mapel->id, 'kelas_rombel' => $kelasRombel]) }}" class="btn btn-secondary btn-sm"><i class="ti ti-download"></i> Download Template Kelas</a>
-        <form action="{{ route('erapor.penilaian.import-kelas') }}" method="POST" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;">
+<div id="modal-import" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:460px;width:100%;padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p style="font-size:15px;font-weight:800;color:#0f172a;margin:0;">Import Nilai Kelas</p>
+            <button type="button" onclick="document.getElementById('modal-import').style.display='none'" style="background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;">&times;</button>
+        </div>
+        <p style="font-size:12px;color:#64748b;margin:0 0 16px;">Upload file template kelas yang sudah diisi nilainya (kolom no_induk, nama, dan tiap penilaian).</p>
+        <form action="{{ route('erapor.penilaian.import-kelas') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="mata_pelajaran_id" value="{{ $mapel->id }}">
             <input type="hidden" name="kelas_rombel" value="{{ $kelasRombel }}">
-            <input type="file" name="file" accept=".xlsx,.xls,.csv" required style="font-size:12px;">
-            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-upload"></i> Import Nilai Kelas</button>
+            <input type="file" name="file" accept=".xlsx,.xls,.csv" required class="form-input" style="margin-bottom:16px;">
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-upload"></i> Import Sekarang</button>
         </form>
     </div>
 </div>
