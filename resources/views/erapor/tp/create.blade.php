@@ -44,7 +44,16 @@
 
     <div style="margin-bottom:16px;">
         <label class="form-label">Deskripsi TP <span style="color:#ef4444">*</span></label>
-        <textarea name="deskripsi_tp" class="form-input" rows="3" placeholder="mis. Peserta didik mampu menjelaskan konsep operasi bilangan bulat" required></textarea>
+        <textarea name="deskripsi_tp" class="form-input" rows="3" placeholder="mis. Menjelaskan konsep operasi bilangan bulat" required></textarea>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-top:8px;">
+            <p style="font-size:11px;color:#1e40af;margin:0;">
+                <strong>Mulai dengan kata kerja</strong> (bukan "Peserta didik mampu..."), karena kalimat ini
+                otomatis disambung jadi deskripsi capaian di rapor - mis. "Menunjukkan penguasaan yang baik
+                dalam <em>mengerjakan trigonometri</em>" atau "Perlu penguatan dalam <em>merumuskan masalah kontekstual</em>".
+                Contoh benar: <strong>"Mengerjakan trigonometri"</strong>, <strong>"Merumuskan masalah kontekstual"</strong>.
+                Contoh salah: <span style="text-decoration:line-through;">"Peserta didik mampu mengerjakan trigonometri"</span>.
+            </p>
+        </div>
     </div>
 
     <div style="margin-bottom:20px;">
