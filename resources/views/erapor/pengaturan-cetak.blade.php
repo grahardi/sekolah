@@ -10,6 +10,7 @@
 
 <form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;" enctype="multipart/form-data">
     @csrf
+    @method('PUT')
     {{-- hidden supaya validasi required ambang batas tetap terpenuhi walau form ini yg disubmit --}}
     <input type="hidden" name="rapor_threshold_sangat_baik" value="{{ $sekolah->rapor_threshold_sangat_baik }}">
     <input type="hidden" name="rapor_threshold_baik" value="{{ $sekolah->rapor_threshold_baik }}">
@@ -110,6 +111,7 @@
 
 <form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;margin-top:16px;">
     @csrf
+    @method('PUT')
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Ambang Batas Deskripsi Capaian Kompetensi</p>
     <p style="font-size:12px;color:#64748b;margin:0 0 14px;">
         Menentukan kata "sangat baik/baik/cukup/perlu penguatan" di deskripsi rapor berdasarkan rata-rata
