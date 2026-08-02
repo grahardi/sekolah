@@ -30,8 +30,12 @@
     </div>
 </div>
 
-<form method="GET" style="margin-bottom:18px;max-width:400px;">
-    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama guru..." class="form-input" onchange="this.form.submit()">
+<form method="GET" style="margin-bottom:18px;max-width:400px;display:flex;gap:8px;">
+    <div style="position:relative;flex:1;">
+        <i class="ti ti-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:16px;"></i>
+        <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama guru..." class="form-input" style="padding-left:36px;">
+    </div>
+    <button type="submit" class="btn btn-primary" style="padding:10px 16px;"><i class="ti ti-search"></i></button>
 </form>
 
 <div id="modal-tambah-guru" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;align-items:center;justify-content:center;padding:20px;">
