@@ -8,8 +8,12 @@
     kepala sekolah, dll) diatur di <a href="/profil-sekolah" style="color:#2563EB;">Profil Sekolah</a>, terpisah dari halaman ini.
 </p>
 
-<form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;">
+<form action="{{ route('erapor.pengaturan-cetak.update') }}" method="POST" class="card" style="max-width:640px;padding:24px;" enctype="multipart/form-data">
     @csrf
+    {{-- hidden supaya validasi required ambang batas tetap terpenuhi walau form ini yg disubmit --}}
+    <input type="hidden" name="rapor_threshold_sangat_baik" value="{{ $sekolah->rapor_threshold_sangat_baik }}">
+    <input type="hidden" name="rapor_threshold_baik" value="{{ $sekolah->rapor_threshold_baik }}">
+    <input type="hidden" name="rapor_threshold_cukup" value="{{ $sekolah->rapor_threshold_cukup }}">
 
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Kertas & Tata Letak</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
@@ -40,6 +44,35 @@
             <input type="checkbox" name="rapor_tampilkan_logo" value="1" id="tampilkan_logo" {{ $sekolah->rapor_tampilkan_logo ? 'checked' : '' }}>
             <label for="tampilkan_logo" style="font-size:13px;">Tampilkan logo di kop surat</label>
         </div>
+    </div>
+
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Logo & Watermark</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+        <div>
+            <label class="form-label">Logo Kabupaten/Kota (kiri)</label>
+            @if($sekolah->logo_kabupaten)
+            <div style="margin-bottom:6px;"><img src="{{ asset('storage/' . $sekolah->logo_kabupaten) }}" style="height:50px;"></div>
+            @endif
+            <input type="file" name="logo_kabupaten" accept="image/*" class="form-input">
+        </div>
+        <div>
+            <label class="form-label">Logo Sekolah (kanan)</label>
+            @if($sekolah->logo_sekolah)
+            <div style="margin-bottom:6px;"><img src="{{ asset('storage/' . $sekolah->logo_sekolah) }}" style="height:50px;"></div>
+            @endif
+            <input type="file" name="logo_sekolah" accept="image/*" class="form-input">
+        </div>
+    </div>
+    <div style="margin-bottom:18px;">
+        <label class="form-label">Watermark Background Rapor</label>
+        @if($sekolah->watermark_rapor)
+        <div style="margin-bottom:6px;"><img src="{{ asset('storage/' . $sekolah->watermark_rapor) }}" style="height:60px;opacity:.5;"></div>
+        @endif
+        <input type="file" name="watermark_rapor" accept="image/*" class="form-input" style="margin-bottom:8px;">
+        <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" name="rapor_tampilkan_watermark" value="1" {{ $sekolah->rapor_tampilkan_watermark ? 'checked' : '' }}>
+            <span style="font-size:13px;">Tampilkan watermark ini di background rapor</span>
+        </label>
     </div>
 
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Tanggal & Tanda Tangan</p>

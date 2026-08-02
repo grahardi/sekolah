@@ -289,14 +289,29 @@ class EraporController extends Controller
             'rapor_font_size' => 'required|in:kecil,normal,besar',
             'rapor_tanggal_manual' => 'nullable|date',
             'rapor_tampilkan_logo' => 'nullable|boolean',
+            'rapor_tampilkan_watermark' => 'nullable|boolean',
             'rapor_kota_ttd' => 'nullable|string|max:100',
             'rapor_threshold_sangat_baik' => 'required|integer|min:0|max:100',
             'rapor_threshold_baik' => 'required|integer|min:0|max:100',
             'rapor_threshold_cukup' => 'required|integer|min:0|max:100',
+            'logo_kabupaten' => 'nullable|image|max:2048',
+            'logo_sekolah' => 'nullable|image|max:2048',
+            'watermark_rapor' => 'nullable|image|max:2048',
         ]);
         $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
+        $data['rapor_tampilkan_watermark'] = $request->boolean('rapor_tampilkan_watermark');
 
-        auth()->user()->sekolah->update($data);
+        $sekolah = auth()->user()->sekolah;
+
+        foreach (['logo_kabupaten', 'logo_sekolah', 'watermark_rapor'] as $field) {
+            if ($request->hasFile($field)) {
+                $data[$field] = $request->file($field)->store('kop-surat', 'public');
+            } else {
+                unset($data[$field]); // jangan timpa yg sudah ada kalau tidak upload baru
+            }
+        }
+
+        $sekolah->update($data);
 
         return back()->with('success', 'Pengaturan cetak rapor berhasil disimpan.');
     }

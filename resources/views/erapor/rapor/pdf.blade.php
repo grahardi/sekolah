@@ -13,7 +13,7 @@
     .kop-text { text-align: center; }
     .kop-text h1 { font-size: 13px; margin: 0; font-weight: bold; }
     .kop-text h2 { font-size: 11px; margin: 1px 0; }
-    .kop-text h3 { font-size: 14px; margin: 2px 0; font-weight: bold; }
+    .kop-text h3 { font-size: 14px; margin: 2px 0; font-weight: bold; color: #1d4ed8; }
     .kop-text p { font-size: 8.5px; margin: 1px 0; }
     .garis-tebal { border-bottom: 3px solid #000; border-top: 1px solid #000; height: 4px; margin-bottom: 10px; }
 
@@ -52,6 +52,8 @@
     .footer-fixed .f-right { display: table-cell; text-align: right; font-style: italic; }
 
     .page-break { page-break-before: always; }
+    .watermark { position: fixed; top: 30%; left: 20%; width: 60%; opacity: 0.07; z-index: -1; }
+    .bar-atas { background: #1a1a1a; height: 5px; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -61,24 +63,44 @@
     $kabupatenText = $sekolah->kabupaten_kota ? 'PEMERINTAH ' . strtoupper($sekolah->kabupaten_kota) : '';
     $siswa = $rapor->siswa;
     $kkm = $sekolah->kkm ?? 75;
+
+    $alamatBaris = trim($sekolah->alamat ?? '');
+    if (!empty($sekolah->kecamatan)) $alamatBaris .= ', ' . $sekolah->kecamatan;
+    if (!empty($sekolah->kabupaten_kota)) $alamatBaris .= ', ' . $sekolah->kabupaten_kota;
+
+    $kontakBaris = [];
+    if (!empty($sekolah->telepon)) $kontakBaris[] = 'Telepon ' . $sekolah->telepon;
+    if (!empty($sekolah->email)) $kontakBaris[] = 'Pos-el: ' . $sekolah->email;
+    $kontakBaris = implode(' &middot; ', $kontakBaris);
+
+    $kelasInt = (int) $siswa->kelas;
+    if ($kelasInt <= 6) { $fase = 'C'; }
+    elseif ($kelasInt <= 9) { $fase = 'D'; }
+    else { $fase = 'E'; }
 @endphp
 
+@if($sekolah->rapor_tampilkan_watermark && $sekolah->watermark_rapor)
+<img src="{{ public_path('storage/' . $sekolah->watermark_rapor) }}" class="watermark">
+@endif
+
 {{-- ================= HALAMAN 1 ================= --}}
+<div class="bar-atas"></div>
 <div class="kop">
     <div class="kop-row">
-        @if($sekolah->rapor_tampilkan_logo)<div class="kop-cell kop-logo"></div>@endif
+        <div class="kop-cell kop-logo">
+            @if(!empty($sekolah->logo_kabupaten))<img src="{{ public_path('storage/' . $sekolah->logo_kabupaten) }}" alt="">@endif
+        </div>
         <div class="kop-cell kop-text">
             @if($kabupatenText)<h1>{{ $kabupatenText }}</h1>@endif
             <h2>DINAS PENDIDIKAN</h2>
             <h3>{{ $sekolahNama }}</h3>
-            <p>{{ $sekolah->alamat }}@if($sekolah->kecamatan), {{ $sekolah->kecamatan }}@endif@if($sekolah->kabupaten_kota), {{ $sekolah->kabupaten_kota }}@endif</p>
-            <p>
-                @if($sekolah->telepon)Telepon {{ $sekolah->telepon }}@endif
-                @if($sekolah->email) &middot; Pos-el: {{ $sekolah->email }}@endif
-            </p>
-            @if($sekolah->website)<p>Laman: {{ $sekolah->website }}</p>@endif
+            <p>{{ $alamatBaris }}</p>
+            @if($kontakBaris)<p>{!! $kontakBaris !!}</p>@endif
+            @if(!empty($sekolah->website))<p>Laman: {{ $sekolah->website }}</p>@endif
         </div>
-        @if($sekolah->rapor_tampilkan_logo)<div class="kop-cell kop-logo"></div>@endif
+        <div class="kop-cell kop-logo">
+            @if(!empty($sekolah->logo_sekolah))<img src="{{ public_path('storage/' . $sekolah->logo_sekolah) }}" alt="">@endif
+        </div>
     </div>
 </div>
 <div class="garis-tebal"></div>
@@ -92,7 +114,7 @@
     </div>
     <div class="identitas-col">
         <div class="identitas-row"><div class="identitas-label">Kelas</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $rapor->kelas_lengkap }}</div></div>
-        <div class="identitas-row"><div class="identitas-label">Fase</div><div class="identitas-sep">:</div><div class="identitas-val">{{ (int)$siswa->kelas <= 6 ? 'C' : ((int)$siswa->kelas <= 9 ? 'D' : 'E') }}</div></div>
+        <div class="identitas-row"><div class="identitas-label">Fase</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $fase }}</div></div>
         <div class="identitas-row"><div class="identitas-label">Semester</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $rapor->semester }} ({{ $rapor->semester == 1 ? 'Ganjil' : 'Genap' }})</div></div>
         <div class="identitas-row"><div class="identitas-label">Tahun Ajaran</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $rapor->tahunAjaran->nama }}</div></div>
     </div>

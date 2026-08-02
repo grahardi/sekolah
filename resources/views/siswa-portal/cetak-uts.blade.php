@@ -31,14 +31,62 @@
     .ttd-col { display: table-cell; width: 33.3%; text-align: center; font-size: 9px; vertical-align: top; }
     .ttd-space { height: 45px; }
     .ttd-nama { font-weight: bold; text-decoration: underline; }
+
+    .bar-atas { background: #1a1a1a; height: 5px; margin-bottom: 10px; }
+    .kop { display: table; width: 100%; margin-bottom: 6px; }
+    .kop-row { display: table-row; }
+    .kop-cell { display: table-cell; vertical-align: middle; }
+    .kop-logo { width: 60px; text-align: center; }
+    .kop-logo img { max-width: 52px; max-height: 52px; }
+    .kop-text { text-align: center; }
+    .kop-text h1 { font-size: 12px; margin: 0; font-weight: bold; text-transform: none; }
+    .kop-text h2 { font-size: 10px; margin: 1px 0; font-weight: normal; }
+    .kop-text h3 { font-size: 13px; margin: 2px 0; font-weight: bold; color: #1d4ed8; }
+    .kop-text p { font-size: 8px; margin: 1px 0; }
+    .garis-tebal { border-bottom: 3px solid #000; border-top: 1px solid #000; height: 4px; margin-bottom: 10px; }
+    .watermark { position: fixed; top: 30%; left: 20%; width: 60%; opacity: 0.07; z-index: -1; }
 </style>
 </head>
 <body>
 
-@php $sekolahNama = strtoupper($sekolah->nama ?? '-'); @endphp
+@php
+    $sekolahNama = strtoupper($sekolah->nama ?? '-');
+    $kabupatenText = $sekolah->kabupaten_kota ? 'PEMERINTAH ' . strtoupper($sekolah->kabupaten_kota) : '';
+    $alamatBaris = trim($sekolah->alamat ?? '');
+    if (!empty($sekolah->kecamatan)) $alamatBaris .= ', ' . $sekolah->kecamatan;
+    $kontakBaris = [];
+    if (!empty($sekolah->telepon)) $kontakBaris[] = 'Telepon ' . $sekolah->telepon;
+    if (!empty($sekolah->email)) $kontakBaris[] = 'Pos-el: ' . $sekolah->email;
+    $kontakBaris = implode(' &middot; ', $kontakBaris);
+@endphp
 
-<h1>Laporan Hasil Belajar Tengah Semester</h1>
-<h2>{{ $sekolahNama }} &middot; Tahun Pelajaran {{ $tahunAktif->nama }}</h2>
+@if($sekolah->rapor_tampilkan_watermark && $sekolah->watermark_rapor)
+<img src="{{ public_path('storage/' . $sekolah->watermark_rapor) }}" class="watermark">
+@endif
+
+<div class="bar-atas"></div>
+<div class="kop">
+    <div class="kop-row">
+        <div class="kop-cell kop-logo">
+            @if($sekolah->rapor_tampilkan_logo && !empty($sekolah->logo_kabupaten))<img src="{{ public_path('storage/' . $sekolah->logo_kabupaten) }}" alt="">@endif
+        </div>
+        <div class="kop-cell kop-text">
+            @if($kabupatenText)<h1>{{ $kabupatenText }}</h1>@endif
+            <h2>DINAS PENDIDIKAN</h2>
+            <h3>{{ $sekolahNama }}</h3>
+            <p>{{ $alamatBaris }}</p>
+            @if($kontakBaris)<p>{!! $kontakBaris !!}</p>@endif
+            @if(!empty($sekolah->website))<p>Laman: {{ $sekolah->website }}</p>@endif
+        </div>
+        <div class="kop-cell kop-logo">
+            @if($sekolah->rapor_tampilkan_logo && !empty($sekolah->logo_sekolah))<img src="{{ public_path('storage/' . $sekolah->logo_sekolah) }}" alt="">@endif
+        </div>
+    </div>
+</div>
+<div class="garis-tebal"></div>
+
+<h1 style="text-transform:uppercase;margin-top:6px;">Laporan Hasil Belajar Tengah Semester</h1>
+<h2>Tahun Pelajaran {{ $tahunAktif->nama }}</h2>
 
 <div class="identitas">
     <div class="identitas-col">

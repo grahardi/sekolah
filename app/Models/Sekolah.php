@@ -38,11 +38,16 @@ class Sekolah extends Model
         'rapor_threshold_sangat_baik',
         'rapor_threshold_baik',
         'rapor_threshold_cukup',
+        'logo_kabupaten',
+        'logo_sekolah',
+        'watermark_rapor',
+        'rapor_tampilkan_watermark',
     ];
 
     protected $casts = [
         'is_demo' => 'boolean',
         'rapor_tampilkan_logo' => 'boolean',
+        'rapor_tampilkan_watermark' => 'boolean',
         'rapor_tanggal_manual' => 'date',
     ];
 
