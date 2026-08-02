@@ -111,6 +111,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/rapor/{rapor}/catatan-otomatis', [RaporController::class, 'catatanOtomatis'])->name('rapor.catatan-otomatis');
         Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
         Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');
+        Route::get('/siswa/{siswa}/cetak-uts', [\App\Http\Controllers\SiswaPortalController::class, 'cetakUts'])->name('siswa.cetak-uts');
 
         // Wali Kelas
         Route::get('/progres-penilaian', [EraporController::class, 'progresPenilaian'])->name('progres-penilaian');

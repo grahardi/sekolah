@@ -63,6 +63,15 @@ require __DIR__.'/bk.php';
 require __DIR__.'/erapor.php';
 require __DIR__.'/pengguna.php';
 require __DIR__.'/superadmin.php';
+
+// Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin
+Route::prefix('siswa')->name('siswa-portal.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\SiswaPortalController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\SiswaPortalController::class, 'login'])->name('login.submit');
+    Route::get('/logout', [\App\Http\Controllers\SiswaPortalController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [\App\Http\Controllers\SiswaPortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('/qr/{token}', [\App\Http\Controllers\SiswaPortalController::class, 'lihatViaQr'])->name('qr');
+});
 // require __DIR__.'/ujian.php';
 // require __DIR__.'/bk.php';
 // require __DIR__.'/manajemen.php';

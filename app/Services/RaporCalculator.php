@@ -119,4 +119,43 @@ class RaporCalculator
         if ($rata >= $cukup) return "Menunjukkan penguasaan yang cukup dalam {$namaTp}";
         return "Perlu penguatan dalam {$namaTp}";
     }
+    /** Nilai per-TP (bukan rata-rata akhir) - dipakai portal siswa & cetak UTS/PTS */
+    public static function nilaiPerTp(int $siswaId, string $kelas, ?string $rombel, int $mataPelajaranId, int $tahunAjaranId, int $semester): array
+    {
+        $rows = \App\Models\PenilaianDetailNilai::query()
+            ->join('penilaians', 'penilaians.id', '=', 'penilaian_detail_nilais.penilaian_id')
+            ->where('penilaian_detail_nilais.siswa_id', $siswaId)
+            ->where('penilaians.kelas', $kelas)
+            ->where('penilaians.rombel', $rombel)
+            ->where('penilaians.mata_pelajaran_id', $mataPelajaranId)
+            ->where('penilaians.tahun_ajaran_id', $tahunAjaranId)
+            ->where('penilaians.semester', $semester)
+            ->where('penilaians.subjenis_penilaian', 'Sumatif TP')
+            ->select('penilaian_detail_nilais.penilaian_id', 'penilaian_detail_nilais.nilai')
+            ->get();
+
+        $hasil = [];
+        foreach ($rows as $r) {
+            $tps = \App\Models\Penilaian::find($r->penilaian_id)?->tujuanPembelajarans ?? collect();
+            foreach ($tps as $tp) {
+                $hasil[] = ['tp' => $tp, 'nilai' => $r->nilai];
+            }
+        }
+        return $hasil;
+    }
+
+    /** Nilai Sumatif Tengah Semester (UTS/PTS) mentah, tanpa dirata-rata dgn yg lain */
+    public static function nilaiSts(int $siswaId, string $kelas, ?string $rombel, int $mataPelajaranId, int $tahunAjaranId, int $semester): ?int
+    {
+        return \App\Models\PenilaianDetailNilai::query()
+            ->join('penilaians', 'penilaians.id', '=', 'penilaian_detail_nilais.penilaian_id')
+            ->where('penilaian_detail_nilais.siswa_id', $siswaId)
+            ->where('penilaians.kelas', $kelas)
+            ->where('penilaians.rombel', $rombel)
+            ->where('penilaians.mata_pelajaran_id', $mataPelajaranId)
+            ->where('penilaians.tahun_ajaran_id', $tahunAjaranId)
+            ->where('penilaians.semester', $semester)
+            ->where('penilaians.subjenis_penilaian', 'Sumatif Tengah Semester')
+            ->value('penilaian_detail_nilais.nilai');
+    }
 }
