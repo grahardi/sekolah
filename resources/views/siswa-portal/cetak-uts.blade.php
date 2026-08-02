@@ -65,6 +65,10 @@
 @endif
 
 <div class="bar-atas"></div>
+@if($sekolah->rapor_pakai_header_custom && $sekolah->rapor_header_custom)
+<img src="{{ public_path('storage/' . $sekolah->rapor_header_custom) }}" style="width:100%;margin-bottom:10px;">
+<div class="garis-tebal"></div>
+@else
 <div class="kop">
     <div class="kop-row">
         <div class="kop-cell kop-logo">
@@ -84,6 +88,7 @@
     </div>
 </div>
 <div class="garis-tebal"></div>
+@endif
 
 <h1 style="text-transform:uppercase;margin-top:6px;">Laporan Hasil Belajar Tengah Semester</h1>
 <h2>Tahun Pelajaran {{ $tahunAktif->nama }}</h2>

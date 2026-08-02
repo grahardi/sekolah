@@ -42,12 +42,15 @@ class Sekolah extends Model
         'logo_sekolah',
         'watermark_rapor',
         'rapor_tampilkan_watermark',
+        'rapor_header_custom',
+        'rapor_pakai_header_custom',
     ];
 
     protected $casts = [
         'is_demo' => 'boolean',
         'rapor_tampilkan_logo' => 'boolean',
         'rapor_tampilkan_watermark' => 'boolean',
+        'rapor_pakai_header_custom' => 'boolean',
         'rapor_tanggal_manual' => 'date',
     ];
 

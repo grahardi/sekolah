@@ -297,13 +297,16 @@ class EraporController extends Controller
             'logo_kabupaten' => 'nullable|image|max:2048',
             'logo_sekolah' => 'nullable|image|max:2048',
             'watermark_rapor' => 'nullable|image|max:2048',
+            'rapor_header_custom' => 'nullable|image|max:4096',
+            'rapor_pakai_header_custom' => 'nullable|boolean',
         ]);
         $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
         $data['rapor_tampilkan_watermark'] = $request->boolean('rapor_tampilkan_watermark');
+        $data['rapor_pakai_header_custom'] = $request->boolean('rapor_pakai_header_custom');
 
         $sekolah = auth()->user()->sekolah;
 
-        foreach (['logo_kabupaten', 'logo_sekolah', 'watermark_rapor'] as $field) {
+        foreach (['logo_kabupaten', 'logo_sekolah', 'watermark_rapor', 'rapor_header_custom'] as $field) {
             if ($request->hasFile($field)) {
                 $data[$field] = $request->file($field)->store('kop-surat', 'public');
             } else {

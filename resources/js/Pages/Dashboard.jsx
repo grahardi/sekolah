@@ -92,6 +92,12 @@ export default function Dashboard({ stats, sekolah }) {
                             </Wrapper>
                         );
                     })()}
+
+                    {user?.role === 'admin' && (
+                        <a href="/erapor/pengaturan-cetak" className="inline-flex items-center gap-1.5 mt-3 text-xs text-cream/80 hover:text-white transition-colors">
+                            <i className="ti ti-settings" style={{ fontSize: '13px' }} /> Atur Kop Surat, Logo &amp; Watermark Rapor
+                        </a>
+                    )}
                 </div>
                 {/* Aksen dekoratif */}
                 <div className="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/5" />

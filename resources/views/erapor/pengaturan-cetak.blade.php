@@ -75,6 +75,22 @@
         </label>
     </div>
 
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-bottom:18px;">
+        <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Opsi Lain: Upload Header Lengkap</p>
+        <p style="font-size:12px;color:#1e40af;margin:0 0 10px;">
+            Kalau susunan logo+teks otomatis di atas kurang sama persis dengan kop surat resmi sekolahmu, upload
+            1 gambar header utuh (logo+teks jadi satu) di sini - ini akan dipakai apa adanya, menggantikan susunan otomatis.
+        </p>
+        @if($sekolah->rapor_header_custom)
+        <div style="margin-bottom:8px;background:#fff;padding:8px;border-radius:8px;"><img src="{{ asset('storage/' . $sekolah->rapor_header_custom) }}" style="max-width:100%;"></div>
+        @endif
+        <input type="file" name="rapor_header_custom" accept="image/*" class="form-input" style="margin-bottom:8px;">
+        <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" name="rapor_pakai_header_custom" value="1" {{ $sekolah->rapor_pakai_header_custom ? 'checked' : '' }}>
+            <span style="font-size:13px;color:#1e40af;">Pakai header custom ini (bukan susunan logo+teks otomatis di atas)</span>
+        </label>
+    </div>
+
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Tanggal & Tanda Tangan</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;">
         <div>
@@ -106,6 +122,8 @@
     <input type="hidden" name="rapor_font_size" value="{{ $sekolah->rapor_font_size }}">
     <input type="hidden" name="rapor_tanggal_manual" value="{{ $sekolah->rapor_tanggal_manual?->format('Y-m-d') }}">
     <input type="hidden" name="rapor_tampilkan_logo" value="{{ $sekolah->rapor_tampilkan_logo ? '1' : '0' }}">
+    <input type="hidden" name="rapor_tampilkan_watermark" value="{{ $sekolah->rapor_tampilkan_watermark ? '1' : '0' }}">
+    <input type="hidden" name="rapor_pakai_header_custom" value="{{ $sekolah->rapor_pakai_header_custom ? '1' : '0' }}">
     <input type="hidden" name="rapor_kota_ttd" value="{{ $sekolah->rapor_kota_ttd }}">
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
