@@ -2,6 +2,12 @@
 @section('title', 'Guru')
 @section('page-title', 'Guru')
 
+@section('header-actions')
+    <button type="button" onclick="document.getElementById('modal-tambah-guru').style.display='flex'" class="btn btn-primary">
+        <i class="ti ti-square-plus"></i> Tambah Guru Bantu
+    </button>
+@endsection
+
 @section('content')
 @if(session('akun_guru_baru'))
 <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
@@ -13,19 +19,39 @@
 </div>
 @endif
 
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+    <div style="background:#eff6ff;border-radius:14px;padding:18px;">
+        <p style="font-size:28px;font-weight:800;color:#1e40af;margin:0;">{{ $totalGuru }}</p>
+        <p style="font-size:12px;color:#64748b;margin:2px 0 0;">Total Guru</p>
+    </div>
+    <div style="background:#f0fdf4;border-radius:14px;padding:18px;">
+        <p style="font-size:28px;font-weight:800;color:#16a34a;margin:0;">{{ $totalKelasDiampu }}</p>
+        <p style="font-size:12px;color:#64748b;margin:2px 0 0;">Kelas Diampu (semua guru)</p>
+    </div>
+</div>
+
 <form method="GET" style="margin-bottom:18px;max-width:400px;">
     <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama guru..." class="form-input" onchange="this.form.submit()">
 </form>
 
-<form action="{{ route('erapor.guru.store-bantu') }}" method="POST" class="card" style="padding:16px;margin-bottom:20px;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;">
-    @csrf
-    <div><label class="form-label">Tambah Guru Bantu</label><input name="nama" class="form-input" placeholder="Nama lengkap" required></div>
-    <div><label class="form-label">NIP/NUPTK</label><input name="nip_nuptk" class="form-input"></div>
-    <div><label class="form-label">Keterangan</label><input name="keterangan" class="form-input" placeholder="Guru Bantu"></div>
-    <div><button class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ti ti-plus"></i> Tambah</button></div>
-</form>
+<div id="modal-tambah-guru" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:460px;width:100%;padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p style="font-size:15px;font-weight:800;color:#0f172a;margin:0;">Tambah Guru Bantu</p>
+            <button type="button" onclick="document.getElementById('modal-tambah-guru').style.display='none'" style="background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;">&times;</button>
+        </div>
+        <p style="font-size:12px;color:#64748b;margin:0 0 16px;">Untuk guru yang tidak terdaftar di Kepegawaian (mis. guru bantu/tamu).</p>
+        <form action="{{ route('erapor.guru.store-bantu') }}" method="POST">
+            @csrf
+            <div style="margin-bottom:12px;"><label class="form-label">Nama Lengkap</label><input name="nama" class="form-input" required></div>
+            <div style="margin-bottom:12px;"><label class="form-label">NIP/NUPTK (opsional)</label><input name="nip_nuptk" class="form-input"></div>
+            <div style="margin-bottom:16px;"><label class="form-label">Keterangan</label><input name="keterangan" class="form-input" placeholder="Guru Bantu"></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-plus"></i> Tambah</button>
+        </form>
+    </div>
+</div>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:20px;">
     @forelse($gurus as $g)
     <div class="card" style="padding:20px;text-align:center;">
         <img src="{{ $g->foto_url }}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 10px;">
@@ -58,4 +84,6 @@
     <p style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px;">Belum ada data guru.</p>
     @endforelse
 </div>
+
+{{ $gurus->links() }}
 @endsection

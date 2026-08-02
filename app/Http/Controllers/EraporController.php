@@ -449,9 +449,20 @@ class EraporController extends Controller
         $gurus = Guru::with('pegawai')
             ->when($search, fn ($q) => $q->where('nama', 'ilike', "%{$search}%"))
             ->orderBy('nama')
-            ->get();
+            ->paginate(16)
+            ->withQueryString();
 
-        return view('erapor.guru.index', ['gurus' => $gurus, 'search' => $search]);
+        $totalGuru = Guru::count();
+        $totalKelasDiampu = GuruPengajar::get()
+            ->map(fn ($p) => $p->kelas . '|' . ($p->rombel ?? ''))
+            ->unique()->count();
+
+        return view('erapor.guru.index', [
+            'gurus' => $gurus,
+            'search' => $search,
+            'totalGuru' => $totalGuru,
+            'totalKelasDiampu' => $totalKelasDiampu,
+        ]);
     }
 
     public function storeGuruBantu(Request $request)
