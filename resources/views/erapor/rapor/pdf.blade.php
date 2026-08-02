@@ -10,11 +10,11 @@
     .kop-cell { display: table-cell; vertical-align: middle; }
     .kop-logo { width: 70px; text-align: center; }
     .kop-logo img { max-width: 60px; max-height: 60px; }
-    .kop-text { text-align: center; }
-    .kop-text h1 { font-size: 13px; margin: 0; font-weight: bold; }
-    .kop-text h2 { font-size: 11px; margin: 1px 0; }
-    .kop-text h3 { font-size: 14px; margin: 2px 0; font-weight: bold; color: #1d4ed8; }
-    .kop-text p { font-size: 8.5px; margin: 1px 0; }
+    .kop-text { text-align: center; font-family: 'DejaVu Serif', serif; }
+    .kop-text h1 { font-size: 14px; margin: 0; font-weight: bold; }
+    .kop-text h2 { font-size: 12px; margin: 1px 0; font-weight: normal; }
+    .kop-text h3 { font-size: 16px; margin: 2px 0; font-weight: bold; }
+    .kop-text p { font-size: 9.5px; margin: 1px 0; }
     .garis-tebal { border-bottom: 3px solid #000; border-top: 1px solid #000; height: 4px; margin-bottom: 10px; }
 
     .identitas { display: table; width: 100%; margin-bottom: 14px; font-size: 10px; }
