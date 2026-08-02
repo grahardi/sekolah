@@ -109,6 +109,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/rapor/batalkan-finalisasi-semua', [RaporController::class, 'batalkanFinalisasiSemua'])->name('rapor.batalkan-finalisasi-semua');
         Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');
         Route::get('/rapor/{rapor}/catatan-otomatis', [RaporController::class, 'catatanOtomatis'])->name('rapor.catatan-otomatis');
+        Route::get('/rapor/{rapor}/catatan-uts-otomatis', [RaporController::class, 'catatanUtsOtomatis'])->name('rapor.catatan-uts-otomatis');
         Route::put('/rapor/{rapor}', [RaporController::class, 'update'])->name('rapor.update');
         Route::get('/rapor/{rapor}/cetak', [RaporController::class, 'cetak'])->name('rapor.cetak');
         Route::get('/siswa/{siswa}/cetak-uts', [\App\Http\Controllers\SiswaPortalController::class, 'cetakUts'])->name('siswa.cetak-uts');
@@ -119,6 +120,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/catatan-wali', [EraporController::class, 'catatanWaliStore'])->name('catatan-wali.store');
         Route::get('/catatan-uts', [EraporController::class, 'catatanUtsIndex'])->name('catatan-uts.index');
         Route::post('/catatan-uts', [EraporController::class, 'catatanUtsStore'])->name('catatan-uts.store');
+        Route::get('/catatan-uts/{rapor}/otomatis', [EraporController::class, 'catatanUtsOtomatis'])->name('catatan-uts.otomatis');
 
         // Tugas Mengajar (toggle grid) - guru lihat/atur tugas mengajarnya sendiri
         Route::get('/guru/{guru}/tugas-mengajar', [EraporController::class, 'tugasMengajarPage'])->name('guru.tugas-mengajar');

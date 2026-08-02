@@ -23,7 +23,10 @@
             </button>
 
             <div id="body-{{ $siswa->id }}" style="display:{{ $i === 0 ? 'block' : 'none' }};padding:18px;">
-                <textarea name="catatan_uts[{{ $rapor->id }}]" class="form-input" rows="3" placeholder="Catatan khusus di lembar cetak UTS/PTS...">{{ $rapor->catatan_uts }}</textarea>
+                <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+                    <button type="button" onclick="buatOtomatis({{ $rapor->id }})" class="btn btn-sm" style="background:#0891b2;color:#fff;"><i class="ti ti-wand"></i> Buat Otomatis</button>
+                </div>
+                <textarea name="catatan_uts[{{ $rapor->id }}]" id="catatan-uts-{{ $rapor->id }}" class="form-input" rows="3" placeholder="Catatan khusus di lembar cetak UTS/PTS...">{{ $rapor->catatan_uts }}</textarea>
             </div>
         </div>
         @endforeach
@@ -48,6 +51,12 @@
             body.style.display = 'block';
             document.getElementById('chev-' + id).style.transform = 'rotate(180deg)';
         }
+    }
+
+    function buatOtomatis(raporId) {
+        fetch(`/erapor/catatan-uts/${raporId}/otomatis`)
+            .then(r => r.json())
+            .then(json => { document.getElementById('catatan-uts-' + raporId).value = json.teks; });
     }
 </script>
 @endsection

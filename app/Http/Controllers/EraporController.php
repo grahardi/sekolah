@@ -484,6 +484,39 @@ class EraporController extends Controller
         return back()->with('success', 'Catatan UTS/PTS berhasil disimpan.');
     }
 
+    /** "Buat Otomatis" utk Catatan UTS - berdasarkan mapel dgn nilai STS/TP terbaik */
+    public function catatanUtsOtomatis(\App\Models\Rapor $rapor)
+    {
+        $rapor->load('siswa');
+        $siswa = $rapor->siswa;
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422);
+
+        $mapelList = \App\Models\GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)
+            ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
+            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id');
+
+        $terbaik = null;
+        foreach ($mapelList as $mapel) {
+            $sts = \App\Services\RaporCalculator::nilaiSts($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $rapor->semester);
+            if ($sts === null) continue;
+            if (! $terbaik || $sts > $terbaik['nilai']) {
+                $terbaik = ['mapel' => $mapel->nama, 'nilai' => $sts];
+            }
+        }
+
+        $namaSiswa = trim(explode(' ', $siswa->nama_lengkap)[array_key_last(explode(' ', $siswa->nama_lengkap))] ?? $siswa->nama_lengkap);
+
+        if ($terbaik) {
+            $teks = "Pada penilaian tengah semester ini, Ananda {$namaSiswa} menunjukkan hasil yang baik terutama pada mata pelajaran {$terbaik['mapel']} dengan nilai {$terbaik['nilai']}. "
+                . "Tetap semangat belajar dan pertahankan capaiannya menjelang penilaian akhir semester.";
+        } else {
+            $teks = "Pada penilaian tengah semester ini, Ananda {$namaSiswa} sudah menunjukkan usaha yang baik. Tetap semangat belajar menjelang penilaian akhir semester.";
+        }
+
+        return response()->json(['teks' => $teks]);
+    }
+
     private function kelasRombelList()
     {
         return Siswa::where('status', 'aktif')

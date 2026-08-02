@@ -359,6 +359,53 @@ class RaporController extends Controller
         return back()->with(count($errors) > 0 ? 'warning' : 'success', $msg);
     }
 
+    /**
+     * "Buat Otomatis" khusus Catatan UTS - cari mapel dengan nilai STS (atau
+     * rata-rata TP kalau STS belum ada) tertinggi, generate kalimat serupa.
+     */
+    public function catatanUtsOtomatis(Rapor $rapor)
+    {
+        $rapor->load('siswa');
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422, 'Belum ada tahun ajaran aktif.');
+
+        $mapelList = GuruPengajar::where('tahun_ajaran_id', $tahunAjaran->id)
+            ->where('kelas', $rapor->kelas)->where('rombel', $rapor->rombel)
+            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id');
+
+        $terbaik = null;
+        $skorTerbaik = -1;
+
+        foreach ($mapelList as $mapel) {
+            $sts = RaporCalculator::nilaiSts($rapor->siswa_id, $rapor->kelas, $rapor->rombel, $mapel->id, $tahunAjaran->id, $rapor->semester);
+            $skor = $sts;
+
+            if ($skor === null) {
+                $perTp = RaporCalculator::nilaiPerTp($rapor->siswa_id, $rapor->kelas, $rapor->rombel, $mapel->id, $tahunAjaran->id, $rapor->semester);
+                $nilaiTp = array_column($perTp, 'nilai');
+                $skor = count($nilaiTp) > 0 ? array_sum($nilaiTp) / count($nilaiTp) : null;
+            }
+
+            if ($skor !== null && $skor > $skorTerbaik) {
+                $skorTerbaik = $skor;
+                $terbaik = $mapel;
+            }
+        }
+
+        $namaSiswa = trim(collect(explode(' ', $rapor->siswa->nama_lengkap))->last());
+
+        if ($terbaik) {
+            $teks = "Ananda {$namaSiswa} menunjukkan hasil belajar yang baik pada pertengahan semester ini, "
+                . "khususnya di mata pelajaran {$terbaik->nama} dengan capaian nilai " . round($skorTerbaik) . ". "
+                . "Terus pertahankan semangat belajar hingga akhir semester.";
+        } else {
+            $teks = "Ananda {$namaSiswa} menunjukkan hasil belajar yang baik pada pertengahan semester ini. "
+                . "Terus pertahankan semangat belajar hingga akhir semester.";
+        }
+
+        return response()->json(['teks' => $teks]);
+    }
+
     private function kelasRombelList()
     {
         return Siswa::where('status', 'aktif')
