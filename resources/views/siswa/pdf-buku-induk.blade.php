@@ -52,7 +52,7 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @endphp
     @php baris(1,  'Nama Lengkap',             $siswa->nama_lengkap) @endphp
     @php baris(2,  'Jenis Kelamin',             $siswa->jenis_kelamin_lengkap) @endphp
-    @php baris(3,  'Tempat, Tanggal Lahir',     $siswa->tempat_lahir . ', ' . ($siswa->tanggal_lahir?->format('d F Y') ?? '-')) @endphp
+    @php baris(3,  'Tempat, Tanggal Lahir',     $siswa->tempat_lahir . ', ' . ($siswa->tanggal_lahir?->locale('id')->translatedFormat('d F Y') ?? '-')) @endphp
     @php baris(4,  'Agama',                     $siswa->agama) @endphp
     @php baris(5,  'Kewarganegaraan',           'Indonesia') @endphp
     @php baris(6,  'Anak ke-',                  $siswa->anak_ke) @endphp
@@ -86,7 +86,7 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(22, 'No. STTB / Ijazah SD',$siswa->no_sttb_sd) @endphp
     @php baris(23, 'No. UN SD',           $siswa->no_un_sd) @endphp
     @php baris(24, 'Diterima di Kelas',   $siswa->kelas) @endphp
-    @php baris(25, 'Tanggal Diterima',    $siswa->tanggal_diterima?->format('d F Y')) @endphp
+    @php baris(25, 'Tanggal Diterima',    $siswa->tanggal_diterima?->locale('id')->translatedFormat('d F Y')) @endphp
     @php baris(26, 'Tahun Masuk',         $siswa->tahun_masuk) @endphp
     @php baris(27, 'Status',              ucfirst($siswa->status)) @endphp
 </table>

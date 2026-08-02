@@ -8,8 +8,8 @@
     .kop { display: table; width: 100%; margin-bottom: 6px; }
     .kop-row { display: table-row; }
     .kop-cell { display: table-cell; vertical-align: middle; }
-    .kop-logo { width: 70px; text-align: center; }
-    .kop-logo img { max-width: 60px; max-height: 60px; }
+    .kop-logo { width: 100px; text-align: center; }
+    .kop-logo img { max-width: 95px; max-height: 95px; }
     .kop-text { text-align: center; font-family: 'DejaVu Serif', serif; }
     .kop-text h1 { font-size: 14px; margin: 0; font-weight: bold; }
     .kop-text h2 { font-size: 12px; margin: 1px 0; font-weight: normal; }
@@ -203,7 +203,7 @@
         <div>NIP {{ $sekolah->kepala_sekolah_nip }}</div>
     </div>
     <div class="ttd-col">
-        {{ $kotaTtd ?? '' }}, {{ $tanggalCetak->translatedFormat('d F Y') }}<br>Wali Kelas
+        {{ $kotaTtd ?? '' }}, {{ $tanggalCetak->locale('id')->translatedFormat('d F Y') }}<br>Wali Kelas
         <div class="ttd-space"></div>
         <div class="ttd-nama">{{ $waliKelas->nama ?? '-' }}</div>
         <div>{{ $waliKelas && $waliKelas->nip_nuptk ? 'NIP ' . $waliKelas->nip_nuptk : '' }}</div>

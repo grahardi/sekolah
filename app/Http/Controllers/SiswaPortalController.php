@@ -56,10 +56,13 @@ class SiswaPortalController extends Controller
     }
 
     /** Akses langsung via QR code (link dari rapor cetak) - tanpa perlu login NISN+tanggal lahir */
-    public function lihatViaQr(string $token)
+    public function lihatViaQr(string $nisn, string $kode)
     {
-        $id = base64_decode(strtr($token, '-_', '+/'));
-        $siswa = Siswa::withoutGlobalScopes()->where('id', $id)->where('status', 'aktif')->first();
+        $siswa = Siswa::withoutGlobalScopes()
+            ->where('nisn', $nisn)
+            ->where('kode_akses', $kode)
+            ->where('status', 'aktif')
+            ->first();
         abort_unless($siswa, 404);
 
         return $this->tampilkanDashboard($siswa, viaQr: true);
@@ -119,8 +122,7 @@ class SiswaPortalController extends Controller
             return ['mapel' => $mapel, 'per_tp' => array_column($perTp, 'nilai'), 'sts' => $sts];
         });
 
-        $token = rtrim(strtr(base64_encode((string) $siswa->id), '+/', '-_'), '=');
-        $qrUrl = url("/siswa/qr/{$token}");
+        $qrUrl = url("/siswa/{$siswa->nisn}/qr/{$siswa->getOrCreateKodeAkses()}");
 
         $qrPng = null;
         if (class_exists(QrCode::class)) {

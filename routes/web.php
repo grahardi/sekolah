@@ -70,7 +70,7 @@ Route::prefix('siswa')->name('siswa-portal.')->group(function () {
     Route::post('/login', [\App\Http\Controllers\SiswaPortalController::class, 'login'])->name('login.submit');
     Route::get('/logout', [\App\Http\Controllers\SiswaPortalController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [\App\Http\Controllers\SiswaPortalController::class, 'dashboard'])->name('dashboard');
-    Route::get('/qr/{token}', [\App\Http\Controllers\SiswaPortalController::class, 'lihatViaQr'])->name('qr');
+    Route::get('/{nisn}/qr/{kode}', [\App\Http\Controllers\SiswaPortalController::class, 'lihatViaQr'])->name('qr');
 });
 // require __DIR__.'/ujian.php';
 // require __DIR__.'/bk.php';

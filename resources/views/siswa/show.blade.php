@@ -65,7 +65,7 @@
                     $rows = [
                         ['NISN', $siswa->nisn], ['NIS', $siswa->nis], ['NIK', $siswa->nik], ['No. KK', $siswa->no_kk],
                         ['Tempat Lahir', $siswa->tempat_lahir],
-                        ['Tanggal Lahir', $siswa->tanggal_lahir?->format('d F Y') . ' (' . $siswa->umur . ' tahun)'],
+                        ['Tanggal Lahir', $siswa->tanggal_lahir?->locale('id')->translatedFormat('d F Y') . ' (' . $siswa->umur . ' tahun)'],
                         ['Agama', $siswa->agama], ['Golongan Darah', $siswa->golongan_darah], ['Anak ke-', $siswa->anak_ke],
                         ['No. Telepon', $siswa->no_telepon], ['Email', $siswa->email],
                     ];

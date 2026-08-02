@@ -13,7 +13,7 @@ class Siswa extends Model
 
     protected $fillable = [
         'sekolah_id',
-        'nisn','nis','nama_lengkap','jenis_kelamin','tempat_lahir','tanggal_lahir',
+        'nisn','nis','nama_lengkap','kode_akses','jenis_kelamin','tempat_lahir','tanggal_lahir',
         'agama','nik','no_kk',
         'alamat','rt','rw','dusun','kelurahan','kecamatan','kode_pos',
         'lintang','bujur',
@@ -81,6 +81,16 @@ class Siswa extends Model
     public function getJenisKelaminLengkapAttribute(): string
     {
         return $this->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+    }
+
+    /** Kode acak dipakai bareng NISN utk link QR - dibuat sekali kalau belum ada */
+    public function getOrCreateKodeAkses(): string
+    {
+        if (! $this->kode_akses) {
+            $this->kode_akses = \Illuminate\Support\Str::random(10);
+            $this->saveQuietly();
+        }
+        return $this->kode_akses;
     }
 
     public function getFotoUrlAttribute(): string

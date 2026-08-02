@@ -63,7 +63,7 @@ body { font-family:'DejaVu Sans', sans-serif; color:#1e293b; }
         </div>
         @endif
     </div>
-    <div class="card-footer">Dicetak {{ now()->format('d F Y') }} &bull; Sistem Buku Induk Siswa</div>
+    <div class="card-footer">Dicetak {{ now()->locale('id')->translatedFormat('d F Y') }} &bull; Sistem Buku Induk Siswa</div>
 </div>
 </body>
 </html>

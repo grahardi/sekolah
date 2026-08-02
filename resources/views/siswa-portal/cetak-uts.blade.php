@@ -36,8 +36,8 @@
     .kop { display: table; width: 100%; margin-bottom: 6px; }
     .kop-row { display: table-row; }
     .kop-cell { display: table-cell; vertical-align: middle; }
-    .kop-logo { width: 60px; text-align: center; }
-    .kop-logo img { max-width: 52px; max-height: 52px; }
+    .kop-logo { width: 90px; text-align: center; }
+    .kop-logo img { max-width: 85px; max-height: 85px; }
     .kop-text { text-align: center; font-family: 'DejaVu Serif', serif; }
     .kop-text h1 { font-size: 13px; margin: 0; font-weight: bold; text-transform: none; }
     .kop-text h2 { font-size: 11px; margin: 1px 0; font-weight: normal; }
@@ -164,7 +164,7 @@
         <div>( ................................. )</div>
     </div>
     <div class="ttd-col">
-        {{ $sekolah->kecamatan ?? '' }}, {{ now()->translatedFormat('d F Y') }}<br>Wali Kelas
+        {{ $sekolah->kecamatan ?? '' }}, {{ now()->locale('id')->translatedFormat('d F Y') }}<br>Wali Kelas
         <div class="ttd-space"></div>
         <div class="ttd-nama">&nbsp;</div>
     </div>
