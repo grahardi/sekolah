@@ -425,32 +425,63 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'catatan' => 'nullable|array',
-            'catatan_uts' => 'nullable|array',
             'sakit' => 'nullable|array',
             'izin' => 'nullable|array',
             'alpa' => 'nullable|array',
         ]);
 
-        $semuaRaporId = collect(array_keys($data['catatan'] ?? []))->merge(array_keys($data['catatan_uts'] ?? []))->unique();
-
-        foreach ($semuaRaporId as $raporId) {
+        foreach ($data['catatan'] ?? [] as $raporId => $teks) {
             $rapor = \App\Models\Rapor::find($raporId);
-            if (! $rapor) continue;
-
-            // Catatan UTS tidak perlu finalisasi (bukan bagian dari rapor semester) - selalu bisa diedit
-            $rapor->update(['catatan_uts' => $data['catatan_uts'][$raporId] ?? $rapor->catatan_uts]);
-
-            if ($rapor->status === 'Final') continue; // sisanya (catatan wali kelas & absensi) tetap terkunci kalau final
+            if (! $rapor || $rapor->status === 'Final') continue; // lewati yg sudah final/terkunci
 
             $rapor->update([
-                'catatan_wali_kelas' => $data['catatan'][$raporId] ?? $rapor->catatan_wali_kelas,
+                'catatan_wali_kelas' => $teks,
                 'sakit' => $data['sakit'][$raporId] ?? 0,
                 'izin' => $data['izin'][$raporId] ?? 0,
                 'tanpa_keterangan' => $data['alpa'][$raporId] ?? 0,
             ]);
         }
 
-        return back()->with('success', 'Catatan berhasil disimpan.');
+        return back()->with('success', 'Catatan wali kelas berhasil disimpan.');
+    }
+
+    // ── Catatan UTS/PTS (halaman & fitur terpisah dari Catatan Wali Kelas) ──
+    public function catatanUtsIndex()
+    {
+        $waliKelas = self::waliKelasSayaAtauNull();
+        abort_unless($waliKelas || auth()->user()->isAdmin(), 403, 'Halaman ini khusus wali kelas.');
+
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+
+        $kelas = $waliKelas->kelas ?? null;
+        $rombel = $waliKelas->rombel ?? null;
+        abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
+
+        $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+
+        foreach ($siswaList as $siswa) {
+            $siswa->rapor = \App\Models\Rapor::firstOrCreate(
+                ['siswa_id' => $siswa->id, 'tahun_ajaran_id' => $tahunAktif->id, 'semester' => $semester],
+                ['kelas' => $kelas, 'rombel' => $rombel]
+            );
+        }
+
+        return view('erapor.catatan-uts.index', ['siswaList' => $siswaList]);
+    }
+
+    public function catatanUtsStore(Request $request)
+    {
+        $data = $request->validate(['catatan_uts' => 'nullable|array']);
+
+        foreach ($data['catatan_uts'] ?? [] as $raporId => $teks) {
+            $rapor = \App\Models\Rapor::find($raporId);
+            if (! $rapor) continue;
+            $rapor->update(['catatan_uts' => $teks]); // tidak perlu cek status Final - UTS gak terkunci
+        }
+
+        return back()->with('success', 'Catatan UTS/PTS berhasil disimpan.');
     }
 
     private function kelasRombelList()

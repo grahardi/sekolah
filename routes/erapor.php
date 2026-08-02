@@ -117,6 +117,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/progres-penilaian', [EraporController::class, 'progresPenilaian'])->name('progres-penilaian');
         Route::get('/catatan-wali', [EraporController::class, 'catatanWaliIndex'])->name('catatan-wali.index');
         Route::post('/catatan-wali', [EraporController::class, 'catatanWaliStore'])->name('catatan-wali.store');
+        Route::get('/catatan-uts', [EraporController::class, 'catatanUtsIndex'])->name('catatan-uts.index');
+        Route::post('/catatan-uts', [EraporController::class, 'catatanUtsStore'])->name('catatan-uts.store');
 
         // Tugas Mengajar (toggle grid) - guru lihat/atur tugas mengajarnya sendiri
         Route::get('/guru/{guru}/tugas-mengajar', [EraporController::class, 'tugasMengajarPage'])->name('guru.tugas-mengajar');

@@ -241,6 +241,10 @@
            class="sb-item {{ request()->routeIs('erapor.catatan-wali.*') ? 'active' : '' }}">
             <i class="ti ti-notes"></i><span>Catatan Wali Kelas</span>
         </a>
+        <a href="{{ route('erapor.catatan-uts.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.catatan-uts.*') ? 'active' : '' }}">
+            <i class="ti ti-file-text"></i><span>Catatan UTS/PTS</span>
+        </a>
         <a href="{{ route('erapor.rapor.cetak-kelas') }}"
            class="sb-item {{ request()->routeIs('erapor.rapor.cetak-kelas') || request()->routeIs('erapor.rapor.edit') ? 'active' : '' }}">
             <i class="ti ti-printer"></i><span>Cetak Rapor</span>

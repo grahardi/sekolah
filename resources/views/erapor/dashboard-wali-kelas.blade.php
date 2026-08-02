@@ -51,6 +51,10 @@
                 <a href="{{ route('erapor.catatan-wali.index') }}" class="btn btn-secondary btn-sm">Buka</a>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                <span style="font-size:13px;color:#374151;">Catatan UTS/PTS</span>
+                <a href="{{ route('erapor.catatan-uts.index') }}" class="btn btn-secondary btn-sm">Buka</a>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
                 <span style="font-size:13px;color:#374151;">Cek Kelengkapan Nilai</span>
                 <a href="{{ route('erapor.progres-penilaian') }}" class="btn btn-secondary btn-sm">Lihat Progres</a>
             </div>
