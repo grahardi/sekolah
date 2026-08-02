@@ -54,7 +54,7 @@ export default function Dashboard({ stats, sekolah }) {
     return (
         <PortalLayout title="Beranda" breadcrumb={['Portal']}>
             {/* Banner sambutan */}
-            <div className="rounded-2xl bg-teal text-cream p-6 lg:p-8 mb-6 relative overflow-hidden">
+            <div className="rounded-2xl text-cream p-6 lg:p-8 mb-6 relative overflow-hidden" style={{ background: 'linear-gradient(135deg,#1E3A5F,#2563EB)' }}>
                 <div className="relative z-10 max-w-lg">
                     <p className="text-cream/70 text-sm">Selamat datang kembali,</p>
                     <h2 className="font-display font-700 text-2xl lg:text-3xl mt-1">
