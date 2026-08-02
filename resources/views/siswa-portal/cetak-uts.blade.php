@@ -14,7 +14,7 @@
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 14px; table-layout: fixed; }
     table.nilai th { background: #dbeafe; border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
     table.nilai td { border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
     table.nilai td.nama { text-align: left; }
@@ -64,7 +64,6 @@
 <img src="{{ public_path('storage/' . $sekolah->watermark_rapor) }}" class="watermark">
 @endif
 
-<div class="bar-atas"></div>
 @if($sekolah->rapor_pakai_header_custom && $sekolah->rapor_header_custom)
 <img src="{{ public_path('storage/' . $sekolah->rapor_header_custom) }}" style="width:100%;margin-bottom:10px;">
 <div class="garis-tebal"></div>
@@ -105,12 +104,18 @@
 </div>
 
 <table class="nilai">
+    <colgroup>
+        <col style="width:24px;">
+        <col style="width:150px;">
+        <col style="width:60px;"><col style="width:60px;"><col style="width:60px;"><col style="width:60px;">
+        <col style="width:55px;">
+    </colgroup>
     <thead>
         <tr>
             <th rowspan="2" style="width:24px;">No</th>
             <th rowspan="2" style="width:150px;">Mata Pelajaran</th>
             <th colspan="4">Tujuan Pembelajaran</th>
-            <th rowspan="2" style="width:40px;">STS</th>
+            <th rowspan="2">STS</th>
         </tr>
         <tr>
             <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
@@ -124,7 +129,7 @@
             @for($k = 0; $k < 4; $k++)
             <td>{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
-            <td style="font-weight:bold;">{{ $r['sts'] ?? '-' }}</td>
+            <td style="font-weight:bold;font-size:11px;">{{ $r['sts'] ?? '-' }}</td>
         </tr>
         @empty
         <tr><td colspan="7">Belum ada data penilaian.</td></tr>

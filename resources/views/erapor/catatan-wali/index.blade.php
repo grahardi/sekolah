@@ -41,6 +41,9 @@
                         </div>
                         <textarea name="catatan[{{ $rapor->id }}]" id="catatan-{{ $rapor->id }}" class="form-input" rows="6" {{ $terkunci ? 'disabled' : '' }}
                                   placeholder="mis. Ananda sudah menunjukkan sikap yang baik...">{{ $rapor->catatan_wali_kelas }}</textarea>
+
+                        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:16px 0 8px;"><i class="ti ti-file-text"></i> Catatan UTS/PTS <span style="font-weight:400;color:#94a3b8;font-size:11px;">(tidak perlu finalisasi, bisa diedit kapan saja)</span></p>
+                        <textarea name="catatan_uts[{{ $rapor->id }}]" class="form-input" rows="3" placeholder="Catatan khusus di lembar cetak UTS/PTS...">{{ $rapor->catatan_uts }}</textarea>
                     </div>
 
                     <div>

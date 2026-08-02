@@ -12,7 +12,7 @@ class Rapor extends Model
     protected $table = 'rapors';
     protected $fillable = [
         'sekolah_id', 'siswa_id', 'tahun_ajaran_id', 'kelas', 'rombel', 'semester',
-        'sakit', 'izin', 'tanpa_keterangan', 'catatan_wali_kelas',
+        'sakit', 'izin', 'tanpa_keterangan', 'catatan_wali_kelas', 'catatan_uts',
         'deskripsi_kokurikuler', 'deskripsi_ekstrakurikuler', 'status', 'tanggal_rapor',
     ];
     protected $casts = ['tanggal_rapor' => 'date'];

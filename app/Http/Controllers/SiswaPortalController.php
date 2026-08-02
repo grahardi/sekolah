@@ -130,7 +130,7 @@ class SiswaPortalController extends Controller
             $qrPng = 'data:image/png;base64,' . base64_encode($result->getString());
         }
 
-        $catatanWaliKelas = Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->value('catatan_wali_kelas');
+        $catatanUts = Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->value('catatan_uts');
 
         $pdf = Pdf::loadView('siswa-portal.cetak-uts', [
             'siswa' => $siswa,
@@ -139,7 +139,7 @@ class SiswaPortalController extends Controller
             'semester' => $semester,
             'rows' => $rows,
             'qrPng' => $qrPng,
-            'catatanWaliKelas' => $catatanWaliKelas,
+            'catatanWaliKelas' => $catatanUts,
         ])->setPaper('a4', 'portrait');
 
         return $pdf->download('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');

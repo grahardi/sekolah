@@ -425,24 +425,32 @@ class EraporController extends Controller
     {
         $data = $request->validate([
             'catatan' => 'nullable|array',
+            'catatan_uts' => 'nullable|array',
             'sakit' => 'nullable|array',
             'izin' => 'nullable|array',
             'alpa' => 'nullable|array',
         ]);
 
-        foreach ($data['catatan'] ?? [] as $raporId => $teks) {
+        $semuaRaporId = collect(array_keys($data['catatan'] ?? []))->merge(array_keys($data['catatan_uts'] ?? []))->unique();
+
+        foreach ($semuaRaporId as $raporId) {
             $rapor = \App\Models\Rapor::find($raporId);
-            if (! $rapor || $rapor->status === 'Final') continue; // lewati yg sudah final/terkunci
+            if (! $rapor) continue;
+
+            // Catatan UTS tidak perlu finalisasi (bukan bagian dari rapor semester) - selalu bisa diedit
+            $rapor->update(['catatan_uts' => $data['catatan_uts'][$raporId] ?? $rapor->catatan_uts]);
+
+            if ($rapor->status === 'Final') continue; // sisanya (catatan wali kelas & absensi) tetap terkunci kalau final
 
             $rapor->update([
-                'catatan_wali_kelas' => $teks,
+                'catatan_wali_kelas' => $data['catatan'][$raporId] ?? $rapor->catatan_wali_kelas,
                 'sakit' => $data['sakit'][$raporId] ?? 0,
                 'izin' => $data['izin'][$raporId] ?? 0,
                 'tanpa_keterangan' => $data['alpa'][$raporId] ?? 0,
             ]);
         }
 
-        return back()->with('success', 'Catatan wali kelas berhasil disimpan.');
+        return back()->with('success', 'Catatan berhasil disimpan.');
     }
 
     private function kelasRombelList()

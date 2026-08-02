@@ -84,7 +84,6 @@
 @endif
 
 {{-- ================= HALAMAN 1 ================= --}}
-<div class="bar-atas"></div>
 @if($sekolah->rapor_pakai_header_custom && $sekolah->rapor_header_custom)
 <img src="{{ public_path('storage/' . $sekolah->rapor_header_custom) }}" style="width:100%;margin-bottom:10px;">
 <div class="garis-tebal"></div>
