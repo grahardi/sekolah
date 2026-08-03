@@ -68,8 +68,8 @@
                     @if($siswa->rapor)
                     <a href="{{ route('erapor.rapor.edit', $siswa->rapor) }}" class="btn btn-secondary btn-sm"><i class="ti ti-edit"></i> Kelola</a>
                     <a href="{{ route('erapor.rapor.cetak', $siswa->rapor) }}" class="btn btn-primary btn-sm"><i class="ti ti-printer"></i> Cetak PDF</a>
-                    <a href="{{ route('erapor.siswa.cetak-uts', $siswa) }}" class="btn btn-sm" style="background:#0891b2;color:#fff;"><i class="ti ti-qrcode"></i> Cetak UTS</a>
                     @endif
+                    <a href="{{ route('erapor.siswa.cetak-uts', $siswa) }}" class="btn btn-sm" style="background:#0891b2;color:#fff;"><i class="ti ti-qrcode"></i> Cetak UTS</a>
                 </td>
             </tr>
             @empty
