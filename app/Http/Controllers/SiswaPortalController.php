@@ -73,15 +73,24 @@ class SiswaPortalController extends Controller
         $tahunAktif = TahunAjaran::withoutGlobalScopes()->where('sekolah_id', $siswa->sekolah_id)->where('is_aktif', true)->first();
         $semester = $tahunAktif?->semester === 'Genap' ? 2 : 1;
 
+        // Kehadiran tetap ambil dari Rapor (diisi manual wali kelas), tapi
+        // NILAI dihitung LIVE dari data Penilaian - tidak perlu nunggu admin
+        // klik "Hitung Ulang" atau rapor difinalisasi dulu.
         $rapor = $tahunAktif
-            ? Rapor::withoutGlobalScopes()->where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->with('detailAkademik.mataPelajaran')->first()
+            ? Rapor::withoutGlobalScopes()->where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->first()
             : null;
 
         $mapelData = collect();
-        if ($rapor) {
-            foreach ($rapor->detailAkademik as $d) {
-                $perTp = RaporCalculator::nilaiPerTp($siswa->id, $siswa->kelas, $siswa->rombel, $d->mata_pelajaran_id, $tahunAktif->id, $semester);
-                $mapelData->push(['mapel' => $d->mataPelajaran, 'nilai_akhir' => $d->nilai_katrol ?? $d->nilai_akhir, 'per_tp' => $perTp]);
+        if ($tahunAktif) {
+            $mapelList = \App\Models\GuruPengajar::withoutGlobalScopes()
+                ->where('tahun_ajaran_id', $tahunAktif->id)
+                ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
+                ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->sortBy('nama')->values();
+
+            foreach ($mapelList as $mapel) {
+                $hasil = RaporCalculator::hitung($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
+                $perTp = RaporCalculator::nilaiPerTp($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
+                $mapelData->push(['mapel' => $mapel, 'nilai_akhir' => $hasil['nilai_akhir'], 'per_tp' => $perTp]);
             }
         }
 

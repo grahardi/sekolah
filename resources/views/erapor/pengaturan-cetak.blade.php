@@ -76,6 +76,19 @@
         </label>
     </div>
 
+    <div style="margin-bottom:18px;">
+        <label class="form-label">Warna Dasar Tabel (nilai, identitas, dll)</label>
+        <div style="display:flex;gap:10px;margin-top:6px;">
+            @foreach(['biru' => ['Biru Muda', '#dbeafe'], 'hijau' => ['Hijau', '#dcfce7'], 'kuning' => ['Kuning', '#fef9c3']] as $val => $info)
+            <label style="flex:1;display:flex;align-items:center;gap:8px;border:2px solid {{ $sekolah->rapor_warna_tabel === $val ? '#1E3A5F' : '#e2e8f0' }};border-radius:8px;padding:10px 12px;cursor:pointer;">
+                <input type="radio" name="rapor_warna_tabel" value="{{ $val }}" {{ $sekolah->rapor_warna_tabel === $val ? 'checked' : '' }}>
+                <span style="width:20px;height:20px;border-radius:5px;background:{{ $info[1] }};display:inline-block;border:1px solid #cbd5e1;"></span>
+                <span style="font-size:13px;">{{ $info[0] }}</span>
+            </label>
+            @endforeach
+        </div>
+    </div>
+
     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-bottom:18px;">
         <p style="font-size:13px;font-weight:700;color:#1e40af;margin:0 0 4px;">Opsi Lain: Upload Header Lengkap</p>
         <p style="font-size:12px;color:#1e40af;margin:0 0 10px;">
@@ -126,6 +139,7 @@
     <input type="hidden" name="rapor_tampilkan_logo" value="{{ $sekolah->rapor_tampilkan_logo ? '1' : '0' }}">
     <input type="hidden" name="rapor_tampilkan_watermark" value="{{ $sekolah->rapor_tampilkan_watermark ? '1' : '0' }}">
     <input type="hidden" name="rapor_pakai_header_custom" value="{{ $sekolah->rapor_pakai_header_custom ? '1' : '0' }}">
+    <input type="hidden" name="rapor_warna_tabel" value="{{ $sekolah->rapor_warna_tabel }}">
     <input type="hidden" name="rapor_kota_ttd" value="{{ $sekolah->rapor_kota_ttd }}">
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">

@@ -299,6 +299,7 @@ class EraporController extends Controller
             'watermark_rapor' => 'nullable|image|max:2048',
             'rapor_header_custom' => 'nullable|image|max:4096',
             'rapor_pakai_header_custom' => 'nullable|boolean',
+            'rapor_warna_tabel' => 'required|in:biru,hijau,kuning',
         ]);
         $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
         $data['rapor_tampilkan_watermark'] = $request->boolean('rapor_tampilkan_watermark');

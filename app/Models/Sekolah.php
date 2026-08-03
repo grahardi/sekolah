@@ -44,6 +44,7 @@ class Sekolah extends Model
         'rapor_tampilkan_watermark',
         'rapor_header_custom',
         'rapor_pakai_header_custom',
+        'rapor_warna_tabel',
     ];
 
     protected $casts = [

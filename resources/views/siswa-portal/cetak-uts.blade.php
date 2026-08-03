@@ -15,7 +15,7 @@
     .identitas-val { display: table-cell; font-weight: bold; }
 
     table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 14px; table-layout: fixed; }
-    table.nilai th { background: #dbeafe; border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
     table.nilai td { border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
     table.nilai td.nama { text-align: left; }
 

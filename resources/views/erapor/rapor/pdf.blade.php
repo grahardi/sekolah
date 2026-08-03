@@ -27,12 +27,12 @@
     .section-title { font-size: 11px; font-weight: bold; margin: 14px 0 6px; }
 
     table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    table.nilai th { background: #dbeafe; border: 1px solid #333; padding: 5px 6px; font-size: 9.5px; text-align: center; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px 6px; font-size: 9.5px; text-align: center; }
     table.nilai td { border: 1px solid #333; padding: 5px 6px; font-size: 9px; vertical-align: top; }
     table.nilai td.center { text-align: center; }
 
     .box { border: 1px solid #333; padding: 8px 10px; font-size: 9.5px; margin-bottom: 10px; }
-    .box-header { background: #dbeafe; border: 1px solid #333; padding: 5px 8px; font-size: 10.5px; font-weight: bold; margin-bottom: 0; }
+    .box-header { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px 8px; font-size: 10.5px; font-weight: bold; margin-bottom: 0; }
 
     .grid-2 { display: table; width: 100%; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
