@@ -97,10 +97,21 @@ class SeedDemoErapor extends Command
             $isFinal = $idx === 0;
             $this->line("--- Kelas {$kk->kelas}-{$kk->rombel} (" . ($isFinal ? 'akan Final' : 'akan Draft') . ") ---");
 
-            WaliKelas::firstOrCreate(
+            $waliKelasRecord = WaliKelas::firstOrCreate(
                 ['sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel],
                 ['guru_id' => $guruList->random()->id]
             );
+
+            // Hubungkan akun demo (role induk) ke Guru yg jadi Wali Kelas kelas
+            // PERTAMA (yg bakal Final) - biar demo bisa akses menu Wali Kelas juga.
+            if ($isFinal) {
+                $guruWaliDemo = \App\Models\Guru::find($waliKelasRecord->guru_id);
+                $userDemo = \App\Models\User::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('role', 'induk')->first();
+                if ($guruWaliDemo && $userDemo) {
+                    $guruWaliDemo->update(['user_id' => $userDemo->id]);
+                    $this->info("Akun demo dihubungkan sbg Wali Kelas: {$guruWaliDemo->nama} (Kelas {$kk->kelas}-{$kk->rombel})");
+                }
+            }
 
             $siswaKelas = Siswa::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)
                 ->where('kelas', $kk->kelas)->where('rombel', $kk->rombel)->where('status', 'aktif')->get();

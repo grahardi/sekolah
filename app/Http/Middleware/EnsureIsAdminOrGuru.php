@@ -12,7 +12,7 @@ class EnsureIsAdminOrGuru
     {
         $role = $request->user()?->role;
 
-        if (! in_array($role, ['admin', 'guru'])) {
+        if (! in_array($role, ['admin', 'guru', 'induk'])) {
             abort(403, 'Halaman ini khusus untuk admin sekolah atau guru.');
         }
 

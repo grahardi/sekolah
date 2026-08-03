@@ -353,7 +353,7 @@ class EraporController extends Controller
     public static function waliKelasSayaAtauNull(): ?\App\Models\WaliKelas
     {
         $user = auth()->user();
-        if (! $user || $user->role !== 'guru') return null;
+        if (! $user || ! in_array($user->role, ['guru', 'induk'])) return null;
 
         $guru = \App\Models\Guru::where('user_id', $user->id)->first();
         if (! $guru) return null;
