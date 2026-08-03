@@ -4,32 +4,32 @@
 <meta charset="utf-8">
 <style>
     * { font-family: 'DejaVu Sans', sans-serif; box-sizing: border-box; }
-    body { font-size: 10px; color: #1a1a1a; margin: 0; }
-    h1 { text-align:center; font-size: 13px; margin: 0 0 2px; text-transform: uppercase; }
-    h2 { text-align:center; font-size: 10px; margin: 0 0 14px; font-weight: normal; }
-    .identitas { display: table; width: 100%; margin-bottom: 14px; font-size: 10px; }
+    body { font-size: 11.5px; color: #1a1a1a; margin: 0; }
+    h1 { text-align:center; font-size: 15px; margin: 0 0 3px; text-transform: uppercase; }
+    h2 { text-align:center; font-size: 11.5px; margin: 0 0 16px; font-weight: normal; }
+    .identitas { display: table; width: 100%; margin-bottom: 16px; font-size: 11.5px; }
     .identitas-col { display: table-cell; width: 50%; }
-    .identitas-row { display: table; width: 100%; margin-bottom: 2px; }
-    .identitas-label { display: table-cell; width: 90px; }
+    .identitas-row { display: table; width: 100%; margin-bottom: 3px; }
+    .identitas-label { display: table-cell; width: 100px; }
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 14px; table-layout: fixed; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
-    table.nilai td { border: 1px solid #333; padding: 5px; font-size: 9px; text-align: center; }
+    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 7px; font-size: 11px; text-align: center; }
+    table.nilai td { border: 1px solid #333; padding: 7px; font-size: 11.5px; text-align: center; }
     table.nilai td.nama { text-align: left; }
 
-    .grid-2 { display: table; width: 100%; margin-bottom: 14px; }
+    .grid-2 { display: table; width: 100%; margin-bottom: 16px; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
     .grid-2 .gap { display: table-cell; width: 4%; }
-    .box-title { font-size: 9.5px; font-weight: bold; margin: 0 0 6px; }
-    .box { border: 1px solid #333; padding: 8px; font-size: 9px; min-height: 70px; }
+    .box-title { font-size: 11px; font-weight: bold; margin: 0 0 6px; }
+    .box { border: 1px solid #333; padding: 9px; font-size: 10.5px; min-height: 75px; }
     .qr-box { text-align: center; }
-    .qr-box img { width: 90px; height: 90px; }
+    .qr-box img { width: 100px; height: 100px; }
 
-    .ttd-grid { display: table; width: 100%; margin-top: 10px; }
-    .ttd-col { display: table-cell; width: 33.3%; text-align: center; font-size: 9px; vertical-align: top; }
-    .ttd-space { height: 45px; }
+    .ttd-grid { display: table; width: 100%; margin-top: 12px; }
+    .ttd-col { display: table-cell; width: 33.3%; text-align: center; font-size: 10.5px; vertical-align: top; }
+    .ttd-space { height: 48px; }
     .ttd-nama { font-weight: bold; text-decoration: underline; }
 
     .bar-atas { background: #1a1a1a; height: 5px; margin-bottom: 10px; }
@@ -39,10 +39,10 @@
     .kop-logo { width: 90px; text-align: center; }
     .kop-logo img { max-width: 85px; max-height: 85px; }
     .kop-text { text-align: center; font-family: 'DejaVu Serif', serif; }
-    .kop-text h1 { font-size: 13px; margin: 0; font-weight: bold; text-transform: none; }
-    .kop-text h2 { font-size: 11px; margin: 1px 0; font-weight: normal; }
-    .kop-text h3 { font-size: 15px; margin: 2px 0; font-weight: bold; }
-    .kop-text p { font-size: 9px; margin: 1px 0; }
+    .kop-text h1 { font-size: 15px; margin: 0; font-weight: bold; text-transform: none; }
+    .kop-text h2 { font-size: 12.5px; margin: 1px 0; font-weight: normal; }
+    .kop-text h3 { font-size: 17px; margin: 2px 0; font-weight: bold; }
+    .kop-text p { font-size: 10.5px; margin: 1px 0; }
     .garis-tebal { border-bottom: 3px solid #000; border-top: 1px solid #000; height: 4px; margin-bottom: 10px; }
     .watermark { position: fixed; top: 30%; left: 20%; width: 60%; opacity: 0.07; z-index: -1; }
 </style>
@@ -131,7 +131,7 @@
             @for($k = 0; $k < 4; $k++)
             <td>{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
-            <td style="font-weight:bold;font-size:11px;">{{ $r['sts'] ?? '-' }}</td>
+            <td style="font-weight:bold;font-size:13px;">{{ $r['sts'] ?? '-' }}</td>
         </tr>
         @empty
         <tr><td colspan="7">Belum ada data penilaian.</td></tr>

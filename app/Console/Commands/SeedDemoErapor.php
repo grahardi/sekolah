@@ -124,8 +124,8 @@ class SeedDemoErapor extends Command
                     'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
                 ]);
 
-                $jumlahTp = rand(2, 3);
-                $tpIds = [];
+                $jumlahTp = rand(3, 4);
+                $penilaianPerTp = [];
                 for ($t = 1; $t <= $jumlahTp; $t++) {
                     $tp = TujuanPembelajaran::create([
                         'sekolah_id' => $sekolah->id, 'mata_pelajaran_id' => $mapel->id, 'guru_id' => $guru->id,
@@ -133,16 +133,19 @@ class SeedDemoErapor extends Command
                         'deskripsi_tp' => "Memahami materi {$mapel->nama} bagian {$t}", 'semester' => $semester,
                     ]);
                     TpKelas::create(['tujuan_pembelajaran_id' => $tp->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel]);
-                    $tpIds[] = $tp->id;
-                }
 
-                $penilaianTp = Penilaian::create([
-                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
-                    'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
-                    'nama_penilaian' => 'Ulangan Harian', 'jenis_penilaian' => 'Sumatif', 'subjenis_penilaian' => 'Sumatif TP',
-                    'bobot_penilaian' => 1, 'semester' => $semester, 'tanggal_penilaian' => now()->subDays(20),
-                ]);
-                $penilaianTp->tujuanPembelajarans()->sync($tpIds);
+                    // 1 Penilaian TERPISAH per TP - biar nilainya bisa beda-beda
+                    // per TP (kalau digabung 1 penilaian utk semua TP, nilainya
+                    // bakal sama semua & deskripsi min/max jadi gak ada variasi).
+                    $penilaianSatuTp = Penilaian::create([
+                        'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
+                        'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                        'nama_penilaian' => "Ulangan Harian {$t}", 'jenis_penilaian' => 'Sumatif', 'subjenis_penilaian' => 'Sumatif TP',
+                        'bobot_penilaian' => 1, 'semester' => $semester, 'tanggal_penilaian' => now()->subDays(25 - $t * 3),
+                    ]);
+                    $penilaianSatuTp->tujuanPembelajarans()->sync([$tp->id]);
+                    $penilaianPerTp[] = $penilaianSatuTp;
+                }
 
                 $penilaianUts = Penilaian::create([
                     'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
@@ -159,7 +162,11 @@ class SeedDemoErapor extends Command
                 ]);
 
                 foreach ($siswaKelas as $siswa) {
-                    PenilaianDetailNilai::create(['penilaian_id' => $penilaianTp->id, 'siswa_id' => $siswa->id, 'nilai' => rand(70, 98)]);
+                    // Rentang nilai lebih lebar (60-100) per TP biar variasi
+                    // min/max di deskripsi capaian kompetensi kelihatan jelas.
+                    foreach ($penilaianPerTp as $p) {
+                        PenilaianDetailNilai::create(['penilaian_id' => $p->id, 'siswa_id' => $siswa->id, 'nilai' => rand(60, 100)]);
+                    }
                     PenilaianDetailNilai::create(['penilaian_id' => $penilaianUts->id, 'siswa_id' => $siswa->id, 'nilai' => rand(70, 95)]);
                     PenilaianDetailNilai::create(['penilaian_id' => $penilaianUas->id, 'siswa_id' => $siswa->id, 'nilai' => rand(72, 96)]);
                 }

@@ -14,6 +14,7 @@ class SeedLogoDemo extends Command
     public function handle(): int
     {
         $sumber = resource_path('seed-assets/logo-kabupaten-malang.png');
+        $sumberHeader = resource_path('seed-assets/header-demo-konoha.png');
         if (! file_exists($sumber)) {
             $this->error('File logo contoh tidak ditemukan di resources/seed-assets/. Pastikan sudah git pull terbaru.');
             return self::FAILURE;
@@ -29,12 +30,19 @@ class SeedLogoDemo extends Command
             $tujuan = 'kop-surat/logo-kabupaten-demo-' . $sekolah->id . '.png';
             Storage::disk('public')->put($tujuan, file_get_contents($sumber));
 
-            $sekolah->update([
-                'logo_kabupaten' => $tujuan,
-                'rapor_tampilkan_logo' => true,
-            ]);
+            $update = ['logo_kabupaten' => $tujuan, 'rapor_tampilkan_logo' => true];
 
-            $this->info("✓ Logo dipasang untuk: {$sekolah->nama}");
+            if (file_exists($sumberHeader)) {
+                $tujuanHeader = 'kop-surat/header-demo-' . $sekolah->id . '.png';
+                Storage::disk('public')->put($tujuanHeader, file_get_contents($sumberHeader));
+                $update['rapor_header_custom'] = $tujuanHeader;
+                $update['rapor_pakai_header_custom'] = true;
+                $update['rapor_header_custom_scale'] = 100;
+            }
+
+            $sekolah->update($update);
+
+            $this->info("✓ Logo & header demo dipasang untuk: {$sekolah->nama}");
         }
 
         return self::SUCCESS;
