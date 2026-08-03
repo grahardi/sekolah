@@ -256,17 +256,22 @@
             <i class="ti ti-progress-check"></i><span>Progres Penilaian</span><span class="sb-demo-badge">Read Only</span>
         </div>
         <div class="sb-item-demo" title="Fitur ini spesifik ke akun Wali Kelas tertentu, tidak ditampilkan di mode demo read-only">
-            <i class="ti ti-calendar-stats"></i><span>Rekap Absensi</span><span class="sb-demo-badge">Read Only</span>
-        </div>
-        <div class="sb-item-demo" title="Fitur ini spesifik ke akun Wali Kelas tertentu, tidak ditampilkan di mode demo read-only">
             <i class="ti ti-notes"></i><span>Catatan Wali Kelas</span><span class="sb-demo-badge">Read Only</span>
         </div>
         <div class="sb-item-demo" title="Fitur ini spesifik ke akun Wali Kelas tertentu, tidak ditampilkan di mode demo read-only">
             <i class="ti ti-file-text"></i><span>Catatan UTS/PTS</span><span class="sb-demo-badge">Read Only</span>
         </div>
-        <div class="sb-item-demo" title="Fitur ini spesifik ke akun Wali Kelas tertentu, tidak ditampilkan di mode demo read-only">
-            <i class="ti ti-printer"></i><span>Cetak Rapor</span><span class="sb-demo-badge">Read Only</span>
-        </div>
+        {{-- Cetak Rapor sengaja TETAP aktif utk demo - biar calon pengguna bisa
+             lihat hasil akhir rapornya, cuma "Finalisasi"/edit yg diblok
+             middleware block_write_for_induk kalau dicoba diklik. --}}
+        <a href="{{ route('erapor.rapor.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.rapor.index') ? 'active' : '' }}">
+            <i class="ti ti-calendar-stats"></i><span>Rekap Absensi</span>
+        </a>
+        <a href="{{ route('erapor.rapor.index') }}"
+           class="sb-item {{ request()->routeIs('erapor.rapor.cetak-kelas') || request()->routeIs('erapor.rapor.edit') ? 'active' : '' }}">
+            <i class="ti ti-printer"></i><span>Cetak Rapor</span>
+        </a>
         @endif
     </nav>
 
