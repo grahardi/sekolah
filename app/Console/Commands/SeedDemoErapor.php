@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Guru;
+use App\Models\GuruPengajar;
+use App\Models\MataPelajaran;
+use App\Models\Penilaian;
+use App\Models\PenilaianDetailNilai;
+use App\Models\Rapor;
+use App\Models\RaporDetailAkademik;
+use App\Models\Sekolah;
+use App\Models\Siswa;
+use App\Models\TahunAjaran;
+use App\Models\TpKelas;
+use App\Models\TujuanPembelajaran;
+use App\Models\WaliKelas;
+use App\Services\MataPelajaranTemplate;
+use App\Services\RaporCalculator;
+use Illuminate\Console\Command;
+
+class SeedDemoErapor extends Command
+{
+    protected $signature = 'demo:seed-erapor';
+    protected $description = 'Generate data E-Rapor lengkap utk sekolah demo: guru, TP, penilaian, nilai UTS/akhir, catatan, absensi - 1 kelas final, 1 kelas draft';
+
+    private const CATATAN_CONTOH = [
+        'Secara keseluruhan menunjukkan perkembangan yang positif pada semester ini. Terus pertahankan semangat belajarnya.',
+        'Menunjukkan sikap yang baik dan aktif dalam kegiatan belajar. Perlu ditingkatkan lagi kedisiplinan waktu mengumpulkan tugas.',
+        'Sangat aktif bertanya dan berdiskusi di kelas. Pertahankan rasa ingin tahunya.',
+        'Perlu bimbingan lebih dalam manajemen waktu belajar di rumah agar hasil belajar lebih maksimal.',
+    ];
+
+    public function handle(): int
+    {
+        $sekolah = Sekolah::where('is_demo', true)->first();
+        if (! $sekolah) {
+            $this->error('Sekolah demo belum ada. Jalankan `php artisan demo:setup` dulu.');
+            return self::FAILURE;
+        }
+
+        $this->info('Menyiapkan Tahun Ajaran & Mata Pelajaran...');
+        $tahunAjaran = TahunAjaran::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('is_aktif', true)->first();
+        if (! $tahunAjaran) {
+            TahunAjaran::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->update(['is_aktif' => false]);
+            $tahunAjaran = TahunAjaran::create([
+                'sekolah_id' => $sekolah->id, 'nama' => (date('Y')) . '/' . (date('Y') + 1), 'semester' => 'Ganjil', 'is_aktif' => true,
+            ]);
+        }
+        $semester = $tahunAjaran->semester === 'Genap' ? 2 : 1;
+
+        if (Penilaian::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('tahun_ajaran_id', $tahunAjaran->id)->exists()) {
+            if (! $this->confirm('Data penilaian demo utk tahun ajaran ini sudah ada. Lanjutkan akan menambah data BARU (bisa dobel). Lanjut?', false)) {
+                $this->warn('Dibatalkan.');
+                return self::SUCCESS;
+            }
+        }
+
+        MataPelajaranTemplate::seedFor($sekolah);
+        $mapelList = MataPelajaran::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->get();
+
+        $kombinasiKelas = Siswa::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('status', 'aktif')
+            ->selectRaw('kelas, rombel, count(*) as jumlah')->groupBy('kelas', 'rombel')->orderByDesc('jumlah')->limit(2)->get();
+
+        if ($kombinasiKelas->count() < 1) {
+            $this->error('Tidak ada data siswa demo. Jalankan `php artisan demo:setup` dulu.');
+            return self::FAILURE;
+        }
+
+        $this->info('Membuat guru demo...');
+        $namaGuru = ['Siti Nurhaliza, S.Pd.', 'Budi Santoso, S.Pd.', 'Rina Wulandari, S.Pd.', 'Agus Prasetyo, S.Pd.', 'Dewi Kartika, S.Pd.'];
+        $guruList = collect();
+        foreach ($namaGuru as $nama) {
+            $guruList->push(Guru::firstOrCreate(
+                ['sekolah_id' => $sekolah->id, 'nama' => $nama],
+                ['keterangan' => 'Guru Demo']
+            ));
+        }
+
+        foreach ($kombinasiKelas as $idx => $kk) {
+            $isFinal = $idx === 0;
+            $this->line("--- Kelas {$kk->kelas}-{$kk->rombel} (" . ($isFinal ? 'akan Final' : 'akan Draft') . ") ---");
+
+            WaliKelas::firstOrCreate(
+                ['sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel],
+                ['guru_id' => $guruList->random()->id]
+            );
+
+            $siswaKelas = Siswa::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)
+                ->where('kelas', $kk->kelas)->where('rombel', $kk->rombel)->where('status', 'aktif')->get();
+
+            foreach ($mapelList as $mapel) {
+                $guru = $guruList->random();
+
+                GuruPengajar::firstOrCreate([
+                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
+                    'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                ]);
+
+                $jumlahTp = rand(2, 3);
+                $tpIds = [];
+                for ($t = 1; $t <= $jumlahTp; $t++) {
+                    $tp = TujuanPembelajaran::create([
+                        'sekolah_id' => $sekolah->id, 'mata_pelajaran_id' => $mapel->id, 'guru_id' => $guru->id,
+                        'tahun_ajaran_id' => $tahunAjaran->id, 'fase' => 'D', 'kode_tp' => "{$mapel->id}.{$t}",
+                        'deskripsi_tp' => "Memahami materi {$mapel->nama} bagian {$t}", 'semester' => $semester,
+                    ]);
+                    TpKelas::create(['tujuan_pembelajaran_id' => $tp->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel]);
+                    $tpIds[] = $tp->id;
+                }
+
+                $penilaianTp = Penilaian::create([
+                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
+                    'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                    'nama_penilaian' => 'Ulangan Harian', 'jenis_penilaian' => 'Sumatif', 'subjenis_penilaian' => 'Sumatif TP',
+                    'bobot_penilaian' => 1, 'semester' => $semester, 'tanggal_penilaian' => now()->subDays(20),
+                ]);
+                $penilaianTp->tujuanPembelajarans()->sync($tpIds);
+
+                $penilaianUts = Penilaian::create([
+                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
+                    'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                    'nama_penilaian' => 'STS ' . ($semester == 1 ? 'Ganjil' : 'Genap'), 'jenis_penilaian' => 'Sumatif', 'subjenis_penilaian' => 'Sumatif Tengah Semester',
+                    'bobot_penilaian' => 1, 'semester' => $semester, 'tanggal_penilaian' => now()->subDays(10),
+                ]);
+
+                $penilaianUas = Penilaian::create([
+                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'guru_id' => $guru->id,
+                    'mata_pelajaran_id' => $mapel->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                    'nama_penilaian' => 'SAS ' . ($semester == 1 ? 'Ganjil' : 'Genap'), 'jenis_penilaian' => 'Sumatif', 'subjenis_penilaian' => 'Sumatif Akhir Semester',
+                    'bobot_penilaian' => 2, 'semester' => $semester, 'tanggal_penilaian' => now()->subDays(2),
+                ]);
+
+                foreach ($siswaKelas as $siswa) {
+                    PenilaianDetailNilai::create(['penilaian_id' => $penilaianTp->id, 'siswa_id' => $siswa->id, 'nilai' => rand(70, 98)]);
+                    PenilaianDetailNilai::create(['penilaian_id' => $penilaianUts->id, 'siswa_id' => $siswa->id, 'nilai' => rand(70, 95)]);
+                    PenilaianDetailNilai::create(['penilaian_id' => $penilaianUas->id, 'siswa_id' => $siswa->id, 'nilai' => rand(72, 96)]);
+                }
+            }
+
+            foreach ($siswaKelas as $siswa) {
+                $rapor = Rapor::updateOrCreate(
+                    ['siswa_id' => $siswa->id, 'tahun_ajaran_id' => $tahunAjaran->id, 'semester' => $semester],
+                    [
+                        'sekolah_id' => $sekolah->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel,
+                        'sakit' => rand(0, 3), 'izin' => rand(0, 2), 'tanpa_keterangan' => rand(0, 1),
+                        'catatan_wali_kelas' => self::CATATAN_CONTOH[array_rand(self::CATATAN_CONTOH)],
+                        'catatan_uts' => 'Hasil UTS menunjukkan pemahaman yang baik terhadap materi semester ini.',
+                        'tanggal_rapor' => now(),
+                    ]
+                );
+
+                foreach ($mapelList as $mapel) {
+                    $hasil = RaporCalculator::hitung($siswa->id, $kk->kelas, $kk->rombel, $mapel->id, $tahunAjaran->id, $semester);
+                    RaporDetailAkademik::updateOrCreate(
+                        ['rapor_id' => $rapor->id, 'mata_pelajaran_id' => $mapel->id],
+                        ['nilai_akhir' => $hasil['nilai_akhir'], 'capaian_kompetensi' => $hasil['deskripsi']]
+                    );
+                }
+
+                if ($isFinal) {
+                    $rapor->update(['status' => 'Final']);
+                }
+            }
+
+            $this->info("Kelas {$kk->kelas}-{$kk->rombel} selesai (" . $siswaKelas->count() . ' siswa, status: ' . ($isFinal ? 'Final' : 'Draft') . ')');
+        }
+
+        $this->newLine();
+        $this->info('Selesai! Data demo E-Rapor siap dipakai showcase.');
+        return self::SUCCESS;
+    }
+}
