@@ -134,6 +134,11 @@ class SiswaPortalController extends Controller
 
         $catatanUts = Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->value('catatan_uts');
 
+        $waliKelas = \App\Models\WaliKelas::with('guru')
+            ->where('tahun_ajaran_id', $tahunAktif->id)
+            ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
+            ->first();
+
         $pdf = Pdf::loadView('siswa-portal.cetak-uts', [
             'siswa' => $siswa,
             'sekolah' => $sekolah,
@@ -142,6 +147,7 @@ class SiswaPortalController extends Controller
             'rows' => $rows,
             'qrPng' => $qrPng,
             'catatanWaliKelas' => $catatanUts,
+            'waliKelas' => $waliKelas?->guru,
         ])->setPaper('a4', 'portrait');
 
         return $pdf->download('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');
