@@ -11,7 +11,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
     Route::get('/', [EraporController::class, 'index'])->name('index');
 
     // ── Khusus Admin sekolah (master data & penugasan) ──────────────────
-    Route::middleware('admin')->group(function () {
+    Route::middleware(['admin_or_induk', 'block_write_for_induk'])->group(function () {
         Route::get('/tahun-ajaran', [EraporController::class, 'tahunAjaran'])->name('tahun-ajaran');
         Route::post('/tahun-ajaran', [EraporController::class, 'storeTahunAjaran'])->name('tahun-ajaran.store');
         Route::post('/tahun-ajaran/{tahunAjaran}/aktifkan', [EraporController::class, 'aktifkanTahunAjaran'])->name('tahun-ajaran.aktifkan');

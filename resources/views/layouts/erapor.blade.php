@@ -173,7 +173,7 @@
             <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
         </a>
 
-        @if(auth()->user()->isAdmin())
+        @if(auth()->user()->isAdmin() || $isDemoReadonly)
         <div class="sb-divider"></div>
         <div class="sb-section">Master Data</div>
         <a href="{{ route('erapor.tahun-ajaran') }}"
@@ -226,7 +226,7 @@
             <i class="ti ti-report"></i><span>Input Nilai</span>
         </a>
 
-        @if(auth()->user()->isAdmin() || $waliKelasSaya)
+        @if(auth()->user()->isAdmin() || $isDemoReadonly || $waliKelasSaya)
         <div class="sb-divider"></div>
         <div class="sb-section">Wali Kelas</div>
         <a href="{{ route('erapor.progres-penilaian') }}"

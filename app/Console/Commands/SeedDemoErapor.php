@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Guru;
 use App\Models\GuruPengajar;
 use App\Models\MataPelajaran;
 use App\Models\Penilaian;
@@ -67,15 +66,32 @@ class SeedDemoErapor extends Command
             return self::FAILURE;
         }
 
-        $this->info('Membuat guru demo...');
+        $this->info('Membuat data Kepegawaian & Guru demo...');
         $namaGuru = ['Siti Nurhaliza, S.Pd.', 'Budi Santoso, S.Pd.', 'Rina Wulandari, S.Pd.', 'Agus Prasetyo, S.Pd.', 'Dewi Kartika, S.Pd.'];
         $guruList = collect();
-        foreach ($namaGuru as $nama) {
-            $guruList->push(Guru::firstOrCreate(
-                ['sekolah_id' => $sekolah->id, 'nama' => $nama],
-                ['keterangan' => 'Guru Demo']
-            ));
+        foreach ($namaGuru as $i => $nama) {
+            $pegawai = \App\Models\Pegawai::firstOrCreate(
+                ['sekolah_id' => $sekolah->id, 'nama_lengkap' => $nama],
+                [
+                    'nip_nuptk' => (string) (198000000000 + $i * 1111 + rand(100, 999)),
+                    'jenis_kelamin' => rand(0, 1) ? 'L' : 'P',
+                    'tempat_lahir' => 'Malang',
+                    'tanggal_lahir' => now()->subYears(rand(28, 50))->format('Y-m-d'),
+                    'jenis_kepegawaian' => ['PNS', 'PPPK', 'GTT'][array_rand(['PNS', 'PPPK', 'GTT'])],
+                    'jabatan' => 'Guru Mata Pelajaran',
+                    'status_aktif' => 'Aktif',
+                    'tanggal_masuk' => now()->subYears(rand(2, 15))->format('Y-m-d'),
+                ]
+            );
+            \App\Models\Guru::syncFromPegawai($sekolah->id);
+            $guruList->push(\App\Models\Guru::where('sekolah_id', $sekolah->id)->where('pegawai_id', $pegawai->id)->first());
         }
+
+        // 1 contoh guru bantu (tidak terdaftar di Kepegawaian) - biar fitur itu ikut ke-demo-in
+        $guruList->push(\App\Models\Guru::firstOrCreate(
+            ['sekolah_id' => $sekolah->id, 'nama' => 'Farhan Maulana (Guru Bantu)'],
+            ['keterangan' => 'Guru Bantu']
+        ));
 
         foreach ($kombinasiKelas as $idx => $kk) {
             $isFinal = $idx === 0;
