@@ -99,6 +99,17 @@
         <div style="margin-bottom:8px;background:#fff;padding:8px;border-radius:8px;"><img src="{{ asset('storage/' . $sekolah->rapor_header_custom) }}" style="max-width:100%;"></div>
         @endif
         <input type="file" name="rapor_header_custom" accept="image/*" class="form-input" style="margin-bottom:8px;">
+
+        <div style="margin-bottom:8px;">
+            <label class="form-label" style="color:#1e40af;">Ukuran Header (persentase)</label>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <input type="range" name="rapor_header_custom_scale" min="30" max="150" value="{{ $sekolah->rapor_header_custom_scale ?? 100 }}"
+                       oninput="document.getElementById('scale-preview').textContent = this.value + '%'" style="flex:1;">
+                <span id="scale-preview" style="font-size:13px;font-weight:700;color:#1e40af;min-width:45px;">{{ $sekolah->rapor_header_custom_scale ?? 100 }}%</span>
+            </div>
+            <p style="font-size:11px;color:#1e40af;margin:4px 0 0;">Kalau gambar header kamu terlalu besar/kecil, atur di sini (30%-150%).</p>
+        </div>
+
         <label style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" name="rapor_pakai_header_custom" value="1" {{ $sekolah->rapor_pakai_header_custom ? 'checked' : '' }}>
             <span style="font-size:13px;color:#1e40af;">Pakai header custom ini (bukan susunan logo+teks otomatis di atas)</span>
@@ -139,6 +150,7 @@
     <input type="hidden" name="rapor_tampilkan_logo" value="{{ $sekolah->rapor_tampilkan_logo ? '1' : '0' }}">
     <input type="hidden" name="rapor_tampilkan_watermark" value="{{ $sekolah->rapor_tampilkan_watermark ? '1' : '0' }}">
     <input type="hidden" name="rapor_pakai_header_custom" value="{{ $sekolah->rapor_pakai_header_custom ? '1' : '0' }}">
+    <input type="hidden" name="rapor_header_custom_scale" value="{{ $sekolah->rapor_header_custom_scale ?? 100 }}">
     <input type="hidden" name="rapor_warna_tabel" value="{{ $sekolah->rapor_warna_tabel }}">
     <input type="hidden" name="rapor_kota_ttd" value="{{ $sekolah->rapor_kota_ttd }}">
 

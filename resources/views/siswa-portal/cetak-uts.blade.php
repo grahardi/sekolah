@@ -65,7 +65,9 @@
 @endif
 
 @if($sekolah->rapor_pakai_header_custom && $sekolah->rapor_header_custom)
-<img src="{{ public_path('storage/' . $sekolah->rapor_header_custom) }}" style="width:100%;margin-bottom:10px;">
+<div style="text-align:center;margin-bottom:10px;">
+    <img src="{{ public_path('storage/' . $sekolah->rapor_header_custom) }}" style="width:{{ $sekolah->rapor_header_custom_scale ?? 100 }}%;">
+</div>
 <div class="garis-tebal"></div>
 @else
 <div class="kop">
