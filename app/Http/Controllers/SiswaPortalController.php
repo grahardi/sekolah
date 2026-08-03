@@ -159,6 +159,6 @@ class SiswaPortalController extends Controller
             'waliKelas' => $waliKelas?->guru,
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->download('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');
+        return $pdf->stream('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');
     }
 }

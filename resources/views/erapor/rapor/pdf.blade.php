@@ -4,35 +4,35 @@
 <meta charset="utf-8">
 <style>
     * { font-family: 'DejaVu Sans', sans-serif; box-sizing: border-box; }
-    body { font-size: {{ $sekolah->rapor_font_size === 'kecil' ? '9px' : ($sekolah->rapor_font_size === 'besar' ? '11px' : '10px') }}; color: #1a1a1a; margin: 0; }
+    body { font-size: {{ $sekolah->rapor_font_size === 'kecil' ? '10px' : ($sekolah->rapor_font_size === 'besar' ? '12.5px' : '11.5px') }}; color: #1a1a1a; margin: 0; }
     .kop { display: table; width: 100%; margin-bottom: 6px; }
     .kop-row { display: table-row; }
     .kop-cell { display: table-cell; vertical-align: middle; }
     .kop-logo { width: 100px; text-align: center; }
     .kop-logo img { max-width: 95px; max-height: 95px; }
     .kop-text { text-align: center; font-family: 'DejaVu Serif', serif; }
-    .kop-text h1 { font-size: 14px; margin: 0; font-weight: bold; }
-    .kop-text h2 { font-size: 12px; margin: 1px 0; font-weight: normal; }
-    .kop-text h3 { font-size: 16px; margin: 2px 0; font-weight: bold; }
-    .kop-text p { font-size: 9.5px; margin: 1px 0; }
+    .kop-text h1 { font-size: 16px; margin: 0; font-weight: bold; }
+    .kop-text h2 { font-size: 13px; margin: 1px 0; font-weight: normal; }
+    .kop-text h3 { font-size: 18px; margin: 2px 0; font-weight: bold; }
+    .kop-text p { font-size: 11px; margin: 1px 0; }
     .garis-tebal { border-bottom: 3px solid #000; border-top: 1px solid #000; height: 4px; margin-bottom: 10px; }
 
-    .identitas { display: table; width: 100%; margin-bottom: 14px; font-size: 10px; }
+    .identitas { display: table; width: 100%; margin-bottom: 16px; font-size: 11.5px; }
     .identitas-col { display: table-cell; width: 50%; vertical-align: top; }
-    .identitas-row { display: table; width: 100%; margin-bottom: 2px; }
-    .identitas-label { display: table-cell; width: 110px; }
+    .identitas-row { display: table; width: 100%; margin-bottom: 3px; }
+    .identitas-label { display: table-cell; width: 120px; }
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    .section-title { font-size: 11px; font-weight: bold; margin: 14px 0 6px; }
+    .section-title { font-size: 13px; font-weight: bold; margin: 16px 0 7px; }
 
-    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px 6px; font-size: 9.5px; text-align: center; }
-    table.nilai td { border: 1px solid #333; padding: 5px 6px; font-size: 9px; vertical-align: top; }
+    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 7px; font-size: 11px; text-align: center; }
+    table.nilai td { border: 1px solid #333; padding: 6px 7px; font-size: 11px; vertical-align: top; }
     table.nilai td.center { text-align: center; }
 
-    .box { border: 1px solid #333; padding: 8px 10px; font-size: 9.5px; margin-bottom: 10px; }
-    .box-header { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 5px 8px; font-size: 10.5px; font-weight: bold; margin-bottom: 0; }
+    .box { border: 1px solid #333; padding: 9px 11px; font-size: 11px; margin-bottom: 10px; }
+    .box-header { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 9px; font-size: 12px; font-weight: bold; margin-bottom: 0; }
 
     .grid-2 { display: table; width: 100%; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }

@@ -197,6 +197,56 @@ class SeedDemoErapor extends Command
                 }
             }
 
+            // ── Ekstrakurikuler ──────────────────────────────────────────
+            $daftarEkskul = ['Pramuka', 'Futsal', 'Paduan Suara'];
+            foreach ($daftarEkskul as $namaEkskul) {
+                \App\Models\GuruEkstrakurikuler::firstOrCreate([
+                    'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id,
+                    'guru_id' => $guruList->random()->id, 'nama_ekstrakurikuler' => $namaEkskul,
+                ]);
+            }
+            foreach ($siswaKelas as $siswa) {
+                if (rand(0, 100) > 70) continue; // sebagian siswa tidak ikut ekskul, biar realistis
+                $rapor = Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $semester)->first();
+                if (! $rapor || $rapor->detailEkskul()->exists()) continue;
+
+                $ikutEkskul = collect($daftarEkskul)->random(rand(1, 2));
+                foreach ((is_iterable($ikutEkskul) ? $ikutEkskul : [$ikutEkskul]) as $namaEkskul) {
+                    \App\Models\RaporDetailEkskul::create([
+                        'rapor_id' => $rapor->id, 'nama_ekskul' => $namaEkskul,
+                        'kehadiran_hadir' => rand(6, 10), 'kehadiran_total' => 10,
+                        'evaluasi' => ['Sangat Baik', 'Baik', 'Cukup'][array_rand(['Sangat Baik', 'Baik', 'Cukup'])],
+                        'keterangan' => 'Mengikuti kegiatan dengan aktif dan disiplin.',
+                    ]);
+                }
+            }
+
+            // ── Kokurikuler (P5) ─────────────────────────────────────────
+            $kegiatanP5 = \App\Models\KokurikulerKegiatan::create([
+                'sekolah_id' => $sekolah->id, 'tahun_ajaran_id' => $tahunAjaran->id,
+                'nama_kegiatan' => '7 Kebiasaan Anak Indonesia Hebat', 'tema' => 'Gaya Hidup Berkelanjutan',
+                'bentuk_kegiatan' => 'Lintas Disiplin', 'koordinator_guru_id' => $guruList->random()->id, 'semester' => $semester,
+            ]);
+            foreach (array_slice(\App\Models\KokurikulerKegiatan::daftarDimensi(), 0, 3) as $dim) {
+                \App\Models\KokurikulerTargetDimensi::create(['kegiatan_id' => $kegiatanP5->id, 'nama_dimensi' => $dim]);
+            }
+            \App\Models\KokurikulerKelasTerlibat::create(['kegiatan_id' => $kegiatanP5->id, 'kelas' => $kk->kelas, 'rombel' => $kk->rombel]);
+            \App\Models\KokurikulerMapelTerlibat::create(['kegiatan_id' => $kegiatanP5->id, 'mata_pelajaran_id' => $mapelList->first()->id]);
+
+            $dimensiList = $kegiatanP5->targetDimensis;
+            foreach ($siswaKelas as $siswa) {
+                foreach ($dimensiList as $dim) {
+                    \App\Models\KokurikulerAsesmen::create([
+                        'target_dimensi_id' => $dim->id, 'siswa_id' => $siswa->id,
+                        'nilai_kualitatif' => ['Sangat Baik', 'Baik', 'Baik', 'Cukup'][array_rand(['Sangat Baik', 'Baik', 'Baik', 'Cukup'])],
+                        'catatan_guru' => 'Menunjukkan perkembangan yang baik selama projek berlangsung.',
+                    ]);
+                }
+                $deskripsiP5 = \App\Http\Controllers\KokurikulerController::generateDeskripsi($siswa->id, $kegiatanP5->id);
+                Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $semester)
+                    ->update(['deskripsi_kokurikuler' => $deskripsiP5]);
+            }
+
             $this->info("Kelas {$kk->kelas}-{$kk->rombel} selesai (" . $siswaKelas->count() . ' siswa, status: ' . ($isFinal ? 'Final' : 'Draft') . ')');
         }
 

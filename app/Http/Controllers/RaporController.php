@@ -283,7 +283,7 @@ class RaporController extends Controller
             'kotaTtd' => $kotaTtd,
         ])->setPaper($ukuranKertas, $sekolah->rapor_orientasi);
 
-        return $pdf->download('rapor-' . str_replace(' ', '-', $rapor->siswa->nama_lengkap) . '.pdf');
+        return $pdf->stream('rapor-' . str_replace(' ', '-', $rapor->siswa->nama_lengkap) . '.pdf');
     }
 
     /** Download template absensi: siswa 1 kelas, kolom NISN/Nama/Kelas/S/I/A kosong, urut kelas-no induk-nama */
