@@ -70,7 +70,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
     Route::get('/kembali-admin', [EraporController::class, 'kembaliKeAdmin'])->name('kembali-admin');
 
     // ── Admin ATAU Guru (guru login sendiri butuh akses ini) ────────────
-    Route::middleware('admin_or_guru')->group(function () {
+    Route::middleware(['admin_or_guru', 'block_write_for_induk'])->group(function () {
         // Kokurikuler - Input Asesmen (koordinator guru bisa akses)
         Route::get('/kokurikuler/pilih-asesmen', [KokurikulerController::class, 'pilihAsesmen'])->name('kokurikuler.pilih-asesmen');
         Route::post('/kokurikuler/save-asesmen', [KokurikulerController::class, 'saveAsesmen'])->name('kokurikuler.save-asesmen');

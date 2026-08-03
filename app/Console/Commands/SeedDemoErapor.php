@@ -20,7 +20,7 @@ use Illuminate\Console\Command;
 
 class SeedDemoErapor extends Command
 {
-    protected $signature = 'demo:seed-erapor';
+    protected $signature = 'demo:seed-erapor {--fresh : Hapus dulu data E-Rapor demo lama sebelum generate ulang, biar tidak dobel}';
     protected $description = 'Generate data E-Rapor lengkap utk sekolah demo: guru, TP, penilaian, nilai UTS/akhir, catatan, absensi - 1 kelas final, 1 kelas draft';
 
     private const CATATAN_CONTOH = [
@@ -48,9 +48,24 @@ class SeedDemoErapor extends Command
         }
         $semester = $tahunAjaran->semester === 'Genap' ? 2 : 1;
 
-        if (Penilaian::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('tahun_ajaran_id', $tahunAjaran->id)->exists()) {
-            if (! $this->confirm('Data penilaian demo utk tahun ajaran ini sudah ada. Lanjutkan akan menambah data BARU (bisa dobel). Lanjut?', false)) {
-                $this->warn('Dibatalkan.');
+        if ($this->option('fresh')) {
+            $this->warn('Membersihkan data E-Rapor demo lama...');
+            \App\Models\KokurikulerAsesmen::whereHas('targetDimensi.kegiatan', fn ($q) => $q->where('sekolah_id', $sekolah->id))->delete();
+            \App\Models\KokurikulerKegiatan::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete(); // cascade ke target_dimensi/kelas/mapel_terlibat
+            \App\Models\RaporDetailEkskul::whereHas('rapor', fn ($q) => $q->where('sekolah_id', $sekolah->id))->delete();
+            \App\Models\GuruEkstrakurikuler::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            \App\Models\RaporDetailAkademik::whereHas('rapor', fn ($q) => $q->where('sekolah_id', $sekolah->id))->delete();
+            Rapor::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            PenilaianDetailNilai::whereHas('penilaian', fn ($q) => $q->where('sekolah_id', $sekolah->id))->delete();
+            Penilaian::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            TpKelas::whereHas('tujuanPembelajaran', fn ($q) => $q->where('sekolah_id', $sekolah->id))->delete();
+            TujuanPembelajaran::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            GuruPengajar::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            WaliKelas::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->delete();
+            $this->info('Data lama sudah bersih, generate ulang dari nol...');
+        } elseif (Penilaian::withoutGlobalScopes()->where('sekolah_id', $sekolah->id)->where('tahun_ajaran_id', $tahunAjaran->id)->exists()) {
+            if (! $this->confirm('Data penilaian demo utk tahun ajaran ini sudah ada. Lanjutkan akan menambah data BARU (bisa dobel) - mending pakai --fresh. Tetap lanjut tanpa --fresh?', false)) {
+                $this->warn('Dibatalkan. Jalankan lagi dgn: php artisan demo:seed-erapor --fresh');
                 return self::SUCCESS;
             }
         }
