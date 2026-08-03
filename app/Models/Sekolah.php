@@ -46,6 +46,10 @@ class Sekolah extends Model
         'rapor_pakai_header_custom',
         'rapor_header_custom_scale',
         'rapor_warna_tabel',
+        'uts_ukuran_kertas',
+        'uts_orientasi',
+        'uts_font_size',
+        'uts_warna_tabel',
     ];
 
     protected $casts = [

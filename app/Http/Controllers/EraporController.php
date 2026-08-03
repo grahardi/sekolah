@@ -301,6 +301,10 @@ class EraporController extends Controller
             'rapor_pakai_header_custom' => 'nullable|boolean',
             'rapor_header_custom_scale' => 'nullable|integer|min:30|max:150',
             'rapor_warna_tabel' => 'required|in:biru,hijau,kuning',
+            'uts_ukuran_kertas' => 'required|in:A4,F4,Legal',
+            'uts_orientasi' => 'required|in:portrait,landscape',
+            'uts_font_size' => 'required|in:kecil,normal,besar',
+            'uts_warna_tabel' => 'required|in:biru,hijau,kuning',
         ]);
         $data['rapor_tampilkan_logo'] = $request->boolean('rapor_tampilkan_logo');
         $data['rapor_tampilkan_watermark'] = $request->boolean('rapor_tampilkan_watermark');

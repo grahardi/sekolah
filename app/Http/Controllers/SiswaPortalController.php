@@ -148,6 +148,8 @@ class SiswaPortalController extends Controller
             ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
             ->first();
 
+        $ukuranKertasUts = strtolower($sekolah->uts_ukuran_kertas ?? 'F4') === 'f4' ? 'folio' : strtolower($sekolah->uts_ukuran_kertas ?? 'F4');
+
         $pdf = Pdf::loadView('siswa-portal.cetak-uts', [
             'siswa' => $siswa,
             'sekolah' => $sekolah,
@@ -157,7 +159,7 @@ class SiswaPortalController extends Controller
             'qrPng' => $qrPng,
             'catatanWaliKelas' => $catatanUts,
             'waliKelas' => $waliKelas?->guru,
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper($ukuranKertasUts, $sekolah->uts_orientasi ?? 'portrait');
 
         return $pdf->stream('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');
     }

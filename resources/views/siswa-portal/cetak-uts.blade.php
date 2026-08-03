@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <style>
     * { font-family: 'DejaVu Sans', sans-serif; box-sizing: border-box; }
-    body { font-size: 11.5px; color: #1a1a1a; margin: 0; }
+    body { font-size: {{ ($sekolah->uts_font_size ?? 'normal') === 'kecil' ? '10px' : (($sekolah->uts_font_size ?? 'normal') === 'besar' ? '13px' : '11.5px') }}; color: #1a1a1a; margin: 0; }
     h1 { text-align:center; font-size: 15px; margin: 0 0 3px; text-transform: uppercase; }
     h2 { text-align:center; font-size: 11.5px; margin: 0 0 16px; font-weight: normal; }
     .identitas { display: table; width: 100%; margin-bottom: 16px; font-size: 11.5px; }
@@ -15,8 +15,8 @@
     .identitas-val { display: table-cell; font-weight: bold; }
 
     table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 7px; font-size: 11px; text-align: center; }
-    table.nilai td { border: 1px solid #333; padding: 7px; font-size: 11.5px; text-align: center; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 4px; font-size: 10.5px; text-align: center; }
+    table.nilai td { border: 1px solid #333; padding: 4px 6px; font-size: 11px; text-align: center; line-height:1.25; }
     table.nilai td.nama { text-align: left; }
 
     .grid-2 { display: table; width: 100%; margin-bottom: 16px; }
@@ -107,19 +107,20 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:24px;">
-        <col style="width:150px;">
-        <col style="width:60px;"><col style="width:60px;"><col style="width:60px;"><col style="width:60px;">
-        <col style="width:55px;">
+        <col style="width:22px;">
+        <col style="width:270px;">
+        <col style="width:38px;"><col style="width:38px;"><col style="width:38px;"><col style="width:38px;">
+        <col style="width:42px;">
     </colgroup>
     <thead>
         <tr>
-            <th rowspan="2" style="width:24px;">No</th>
-            <th rowspan="2" style="width:150px;">Mata Pelajaran</th>
+            <th colspan="2" style="background:#fff;border:1px solid #333;">Komponen</th>
             <th colspan="4">Tujuan Pembelajaran</th>
             <th rowspan="2">STS</th>
         </tr>
         <tr>
+            <th style="width:22px;">No</th>
+            <th style="width:270px;">Mata Pelajaran</th>
             <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
         </tr>
     </thead>
