@@ -31,8 +31,8 @@ const MODULES = [
         href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-100',
     },
     {
-        key: 'manajemen', title: 'Manajemen Sekolah Digital', desc: 'Jadwal, keuangan, dan administrasi umum.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-100',
+        key: 'manajemen', title: 'Manajemen Sekolah', desc: 'Absensi harian siswa, data siswa & guru terpadu.',
+        href: '/manajemen-sekolah', status: 'aktif', color: 'bg-teal', bg: 'bg-emerald-100', external: true,
     },
     {
         key: 'sarpras', title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.',

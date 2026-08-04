@@ -14,7 +14,7 @@ const MENU = [
     { key: 'pengguna', label: 'Manajemen User', href: '/pengguna', icon: ShieldIcon, disabled: false, external: true },
     { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: false, external: true },
-    { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen', icon: GearIcon, disabled: true },
+    { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen-sekolah', icon: GearIcon, disabled: false, external: true },
     { key: 'modul-ajar', label: 'Modul Ajar', href: '/modul-ajar', icon: DocIcon },
     {
         key: 'lab',

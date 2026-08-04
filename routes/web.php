@@ -63,6 +63,7 @@ require __DIR__.'/bk.php';
 require __DIR__.'/erapor.php';
 require __DIR__.'/pengguna.php';
 require __DIR__.'/superadmin.php';
+require __DIR__.'/manajemen-sekolah.php';
 
 // Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin
 Route::prefix('siswa')->name('siswa-portal.')->group(function () {

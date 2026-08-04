@@ -50,9 +50,11 @@ export const PROGRAMS = [
     {
         slug: 'manajemen-sekolah',
         title: 'Manajemen Sekolah',
-        status: 'Segera',
-        summary: 'Jadwal, keuangan, dan administrasi umum.',
-        detail: 'Sedang dikembangkan - akan mencakup penjadwalan pelajaran, pencatatan keuangan sekolah, dan administrasi umum lainnya.',
+        status: 'Aktif',
+        summary: 'Absensi harian siswa, data siswa & guru terpadu.',
+        detail: 'Absensi harian per kelas, rekap bulanan, plus akses cepat ke data siswa (Buku Induk) dan guru (E-Rapor) dalam satu tempat. Modul tata tertib, BK, kebersihan kelas, dan peminjaman ruang menyusul.',
+        href: '/manajemen-sekolah',
+        cta: 'Buka Manajemen Sekolah',
     },
     {
         slug: 'program-ujian',
