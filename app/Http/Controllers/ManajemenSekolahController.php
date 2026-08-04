@@ -318,11 +318,18 @@ class ManajemenSekolahController extends Controller
         $siswaList = collect();
         $absensiTersimpan = [];
 
-        if ($kelasRombel) {
-            [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
-            $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-                ->when($cari !== '', fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$cari}%"))
-                ->orderBy('nama_lengkap')->get();
+        if ($kelasRombel || $cari !== '') {
+            $siswaQuery = Siswa::where('status', 'aktif');
+
+            if ($kelasRombel) {
+                [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
+                $siswaQuery->where('kelas', $kelas)->where('rombel', $rombel ?: null);
+            }
+            if ($cari !== '') {
+                $siswaQuery->where('nama_lengkap', 'ilike', "%{$cari}%");
+            }
+
+            $siswaList = $siswaQuery->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')->limit(100)->get();
 
             $absensiTersimpan = AbsensiHarian::where('tanggal', $tanggal)
                 ->whereIn('siswa_id', $siswaList->pluck('id'))->get()->keyBy('siswa_id');

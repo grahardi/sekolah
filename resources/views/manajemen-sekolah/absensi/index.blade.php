@@ -27,7 +27,7 @@
     </div>
 </form>
 
-@if($kelasRombel && $siswaList->count() > 0)
+@if(($kelasRombel || $cari) && $siswaList->count() > 0)
 <form action="{{ route('manajemen-sekolah.absensi.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="tanggal" value="{{ $tanggal }}">
@@ -36,6 +36,7 @@
             <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
                 <th style="padding:10px 18px;width:40px;">No</th>
                 <th style="padding:10px;">Nama Siswa</th>
+                <th style="padding:10px;width:70px;">Kelas</th>
                 <th style="padding:10px;width:340px;">Status</th>
                 <th style="padding:10px;">Keterangan</th>
                 <th style="padding:10px;width:120px;">Foto Bukti</th>
@@ -46,6 +47,7 @@
                 <tr style="border-bottom:1px solid #f8fafc;">
                     <td style="padding:10px 18px;color:#94a3b8;">{{ $i + 1 }}</td>
                     <td style="padding:10px;font-weight:700;">{{ $siswa->nama_lengkap }}</td>
+                    <td style="padding:10px;color:#64748b;">{{ $siswa->rombel ? "{$siswa->kelas}-{$siswa->rombel}" : $siswa->kelas }}</td>
                     <td style="padding:10px;">
                         <div id="grp-{{ $siswa->id }}" style="display:flex;gap:4px;">
                             @foreach(['Hadir'=>'#16a34a','Sakit'=>'#dc2626','Izin'=>'#d97706','Alpha'=>'#64748b','Dispensasi'=>'#2563EB'] as $status => $warna)
@@ -75,9 +77,9 @@
         </div>
     </div>
 </form>
-@elseif($kelasRombel)
-<p style="text-align:center;color:#94a3b8;padding:30px;">Tidak ada siswa aktif di kelas ini.</p>
+@elseif($kelasRombel || $cari)
+<p style="text-align:center;color:#94a3b8;padding:30px;">Tidak ada siswa ditemukan.</p>
 @else
-<p style="text-align:center;color:#94a3b8;padding:30px;">Pilih kelas dulu di atas untuk mulai absensi.</p>
+<p style="text-align:center;color:#94a3b8;padding:30px;">Pilih kelas atau cari nama siswa dulu di atas.</p>
 @endif
 @endsection
