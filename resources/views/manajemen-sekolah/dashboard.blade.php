@@ -36,48 +36,48 @@
 
 @php
     $menuUtama = [
-        ['label' => 'Absensi Harian', 'icon' => 'ti-calendar-check', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.index')],
-        ['label' => 'Rekap Bulanan', 'icon' => 'ti-report', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.rekap')],
-        ['label' => 'Data Siswa', 'icon' => 'ti-users', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'href' => route('manajemen-sekolah.data-siswa')],
-        ['label' => 'Data Guru', 'icon' => 'ti-user-check', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'href' => route('manajemen-sekolah.data-guru')],
+        ['label' => 'Absensi Harian', 'icon' => 'ti-calendar-check', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.index')],
+        ['label' => 'Rekap Bulanan', 'icon' => 'ti-report', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.rekap')],
+        ['label' => 'Data Siswa', 'icon' => 'ti-users', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'href' => route('manajemen-sekolah.data-siswa')],
+        ['label' => 'Data Guru', 'icon' => 'ti-user-check', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'href' => route('manajemen-sekolah.data-guru')],
     ];
 
     $menuGuru = [
-        ['label' => 'Jadwal Mengajar', 'icon' => 'ti-clock', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'segera' => true],
-        ['label' => 'Ajukan Absen Diri', 'icon' => 'ti-user-exclamation', 'bg' => '#fef2f2', 'warna' => '#dc2626', 'segera' => true],
-        ['label' => 'Guru Wali', 'icon' => 'ti-users-group', 'bg' => '#f3e8ff', 'warna' => '#7C3AED', 'segera' => true],
-        ['label' => 'Ajuan Surat', 'icon' => 'ti-file-text', 'bg' => '#fef2f2', 'warna' => '#dc2626', 'segera' => true],
-        ['label' => 'Laporan Keagamaan', 'icon' => 'ti-moon-stars', 'bg' => '#f3e8ff', 'warna' => '#7C3AED', 'segera' => true],
-        ['label' => 'Peminjaman', 'icon' => 'ti-door', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'segera' => true],
-        ['label' => 'Foto Siswa', 'icon' => 'ti-photo', 'bg' => '#fce7f3', 'warna' => '#db2777', 'segera' => true],
+        ['label' => 'Jadwal Mengajar', 'icon' => 'ti-clock', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'segera' => true],
+        ['label' => 'Ajukan Absen Diri', 'icon' => 'ti-user-exclamation', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+        ['label' => 'Guru Wali', 'icon' => 'ti-users-group', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
+        ['label' => 'Ajuan Surat', 'icon' => 'ti-file-text', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+        ['label' => 'Laporan Keagamaan', 'icon' => 'ti-moon-stars', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
+        ['label' => 'Peminjaman', 'icon' => 'ti-door', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
+        ['label' => 'Foto Siswa', 'icon' => 'ti-photo', 'bg' => '#fbcfe8', 'warna' => '#be185d', 'segera' => true],
     ];
 
     $menuPiket = [
-        ['label' => 'Isi Absensi', 'icon' => 'ti-pencil', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.index')],
-        ['label' => 'Isi Keterlambatan', 'icon' => 'ti-clock', 'bg' => '#f3e8ff', 'warna' => '#7C3AED', 'segera' => true],
-        ['label' => 'Siswa Terlambat', 'icon' => 'ti-alarm', 'bg' => '#fef2f2', 'warna' => '#dc2626', 'segera' => true],
-        ['label' => 'Absensi Siswa', 'icon' => 'ti-checkbox', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.rekap')],
-        ['label' => 'Arsip Surat', 'icon' => 'ti-briefcase', 'bg' => '#fffbeb', 'warna' => '#d97706', 'segera' => true],
-        ['label' => 'Ajuan WhatsApp', 'icon' => 'ti-brand-whatsapp', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'segera' => true],
-        ['label' => 'Absensi Guru', 'icon' => 'ti-users', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'segera' => true],
+        ['label' => 'Isi Absensi', 'icon' => 'ti-pencil', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.index')],
+        ['label' => 'Isi Keterlambatan', 'icon' => 'ti-clock', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
+        ['label' => 'Siswa Terlambat', 'icon' => 'ti-alarm', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+        ['label' => 'Absensi Siswa', 'icon' => 'ti-checkbox', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.rekap')],
+        ['label' => 'Arsip Surat', 'icon' => 'ti-briefcase', 'bg' => '#fde68a', 'warna' => '#a16207', 'segera' => true],
+        ['label' => 'Ajuan WhatsApp', 'icon' => 'ti-brand-whatsapp', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
+        ['label' => 'Absensi Guru', 'icon' => 'ti-users', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
     ];
 
     $sectionLain = [
         'is_tatib' => ['label' => 'Menu Tata Tertib', 'items' => [
-            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fef2f2', 'warna' => '#dc2626', 'segera' => true],
-            ['label' => 'Rekap Poin Siswa', 'icon' => 'ti-list-details', 'bg' => '#fef2f2', 'warna' => '#dc2626', 'segera' => true],
+            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+            ['label' => 'Rekap Poin Siswa', 'icon' => 'ti-list-details', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
         ]],
         'is_bk' => ['label' => 'Menu Bimbingan Konseling', 'items' => [
-            ['label' => 'Catatan Konseling', 'icon' => 'ti-notes', 'bg' => '#f3e8ff', 'warna' => '#7C3AED', 'segera' => true],
+            ['label' => 'Catatan Konseling', 'icon' => 'ti-notes', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
         ]],
         'is_kebersihan' => ['label' => 'Menu Kebersihan', 'items' => [
-            ['label' => 'Lapor Kelas Kotor', 'icon' => 'ti-spray', 'bg' => '#fffbeb', 'warna' => '#d97706', 'segera' => true],
+            ['label' => 'Lapor Kelas Kotor', 'icon' => 'ti-spray', 'bg' => '#fde68a', 'warna' => '#a16207', 'segera' => true],
         ]],
         'is_keagamaan' => ['label' => 'Menu Keagamaan', 'items' => [
-            ['label' => 'Absensi Sholat', 'icon' => 'ti-moon-stars', 'bg' => '#f3e8ff', 'warna' => '#7C3AED', 'segera' => true],
+            ['label' => 'Absensi Sholat', 'icon' => 'ti-moon-stars', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
         ]],
         'is_kepsek' => ['label' => 'Menu Kepala Sekolah', 'items' => [
-            ['label' => 'Setujui RPP', 'icon' => 'ti-file-check', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'segera' => true],
+            ['label' => 'Setujui RPP', 'icon' => 'ti-file-check', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
         ]],
     ];
 @endphp
