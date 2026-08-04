@@ -64,7 +64,7 @@
 
     $sectionLain = [
         'is_tatib' => ['label' => 'Menu Tata Tertib', 'items' => [
-            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.create')],
+            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.index')],
             ['label' => 'Rekap Poin Siswa', 'icon' => 'ti-list-details', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.index')],
         ]],
         'is_bk' => ['label' => 'Menu Bimbingan Konseling', 'items' => [

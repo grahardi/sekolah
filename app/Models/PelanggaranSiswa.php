@@ -19,18 +19,24 @@ class PelanggaranSiswa extends Model
     public function siswa() { return $this->belongsTo(Siswa::class); }
     public function pelapor() { return $this->belongsTo(Guru::class, 'dilaporkan_oleh_guru_id'); }
 
-    /** Kategori & poin standar - bisa dipilih cepat saat lapor */
+    /** Tingkat keparahan & poin default - sesuai referensi (bisa diedit manual) */
     public static function daftarKategori(): array
     {
         return [
-            'Terlambat' => 5,
-            'Atribut Tidak Lengkap' => 5,
-            'Tidak Mengerjakan Tugas' => 10,
-            'Bolos Pelajaran' => 15,
-            'Merokok' => 25,
-            'Berkelahi' => 50,
-            'Membawa Barang Terlarang' => 75,
-            'Lainnya' => 10,
+            'Peringatan' => 2,
+            'Ringan' => 5,
+            'Sedang' => 15,
+            'Berat' => 50,
+        ];
+    }
+
+    public static function warnaKategori(): array
+    {
+        return [
+            'Peringatan' => ['#bfdbfe', '#1d4ed8'],
+            'Ringan' => ['#bbf7d0', '#15803d'],
+            'Sedang' => ['#fde68a', '#a16207'],
+            'Berat' => ['#fecaca', '#b91c1c'],
         ];
     }
 }

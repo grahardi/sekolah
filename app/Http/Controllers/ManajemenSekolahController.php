@@ -70,41 +70,55 @@ class ManajemenSekolahController extends Controller
     // ── Tata Tertib (Pelanggaran Siswa) ──────────────────────────────────
     public function tatibIndex(Request $request)
     {
-        $search = $request->input('search');
-        $pelanggaranList = \App\Models\PelanggaranSiswa::with(['siswa', 'pelapor'])
-            ->when($search, fn ($q) => $q->whereHas('siswa', fn ($s) => $s->where('nama_lengkap', 'ilike', "%{$search}%")))
-            ->orderByDesc('tanggal')->paginate(20)->withQueryString();
+        $cari = trim((string) $request->input('cari'));
+        $siswaList = collect();
+        if ($cari !== '') {
+            $siswaList = Siswa::where('status', 'aktif')->where('nama_lengkap', 'ilike', "%{$cari}%")->orderBy('nama_lengkap')->limit(30)->get();
+        }
 
+        $riwayat = \App\Models\PelanggaranSiswa::with(['siswa', 'pelapor'])->orderByDesc('tanggal')->paginate(20);
         $rekapPoin = \App\Models\PelanggaranSiswa::selectRaw('siswa_id, sum(poin) as total_poin')
-            ->groupBy('siswa_id')->orderByDesc('total_poin')->limit(10)
-            ->with('siswa')->get();
+            ->groupBy('siswa_id')->orderByDesc('total_poin')->limit(10)->with('siswa')->get();
 
-        return view('manajemen-sekolah.tatib.index', ['pelanggaranList' => $pelanggaranList, 'search' => $search, 'rekapPoin' => $rekapPoin]);
+        return view('manajemen-sekolah.tatib.index', compact('cari', 'siswaList', 'riwayat', 'rekapPoin'));
     }
 
-    public function tatibCreate()
-    {
-        $siswaList = Siswa::where('status', 'aktif')->orderBy('kelas')->orderBy('nama_lengkap')->get();
-        return view('manajemen-sekolah.tatib.create', [
-            'siswaList' => $siswaList,
-            'daftarKategori' => \App\Models\PelanggaranSiswa::daftarKategori(),
-        ]);
-    }
-
+    /** Ajukan Pelanggaran - form via modal, dipanggil dari kartu siswa hasil cari */
     public function tatibStore(Request $request)
     {
         $data = $request->validate([
             'siswa_id' => 'required|exists:siswas,id',
-            'tanggal' => 'required|date',
-            'kategori' => 'required|string',
+            'kategori' => 'required|in:Peringatan,Ringan,Sedang,Berat',
             'poin' => 'required|integer|min:0',
             'deskripsi' => 'nullable|string',
         ]);
 
         $guru = Guru::where('user_id', auth()->id())->first();
-        \App\Models\PelanggaranSiswa::create($data + ['dilaporkan_oleh_guru_id' => $guru?->id]);
+        \App\Models\PelanggaranSiswa::create($data + ['tanggal' => now()->toDateString(), 'dilaporkan_oleh_guru_id' => $guru?->id]);
 
-        return redirect()->route('manajemen-sekolah.tatib.index')->with('success', 'Pelanggaran berhasil dicatat.');
+        return back()->with('success', 'Pelanggaran berhasil dicatat.');
+    }
+
+    /** Notif Wali Kelas - catatan ringan, tidak masuk poin formal */
+    public function tatibNotifWaliKelas(Request $request)
+    {
+        $data = $request->validate(['siswa_id' => 'required|exists:siswas,id', 'pesan' => 'required|string']);
+        $guru = Guru::where('user_id', auth()->id())->first();
+
+        \App\Models\NotifikasiWaliKelas::create($data + ['dari_guru_id' => $guru?->id]);
+
+        return back()->with('success', 'Notifikasi berhasil dikirim ke Wali Kelas.');
+    }
+
+    /** Ajukan BK - referral ringan, integrasi penuh dgn Program BK menyusul */
+    public function tatibAjuanBk(Request $request)
+    {
+        $data = $request->validate(['siswa_id' => 'required|exists:siswas,id', 'alasan' => 'nullable|string']);
+        $guru = Guru::where('user_id', auth()->id())->first();
+
+        \App\Models\AjuanBk::create($data + ['diajukan_oleh_guru_id' => $guru?->id]);
+
+        return back()->with('success', 'Siswa berhasil diajukan ke BK.');
     }
 
     public function tatibTindakLanjut(Request $request, \App\Models\PelanggaranSiswa $pelanggaran)
