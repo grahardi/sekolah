@@ -109,8 +109,8 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:4%;"><col style="width:38%;">
-        <col style="width:9%;"><col style="width:9%;"><col style="width:9%;"><col style="width:9%;">
+        <col style="width:3%;"><col style="width:47%;">
+        <col style="width:7%;"><col style="width:7%;"><col style="width:7%;"><col style="width:7%;">
         <col style="width:10%;">
     </colgroup>
     <thead>
