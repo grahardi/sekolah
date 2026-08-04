@@ -19,6 +19,7 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
 
         Route::get('/absensi', [ManajemenSekolahController::class, 'absensiIndex'])->name('absensi.index');
         Route::post('/absensi', [ManajemenSekolahController::class, 'absensiStore'])->name('absensi.store');
+        Route::post('/absensi/{siswa}/tandai', [ManajemenSekolahController::class, 'absensiTandaiSatu'])->name('absensi.tandai-satu');
         Route::get('/absensi/rekap', [ManajemenSekolahController::class, 'absensiRekap'])->name('absensi.rekap');
         Route::get('/absensi/hari-ini', [ManajemenSekolahController::class, 'absensiSiswaHariIni'])->name('absensi.hari-ini');
 

@@ -345,6 +345,34 @@ class ManajemenSekolahController extends Controller
         ]);
     }
 
+    public function absensiTandaiSatu(Request $request, Siswa $siswa)
+    {
+        $data = $request->validate([
+            'tanggal' => 'required|date',
+            'status' => 'required|in:Hadir,Sakit,Izin,Alpha,Dispensasi',
+            'keterangan' => 'nullable|string|max:255',
+            'foto' => 'nullable|image|max:4096',
+        ]);
+
+        $guru = Guru::where('user_id', auth()->id())->first();
+        $atribut = [
+            'status' => $data['status'],
+            'keterangan' => $data['keterangan'] ?? null,
+            'dicatat_oleh_guru_id' => $guru?->id,
+        ];
+
+        if ($request->hasFile('foto')) {
+            $atribut['foto_bukti'] = $request->file('foto')->store('absensi-bukti', 'public');
+        }
+
+        AbsensiHarian::updateOrCreate(
+            ['siswa_id' => $siswa->id, 'tanggal' => $data['tanggal']],
+            $atribut
+        );
+
+        return back()->with('success', "Absensi {$siswa->nama_lengkap} ({$data['status']}) berhasil disimpan.");
+    }
+
     public function absensiStore(Request $request)
     {
         $data = $request->validate([
