@@ -14,10 +14,19 @@
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 4px; font-size: 10.5px; text-align: center; }
-    table.nilai td { border: 1px solid #333; padding: 4px 6px; font-size: 11px; text-align: center; line-height:1.25; }
-    table.nilai td.nama { text-align: left; }
+    .nilai-wrap { display: table; width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; border: 1px solid #333; }
+    .nilai-row { display: table-row; }
+    .nilai-row > div { display: table-cell; border: 1px solid #333; padding: 5px 6px; font-size: 11px; text-align: center; vertical-align: middle; line-height: 1.3; }
+    .nilai-head-1 > div, .nilai-head-2 > div { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
+    .c-no { width: 4%; }
+    .c-mapel { width: 40%; text-align: left; }
+    .c-mapel-body { text-align: left; font-weight: normal; font-size: 11px; }
+    .c-tp { width: 9%; }
+    .c-sts { width: 10%; }
+    .c-komponen { width: 44%; }
+    .c-penilaian { width: 56%; }
+    .c-nilai-angka { font-weight: bold; font-size: 13px; }
+    .c-sts-angka { font-size: 14px; }
 
     .grid-2 { display: table; width: 100%; margin-bottom: 16px; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
@@ -105,40 +114,33 @@
     </div>
 </div>
 
-<table class="nilai">
-    <colgroup>
-        <col style="width:18px;">
-        <col style="width:380px;">
-        <col style="width:30px;"><col style="width:30px;"><col style="width:30px;"><col style="width:30px;">
-        <col style="width:36px;">
-    </colgroup>
-    <thead>
-        <tr>
-            <th colspan="2" style="background:#fff;border:1px solid #333;">Komponen</th>
-            <th colspan="4">Tujuan Pembelajaran</th>
-            <th rowspan="2">STS</th>
-        </tr>
-        <tr>
-            <th style="width:18px;">No</th>
-            <th style="width:380px;">Mata Pelajaran</th>
-            <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($rows as $i => $r)
-        <tr>
-            <td style="width:18px;">{{ $i + 1 }}</td>
-            <td class="nama" style="width:380px;">{{ $r['mapel']->nama }}</td>
-            @for($k = 0; $k < 4; $k++)
-            <td style="width:30px;font-weight:bold;font-size:13px;">{{ $r['per_tp'][$k] ?? '-' }}</td>
-            @endfor
-            <td style="width:36px;font-weight:bold;font-size:14px;">{{ $r['sts'] ?? '-' }}</td>
-        </tr>
-        @empty
-        <tr><td colspan="7">Belum ada data penilaian.</td></tr>
-        @endforelse
-    </tbody>
-</table>
+<div class="nilai-wrap">
+    <div class="nilai-row nilai-head-1">
+        <div class="c-komponen">Komponen</div>
+        <div class="c-penilaian">Penilaian</div>
+    </div>
+    <div class="nilai-row nilai-head-2">
+        <div class="c-no">No</div>
+        <div class="c-mapel">Mata Pelajaran</div>
+        <div class="c-tp">TP 1</div>
+        <div class="c-tp">TP 2</div>
+        <div class="c-tp">TP 3</div>
+        <div class="c-tp">TP 4</div>
+        <div class="c-sts">STS</div>
+    </div>
+    @forelse($rows as $i => $r)
+    <div class="nilai-row">
+        <div class="c-no">{{ $i + 1 }}</div>
+        <div class="c-mapel c-mapel-body">{{ $r['mapel']->nama }}</div>
+        @for($k = 0; $k < 4; $k++)
+        <div class="c-tp c-nilai-angka">{{ $r['per_tp'][$k] ?? '-' }}</div>
+        @endfor
+        <div class="c-sts c-nilai-angka c-sts-angka">{{ $r['sts'] ?? '-' }}</div>
+    </div>
+    @empty
+    <div class="nilai-row"><div style="width:100%;padding:10px;text-align:center;">Belum ada data penilaian.</div></div>
+    @endforelse
+</div>
 
 <div class="grid-2">
     <div class="col">
