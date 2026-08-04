@@ -17,23 +17,24 @@
 @if($siswaList->count() > 0)
 <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
     @foreach($siswaList as $siswa)
+    @php $kelasLengkap = $siswa->rombel ? "{$siswa->kelas}-{$siswa->rombel}" : $siswa->kelas; @endphp
     <div class="card" style="padding:16px 20px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
             <img src="{{ $siswa->foto_url }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;">
             <div>
                 <p style="font-weight:800;color:#0f172a;margin:0;font-size:14px;">{{ $siswa->nama_lengkap }}</p>
-                <p style="font-size:12px;color:#64748b;margin:0;">No. Induk {{ $siswa->nis }} &middot; Kelas {{ $siswa->rombel ? "{$siswa->kelas}-{$siswa->rombel}" : $siswa->kelas }}</p>
+                <p style="font-size:12px;color:#64748b;margin:0;">No. Induk {{ $siswa->nis }} &middot; Kelas {{ $kelasLengkap }}</p>
             </div>
         </div>
         <p style="font-size:12px;color:#64748b;margin:0 0 8px;">Pilih jenis tindakan:</p>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-            <button type="button" onclick="bukaModalNotif({{ $siswa->id }}, '{{ $siswa->nama_lengkap }}')" class="btn" style="background:#fff;border:1px solid #bfdbfe;color:#1d4ed8;justify-content:center;">
+            <button type="button" onclick="bukaModalNotif({{ $siswa->id }}, {{ Js::from($siswa->nama_lengkap) }})" class="btn" style="background:#fff;border:1px solid #bfdbfe;color:#1d4ed8;justify-content:center;">
                 <i class="ti ti-bell"></i> Notif Wali Kelas
             </button>
-            <button type="button" onclick="bukaModalBk({{ $siswa->id }}, '{{ $siswa->nama_lengkap }}')" class="btn" style="background:#fff;border:1px solid #bbf7d0;color:#15803d;justify-content:center;">
+            <button type="button" onclick="bukaModalBk({{ $siswa->id }}, {{ Js::from($siswa->nama_lengkap) }})" class="btn" style="background:#fff;border:1px solid #bbf7d0;color:#15803d;justify-content:center;">
                 <i class="ti ti-arrows-exchange"></i> Ajukan BK
             </button>
-            <button type="button" onclick="bukaModalPelanggaran({{ $siswa->id }}, '{{ $siswa->nama_lengkap }}', '{{ $siswa->nis }}', '{{ $siswa->rombel ? "$siswa->kelas-$siswa->rombel" : $siswa->kelas }}', '{{ $siswa->foto_url }}')" class="btn" style="background:#fff;border:1px solid #fecaca;color:#b91c1c;justify-content:center;">
+            <button type="button" onclick="bukaModalPelanggaran({{ $siswa->id }}, {{ Js::from($siswa->nama_lengkap) }}, {{ Js::from($siswa->nis) }}, {{ Js::from($kelasLengkap) }}, {{ Js::from($siswa->foto_url) }})" class="btn" style="background:#fff;border:1px solid #fecaca;color:#b91c1c;justify-content:center;">
                 <i class="ti ti-gavel"></i> Ajukan Pelanggaran
             </button>
         </div>
