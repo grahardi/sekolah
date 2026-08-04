@@ -176,6 +176,34 @@ class ManajemenSekolahController extends Controller
         return view('manajemen-sekolah.arsip-surat.index', compact('arsip', 'tanggal'));
     }
 
+    /** List siswa yang absen (bukan Hadir) hari ini - warna per status */
+    public function absensiSiswaHariIni(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->toDateString());
+        $kelasFilter = $request->input('kelas');
+
+        $data = AbsensiHarian::with('siswa')
+            ->whereDate('tanggal', $tanggal)
+            ->where('status', '!=', 'Hadir')
+            ->when($kelasFilter, fn ($q) => $q->whereHas('siswa', fn ($s) => $s->where('kelas', $kelasFilter)))
+            ->orderBy('status')
+            ->get()
+            ->sortBy(fn ($d) => $d->siswa?->nama_lengkap);
+
+        $daftarKelas = Siswa::where('status', 'aktif')->select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+
+        return view('manajemen-sekolah.absensi.hari-ini', compact('data', 'tanggal', 'kelasFilter', 'daftarKelas'));
+    }
+
+    /** List guru yang absen (bukan Hadir) hari ini - warna per status */
+    public function absensiGuruHariIni(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->toDateString());
+        $data = \App\Models\AbsensiGuru::with('guru')->whereDate('tanggal', $tanggal)->orderBy('status')->get();
+
+        return view('manajemen-sekolah.absensi-guru.hari-ini', compact('data', 'tanggal'));
+    }
+
     // ── Absensi Guru ──────────────────────────────────────────────────────
     public function absensiGuruIndex(Request $request)
     {
@@ -229,12 +257,17 @@ class ManajemenSekolahController extends Controller
     public function dataSiswa(Request $request)
     {
         $search = $request->input('search');
+        $kelasFilter = $request->input('kelas');
+
         $siswaList = Siswa::where('status', 'aktif')
             ->when($search, fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$search}%"))
+            ->when($kelasFilter, fn ($q) => $q->where('kelas', $kelasFilter))
             ->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')
             ->paginate(20)->withQueryString();
 
-        return view('manajemen-sekolah.data-siswa', ['siswaList' => $siswaList, 'search' => $search]);
+        $daftarKelas = Siswa::where('status', 'aktif')->select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+
+        return view('manajemen-sekolah.data-siswa', ['siswaList' => $siswaList, 'search' => $search, 'kelasFilter' => $kelasFilter, 'daftarKelas' => $daftarKelas]);
     }
 
     public function updateRoleGuru(Request $request, Guru $guru)

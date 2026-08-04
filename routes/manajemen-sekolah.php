@@ -20,6 +20,7 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
         Route::get('/absensi', [ManajemenSekolahController::class, 'absensiIndex'])->name('absensi.index');
         Route::post('/absensi', [ManajemenSekolahController::class, 'absensiStore'])->name('absensi.store');
         Route::get('/absensi/rekap', [ManajemenSekolahController::class, 'absensiRekap'])->name('absensi.rekap');
+        Route::get('/absensi/hari-ini', [ManajemenSekolahController::class, 'absensiSiswaHariIni'])->name('absensi.hari-ini');
 
         Route::get('/tatib', [ManajemenSekolahController::class, 'tatibIndex'])->name('tatib.index');
         Route::get('/tatib/create', [ManajemenSekolahController::class, 'tatibCreate'])->name('tatib.create');
@@ -36,5 +37,6 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
         Route::get('/absensi-guru', [ManajemenSekolahController::class, 'absensiGuruIndex'])->name('absensi-guru.index');
         Route::post('/absensi-guru/{guru}', [ManajemenSekolahController::class, 'absensiGuruStore'])->name('absensi-guru.store');
         Route::get('/absensi-guru-rekap', [ManajemenSekolahController::class, 'absensiGuruRekap'])->name('absensi-guru.rekap');
+        Route::get('/absensi-guru-hari-ini', [ManajemenSekolahController::class, 'absensiGuruHariIni'])->name('absensi-guru.hari-ini');
     });
 });
