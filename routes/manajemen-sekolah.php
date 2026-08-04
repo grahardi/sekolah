@@ -26,5 +26,15 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
         Route::post('/tatib', [ManajemenSekolahController::class, 'tatibStore'])->name('tatib.store');
         Route::put('/tatib/{pelanggaran}/tindak-lanjut', [ManajemenSekolahController::class, 'tatibTindakLanjut'])->name('tatib.tindak-lanjut');
         Route::delete('/tatib/{pelanggaran}', [ManajemenSekolahController::class, 'tatibDestroy'])->name('tatib.destroy');
+
+        Route::get('/keterlambatan', [ManajemenSekolahController::class, 'keterlambatanIndex'])->name('keterlambatan.index');
+        Route::post('/keterlambatan/{siswa}', [ManajemenSekolahController::class, 'keterlambatanTandai'])->name('keterlambatan.tandai');
+        Route::get('/keterlambatan-list', [ManajemenSekolahController::class, 'keterlambatanList'])->name('keterlambatan.list');
+
+        Route::get('/arsip-surat', [ManajemenSekolahController::class, 'arsipSuratIndex'])->name('arsip-surat.index');
+
+        Route::get('/absensi-guru', [ManajemenSekolahController::class, 'absensiGuruIndex'])->name('absensi-guru.index');
+        Route::post('/absensi-guru/{guru}', [ManajemenSekolahController::class, 'absensiGuruStore'])->name('absensi-guru.store');
+        Route::get('/absensi-guru-rekap', [ManajemenSekolahController::class, 'absensiGuruRekap'])->name('absensi-guru.rekap');
     });
 });

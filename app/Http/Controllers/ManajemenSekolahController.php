@@ -113,6 +113,108 @@ class ManajemenSekolahController extends Controller
         return back()->with('success', 'Catatan pelanggaran dihapus.');
     }
 
+    // ── Keterlambatan (terpisah dari Absensi Harian) ─────────────────────
+    public function keterlambatanIndex(Request $request)
+    {
+        $cari = trim((string) $request->input('cari'));
+        $kelasFilter = $request->input('kelas');
+
+        $siswaList = collect();
+        if ($cari !== '' || $kelasFilter) {
+            $siswaList = Siswa::where('status', 'aktif')
+                ->when($cari !== '', fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$cari}%"))
+                ->when($kelasFilter, fn ($q) => $q->where('kelas', $kelasFilter))
+                ->orderBy('nama_lengkap')->limit(50)->get();
+
+            $absenHariIni = AbsensiHarian::whereIn('siswa_id', $siswaList->pluck('id'))->whereDate('tanggal', now())->get()->keyBy('siswa_id');
+            $telatHariIni = \App\Models\KeterlambatanSiswa::whereIn('siswa_id', $siswaList->pluck('id'))->whereDate('tanggal', now())->get()->keyBy('siswa_id');
+
+            $siswaList->each(function ($s) use ($absenHariIni, $telatHariIni) {
+                $s->absenHariIni = $absenHariIni->get($s->id);
+                $s->telatHariIni = $telatHariIni->get($s->id);
+            });
+        }
+
+        $daftarKelas = Siswa::where('status', 'aktif')->select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+
+        return view('manajemen-sekolah.keterlambatan.index', compact('siswaList', 'cari', 'kelasFilter', 'daftarKelas'));
+    }
+
+    public function keterlambatanTandai(Request $request, Siswa $siswa)
+    {
+        $sudahAbsen = AbsensiHarian::where('siswa_id', $siswa->id)->whereDate('tanggal', now())->exists();
+        if ($sudahAbsen) {
+            return back()->with('warning', "{$siswa->nama_lengkap} sudah tercatat absen hari ini, tidak bisa ditandai terlambat juga.");
+        }
+
+        $guru = Guru::where('user_id', auth()->id())->first();
+        \App\Models\KeterlambatanSiswa::updateOrCreate(
+            ['siswa_id' => $siswa->id, 'tanggal' => now()->toDateString()],
+            ['keterangan' => $request->input('keterangan'), 'dicatat_oleh_guru_id' => $guru?->id]
+        );
+
+        return back()->with('success', "{$siswa->nama_lengkap} dicatat terlambat hari ini.");
+    }
+
+    public function keterlambatanList(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->toDateString());
+        $data = \App\Models\KeterlambatanSiswa::with('siswa')->whereDate('tanggal', $tanggal)->paginate(20)->withQueryString();
+
+        return view('manajemen-sekolah.keterlambatan.list', compact('data', 'tanggal'));
+    }
+
+    // ── Arsip Surat (foto bukti sakit/izin dari Absensi Harian) ──────────
+    public function arsipSuratIndex(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->toDateString());
+        $arsip = AbsensiHarian::with('siswa')
+            ->whereDate('tanggal', $tanggal)
+            ->whereNotNull('foto_bukti')
+            ->orderByDesc('id')->paginate(20)->withQueryString();
+
+        return view('manajemen-sekolah.arsip-surat.index', compact('arsip', 'tanggal'));
+    }
+
+    // ── Absensi Guru ──────────────────────────────────────────────────────
+    public function absensiGuruIndex(Request $request)
+    {
+        $cari = trim((string) $request->input('cari'));
+
+        $guruList = collect();
+        if ($cari !== '') {
+            $guruList = Guru::where('nama', 'ilike', "%{$cari}%")->orderBy('nama')->limit(50)->get();
+            $absenHariIni = \App\Models\AbsensiGuru::whereIn('guru_id', $guruList->pluck('id'))->whereDate('tanggal', now())->get()->keyBy('guru_id');
+            $guruList->each(fn ($g) => $g->absenHariIni = $absenHariIni->get($g->id));
+        }
+
+        return view('manajemen-sekolah.absensi-guru.index', compact('guruList', 'cari'));
+    }
+
+    public function absensiGuruStore(Request $request, Guru $guru)
+    {
+        $data = $request->validate([
+            'status' => 'required|in:Sakit,Izin,Alpha,Dispensasi',
+            'keterangan' => 'nullable|string|max:255',
+        ]);
+
+        $dicatatOleh = Guru::where('user_id', auth()->id())->first();
+        \App\Models\AbsensiGuru::updateOrCreate(
+            ['guru_id' => $guru->id, 'tanggal' => now()->toDateString()],
+            $data + ['dicatat_oleh_guru_id' => $dicatatOleh?->id]
+        );
+
+        return back()->with('success', "Absensi {$guru->nama} berhasil dicatat.");
+    }
+
+    public function absensiGuruRekap(Request $request)
+    {
+        $tanggal = $request->input('tanggal', now()->toDateString());
+        $data = \App\Models\AbsensiGuru::with('guru')->whereDate('tanggal', $tanggal)->paginate(20)->withQueryString();
+
+        return view('manajemen-sekolah.absensi-guru.rekap', compact('data', 'tanggal'));
+    }
+
     /** Menu Piket - landing page khusus guru dgn flag is_piket (atau admin) */
     public function menuPiket()
     {
@@ -195,18 +297,26 @@ class ManajemenSekolahController extends Controller
             'tanggal' => 'required|date',
             'status' => 'required|array',
             'keterangan' => 'nullable|array',
+            'foto' => 'nullable|array',
+            'foto.*' => 'nullable|image|max:4096',
         ]);
 
         $guru = Guru::where('user_id', auth()->id())->first();
 
         foreach ($data['status'] as $siswaId => $status) {
+            $atribut = [
+                'status' => $status,
+                'keterangan' => $data['keterangan'][$siswaId] ?? null,
+                'dicatat_oleh_guru_id' => $guru?->id,
+            ];
+
+            if ($request->hasFile("foto.{$siswaId}")) {
+                $atribut['foto_bukti'] = $request->file("foto.{$siswaId}")->store('absensi-bukti', 'public');
+            }
+
             AbsensiHarian::updateOrCreate(
                 ['siswa_id' => $siswaId, 'tanggal' => $data['tanggal']],
-                [
-                    'status' => $status,
-                    'keterangan' => $data['keterangan'][$siswaId] ?? null,
-                    'dicatat_oleh_guru_id' => $guru?->id,
-                ]
+                $atribut
             );
         }
 

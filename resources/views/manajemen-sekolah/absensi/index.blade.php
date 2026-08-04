@@ -21,7 +21,7 @@
 </form>
 
 @if($kelasRombel && $siswaList->count() > 0)
-<form action="{{ route('manajemen-sekolah.absensi.store') }}" method="POST">
+<form action="{{ route('manajemen-sekolah.absensi.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="tanggal" value="{{ $tanggal }}">
     <div class="card">
@@ -31,6 +31,7 @@
                 <th style="padding:10px;">Nama Siswa</th>
                 <th style="padding:10px;width:340px;">Status</th>
                 <th style="padding:10px;">Keterangan</th>
+                <th style="padding:10px;width:120px;">Foto Bukti</th>
             </tr></thead>
             <tbody>
                 @foreach($siswaList as $i => $siswa)
@@ -53,6 +54,10 @@
                     </td>
                     <td style="padding:10px;">
                         <input type="text" name="keterangan[{{ $siswa->id }}]" value="{{ $existing->keterangan ?? '' }}" class="form-input" placeholder="Opsional" style="font-size:12px;padding:6px 8px;">
+                    </td>
+                    <td style="padding:10px;">
+                        <input type="file" name="foto[{{ $siswa->id }}]" accept="image/*" style="font-size:11px;width:110px;">
+                        @if($existing?->foto_bukti)<a href="{{ asset('storage/'.$existing->foto_bukti) }}" target="_blank" style="font-size:11px;color:#2563EB;">Lihat foto</a>@endif
                     </td>
                 </tr>
                 @endforeach

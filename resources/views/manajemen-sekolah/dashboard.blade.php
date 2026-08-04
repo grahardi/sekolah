@@ -54,12 +54,12 @@
 
     $menuPiket = [
         ['label' => 'Isi Absensi', 'icon' => 'ti-pencil', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.index')],
-        ['label' => 'Isi Keterlambatan', 'icon' => 'ti-clock', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
-        ['label' => 'Siswa Terlambat', 'icon' => 'ti-alarm', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+        ['label' => 'Isi Keterlambatan', 'icon' => 'ti-clock', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'href' => route('manajemen-sekolah.keterlambatan.index')],
+        ['label' => 'Siswa Terlambat', 'icon' => 'ti-alarm', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.keterlambatan.list')],
         ['label' => 'Absensi Siswa', 'icon' => 'ti-checkbox', 'bg' => '#bfdbfe', 'warna' => '#1d4ed8', 'href' => route('manajemen-sekolah.absensi.rekap')],
-        ['label' => 'Arsip Surat', 'icon' => 'ti-briefcase', 'bg' => '#fde68a', 'warna' => '#a16207', 'segera' => true],
+        ['label' => 'Arsip Surat', 'icon' => 'ti-briefcase', 'bg' => '#fde68a', 'warna' => '#a16207', 'href' => route('manajemen-sekolah.arsip-surat.index')],
         ['label' => 'Ajuan WhatsApp', 'icon' => 'ti-brand-whatsapp', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
-        ['label' => 'Absensi Guru', 'icon' => 'ti-users', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
+        ['label' => 'Absensi Guru', 'icon' => 'ti-users', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'href' => route('manajemen-sekolah.absensi-guru.index')],
     ];
 
     $sectionLain = [
