@@ -52,6 +52,9 @@
         .alert-success { background: #f0fdf4; color: #166534; }
         .alert-warning { background: #fffbeb; color: #92400e; }
         .alert-error { background: #fef2f2; color: #991b1b; }
+
+        .ms-grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 640px) { .ms-grid-3col { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
