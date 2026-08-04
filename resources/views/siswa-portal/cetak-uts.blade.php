@@ -107,10 +107,10 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:20px;">
-        <col style="width:340px;">
-        <col style="width:34px;"><col style="width:34px;"><col style="width:34px;"><col style="width:34px;">
-        <col style="width:40px;">
+        <col style="width:18px;">
+        <col style="width:380px;">
+        <col style="width:30px;"><col style="width:30px;"><col style="width:30px;"><col style="width:30px;">
+        <col style="width:36px;">
     </colgroup>
     <thead>
         <tr>
@@ -119,20 +119,20 @@
             <th rowspan="2">STS</th>
         </tr>
         <tr>
-            <th style="width:20px;">No</th>
-            <th style="width:340px;">Mata Pelajaran</th>
+            <th style="width:18px;">No</th>
+            <th style="width:380px;">Mata Pelajaran</th>
             <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
         </tr>
     </thead>
     <tbody>
         @forelse($rows as $i => $r)
         <tr>
-            <td>{{ $i + 1 }}</td>
-            <td class="nama">{{ $r['mapel']->nama }}</td>
+            <td style="width:18px;">{{ $i + 1 }}</td>
+            <td class="nama" style="width:380px;">{{ $r['mapel']->nama }}</td>
             @for($k = 0; $k < 4; $k++)
-            <td style="font-weight:bold;font-size:13px;">{{ $r['per_tp'][$k] ?? '-' }}</td>
+            <td style="width:30px;font-weight:bold;font-size:13px;">{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
-            <td style="font-weight:bold;font-size:14px;">{{ $r['sts'] ?? '-' }}</td>
+            <td style="width:36px;font-weight:bold;font-size:14px;">{{ $r['sts'] ?? '-' }}</td>
         </tr>
         @empty
         <tr><td colspan="7">Belum ada data penilaian.</td></tr>
