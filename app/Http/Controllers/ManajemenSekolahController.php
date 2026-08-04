@@ -59,6 +59,60 @@ class ManajemenSekolahController extends Controller
         ]);
     }
 
+    // ── Tata Tertib (Pelanggaran Siswa) ──────────────────────────────────
+    public function tatibIndex(Request $request)
+    {
+        $search = $request->input('search');
+        $pelanggaranList = \App\Models\PelanggaranSiswa::with(['siswa', 'pelapor'])
+            ->when($search, fn ($q) => $q->whereHas('siswa', fn ($s) => $s->where('nama_lengkap', 'ilike', "%{$search}%")))
+            ->orderByDesc('tanggal')->paginate(20)->withQueryString();
+
+        $rekapPoin = \App\Models\PelanggaranSiswa::selectRaw('siswa_id, sum(poin) as total_poin')
+            ->groupBy('siswa_id')->orderByDesc('total_poin')->limit(10)
+            ->with('siswa')->get();
+
+        return view('manajemen-sekolah.tatib.index', ['pelanggaranList' => $pelanggaranList, 'search' => $search, 'rekapPoin' => $rekapPoin]);
+    }
+
+    public function tatibCreate()
+    {
+        $siswaList = Siswa::where('status', 'aktif')->orderBy('kelas')->orderBy('nama_lengkap')->get();
+        return view('manajemen-sekolah.tatib.create', [
+            'siswaList' => $siswaList,
+            'daftarKategori' => \App\Models\PelanggaranSiswa::daftarKategori(),
+        ]);
+    }
+
+    public function tatibStore(Request $request)
+    {
+        $data = $request->validate([
+            'siswa_id' => 'required|exists:siswas,id',
+            'tanggal' => 'required|date',
+            'kategori' => 'required|string',
+            'poin' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+        ]);
+
+        $guru = Guru::where('user_id', auth()->id())->first();
+        \App\Models\PelanggaranSiswa::create($data + ['dilaporkan_oleh_guru_id' => $guru?->id]);
+
+        return redirect()->route('manajemen-sekolah.tatib.index')->with('success', 'Pelanggaran berhasil dicatat.');
+    }
+
+    public function tatibTindakLanjut(Request $request, \App\Models\PelanggaranSiswa $pelanggaran)
+    {
+        $data = $request->validate(['tindak_lanjut' => 'required|string']);
+        $pelanggaran->update(['tindak_lanjut' => $data['tindak_lanjut'], 'status' => 'Sudah Ditindak']);
+
+        return back()->with('success', 'Tindak lanjut berhasil disimpan.');
+    }
+
+    public function tatibDestroy(\App\Models\PelanggaranSiswa $pelanggaran)
+    {
+        $pelanggaran->delete();
+        return back()->with('success', 'Catatan pelanggaran dihapus.');
+    }
+
     /** Menu Piket - landing page khusus guru dgn flag is_piket (atau admin) */
     public function menuPiket()
     {
@@ -84,7 +138,7 @@ class ManajemenSekolahController extends Controller
     public function updateRoleGuru(Request $request, Guru $guru)
     {
         $data = [];
-        foreach (['is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek'] as $flag) {
+        foreach (['is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek', 'is_kesiswaan'] as $flag) {
             $data[$flag] = $request->boolean($flag);
         }
         $guru->update($data);

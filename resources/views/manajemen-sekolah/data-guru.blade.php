@@ -33,7 +33,7 @@
                 @if(auth()->user()->isAdmin())
                 <td style="padding:10px;">
                     <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                        @foreach(['is_piket'=>'Piket','is_tatib'=>'Tatib','is_bk'=>'BK','is_kebersihan'=>'Kebersihan','is_keagamaan'=>'Keagamaan','is_kepsek'=>'Kepsek'] as $flag=>$label)
+                        @foreach(['is_piket'=>'Piket','is_tatib'=>'Tatib','is_bk'=>'BK','is_kebersihan'=>'Kebersihan','is_keagamaan'=>'Keagamaan','is_kepsek'=>'Kepsek','is_kesiswaan'=>'Kesiswaan'] as $flag=>$label)
                         @if($g->{$flag})<span class="badge" style="background:#dcfce7;color:#166534;">{{ $label }}</span>@endif
                         @endforeach
                     </div>
@@ -47,7 +47,7 @@
                             </div>
                             <form action="{{ route('manajemen-sekolah.data-guru.update-role', $g) }}" method="POST">
                                 @csrf @method('PUT')
-                                @foreach(['is_piket' => 'Piket', 'is_tatib' => 'Tata Tertib (Tatib)', 'is_bk' => 'Bimbingan Konseling (BK)', 'is_kebersihan' => 'Kebersihan', 'is_keagamaan' => 'Keagamaan', 'is_kepsek' => 'Kepala Sekolah'] as $flag => $label)
+                                @foreach(['is_piket' => 'Piket', 'is_tatib' => 'Tata Tertib (Tatib)', 'is_bk' => 'Bimbingan Konseling (BK)', 'is_kebersihan' => 'Kebersihan', 'is_keagamaan' => 'Keagamaan', 'is_kepsek' => 'Kepala Sekolah', 'is_kesiswaan' => 'Kesiswaan'] as $flag => $label)
                                 <label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9;">
                                     <input type="checkbox" name="{{ $flag }}" value="1" {{ $g->{$flag} ? 'checked' : '' }}>
                                     <span style="font-size:13px;">{{ $label }}</span>

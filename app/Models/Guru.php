@@ -12,11 +12,11 @@ class Guru extends Model
     protected $table = 'gurus';
     protected $fillable = [
         'sekolah_id', 'pegawai_id', 'user_id', 'nama', 'nip_nuptk', 'keterangan',
-        'is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek',
+        'is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek', 'is_kesiswaan',
     ];
     protected $casts = [
         'is_piket' => 'boolean', 'is_tatib' => 'boolean', 'is_bk' => 'boolean',
-        'is_kebersihan' => 'boolean', 'is_keagamaan' => 'boolean', 'is_kepsek' => 'boolean',
+        'is_kebersihan' => 'boolean', 'is_keagamaan' => 'boolean', 'is_kepsek' => 'boolean', 'is_kesiswaan' => 'boolean',
     ];
 
     public function pegawai() { return $this->belongsTo(Pegawai::class); }

@@ -20,5 +20,11 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
         Route::get('/absensi', [ManajemenSekolahController::class, 'absensiIndex'])->name('absensi.index');
         Route::post('/absensi', [ManajemenSekolahController::class, 'absensiStore'])->name('absensi.store');
         Route::get('/absensi/rekap', [ManajemenSekolahController::class, 'absensiRekap'])->name('absensi.rekap');
+
+        Route::get('/tatib', [ManajemenSekolahController::class, 'tatibIndex'])->name('tatib.index');
+        Route::get('/tatib/create', [ManajemenSekolahController::class, 'tatibCreate'])->name('tatib.create');
+        Route::post('/tatib', [ManajemenSekolahController::class, 'tatibStore'])->name('tatib.store');
+        Route::put('/tatib/{pelanggaran}/tindak-lanjut', [ManajemenSekolahController::class, 'tatibTindakLanjut'])->name('tatib.tindak-lanjut');
+        Route::delete('/tatib/{pelanggaran}', [ManajemenSekolahController::class, 'tatibDestroy'])->name('tatib.destroy');
     });
 });

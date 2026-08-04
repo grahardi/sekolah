@@ -11,7 +11,7 @@
     if ($user->isAdmin()) $daftarPeran[] = 'admin';
     if ($guruSaya) {
         $daftarPeran[] = 'guru';
-        foreach (['is_piket'=>'piket','is_tatib'=>'tatib','is_bk'=>'bk','is_kebersihan'=>'kebersihan','is_keagamaan'=>'keagamaan','is_kepsek'=>'kepsek'] as $flag=>$label) {
+        foreach (['is_piket'=>'piket','is_tatib'=>'tatib','is_bk'=>'bk','is_kebersihan'=>'kebersihan','is_keagamaan'=>'keagamaan','is_kepsek'=>'kepsek','is_kesiswaan'=>'kesiswaan'] as $flag=>$label) {
             if ($guruSaya->{$flag}) $daftarPeran[] = $label;
         }
     }
@@ -64,8 +64,8 @@
 
     $sectionLain = [
         'is_tatib' => ['label' => 'Menu Tata Tertib', 'items' => [
-            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
-            ['label' => 'Rekap Poin Siswa', 'icon' => 'ti-list-details', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'segera' => true],
+            ['label' => 'Lapor Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.create')],
+            ['label' => 'Rekap Poin Siswa', 'icon' => 'ti-list-details', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.index')],
         ]],
         'is_bk' => ['label' => 'Menu Bimbingan Konseling', 'items' => [
             ['label' => 'Catatan Konseling', 'icon' => 'ti-notes', 'bg' => '#e9d5ff', 'warna' => '#6d28d9', 'segera' => true],
@@ -78,6 +78,10 @@
         ]],
         'is_kepsek' => ['label' => 'Menu Kepala Sekolah', 'items' => [
             ['label' => 'Setujui RPP', 'icon' => 'ti-file-check', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
+        ]],
+        'is_kesiswaan' => ['label' => 'Menu Kesiswaan', 'items' => [
+            ['label' => 'Rekap Pelanggaran', 'icon' => 'ti-alert-octagon', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('manajemen-sekolah.tatib.index')],
+            ['label' => 'Data Ekstrakurikuler', 'icon' => 'ti-ball-basketball', 'bg' => '#bbf7d0', 'warna' => '#15803d', 'segera' => true],
         ]],
     ];
 @endphp
