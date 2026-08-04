@@ -115,10 +115,14 @@
     </colgroup>
     <thead>
         <tr>
+            <th colspan="2">Komponen</th>
+            <th colspan="4">Tujuan Pembelajaran</th>
+            <th rowspan="2">STS</th>
+        </tr>
+        <tr>
             <th>No</th>
             <th>Mata Pelajaran</th>
             <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
-            <th>STS</th>
         </tr>
     </thead>
     <tbody>
