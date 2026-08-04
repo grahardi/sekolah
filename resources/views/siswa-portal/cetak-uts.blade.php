@@ -61,6 +61,19 @@
     if (!empty($sekolah->telepon)) $kontakBaris[] = 'Telepon ' . $sekolah->telepon;
     if (!empty($sekolah->email)) $kontakBaris[] = 'Pos-el: ' . $sekolah->email;
     $kontakBaris = implode(' &middot; ', $kontakBaris);
+
+    // Nama mapel yg terlalu panjang disingkat khusus di cetak UTS - DomPDF di
+    // sini terbukti tidak bisa diandalkan mengatur lebar kolom, jadi cara
+    // paling pasti supaya muat 2 baris adalah persingkat teksnya sendiri.
+    $singkatMapel = [
+        'Ilmu Pengetahuan Alam (IPA)' => 'IPA',
+        'Ilmu Pengetahuan Sosial (IPS)' => 'IPS',
+        'Pendidikan Agama dan Budi Pekerti' => 'Pend. Agama & Budi Pekerti',
+        'Pendidikan Jasmani, Olahraga, dan Kesehatan' => 'PJOK',
+        'Pendidikan Pancasila dan Kewarganegaraan' => 'PPKn',
+        'Bahasa dan Sastra Indonesia' => 'Bahasa Indonesia',
+        'Bimbingan Konseling' => 'BK',
+    ];
 @endphp
 
 @if($sekolah->rapor_tampilkan_watermark && $sekolah->watermark_rapor)
@@ -110,9 +123,9 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:25px;"><col style="width:430px;">
-        <col style="width:35px;"><col style="width:35px;"><col style="width:35px;"><col style="width:35px;">
-        <col style="width:45px;">
+        <col style="width:4%;"><col style="width:47%;">
+        <col style="width:7%;"><col style="width:7%;"><col style="width:7%;"><col style="width:7%;">
+        <col style="width:10%;">
     </colgroup>
     <thead>
         <tr>
@@ -126,7 +139,7 @@
         @forelse($rows as $i => $r)
         <tr>
             <td>{{ $i + 1 }}</td>
-            <td class="nama">{{ $r['mapel']->nama }}</td>
+            <td class="nama">{{ $singkatMapel[$r['mapel']->nama] ?? $r['mapel']->nama }}</td>
             @for($k = 0; $k < 4; $k++)
             <td class="angka">{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
