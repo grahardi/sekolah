@@ -9,6 +9,39 @@ use Illuminate\Http\Request;
 
 class ManajemenSekolahController extends Controller
 {
+    public function showLogin()
+    {
+        if (auth()->check()) {
+            return redirect()->route('manajemen-sekolah.dashboard');
+        }
+        return view('manajemen-sekolah.login');
+    }
+
+    public function login(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if (! auth()->attempt(['email' => $data['email'], 'password' => $data['password']], $request->boolean('ingat'))) {
+            return back()->withErrors(['email' => 'Email/Nomor ID atau password salah.'])->withInput();
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('manajemen-sekolah.dashboard'));
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('manajemen-sekolah.login');
+    }
+
     public function dashboard()
     {
         $hariIni = now()->toDateString();
@@ -46,6 +79,17 @@ class ManajemenSekolahController extends Controller
             ->paginate(20)->withQueryString();
 
         return view('manajemen-sekolah.data-siswa', ['siswaList' => $siswaList, 'search' => $search]);
+    }
+
+    public function updateRoleGuru(Request $request, Guru $guru)
+    {
+        $data = [];
+        foreach (['is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek'] as $flag) {
+            $data[$flag] = $request->boolean($flag);
+        }
+        $guru->update($data);
+
+        return back()->with('success', "Role {$guru->nama} berhasil diperbarui.");
     }
 
     // ── Data Guru (baca dari data Kepegawaian/Guru E-Rapor yang sudah ada) ──

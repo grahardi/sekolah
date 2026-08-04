@@ -54,7 +54,6 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/guru/bantu', [EraporController::class, 'storeGuruBantu'])->name('guru.store-bantu');
         Route::delete('/guru/{guru}/bantu', [EraporController::class, 'destroyGuruBantu'])->name('guru.destroy-bantu');
         Route::get('/guru/{guru}/login-sebagai', [EraporController::class, 'loginSebagaiGuru'])->name('guru.login-sebagai');
-        Route::put('/guru/{guru}/role', [EraporController::class, 'updateRoleGuru'])->name('guru.update-role');
 
         // Generate User massal
         Route::get('/guru/generate-user', [EraporController::class, 'generateUserIndex'])->name('guru.generate-user');

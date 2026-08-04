@@ -31,11 +31,45 @@
 </div>
 
 <div class="card" style="padding:20px;">
-    <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">Aksi Cepat</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="{{ route('manajemen-sekolah.absensi.index') }}" class="btn btn-primary"><i class="ti ti-calendar-check"></i> Input Absensi Hari Ini</a>
-        <a href="{{ route('manajemen-sekolah.data-siswa') }}" class="btn btn-secondary"><i class="ti ti-users"></i> Lihat Data Siswa</a>
-        <a href="{{ route('manajemen-sekolah.data-guru') }}" class="btn btn-secondary"><i class="ti ti-user-check"></i> Lihat Data Guru</a>
+    <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">Menu</p>
+    @php
+        $guruSayaDb = auth()->user()->isAdmin() ? null : \App\Models\Guru::where('user_id', auth()->id())->first();
+        $bisaAksesPiketDb = auth()->user()->isAdmin() || ($guruSayaDb && $guruSayaDb->is_piket);
+
+        $menuIkon = [
+            ['label' => 'Absensi Harian', 'icon' => 'ti-calendar-check', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.index')],
+            ['label' => 'Rekap Bulanan', 'icon' => 'ti-report', 'bg' => '#eff6ff', 'warna' => '#2563EB', 'href' => route('manajemen-sekolah.absensi.rekap')],
+            ['label' => 'Data Siswa', 'icon' => 'ti-users', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'href' => route('manajemen-sekolah.data-siswa')],
+            ['label' => 'Data Guru', 'icon' => 'ti-user-check', 'bg' => '#f0fdf4', 'warna' => '#16a34a', 'href' => route('manajemen-sekolah.data-guru')],
+        ];
+        if ($bisaAksesPiketDb) {
+            $menuIkon[] = ['label' => 'Menu Piket', 'icon' => 'ti-shield-check', 'bg' => '#eef2ff', 'warna' => '#4F46E5', 'href' => route('manajemen-sekolah.menu-piket')];
+        }
+        $menuSegera = [
+            ['label' => 'Tata Tertib', 'icon' => 'ti-alert-octagon', 'bg' => '#fef2f2', 'warna' => '#dc2626'],
+            ['label' => 'Bimbingan Konseling', 'icon' => 'ti-notes', 'bg' => '#f3e8ff', 'warna' => '#7C3AED'],
+            ['label' => 'Kebersihan Kelas', 'icon' => 'ti-spray', 'bg' => '#fffbeb', 'warna' => '#d97706'],
+            ['label' => 'Peminjaman Ruang', 'icon' => 'ti-door', 'bg' => '#fce7f3', 'warna' => '#db2777'],
+        ];
+    @endphp
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;">
+        @foreach($menuIkon as $m)
+        <a href="{{ $m['href'] }}" style="text-decoration:none;border-radius:14px;padding:20px 12px;text-align:center;background:{{ $m['bg'] }};display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <span style="width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;">
+                <i class="ti {{ $m['icon'] }}" style="font-size:19px;color:{{ $m['warna'] }};"></i>
+            </span>
+            <span style="font-size:12.5px;font-weight:700;color:{{ $m['warna'] }};">{{ $m['label'] }}</span>
+        </a>
+        @endforeach
+        @foreach($menuSegera as $m)
+        <div class="sb-item-demo" style="border-radius:14px;padding:20px 12px;text-align:center;background:{{ $m['bg'] }};display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <span style="width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;">
+                <i class="ti {{ $m['icon'] }}" style="font-size:19px;color:{{ $m['warna'] }};"></i>
+            </span>
+            <span style="font-size:12.5px;font-weight:700;color:{{ $m['warna'] }};">{{ $m['label'] }}</span>
+            <span class="sb-demo-badge">Segera</span>
+        </div>
+        @endforeach
     </div>
 </div>
 @endsection

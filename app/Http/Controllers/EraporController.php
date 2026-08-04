@@ -561,26 +561,6 @@ class EraporController extends Controller
         ]);
     }
 
-    public function updateRoleGuru(Request $request, Guru $guru)
-    {
-        $data = $request->validate([
-            'is_piket' => 'nullable|boolean',
-            'is_tatib' => 'nullable|boolean',
-            'is_bk' => 'nullable|boolean',
-            'is_kebersihan' => 'nullable|boolean',
-            'is_keagamaan' => 'nullable|boolean',
-            'is_kepsek' => 'nullable|boolean',
-        ]);
-
-        foreach (['is_piket', 'is_tatib', 'is_bk', 'is_kebersihan', 'is_keagamaan', 'is_kepsek'] as $flag) {
-            $data[$flag] = $request->boolean($flag);
-        }
-
-        $guru->update($data);
-
-        return back()->with('success', "Role {$guru->nama} berhasil diperbarui.");
-    }
-
     public function storeGuruBantu(Request $request)
     {
         $data = $request->validate([

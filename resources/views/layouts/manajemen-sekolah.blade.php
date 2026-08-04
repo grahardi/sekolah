@@ -230,7 +230,7 @@
                 <p style="font-size:10px;color:#64a0d4;margin:0;">{{ auth()->user()->role_label }}</p>
             </div>
         </div>
-        <form action="{{ route('logout') }}" method="POST">
+        <form action="{{ route('manajemen-sekolah.logout') }}" method="POST">
             @csrf
             <button type="submit" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;border-radius:7px;background:rgba(239,68,68,.15);color:#fca5a5;border:none;font-size:12px;font-weight:600;cursor:pointer;">
                 <i class="ti ti-logout" style="font-size:14px;"></i> Keluar
