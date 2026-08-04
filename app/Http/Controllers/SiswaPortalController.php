@@ -161,6 +161,8 @@ class SiswaPortalController extends Controller
             'waliKelas' => $waliKelas?->guru,
         ])->setPaper($ukuranKertasUts, $sekolah->uts_orientasi ?? 'portrait');
 
-        return $pdf->stream('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf');
+        return $pdf->stream('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 }

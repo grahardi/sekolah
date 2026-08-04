@@ -109,31 +109,31 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:3%;"><col style="width:47%;">
-        <col style="width:7%;"><col style="width:7%;"><col style="width:7%;"><col style="width:7%;">
-        <col style="width:10%;">
+        <col style="width:24px;"><col style="width:400px;">
+        <col style="width:44px;"><col style="width:44px;"><col style="width:44px;"><col style="width:44px;">
+        <col style="width:52px;">
     </colgroup>
     <thead>
         <tr>
-            <th colspan="2" width="50%">Komponen</th>
-            <th colspan="4" width="28%">Tujuan Pembelajaran</th>
-            <th rowspan="2" width="10%">STS</th>
+            <th colspan="2" width="424">Komponen</th>
+            <th colspan="4" width="176">Tujuan Pembelajaran</th>
+            <th rowspan="2" width="52">STS</th>
         </tr>
         <tr>
-            <th width="3%">No</th>
-            <th width="47%">Mata Pelajaran</th>
-            <th width="7%">TP 1</th><th width="7%">TP 2</th><th width="7%">TP 3</th><th width="7%">TP 4</th>
+            <th width="24">No</th>
+            <th width="400">Mata Pelajaran</th>
+            <th width="44">TP 1</th><th width="44">TP 2</th><th width="44">TP 3</th><th width="44">TP 4</th>
         </tr>
     </thead>
     <tbody>
         @forelse($rows as $i => $r)
         <tr>
-            <td width="3%">{{ $i + 1 }}</td>
-            <td class="nama" width="47%">{{ $r['mapel']->nama }}</td>
+            <td width="24">{{ $i + 1 }}</td>
+            <td class="nama" width="400">{{ $r['mapel']->nama }}</td>
             @for($k = 0; $k < 4; $k++)
-            <td class="angka" width="7%">{{ $r['per_tp'][$k] ?? '-' }}</td>
+            <td class="angka" width="44">{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
-            <td class="angka angka-sts" width="10%">{{ $r['sts'] ?? '-' }}</td>
+            <td class="angka angka-sts" width="52">{{ $r['sts'] ?? '-' }}</td>
         </tr>
         @empty
         <tr><td colspan="7" style="padding:14px;">Belum ada data penilaian.</td></tr>
