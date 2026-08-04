@@ -72,9 +72,29 @@
             <a href="{{ route('pegawai.show', $g->pegawai_id) }}" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-pencil"></i> Edit</a>
             @endif
             <a href="{{ route('erapor.guru.tugas-mengajar', $g) }}" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-clipboard-list"></i> Tugas Mengajar</a>
+            <button type="button" onclick="document.getElementById('modal-role-{{ $g->id }}').style.display='flex'" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-shield-cog"></i> Kelola Role</button>
             <a href="{{ route('erapor.guru.login-sebagai', $g) }}" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="return confirm('Login sebagai {{ $g->nama }}? Kamu bisa kembali ke akun admin kapan saja.')">
                 <i class="ti ti-login-2"></i> Login Sebagai
             </a>
+        </div>
+
+        <div id="modal-role-{{ $g->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;align-items:center;justify-content:center;padding:20px;">
+            <div class="card" style="max-width:380px;width:100%;padding:22px;text-align:left;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <p style="font-size:14px;font-weight:800;color:#0f172a;margin:0;">Role Manajemen Sekolah - {{ $g->nama }}</p>
+                    <button type="button" onclick="document.getElementById('modal-role-{{ $g->id }}').style.display='none'" style="background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;">&times;</button>
+                </div>
+                <form action="{{ route('erapor.guru.update-role', $g) }}" method="POST">
+                    @csrf @method('PUT')
+                    @foreach(['is_piket' => 'Piket', 'is_tatib' => 'Tata Tertib (Tatib)', 'is_bk' => 'Bimbingan Konseling (BK)', 'is_kebersihan' => 'Kebersihan', 'is_keagamaan' => 'Keagamaan', 'is_kepsek' => 'Kepala Sekolah'] as $flag => $label)
+                    <label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f1f5f9;">
+                        <input type="checkbox" name="{{ $flag }}" value="1" {{ $g->{$flag} ? 'checked' : '' }}>
+                        <span style="font-size:13px;">{{ $label }}</span>
+                    </label>
+                    @endforeach
+                    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;margin-top:14px;"><i class="ti ti-device-floppy"></i> Simpan Role</button>
+                </form>
+            </div>
         </div>
 
         @if(!$g->isDariKepegawaian())

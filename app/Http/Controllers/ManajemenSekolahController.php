@@ -26,6 +26,16 @@ class ManajemenSekolahController extends Controller
         ]);
     }
 
+    /** Menu Piket - landing page khusus guru dgn flag is_piket (atau admin) */
+    public function menuPiket()
+    {
+        $user = auth()->user();
+        $guruSaya = Guru::where('user_id', $user->id)->first();
+        abort_unless($user->isAdmin() || ($guruSaya && $guruSaya->is_piket), 403, 'Halaman ini khusus Piket.');
+
+        return view('manajemen-sekolah.menu-piket');
+    }
+
     // ── Data Siswa (baca dari data Buku Induk yang sudah ada) ───────────
     public function dataSiswa(Request $request)
     {

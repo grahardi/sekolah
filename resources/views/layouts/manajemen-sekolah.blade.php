@@ -185,6 +185,16 @@
 
         <div class="sb-divider"></div>
         <div class="sb-section">Absensi</div>
+        @php
+            $guruSayaMs = auth()->user()->isAdmin() ? null : \App\Models\Guru::where('user_id', auth()->id())->first();
+            $bisaAksesPiket = auth()->user()->isAdmin() || ($guruSayaMs && $guruSayaMs->is_piket);
+        @endphp
+        @if($bisaAksesPiket)
+        <a href="{{ route('manajemen-sekolah.menu-piket') }}"
+           class="sb-item {{ request()->routeIs('manajemen-sekolah.menu-piket') ? 'active' : '' }}">
+            <i class="ti ti-shield-check"></i><span>Menu Piket</span>
+        </a>
+        @endif
         <a href="{{ route('manajemen-sekolah.absensi.index') }}"
            class="sb-item {{ request()->routeIs('manajemen-sekolah.absensi.index') ? 'active' : '' }}">
             <i class="ti ti-calendar-check"></i><span>Absensi Harian</span>
