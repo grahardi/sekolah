@@ -14,10 +14,11 @@
 
 <form method="GET" class="card" style="padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
     <input type="date" name="tanggal" value="{{ $tanggal }}" class="form-input" onchange="this.form.submit()">
-    <select name="kelas" class="form-input" onchange="this.form.submit()">
+    <select name="kelas_rombel" class="form-input" onchange="this.form.submit()">
         <option value="">-- Semua kelas --</option>
         @foreach($daftarKelas as $k)
-        <option value="{{ $k }}" {{ $kelasFilter === $k ? 'selected' : '' }}>{{ $k }}</option>
+        @php [$kl,$rb]=explode('|',$k); @endphp
+        <option value="{{ $k }}" {{ $kelasRombelFilter === $k ? 'selected' : '' }}>{{ $rb ? "$kl - $rb" : $kl }}</option>
         @endforeach
     </select>
 </form>
@@ -30,9 +31,9 @@
     @endforeach
 </div>
 
-<div class="card" style="overflow:hidden;">
+<div style="display:flex;flex-direction:column;gap:10px;">
     @forelse($data as $i => $d)
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:{{ $warnaStatus[$d->status] ?? '#fff' }};{{ !$loop->last ? 'border-bottom:1px solid rgba(0,0,0,.06);' : '' }}">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-radius:12px;background:{{ $warnaStatus[$d->status] ?? '#fff' }};box-shadow:0 1px 2px rgba(0,0,0,.03);">
         <div>
             <p style="font-weight:700;color:{{ $teksStatus[$d->status] ?? '#0f172a' }};margin:0;font-size:13px;">{{ $d->siswa->nama_lengkap ?? '-' }}</p>
             <p style="font-size:11px;color:{{ $teksStatus[$d->status] ?? '#64748b' }};opacity:.8;margin:2px 0 0;">{{ $d->siswa?->rombel ? "{$d->siswa->kelas}-{$d->siswa->rombel}" : $d->siswa?->kelas }} @if($d->keterangan) &middot; {{ $d->keterangan }} @endif</p>

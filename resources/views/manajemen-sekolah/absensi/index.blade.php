@@ -3,7 +3,7 @@
 @section('page-title', 'Absensi Harian')
 
 @section('content')
-<form method="GET" class="card" style="padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+<form method="GET" class="card" style="padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
     <div>
         <label class="form-label">Tanggal</label>
         <input type="date" name="tanggal" value="{{ $tanggal }}" class="form-input" onchange="this.form.submit()">
@@ -17,6 +17,13 @@
             <option value="{{ $k }}" {{ $kelasRombel === $k ? 'selected' : '' }}>{{ $rb ? "$kl - $rb" : $kl }}</option>
             @endforeach
         </select>
+    </div>
+    <div>
+        <label class="form-label">Cari Nama Siswa</label>
+        <div style="display:flex;gap:6px;">
+            <input type="text" name="cari" value="{{ $cari }}" placeholder="Cari..." class="form-input">
+            <button type="submit" class="btn btn-primary" style="flex-shrink:0;"><i class="ti ti-search"></i></button>
+        </div>
     </div>
 </form>
 

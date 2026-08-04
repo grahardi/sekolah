@@ -42,6 +42,14 @@ class ManajemenSekolahController extends Controller
         return redirect()->route('manajemen-sekolah.login');
     }
 
+    private function kelasRombelList()
+    {
+        return Siswa::where('status', 'aktif')->whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+    }
+
     public function dashboard()
     {
         $hariIni = now()->toDateString();
@@ -180,19 +188,22 @@ class ManajemenSekolahController extends Controller
     public function absensiSiswaHariIni(Request $request)
     {
         $tanggal = $request->input('tanggal', now()->toDateString());
-        $kelasFilter = $request->input('kelas');
+        $kelasRombelFilter = $request->input('kelas_rombel');
 
         $data = AbsensiHarian::with('siswa')
             ->whereDate('tanggal', $tanggal)
             ->where('status', '!=', 'Hadir')
-            ->when($kelasFilter, fn ($q) => $q->whereHas('siswa', fn ($s) => $s->where('kelas', $kelasFilter)))
+            ->when($kelasRombelFilter, function ($q) use ($kelasRombelFilter) {
+                [$kelas, $rombel] = array_pad(explode('|', $kelasRombelFilter), 2, null);
+                $q->whereHas('siswa', fn ($s) => $s->where('kelas', $kelas)->where('rombel', $rombel ?: null));
+            })
             ->orderBy('status')
             ->get()
             ->sortBy(fn ($d) => $d->siswa?->nama_lengkap);
 
-        $daftarKelas = Siswa::where('status', 'aktif')->select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+        $daftarKelas = $this->kelasRombelList();
 
-        return view('manajemen-sekolah.absensi.hari-ini', compact('data', 'tanggal', 'kelasFilter', 'daftarKelas'));
+        return view('manajemen-sekolah.absensi.hari-ini', compact('data', 'tanggal', 'kelasRombelFilter', 'daftarKelas'));
     }
 
     /** List guru yang absen (bukan Hadir) hari ini - warna per status */
@@ -257,17 +268,20 @@ class ManajemenSekolahController extends Controller
     public function dataSiswa(Request $request)
     {
         $search = $request->input('search');
-        $kelasFilter = $request->input('kelas');
+        $kelasRombelFilter = $request->input('kelas_rombel');
 
         $siswaList = Siswa::where('status', 'aktif')
             ->when($search, fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$search}%"))
-            ->when($kelasFilter, fn ($q) => $q->where('kelas', $kelasFilter))
+            ->when($kelasRombelFilter, function ($q) use ($kelasRombelFilter) {
+                [$kelas, $rombel] = array_pad(explode('|', $kelasRombelFilter), 2, null);
+                $q->where('kelas', $kelas)->where('rombel', $rombel ?: null);
+            })
             ->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')
             ->paginate(20)->withQueryString();
 
-        $daftarKelas = Siswa::where('status', 'aktif')->select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+        $daftarKelas = $this->kelasRombelList();
 
-        return view('manajemen-sekolah.data-siswa', ['siswaList' => $siswaList, 'search' => $search, 'kelasFilter' => $kelasFilter, 'daftarKelas' => $daftarKelas]);
+        return view('manajemen-sekolah.data-siswa', ['siswaList' => $siswaList, 'search' => $search, 'kelasRombelFilter' => $kelasRombelFilter, 'daftarKelas' => $daftarKelas]);
     }
 
     public function updateRoleGuru(Request $request, Guru $guru)
@@ -297,11 +311,9 @@ class ManajemenSekolahController extends Controller
     {
         $tanggal = $request->input('tanggal', now()->toDateString());
         $kelasRombel = $request->input('kelas_rombel');
+        $cari = trim((string) $request->input('cari'));
 
-        $kelasList = Siswa::where('status', 'aktif')->whereNotNull('kelas')
-            ->get(['kelas', 'rombel'])
-            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
-            ->unique()->sort()->values();
+        $kelasList = $this->kelasRombelList();
 
         $siswaList = collect();
         $absensiTersimpan = [];
@@ -309,6 +321,7 @@ class ManajemenSekolahController extends Controller
         if ($kelasRombel) {
             [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
             $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+                ->when($cari !== '', fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$cari}%"))
                 ->orderBy('nama_lengkap')->get();
 
             $absensiTersimpan = AbsensiHarian::where('tanggal', $tanggal)
@@ -319,6 +332,7 @@ class ManajemenSekolahController extends Controller
             'tanggal' => $tanggal,
             'kelasList' => $kelasList,
             'kelasRombel' => $kelasRombel,
+            'cari' => $cari,
             'siswaList' => $siswaList,
             'absensiTersimpan' => $absensiTersimpan,
         ]);

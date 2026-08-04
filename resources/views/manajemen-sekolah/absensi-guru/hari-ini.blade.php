@@ -24,9 +24,9 @@
     @endforeach
 </div>
 
-<div class="card" style="overflow:hidden;">
+<div style="display:flex;flex-direction:column;gap:10px;">
     @forelse($data as $d)
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:{{ $warnaStatus[$d->status] ?? '#fff' }};{{ !$loop->last ? 'border-bottom:1px solid rgba(0,0,0,.06);' : '' }}">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-radius:12px;background:{{ $warnaStatus[$d->status] ?? '#fff' }};box-shadow:0 1px 2px rgba(0,0,0,.03);">
         <div>
             <p style="font-weight:700;color:{{ $teksStatus[$d->status] ?? '#0f172a' }};margin:0;font-size:13px;">{{ $d->guru->nama ?? '-' }}</p>
             @if($d->keterangan)<p style="font-size:11px;color:{{ $teksStatus[$d->status] ?? '#64748b' }};opacity:.8;margin:2px 0 0;">{{ $d->keterangan }}</p>@endif
