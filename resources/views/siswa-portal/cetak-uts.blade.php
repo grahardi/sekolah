@@ -107,10 +107,10 @@
 
 <table class="nilai">
     <colgroup>
-        <col style="width:22px;">
-        <col style="width:270px;">
-        <col style="width:38px;"><col style="width:38px;"><col style="width:38px;"><col style="width:38px;">
-        <col style="width:42px;">
+        <col style="width:20px;">
+        <col style="width:340px;">
+        <col style="width:34px;"><col style="width:34px;"><col style="width:34px;"><col style="width:34px;">
+        <col style="width:40px;">
     </colgroup>
     <thead>
         <tr>
@@ -119,8 +119,8 @@
             <th rowspan="2">STS</th>
         </tr>
         <tr>
-            <th style="width:22px;">No</th>
-            <th style="width:270px;">Mata Pelajaran</th>
+            <th style="width:20px;">No</th>
+            <th style="width:340px;">Mata Pelajaran</th>
             <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
         </tr>
     </thead>
@@ -130,9 +130,9 @@
             <td>{{ $i + 1 }}</td>
             <td class="nama">{{ $r['mapel']->nama }}</td>
             @for($k = 0; $k < 4; $k++)
-            <td>{{ $r['per_tp'][$k] ?? '-' }}</td>
+            <td style="font-weight:bold;font-size:13px;">{{ $r['per_tp'][$k] ?? '-' }}</td>
             @endfor
-            <td style="font-weight:bold;font-size:13px;">{{ $r['sts'] ?? '-' }}</td>
+            <td style="font-weight:bold;font-size:14px;">{{ $r['sts'] ?? '-' }}</td>
         </tr>
         @empty
         <tr><td colspan="7">Belum ada data penilaian.</td></tr>
