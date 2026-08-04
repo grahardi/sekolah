@@ -14,19 +14,12 @@
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    .nilai-wrap { display: table; width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; border: 1px solid #333; }
-    .nilai-row { display: table-row; }
-    .nilai-row > div { display: table-cell; border: 1px solid #333; padding: 5px 6px; font-size: 11px; text-align: center; vertical-align: middle; line-height: 1.3; }
-    .nilai-head-1 > div, .nilai-head-2 > div { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
-    .c-no { width: 4%; }
-    .c-mapel { width: 40%; text-align: left; }
-    .c-mapel-body { text-align: left; font-weight: normal; font-size: 11px; }
-    .c-tp { width: 9%; }
-    .c-sts { width: 10%; }
-    .c-komponen { width: 44%; }
-    .c-penilaian { width: 56%; }
-    .c-nilai-angka { font-weight: bold; font-size: 13px; }
-    .c-sts-angka { font-size: 14px; }
+    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; border: 1px solid #333; }
+    table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; font-size: 11px; text-align: center; vertical-align: middle; }
+    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
+    table.nilai td.nama { text-align: left; }
+    table.nilai td.angka { font-weight: bold; font-size: 13px; }
+    table.nilai td.angka-sts { font-size: 14px; }
 
     .grid-2 { display: table; width: 100%; margin-bottom: 16px; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
@@ -114,33 +107,35 @@
     </div>
 </div>
 
-<div class="nilai-wrap">
-    <div class="nilai-row nilai-head-1">
-        <div class="c-komponen">Komponen</div>
-        <div class="c-penilaian">Penilaian</div>
-    </div>
-    <div class="nilai-row nilai-head-2">
-        <div class="c-no">No</div>
-        <div class="c-mapel">Mata Pelajaran</div>
-        <div class="c-tp">TP 1</div>
-        <div class="c-tp">TP 2</div>
-        <div class="c-tp">TP 3</div>
-        <div class="c-tp">TP 4</div>
-        <div class="c-sts">STS</div>
-    </div>
-    @forelse($rows as $i => $r)
-    <div class="nilai-row">
-        <div class="c-no">{{ $i + 1 }}</div>
-        <div class="c-mapel c-mapel-body">{{ $r['mapel']->nama }}</div>
-        @for($k = 0; $k < 4; $k++)
-        <div class="c-tp c-nilai-angka">{{ $r['per_tp'][$k] ?? '-' }}</div>
-        @endfor
-        <div class="c-sts c-nilai-angka c-sts-angka">{{ $r['sts'] ?? '-' }}</div>
-    </div>
-    @empty
-    <div class="nilai-row"><div style="width:100%;padding:10px;text-align:center;">Belum ada data penilaian.</div></div>
-    @endforelse
-</div>
+<table class="nilai">
+    <colgroup>
+        <col style="width:4%;"><col style="width:38%;">
+        <col style="width:9%;"><col style="width:9%;"><col style="width:9%;"><col style="width:9%;">
+        <col style="width:10%;">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Mata Pelajaran</th>
+            <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
+            <th>STS</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($rows as $i => $r)
+        <tr>
+            <td>{{ $i + 1 }}</td>
+            <td class="nama">{{ $r['mapel']->nama }}</td>
+            @for($k = 0; $k < 4; $k++)
+            <td class="angka">{{ $r['per_tp'][$k] ?? '-' }}</td>
+            @endfor
+            <td class="angka angka-sts">{{ $r['sts'] ?? '-' }}</td>
+        </tr>
+        @empty
+        <tr><td colspan="7" style="padding:14px;">Belum ada data penilaian.</td></tr>
+        @endforelse
+    </tbody>
+</table>
 
 <div class="grid-2">
     <div class="col">
