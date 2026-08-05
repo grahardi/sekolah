@@ -39,6 +39,36 @@
     </div>
 </div>
 
+@if($rekapKelas->isNotEmpty())
+<div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:6px;color:#1d4ed8;"></i> Rekap Siswa Aktif per Kelas</span></div>
+    <div class="card-body" style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#f8fafc;text-align:center;">
+                <th style="padding:8px 14px;text-align:left;">Kelas</th>
+                <th style="padding:8px;">L</th><th style="padding:8px;">P</th><th style="padding:8px;">Total</th>
+            </tr></thead>
+            <tbody>
+                @foreach($rekapKelas as $r)
+                <tr style="border-bottom:1px solid #f1f5f9;text-align:center;">
+                    <td style="padding:8px 14px;text-align:left;font-weight:700;">{{ $r->rombel ? "{$r->kelas} - {$r->rombel}" : $r->kelas }}</td>
+                    <td style="padding:8px;color:#1d4ed8;">{{ $r->laki }}</td>
+                    <td style="padding:8px;color:#be185d;">{{ $r->perempuan }}</td>
+                    <td style="padding:8px;font-weight:700;">{{ $r->total }}</td>
+                </tr>
+                @endforeach
+                <tr style="font-weight:800;background:#f8fafc;">
+                    <td style="padding:8px 14px;">Total</td>
+                    <td style="padding:8px;text-align:center;color:#1d4ed8;">{{ $rekapKelas->sum('laki') }}</td>
+                    <td style="padding:8px;text-align:center;color:#be185d;">{{ $rekapKelas->sum('perempuan') }}</td>
+                    <td style="padding:8px;text-align:center;">{{ $rekapKelas->sum('total') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
 <div class="card" style="margin-bottom:20px;">
     <div class="card-body">
         <form method="GET" action="{{ route('siswa.index') }}"

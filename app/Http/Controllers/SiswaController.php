@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -35,9 +36,16 @@ class SiswaController extends Controller
         $totalLaki    = Siswa::where('jenis_kelamin','L')->count();
         $totalPerempu = Siswa::where('jenis_kelamin','P')->count();
 
+        $rekapKelas = Siswa::where('status', 'aktif')->whereNotNull('kelas')
+            ->select('kelas', 'rombel',
+                DB::raw('count(*) as total'),
+                DB::raw("sum(case when jenis_kelamin='L' then 1 else 0 end) as laki"),
+                DB::raw("sum(case when jenis_kelamin='P' then 1 else 0 end) as perempuan"))
+            ->groupBy('kelas', 'rombel')->orderBy('kelas')->orderBy('rombel')->get();
+
         return view('siswa.index', compact(
             'siswas','filters','kelasRombelList','tingkatList','tahunList',
-            'totalSiswa','totalAktif','totalLaki','totalPerempu'
+            'totalSiswa','totalAktif','totalLaki','totalPerempu','rekapKelas'
         ));
     }
 

@@ -63,8 +63,8 @@
                 @php
                     $rekapKelas = \App\Models\Siswa::where('status','aktif')
                         ->select('kelas', \Illuminate\Support\Facades\DB::raw('count(*) as total'),
-                                 \Illuminate\Support\Facades\DB::raw("sum(jenis_kelamin='L') as laki"),
-                                 \Illuminate\Support\Facades\DB::raw("sum(jenis_kelamin='P') as perempuan"))
+                                 \Illuminate\Support\Facades\DB::raw("sum(case when jenis_kelamin='L' then 1 else 0 end) as laki"),
+                                 \Illuminate\Support\Facades\DB::raw("sum(case when jenis_kelamin='P' then 1 else 0 end) as perempuan"))
                         ->groupBy('kelas')->orderBy('kelas')->get();
                 @endphp
                 @if($rekapKelas->isEmpty())
