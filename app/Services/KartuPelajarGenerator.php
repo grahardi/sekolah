@@ -18,13 +18,14 @@ class KartuPelajarGenerator
         $putih = imagecolorallocate($img, 255, 255, 255);
         imagefilledrectangle($img, 0, 0, self::LEBAR, self::TINGGI, $putih);
 
-        $navy       = imagecolorallocate($img, 30, 58, 95);
-        $kuning     = imagecolorallocate($img, 251, 191, 36);
+        $biru       = imagecolorallocate($img, 30, 64, 130);   // biru kartu 1
+        $hijau      = imagecolorallocate($img, 22, 101, 52);   // hijau kartu 2
+        $emas       = imagecolorallocate($img, 202, 138, 4);   // aksen emas kartu 2
+        $biruMuda   = imagecolorallocate($img, 219, 234, 254); // header kartu 3
+        $biruTua3   = imagecolorallocate($img, 30, 58, 138);   // subtitle bar kartu 3
         $abuTeks    = imagecolorallocate($img, 71, 85, 105);
         $hitamTeks  = imagecolorallocate($img, 30, 41, 59);
         $putihTeks  = imagecolorallocate($img, 255, 255, 255);
-        $abuMuda    = imagecolorallocate($img, 148, 163, 184);
-        $biruTeks   = imagecolorallocate($img, 37, 99, 235);
         $abuBorder  = imagecolorallocate($img, 203, 213, 225);
 
         $fontReguler = resource_path('fonts/DejaVuSans.ttf');
@@ -34,34 +35,49 @@ class KartuPelajarGenerator
         imagerectangle($img, 1, 1, self::LEBAR - 2, self::TINGGI - 2, $abuBorder);
 
         $sekolahNama = strtoupper($siswa->sekolah->nama ?? 'SEKOLAH');
+        $alamatSekolah = $siswa->sekolah->alamat ?? '';
+        $berlakuSampai = '30 Juni ' . (now()->month <= 6 ? now()->year : now()->year + 1);
 
         if ($model === 2) {
-            imagefilledrectangle($img, 0, 0, self::LEBAR, 20, $kuning);
-            self::teks($img, $fontBold, 28, $navy, self::LEBAR / 2, 64, $sekolahNama, true);
-            self::teks($img, $fontReguler, 17, $abuTeks, self::LEBAR / 2, 94, 'KARTU TANDA PELAJAR', true);
-            $fotoX = 44; $fotoY = 128; $fotoW = 210; $fotoH = 270;
-            self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $kuning, 5);
+            // ── Model 2: Hijau, aksen emas ──
+            imagefilledrectangle($img, 0, 0, self::LEBAR, 118, $hijau);
+            imagefilledrectangle($img, 0, 118, self::LEBAR, 124, $emas);
+            self::gambarLogoBulat($img, 60, 60, 44, $putih, $hijau, $fontBold);
+            self::teks($img, $fontBold, 30, $putihTeks, 122, 30, 'KARTU PELAJAR', false);
+            self::teks($img, $fontBold, 24, imagecolorallocate($img, 253, 224, 71), 122, 66, $sekolahNama, false);
+
+            $fotoX = 44; $fotoY = 156; $fotoW = 195; $fotoH = 250;
+            self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $emas, 5);
             $infoX = $fotoX + $fotoW + 34;
-            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $navy, $hitamTeks, $abuTeks, false);
-            imagefilledrectangle($img, 0, self::TINGGI - 14, self::LEBAR, self::TINGGI, $kuning);
+            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $hijau, $hitamTeks, $abuTeks, $berlakuSampai);
+            imagefilledrectangle($img, 0, self::TINGGI - 12, self::LEBAR, self::TINGGI, $emas);
         } elseif ($model === 3) {
-            imagefilledrectangle($img, 0, 0, 22, self::TINGGI, $navy);
-            self::teks($img, $fontBold, 26, $hitamTeks, 58, 44, $sekolahNama, false);
-            self::teks($img, $fontReguler, 16, $abuMuda, 58, 76, 'KARTU TANDA PELAJAR', false);
-            imageline($img, 58, 104, self::LEBAR - 40, 104, imagecolorallocate($img, 241, 245, 249));
-            $fotoX = 58; $fotoY = 124; $fotoW = 195; $fotoH = 250;
-            self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, imagecolorallocate($img, 241, 245, 249), 4);
-            $infoX = $fotoX + $fotoW + 30;
-            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $biruTeks, $hitamTeks, imagecolorallocate($img, 100, 116, 139), false);
+            // ── Model 3: Header biru muda, subtitle bar biru tua, foto di kanan ──
+            imagefilledrectangle($img, 0, 0, self::LEBAR, 96, $biruMuda);
+            imagefilledrectangle($img, 0, 96, self::LEBAR, 132, $biruTua3);
+            self::gambarLogoBulat($img, 56, 48, 40, $biru, $putih, $fontBold);
+            self::teks($img, $fontBold, 24, $hitamTeks, 112, 16, $sekolahNama, false);
+            self::teks($img, $fontReguler, 15, $abuTeks, 112, 46, $alamatSekolah ?: 'Kartu Identitas Pelajar', false);
+            self::teks($img, $fontBold, 18, $putihTeks, self::LEBAR / 2, 108, 'KARTU IDENTITAS PELAJAR', true);
+
+            $fotoW = 195; $fotoH = 250; $fotoY = 162;
+            $fotoX = self::LEBAR - $fotoW - 44; // foto di KANAN utk model ini
+            self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $biruTua3, 4);
+            $infoX = 48;
+            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $biru, $hitamTeks, $abuTeks, $berlakuSampai);
         } else {
-            imagefilledrectangle($img, 0, 0, self::LEBAR, 84, $navy);
-            self::teks($img, $fontBold, 28, $putihTeks, 40, 46, $sekolahNama, false);
-            self::teks($img, $fontReguler, 16, $putihTeks, 40, 72, 'KARTU TANDA PELAJAR', false);
-            $fotoX = 40; $fotoY = 112; $fotoW = 205; $fotoH = 265;
+            // ── Model 1 (default): Biru solid ──
+            imagefilledrectangle($img, 0, 0, self::LEBAR, 118, $biru);
+            self::gambarLogoBulat($img, 60, 59, 44, $putih, $biru, $fontBold);
+            self::teks($img, $fontBold, 30, $putihTeks, 122, 26, 'KARTU PELAJAR', false);
+            self::teks($img, $fontBold, 24, $putihTeks, 122, 62, $sekolahNama, false);
+            if ($alamatSekolah) self::teks($img, $fontReguler, 14, imagecolorallocate($img, 191, 219, 254), 122, 92, $alamatSekolah, false);
+
+            $fotoX = 44; $fotoY = 152; $fotoW = 195; $fotoH = 250;
             self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $abuBorder, 3);
             $infoX = $fotoX + $fotoW + 34;
-            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $navy, $hitamTeks, $abuTeks, false);
-            imagefilledrectangle($img, 0, self::TINGGI - 10, self::LEBAR, self::TINGGI, $navy);
+            self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $biru, $hitamTeks, $abuTeks, $berlakuSampai);
+            imagefilledrectangle($img, 0, self::TINGGI - 10, self::LEBAR, self::TINGGI, $biru);
         }
 
         ob_start();
@@ -70,6 +86,12 @@ class KartuPelajarGenerator
         imagedestroy($img);
 
         return $data;
+    }
+
+    /** Lingkaran logo sederhana (inisial sekolah) - dipakai kalau blm ada logo asli */
+    private static function gambarLogoBulat($img, int $cx, int $cy, int $r, $warnaLingkaran, $warnaTeks, string $fontBold): void
+    {
+        imagefilledellipse($img, $cx, $cy, $r * 2, $r * 2, $warnaLingkaran);
     }
 
     private static function gambarFoto($img, Siswa $siswa, int $x, int $y, int $w, int $h, $borderColor, int $borderW): void
@@ -86,7 +108,6 @@ class KartuPelajarGenerator
 
         if ($foto) {
             $srcW = imagesx($foto); $srcH = imagesy($foto);
-            // Crop tengah biar rasio pas (mirip object-fit: cover)
             $rasioTarget = $w / $h;
             $rasioSrc = $srcW / $srcH;
             if ($rasioSrc > $rasioTarget) {
@@ -104,22 +125,26 @@ class KartuPelajarGenerator
         }
     }
 
-    private static function tulisInfo($img, Siswa $siswa, int $x, int $y, string $fontBold, string $fontReguler, $warnaKelas, $warnaNama, $warnaTeks, bool $center): void
+    private static function tulisInfo($img, Siswa $siswa, int $x, int $y, string $fontBold, string $fontReguler, $warnaAksen, $warnaNama, $warnaTeks, string $berlakuSampai): void
     {
-        self::teks($img, $fontBold, 27, $warnaNama, $x, $y + 30, $siswa->nama_lengkap, $center);
-
-        $kelasLabel = "Kelas {$siswa->kelas}" . ($siswa->rombel ? " - {$siswa->rombel}" : '');
-        self::teks($img, $fontBold, 19, $warnaKelas, $x, $y + 66, $kelasLabel, $center);
+        self::teks($img, $fontBold, 26, $warnaNama, $x, $y + 4, $siswa->nama_lengkap, false);
 
         $baris = [
-            "NIS: {$siswa->nis}",
-            "NISN: {$siswa->nisn}",
-            "TTL: {$siswa->tempat_lahir}, " . $siswa->tanggal_lahir->format('d/m/Y'),
-            "Alamat: " . \Illuminate\Support\Str::limit($siswa->alamat, 40),
+            'NIS/NISN' => "{$siswa->nis} / {$siswa->nisn}",
+            'TTL' => "{$siswa->tempat_lahir}, " . $siswa->tanggal_lahir->format('d/m/Y'),
+            'Alamat' => \Illuminate\Support\Str::limit($siswa->alamat, 36),
+            'Kelas' => "{$siswa->kelas}" . ($siswa->rombel ? " - {$siswa->rombel}" : ''),
         ];
-        foreach ($baris as $i => $t) {
-            self::teks($img, $fontReguler, 16, $warnaTeks, $x, $y + 104 + ($i * 30), $t, $center);
+        $baseY = $y + 46;
+        $i = 0;
+        foreach ($baris as $label => $isi) {
+            self::teks($img, $fontBold, 15, $warnaTeks, $x, $baseY + ($i * 32), $label, false);
+            self::teks($img, $fontReguler, 15, $warnaNama, $x + 150, $baseY + ($i * 32), ": {$isi}", false);
+            $i++;
         }
+
+        self::teks($img, $fontBold, 15, $warnaAksen, $x, $baseY + ($i * 32) + 10, 'Berlaku Sampai', false);
+        self::teks($img, $fontBold, 15, $warnaAksen, $x + 150, $baseY + ($i * 32) + 10, ": {$berlakuSampai}", false);
     }
 
     /** Tulis teks dgn TTF. $y = posisi baseline atas (bukan bawah spt imagettftext bawaan) */
