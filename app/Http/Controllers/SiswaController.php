@@ -146,26 +146,27 @@ class SiswaController extends Controller
         return view('siswa.kartu-pilih-model', compact('siswa', 'kelasRombelList'));
     }
 
-    public function cetakKartu(Siswa $siswa, Request $request)
+    private function buatBarcodePng(string $kode): ?string
     {
-        $model = $request->input('model', 1); // 1, 2, atau 3
-        $view = "siswa.pdf-kartu-model{$model}";
-        if (! view()->exists($view)) $view = 'siswa.pdf-kartu-model1';
-
-        $barcodePng = null;
-        if (class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class)) {
-            $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-            $kodeBarcode = $siswa->nis ?: $siswa->nisn;
-            $png = $generator->getBarcode($kodeBarcode, $generator::TYPE_CODE_128, 2, 50);
-            $barcodePng = 'data:image/png;base64,' . base64_encode($png);
-        }
-
-        return Pdf::loadView($view, compact('siswa', 'barcodePng'))
-            ->setPaper([0, 0, 242.65, 153.07], 'landscape') // 85.6mm x 54mm (CR80, standar kartu ID)
-            ->download('kartu-siswa-'.$siswa->nisn.'.pdf');
+        if (! class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class)) return null;
+        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        return $generator->getBarcode($kode, $generator::TYPE_CODE_128, 2, 60);
     }
 
-    /** Cetak massal kartu 1 kelas sekaligus (beberapa kartu per lembar A4) */
+    public function cetakKartu(Siswa $siswa, Request $request)
+    {
+        $model = (int) $request->input('model', 1);
+        $img = \App\Services\KartuPelajarGenerator::buat($siswa, $model, $this->buatBarcodePng($siswa->nis ?: $siswa->nisn));
+
+        $disposisi = $request->boolean('preview') ? 'inline' : 'attachment';
+
+        return response($img->toPng(), 200, [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => "{$disposisi}; filename=\"kartu-siswa-{$siswa->nisn}.png\"",
+        ]);
+    }
+
+    /** Cetak massal kartu 1 kelas sekaligus - ZIP berisi PNG per siswa */
     public function cetakKartuMassal(Request $request)
     {
         $request->validate(['kelas_rombel' => 'required|string', 'model' => 'required|integer|in:1,2,3']);
@@ -174,20 +175,19 @@ class SiswaController extends Controller
         $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
             ->orderBy('nama_lengkap')->get();
 
-        $generator = class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class) ? new \Picqer\Barcode\BarcodeGeneratorPNG() : null;
-        $siswaList->each(function ($s) use ($generator) {
-            if ($generator) {
-                $kode = $s->nis ?: $s->nisn;
-                $png = $generator->getBarcode($kode, $generator::TYPE_CODE_128, 2, 50);
-                $s->barcode_png = 'data:image/png;base64,' . base64_encode($png);
-            }
-        });
+        $zip = new \ZipArchive();
+        $zipPath = storage_path('app/temp-kartu-' . uniqid() . '.zip');
+        $zip->open($zipPath, \ZipArchive::CREATE);
 
-        $model = (int) $request->model;
+        foreach ($siswaList as $s) {
+            $barcode = $this->buatBarcodePng($s->nis ?: $s->nisn);
+            $img = \App\Services\KartuPelajarGenerator::buat($s, (int) $request->model, $barcode);
+            $namaFile = \Illuminate\Support\Str::slug($s->nama_lengkap) . '-' . $s->nis . '.png';
+            $zip->addFromString($namaFile, $img->toPng());
+        }
+        $zip->close();
 
-        return Pdf::loadView('siswa.pdf-kartu-massal', ['siswaList' => $siswaList, 'model' => $model])
-            ->setPaper('a4', 'portrait')
-            ->download('kartu-siswa-kelas-'.str_replace(['|',' '], '-', $request->kelas_rombel).'.pdf');
+        return response()->download($zipPath, 'kartu-siswa-kelas-' . str_replace(['|', ' '], '-', $request->kelas_rombel) . '.zip')->deleteFileAfterSend(true);
     }
 
     // ── Import ────────────────────────────────────────────────────────────────
