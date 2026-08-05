@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Siswa')
-@section('page-title', 'Buku Induk Siswa')
+@section('title', 'Semua Siswa')
+@section('page-title', 'Semua Siswa')
 
 @section('header-actions')
+    <a href="{{ route('siswa.dashboard') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Dashboard</a>
     @if(auth()->user()->isAdmin())
     <a href="{{ route('siswa.export.choice', request()->query()) }}" class="btn btn-secondary">
         <i class="ti ti-download"></i> Export
@@ -16,50 +17,6 @@
 
 @section('content')
 
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
-    <div class="card" style="padding:18px 20px;">
-        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Total Siswa</p>
-        <p style="font-size:28px;font-weight:800;color:#0f172a;line-height:1;">{{ $totalSiswa }}</p>
-        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Semua status</p>
-    </div>
-    <div class="card" style="padding:18px 20px;border-left:3px solid #22c55e;">
-        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Aktif</p>
-        <p style="font-size:28px;font-weight:800;color:#16a34a;line-height:1;">{{ $totalAktif }}</p>
-        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Siswa aktif</p>
-    </div>
-    <div class="card" style="padding:18px 20px;border-left:3px solid #3b82f6;">
-        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Laki-laki</p>
-        <p style="font-size:28px;font-weight:800;color:#1d4ed8;line-height:1;">{{ $totalLaki }}</p>
-        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Siswa putra</p>
-    </div>
-    <div class="card" style="padding:18px 20px;border-left:3px solid #ec4899;">
-        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Perempuan</p>
-        <p style="font-size:28px;font-weight:800;color:#be185d;line-height:1;">{{ $totalPerempu }}</p>
-        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Siswa putri</p>
-    </div>
-</div>
-
-@if($statistikBerkas->isNotEmpty())
-<div class="card" style="margin-bottom:20px;">
-    <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-file-check" style="font-size:15px;vertical-align:-2px;margin-right:6px;color:#1d4ed8;"></i> Kelengkapan Berkas Siswa Aktif</span></div>
-    <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
-            @foreach($statistikBerkas as $b)
-            <div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                    <span style="font-size:12.5px;font-weight:600;color:#374151;">{{ $b['label'] }}</span>
-                    <span style="font-size:12px;color:#94a3b8;">{{ $b['sudah'] }}/{{ $b['total'] }}</span>
-                </div>
-                <div style="background:#f1f5f9;border-radius:6px;height:8px;overflow:hidden;">
-                    <div style="background:{{ $b['persen'] >= 80 ? '#16a34a' : ($b['persen'] >= 40 ? '#d97706' : '#dc2626') }};height:100%;width:{{ $b['persen'] }}%;"></div>
-                </div>
-                <p style="font-size:11px;color:#94a3b8;margin:3px 0 0;">{{ $b['persen'] }}% lengkap</p>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-@endif
 
 <div class="card" style="margin-bottom:20px;">
     <div class="card-body">

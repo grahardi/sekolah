@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 // seluruh sekolah.co.id, bukan sistem login terpisah.
 Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(function () {
 
-    Route::get('/', fn () => redirect()->route('siswa.index'));
+    Route::get('/', [SiswaController::class, 'dashboard'])->name('buku-induk.dashboard');
 
     Route::prefix('siswa')->name('siswa.')->group(function () {
+        Route::get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
+
         // Bisa diakses admin & induk (VIEW ONLY)
         Route::get('/', [SiswaController::class, 'index'])->name('index');
 

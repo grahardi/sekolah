@@ -16,21 +16,8 @@ use Illuminate\Pagination\Paginator;
 
 class SiswaController extends Controller
 {
-    public function index(Request $request)
+    public function dashboard()
     {
-        $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
-
-        $siswas = Siswa::filter($filters)
-            ->orderBy('nama_lengkap')
-            ->paginate(15)
-            ->withQueryString();
-
-        $kelasRombelList = Siswa::whereNotNull('kelas')
-            ->get(['kelas', 'rombel'])
-            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
-            ->unique()->sort()->values();
-        $tingkatList  = Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
-        $tahunList    = Siswa::select('tahun_masuk')->distinct()->orderByDesc('tahun_masuk')->pluck('tahun_masuk');
         $totalSiswa   = Siswa::count();
         $totalAktif   = Siswa::where('status','aktif')->count();
         $totalLaki    = Siswa::where('jenis_kelamin','L')->count();
@@ -49,10 +36,25 @@ class SiswaController extends Controller
             ];
         })->values();
 
-        return view('siswa.index', compact(
-            'siswas','filters','kelasRombelList','tingkatList','tahunList',
-            'totalSiswa','totalAktif','totalLaki','totalPerempu','statistikBerkas'
-        ));
+        return view('siswa.dashboard', compact('totalSiswa', 'totalAktif', 'totalLaki', 'totalPerempu', 'statistikBerkas'));
+    }
+    public function index(Request $request)
+    {
+        $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
+
+        $siswas = Siswa::filter($filters)
+            ->orderBy('nama_lengkap')
+            ->paginate(15)
+            ->withQueryString();
+
+        $kelasRombelList = Siswa::whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+        $tingkatList  = Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+        $tahunList    = Siswa::select('tahun_masuk')->distinct()->orderByDesc('tahun_masuk')->pluck('tahun_masuk');
+
+        return view('siswa.index', compact('siswas','filters','kelasRombelList','tingkatList','tahunList'));
     }
 
     public function create() { return view('siswa.create'); }
