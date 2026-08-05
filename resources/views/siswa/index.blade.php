@@ -39,32 +39,24 @@
     </div>
 </div>
 
-@if($rekapKelas->isNotEmpty())
+@if($statistikBerkas->isNotEmpty())
 <div class="card" style="margin-bottom:20px;">
-    <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-chart-bar" style="font-size:15px;vertical-align:-2px;margin-right:6px;color:#1d4ed8;"></i> Rekap Siswa Aktif per Kelas</span></div>
-    <div class="card-body" style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead><tr style="background:#f8fafc;text-align:center;">
-                <th style="padding:8px 14px;text-align:left;">Kelas</th>
-                <th style="padding:8px;">L</th><th style="padding:8px;">P</th><th style="padding:8px;">Total</th>
-            </tr></thead>
-            <tbody>
-                @foreach($rekapKelas as $r)
-                <tr style="border-bottom:1px solid #f1f5f9;text-align:center;">
-                    <td style="padding:8px 14px;text-align:left;font-weight:700;">{{ $r->rombel ? "{$r->kelas} - {$r->rombel}" : $r->kelas }}</td>
-                    <td style="padding:8px;color:#1d4ed8;">{{ $r->laki }}</td>
-                    <td style="padding:8px;color:#be185d;">{{ $r->perempuan }}</td>
-                    <td style="padding:8px;font-weight:700;">{{ $r->total }}</td>
-                </tr>
-                @endforeach
-                <tr style="font-weight:800;background:#f8fafc;">
-                    <td style="padding:8px 14px;">Total</td>
-                    <td style="padding:8px;text-align:center;color:#1d4ed8;">{{ $rekapKelas->sum('laki') }}</td>
-                    <td style="padding:8px;text-align:center;color:#be185d;">{{ $rekapKelas->sum('perempuan') }}</td>
-                    <td style="padding:8px;text-align:center;">{{ $rekapKelas->sum('total') }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-file-check" style="font-size:15px;vertical-align:-2px;margin-right:6px;color:#1d4ed8;"></i> Kelengkapan Berkas Siswa Aktif</span></div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
+            @foreach($statistikBerkas as $b)
+            <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                    <span style="font-size:12.5px;font-weight:600;color:#374151;">{{ $b['label'] }}</span>
+                    <span style="font-size:12px;color:#94a3b8;">{{ $b['sudah'] }}/{{ $b['total'] }}</span>
+                </div>
+                <div style="background:#f1f5f9;border-radius:6px;height:8px;overflow:hidden;">
+                    <div style="background:{{ $b['persen'] >= 80 ? '#16a34a' : ($b['persen'] >= 40 ? '#d97706' : '#dc2626') }};height:100%;width:{{ $b['persen'] }}%;"></div>
+                </div>
+                <p style="font-size:11px;color:#94a3b8;margin:3px 0 0;">{{ $b['persen'] }}% lengkap</p>
+            </div>
+            @endforeach
+        </div>
     </div>
 </div>
 @endif

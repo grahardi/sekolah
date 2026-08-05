@@ -36,16 +36,22 @@ class SiswaController extends Controller
         $totalLaki    = Siswa::where('jenis_kelamin','L')->count();
         $totalPerempu = Siswa::where('jenis_kelamin','P')->count();
 
-        $rekapKelas = Siswa::where('status', 'aktif')->whereNotNull('kelas')
-            ->select('kelas', 'rombel',
-                DB::raw('count(*) as total'),
-                DB::raw("sum(case when jenis_kelamin='L' then 1 else 0 end) as laki"),
-                DB::raw("sum(case when jenis_kelamin='P' then 1 else 0 end) as perempuan"))
-            ->groupBy('kelas', 'rombel')->orderBy('kelas')->orderBy('rombel')->get();
+        $siswaAktifIds = Siswa::where('status', 'aktif')->pluck('id');
+        $totalAktifUtkBerkas = $siswaAktifIds->count();
+        $fieldBerkas = ['foto' => 'Foto', 'kartu_keluarga' => 'Kartu Keluarga', 'akta_lahir' => 'Akta Lahir', 'ijazah_sd' => 'Ijazah SD', 'ijazah' => 'Ijazah', 'transkrip_nilai' => 'Transkrip Nilai', 'sertifikat_tka' => 'Sertifikat TKA'];
+        $statistikBerkas = collect($fieldBerkas)->map(function ($label, $field) use ($siswaAktifIds, $totalAktifUtkBerkas) {
+            $sudahUpload = \App\Models\ArsipBerkas::whereIn('siswa_id', $siswaAktifIds)->whereNotNull($field)->count();
+            return [
+                'label' => $label,
+                'sudah' => $sudahUpload,
+                'total' => $totalAktifUtkBerkas,
+                'persen' => $totalAktifUtkBerkas > 0 ? round(($sudahUpload / $totalAktifUtkBerkas) * 100) : 0,
+            ];
+        })->values();
 
         return view('siswa.index', compact(
             'siswas','filters','kelasRombelList','tingkatList','tahunList',
-            'totalSiswa','totalAktif','totalLaki','totalPerempu','rekapKelas'
+            'totalSiswa','totalAktif','totalLaki','totalPerempu','statistikBerkas'
         ));
     }
 

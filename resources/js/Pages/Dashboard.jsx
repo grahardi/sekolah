@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import PortalLayout from '../Layouts/PortalLayout';
 
@@ -43,6 +44,12 @@ const MODULES = [
 export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
     const { props } = usePage();
     const user = props?.auth?.user;
+    const [halamanKelas, setHalamanKelas] = useState(0);
+    const PER_HALAMAN_KELAS = 10;
+    const totalHalamanKelas = rekapKelas ? Math.ceil(rekapKelas.length / PER_HALAMAN_KELAS) : 0;
+    const rekapKelasHalamanIni = rekapKelas
+        ? rekapKelas.slice(halamanKelas * PER_HALAMAN_KELAS, (halamanKelas + 1) * PER_HALAMAN_KELAS)
+        : [];
 
     const STAT_CARDS = [
         { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB', bg: 'bg-sky-100' },
@@ -138,7 +145,7 @@ export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {rekapKelas.map((r, i) => (
+                                    {rekapKelasHalamanIni.map((r, i) => (
                                         <tr key={i} className="border-b border-black/5 last:border-0">
                                             <td className="py-1.5 font-600">{r.rombel ? `${r.kelas} - ${r.rombel}` : r.kelas}</td>
                                             <td className="py-1.5 text-center text-blue-700">{r.laki}</td>
@@ -148,6 +155,23 @@ export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
                                     ))}
                                 </tbody>
                             </table>
+                            {totalHalamanKelas > 1 && (
+                                <div className="flex items-center justify-between mt-3 pt-2 border-t border-black/5">
+                                    <button
+                                        type="button"
+                                        disabled={halamanKelas === 0}
+                                        onClick={() => setHalamanKelas((h) => Math.max(0, h - 1))}
+                                        className="text-xs text-navy/60 disabled:opacity-30 hover:text-teal transition-colors"
+                                    >&larr; Sebelumnya</button>
+                                    <span className="text-xs text-navy/40">Halaman {halamanKelas + 1} / {totalHalamanKelas}</span>
+                                    <button
+                                        type="button"
+                                        disabled={halamanKelas >= totalHalamanKelas - 1}
+                                        onClick={() => setHalamanKelas((h) => Math.min(totalHalamanKelas - 1, h + 1))}
+                                        className="text-xs text-navy/60 disabled:opacity-30 hover:text-teal transition-colors"
+                                    >Selanjutnya &rarr;</button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <p className="text-sm text-navy/50">Belum ada data siswa aktif.</p>
