@@ -153,7 +153,7 @@ class SiswaController extends Controller
 
         $disposisi = $request->boolean('preview') ? 'inline' : 'attachment';
 
-        return response($img->toPng(), 200, [
+        return response($img, 200, [
             'Content-Type' => 'image/png',
             'Content-Disposition' => "{$disposisi}; filename=\"kartu-siswa-{$siswa->nisn}.png\"",
         ]);
@@ -175,7 +175,7 @@ class SiswaController extends Controller
         foreach ($siswaList as $s) {
             $img = \App\Services\KartuPelajarGenerator::buat($s, (int) $request->model);
             $namaFile = \Illuminate\Support\Str::slug($s->nama_lengkap) . '-' . $s->nis . '.png';
-            $zip->addFromString($namaFile, $img->toPng());
+            $zip->addFromString($namaFile, $img);
         }
         $zip->close();
 
