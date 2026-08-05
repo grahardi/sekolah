@@ -17,14 +17,18 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk']);
+        $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
 
         $siswas = Siswa::filter($filters)
             ->orderBy('nama_lengkap')
             ->paginate(15)
             ->withQueryString();
 
-        $kelasList    = Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
+        $kelasRombelList = Siswa::whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+        $tingkatList  = Siswa::select('kelas')->distinct()->orderBy('kelas')->pluck('kelas');
         $tahunList    = Siswa::select('tahun_masuk')->distinct()->orderByDesc('tahun_masuk')->pluck('tahun_masuk');
         $totalSiswa   = Siswa::count();
         $totalAktif   = Siswa::where('status','aktif')->count();
@@ -32,7 +36,7 @@ class SiswaController extends Controller
         $totalPerempu = Siswa::where('jenis_kelamin','P')->count();
 
         return view('siswa.index', compact(
-            'siswas','filters','kelasList','tahunList',
+            'siswas','filters','kelasRombelList','tingkatList','tahunList',
             'totalSiswa','totalAktif','totalLaki','totalPerempu'
         ));
     }
@@ -77,12 +81,12 @@ class SiswaController extends Controller
     // ── Export ────────────────────────────────────────────────────────────────
     public function exportChoice(Request $request)
     {
-        return view('siswa.export', ['query' => $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk'])]);
+        return view('siswa.export', ['query' => $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk'])]);
     }
 
     public function exportExcel(Request $request)
     {
-        $filters = $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk']);
+        $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
         return (new SiswaExport($filters))->download('buku-induk-siswa-'.now()->format('Ymd').'.xlsx');
     }
 
@@ -93,7 +97,7 @@ class SiswaController extends Controller
         // mempengaruhi request lain), supaya tidak fatal error kehabisan memori.
         ini_set('memory_limit', '512M');
 
-        $filters = $request->only(['search','kelas','status','jenis_kelamin','tahun_masuk']);
+        $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
         $siswas  = Siswa::filter($filters)->orderBy('nama_lengkap')->get();
         return Pdf::loadView('siswa.pdf-list', compact('siswas'))
             ->setPaper('a4','landscape')

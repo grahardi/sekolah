@@ -125,9 +125,12 @@ class Siswa extends Model
                   ->orWhere('nis','ilike',"%{$s}%");
             });
         });
-        $query->when($filters['kelas']         ?? null, fn($q,$v) => $q->where('kelas',$v));
+        $query->when($filters['kelas_rombel'] ?? null, function ($q, $v) {
+            [$kelas, $rombel] = array_pad(explode('|', $v), 2, null);
+            $q->where('kelas', $kelas)->where('rombel', $rombel ?: null);
+        });
         $query->when($filters['status']        ?? null, fn($q,$v) => $q->where('status',$v));
-        $query->when($filters['jenis_kelamin'] ?? null, fn($q,$v) => $q->where('jenis_kelamin',$v));
+        $query->when($filters['tingkat']       ?? null, fn($q,$v) => $q->where('kelas',$v));
         $query->when($filters['tahun_masuk']   ?? null, fn($q,$v) => $q->where('tahun_masuk',$v));
     }
 

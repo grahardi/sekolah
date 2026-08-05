@@ -54,10 +54,11 @@
             </div>
             <div style="min-width:120px;">
                 <label class="form-label">Kelas</label>
-                <select name="kelas" class="form-input">
+                <select name="kelas_rombel" class="form-input">
                     <option value="">Semua</option>
-                    @foreach($kelasList as $kelas)
-                        <option value="{{ $kelas }}" {{ ($filters['kelas'] ?? '') == $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
+                    @foreach($kelasRombelList as $kr)
+                        @php [$kl,$rb] = explode('|', $kr); @endphp
+                        <option value="{{ $kr }}" {{ ($filters['kelas_rombel'] ?? '') == $kr ? 'selected' : '' }}>{{ $rb ? "$kl - $rb" : $kl }}</option>
                     @endforeach
                 </select>
             </div>
@@ -71,11 +72,12 @@
                 </select>
             </div>
             <div style="min-width:130px;">
-                <label class="form-label">Jenis Kelamin</label>
-                <select name="jenis_kelamin" class="form-input">
+                <label class="form-label">Tingkat</label>
+                <select name="tingkat" class="form-input">
                     <option value="">Semua</option>
-                    <option value="L" {{ ($filters['jenis_kelamin'] ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                    <option value="P" {{ ($filters['jenis_kelamin'] ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                    @foreach($tingkatList as $tk)
+                        <option value="{{ $tk }}" {{ ($filters['tingkat'] ?? '') == $tk ? 'selected' : '' }}>Kelas {{ $tk }}</option>
+                    @endforeach
                 </select>
             </div>
             <div style="min-width:130px;">
