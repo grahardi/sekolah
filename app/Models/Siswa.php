@@ -98,6 +98,11 @@ class Siswa extends Model
         if ($this->foto) {
             return asset('storage/' . $this->foto);
         }
+        // Kalau foto profil siswa kosong, coba pakai foto yg diupload lewat
+        // Berkas (arsip_berkas.foto) - biar tidak perlu upload dobel.
+        if ($this->arsipBerkas && $this->arsipBerkas->foto) {
+            return asset('storage/' . $this->arsipBerkas->foto);
+        }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama_lengkap)
              . '&background=dbeafe&color=1d4ed8&size=128';
     }

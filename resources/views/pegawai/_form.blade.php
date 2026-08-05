@@ -10,6 +10,10 @@
         <input type="text" name="nip_nuptk" value="{{ $fv('nip_nuptk') }}" class="form-input" placeholder="Kosongkan kalau belum ada">
     </div>
     <div>
+        <label class="form-label">NIK</label>
+        <input type="text" name="nik" value="{{ $fv('nik') }}" class="form-input" placeholder="Nomor Induk Kependudukan" maxlength="20">
+    </div>
+    <div>
         <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
         <select name="jenis_kelamin" class="form-input" required>
             <option value="L" {{ $fv('jenis_kelamin') === 'L' ? 'selected' : '' }}>Laki-laki</option>

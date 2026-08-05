@@ -28,6 +28,7 @@ class PegawaiDapodikImport
     private const COL_NIP                = 'G';
     private const COL_STATUS_KEPEGAWAIAN = 'H';
     private const COL_JENIS_PTK          = 'I';
+    private const COL_NIK                = 'J'; // asumsi kolom J = NIK (di antara Jenis PTK & Alamat) - cek lagi kalau ternyata beda
     private const COL_ALAMAT_JALAN       = 'K';
     private const COL_RT                 = 'L';
     private const COL_RW                 = 'M';
@@ -123,6 +124,7 @@ class PegawaiDapodikImport
 
             Pegawai::updateOrCreate($match, array_filter([
                 'nip_nuptk' => $identifier,
+                'nik' => $this->val($sheet, self::COL_NIK, $row),
                 'nama_lengkap' => $nama,
                 'jenis_kelamin' => $jk,
                 'tempat_lahir' => $this->val($sheet, self::COL_TEMPAT_LAHIR, $row),
