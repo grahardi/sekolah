@@ -40,7 +40,7 @@ const MODULES = [
     },
 ];
 
-export default function Dashboard({ stats, sekolah }) {
+export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
     const { props } = usePage();
     const user = props?.auth?.user;
 
@@ -119,6 +119,83 @@ export default function Dashboard({ stats, sekolah }) {
                         <p className="text-xs text-navy/60 mt-0.5">{s.label}</p>
                     </a>
                 ))}
+            </div>
+
+            {/* Rekap Sekolah - inti dashboard, model kartu 2 kolom */}
+            <h3 className="font-display font-600 text-lg text-navy mb-3">Rekap Sekolah</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+                {/* Rekap siswa per kelas */}
+                <div className="rounded-2xl bg-white border border-black/5 p-5">
+                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
+                        <i className="ti ti-chart-bar" style={{ color: '#2563EB' }} /> Rekap Siswa per Kelas
+                    </h4>
+                    {rekapKelas && rekapKelas.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="text-left text-navy/50 text-xs uppercase border-b border-black/5">
+                                        <th className="pb-2">Kelas</th><th className="pb-2 text-center">L</th><th className="pb-2 text-center">P</th><th className="pb-2 text-center">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rekapKelas.map((r, i) => (
+                                        <tr key={i} className="border-b border-black/5 last:border-0">
+                                            <td className="py-1.5 font-600">{r.rombel ? `${r.kelas} - ${r.rombel}` : r.kelas}</td>
+                                            <td className="py-1.5 text-center text-blue-700">{r.laki}</td>
+                                            <td className="py-1.5 text-center text-pink-700">{r.perempuan}</td>
+                                            <td className="py-1.5 text-center font-700">{r.total}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <p className="text-sm text-navy/50">Belum ada data siswa aktif.</p>
+                    )}
+                </div>
+
+                {/* Fitur yang sudah aktif */}
+                <div className="rounded-2xl bg-white border border-black/5 p-5">
+                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
+                        <i className="ti ti-apps" style={{ color: '#16A34A' }} /> Fitur yang Sudah Aktif
+                    </h4>
+                    <div className="flex flex-col gap-2">
+                        {MODULES.filter((m) => m.status === 'aktif').map((m) => (
+                            <a key={m.key} href={m.href} className="flex items-center justify-between text-sm py-1.5 border-b border-black/5 last:border-0 hover:text-teal transition-colors">
+                                <span className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${m.color}`} /> {m.title}</span>
+                                <i className="ti ti-chevron-right text-navy/30" style={{ fontSize: '14px' }} />
+                            </a>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Total guru */}
+                <div className="rounded-2xl bg-white border border-black/5 p-5">
+                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
+                        <i className="ti ti-user-check" style={{ color: '#7C3AED' }} /> Data Guru
+                    </h4>
+                    <p className="font-display font-700 text-3xl text-navy">{stats?.total_guru ?? 0}</p>
+                    <p className="text-xs text-navy/50 mt-1">Total guru terdaftar (Kepegawaian + Guru Bantu)</p>
+                    <a href="/erapor/guru" className="inline-block mt-3 text-xs text-teal hover:underline">Lihat Data Guru &rarr;</a>
+                </div>
+
+                {/* Statistik BK */}
+                <div className="rounded-2xl bg-white border border-black/5 p-5">
+                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
+                        <i className="ti ti-heart" style={{ color: '#D97706' }} /> Statistik Program BK
+                    </h4>
+                    <div className="flex items-center gap-6">
+                        <div>
+                            <p className="font-display font-700 text-2xl text-navy">{bkStats?.total_peserta ?? 0}</p>
+                            <p className="text-xs text-navy/50">Total Peserta Survey</p>
+                        </div>
+                        <div>
+                            <p className="font-display font-700 text-2xl text-navy">{bkStats?.sudah_isi ?? 0}</p>
+                            <p className="text-xs text-navy/50">Sudah Mengisi</p>
+                        </div>
+                    </div>
+                    <a href="/bk" className="inline-block mt-3 text-xs text-teal hover:underline">Buka Program BK &rarr;</a>
+                </div>
             </div>
 
             {/* Grid modul */}
