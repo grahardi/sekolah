@@ -146,17 +146,10 @@ class SiswaController extends Controller
         return view('siswa.kartu-pilih-model', compact('siswa', 'kelasRombelList'));
     }
 
-    private function buatBarcodePng(string $kode): ?string
-    {
-        if (! class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class)) return null;
-        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-        return $generator->getBarcode($kode, $generator::TYPE_CODE_128, 2, 60);
-    }
-
     public function cetakKartu(Siswa $siswa, Request $request)
     {
         $model = (int) $request->input('model', 1);
-        $img = \App\Services\KartuPelajarGenerator::buat($siswa, $model, $this->buatBarcodePng($siswa->nis ?: $siswa->nisn));
+        $img = \App\Services\KartuPelajarGenerator::buat($siswa, $model);
 
         $disposisi = $request->boolean('preview') ? 'inline' : 'attachment';
 
@@ -180,8 +173,7 @@ class SiswaController extends Controller
         $zip->open($zipPath, \ZipArchive::CREATE);
 
         foreach ($siswaList as $s) {
-            $barcode = $this->buatBarcodePng($s->nis ?: $s->nisn);
-            $img = \App\Services\KartuPelajarGenerator::buat($s, (int) $request->model, $barcode);
+            $img = \App\Services\KartuPelajarGenerator::buat($s, (int) $request->model);
             $namaFile = \Illuminate\Support\Str::slug($s->nama_lengkap) . '-' . $s->nis . '.png';
             $zip->addFromString($namaFile, $img->toPng());
         }

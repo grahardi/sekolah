@@ -11,7 +11,7 @@ class KartuPelajarGenerator
     const TINGGI = 638;
 
     /** Kembalikan PNG binary siap dipakai response()/simpan file */
-    public static function buat(Siswa $siswa, int $model, ?string $barcodePngBinary): string
+    public static function buat(Siswa $siswa, int $model): string
     {
         $img = imagecreatetruecolor(self::LEBAR, self::TINGGI);
         imagesavealpha($img, true);
@@ -37,44 +37,31 @@ class KartuPelajarGenerator
 
         if ($model === 2) {
             imagefilledrectangle($img, 0, 0, self::LEBAR, 20, $kuning);
-            self::teks($img, $fontBold, 26, $navy, self::LEBAR / 2, 60, $sekolahNama, true);
-            self::teks($img, $fontReguler, 16, $abuTeks, self::LEBAR / 2, 88, 'KARTU TANDA PELAJAR', true);
-            $fotoX = 40; $fotoY = 120; $fotoW = 190; $fotoH = 230;
+            self::teks($img, $fontBold, 28, $navy, self::LEBAR / 2, 64, $sekolahNama, true);
+            self::teks($img, $fontReguler, 17, $abuTeks, self::LEBAR / 2, 94, 'KARTU TANDA PELAJAR', true);
+            $fotoX = 44; $fotoY = 128; $fotoW = 210; $fotoH = 270;
             self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $kuning, 5);
-            $infoX = $fotoX + $fotoW + 30;
+            $infoX = $fotoX + $fotoW + 34;
             self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $navy, $hitamTeks, $abuTeks, false);
+            imagefilledrectangle($img, 0, self::TINGGI - 14, self::LEBAR, self::TINGGI, $kuning);
         } elseif ($model === 3) {
             imagefilledrectangle($img, 0, 0, 22, self::TINGGI, $navy);
-            self::teks($img, $fontBold, 24, $hitamTeks, 55, 44, $sekolahNama, false);
-            self::teks($img, $fontReguler, 15, $abuMuda, 55, 74, 'KARTU TANDA PELAJAR', false);
-            imageline($img, 55, 100, self::LEBAR - 40, 100, imagecolorallocate($img, 241, 245, 249));
-            $fotoX = 55; $fotoY = 118; $fotoW = 175; $fotoH = 210;
+            self::teks($img, $fontBold, 26, $hitamTeks, 58, 44, $sekolahNama, false);
+            self::teks($img, $fontReguler, 16, $abuMuda, 58, 76, 'KARTU TANDA PELAJAR', false);
+            imageline($img, 58, 104, self::LEBAR - 40, 104, imagecolorallocate($img, 241, 245, 249));
+            $fotoX = 58; $fotoY = 124; $fotoW = 195; $fotoH = 250;
             self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, imagecolorallocate($img, 241, 245, 249), 4);
-            $infoX = $fotoX + $fotoW + 28;
+            $infoX = $fotoX + $fotoW + 30;
             self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $biruTeks, $hitamTeks, imagecolorallocate($img, 100, 116, 139), false);
         } else {
-            imagefilledrectangle($img, 0, 0, self::LEBAR, 78, $navy);
-            self::teks($img, $fontBold, 26, $putihTeks, 36, 44, $sekolahNama, false);
-            self::teks($img, $fontReguler, 15, $putihTeks, 36, 68, 'KARTU TANDA PELAJAR', false);
-            $fotoX = 36; $fotoY = 105; $fotoW = 185; $fotoH = 225;
+            imagefilledrectangle($img, 0, 0, self::LEBAR, 84, $navy);
+            self::teks($img, $fontBold, 28, $putihTeks, 40, 46, $sekolahNama, false);
+            self::teks($img, $fontReguler, 16, $putihTeks, 40, 72, 'KARTU TANDA PELAJAR', false);
+            $fotoX = 40; $fotoY = 112; $fotoW = 205; $fotoH = 265;
             self::gambarFoto($img, $siswa, $fotoX, $fotoY, $fotoW, $fotoH, $abuBorder, 3);
-            $infoX = $fotoX + $fotoW + 30;
+            $infoX = $fotoX + $fotoW + 34;
             self::tulisInfo($img, $siswa, $infoX, $fotoY, $fontBold, $fontReguler, $navy, $hitamTeks, $abuTeks, false);
-        }
-
-        // Barcode di bawah (semua model)
-        if ($barcodePngBinary) {
-            $barcodeSrc = @imagecreatefromstring($barcodePngBinary);
-            if ($barcodeSrc) {
-                $bw = imagesx($barcodeSrc); $bh = imagesy($barcodeSrc);
-                $targetW = self::LEBAR - 80; $targetH = 70;
-                $targetX = 40; $targetY = self::TINGGI - $targetH - 34;
-                imagecopyresampled($img, $barcodeSrc, $targetX, $targetY, 0, 0, $targetW, $targetH, $bw, $bh);
-                imagedestroy($barcodeSrc);
-
-                $kode = $siswa->nis ?: $siswa->nisn;
-                self::teks($img, $fontBold, 16, $hitamTeks, self::LEBAR / 2, self::TINGGI - 14, $kode, true);
-            }
+            imagefilledrectangle($img, 0, self::TINGGI - 10, self::LEBAR, self::TINGGI, $navy);
         }
 
         ob_start();
@@ -119,18 +106,19 @@ class KartuPelajarGenerator
 
     private static function tulisInfo($img, Siswa $siswa, int $x, int $y, string $fontBold, string $fontReguler, $warnaKelas, $warnaNama, $warnaTeks, bool $center): void
     {
-        self::teks($img, $fontBold, 24, $warnaNama, $x, $y + 26, $siswa->nama_lengkap, $center);
+        self::teks($img, $fontBold, 27, $warnaNama, $x, $y + 30, $siswa->nama_lengkap, $center);
 
         $kelasLabel = "Kelas {$siswa->kelas}" . ($siswa->rombel ? " - {$siswa->rombel}" : '');
-        self::teks($img, $fontBold, 17, $warnaKelas, $x, $y + 58, $kelasLabel, $center);
+        self::teks($img, $fontBold, 19, $warnaKelas, $x, $y + 66, $kelasLabel, $center);
 
         $baris = [
             "NIS: {$siswa->nis}",
             "NISN: {$siswa->nisn}",
             "TTL: {$siswa->tempat_lahir}, " . $siswa->tanggal_lahir->format('d/m/Y'),
+            "Alamat: " . \Illuminate\Support\Str::limit($siswa->alamat, 40),
         ];
         foreach ($baris as $i => $t) {
-            self::teks($img, $fontReguler, 14, $warnaTeks, $x, $y + 92 + ($i * 24), $t, $center);
+            self::teks($img, $fontReguler, 16, $warnaTeks, $x, $y + 104 + ($i * 30), $t, $center);
         }
     }
 
