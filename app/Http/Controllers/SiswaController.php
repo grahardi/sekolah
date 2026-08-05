@@ -135,11 +135,59 @@ class SiswaController extends Controller
         return $pdf->download('buku-induk-'.$siswa->nisn.'.pdf');
     }
 
-    public function cetakKartu(Siswa $siswa)
+    /** Pilih model kartu pelajar sebelum cetak */
+    public function pilihModelKartu(Siswa $siswa)
     {
-        return Pdf::loadView('siswa.pdf-kartu', compact('siswa'))
-            ->setPaper('a5','portrait')
+        $kelasRombelList = Siswa::where('status', 'aktif')->whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+
+        return view('siswa.kartu-pilih-model', compact('siswa', 'kelasRombelList'));
+    }
+
+    public function cetakKartu(Siswa $siswa, Request $request)
+    {
+        $model = $request->input('model', 1); // 1, 2, atau 3
+        $view = "siswa.pdf-kartu-model{$model}";
+        if (! view()->exists($view)) $view = 'siswa.pdf-kartu-model1';
+
+        $barcodePng = null;
+        if (class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class)) {
+            $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+            $kodeBarcode = $siswa->nis ?: $siswa->nisn;
+            $png = $generator->getBarcode($kodeBarcode, $generator::TYPE_CODE_128, 2, 50);
+            $barcodePng = 'data:image/png;base64,' . base64_encode($png);
+        }
+
+        return Pdf::loadView($view, compact('siswa', 'barcodePng'))
+            ->setPaper([0, 0, 242.65, 153.07], 'landscape') // 85.6mm x 54mm (CR80, standar kartu ID)
             ->download('kartu-siswa-'.$siswa->nisn.'.pdf');
+    }
+
+    /** Cetak massal kartu 1 kelas sekaligus (beberapa kartu per lembar A4) */
+    public function cetakKartuMassal(Request $request)
+    {
+        $request->validate(['kelas_rombel' => 'required|string', 'model' => 'required|integer|in:1,2,3']);
+        [$kelas, $rombel] = array_pad(explode('|', $request->kelas_rombel), 2, null);
+
+        $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('nama_lengkap')->get();
+
+        $generator = class_exists(\Picqer\Barcode\BarcodeGeneratorPNG::class) ? new \Picqer\Barcode\BarcodeGeneratorPNG() : null;
+        $siswaList->each(function ($s) use ($generator) {
+            if ($generator) {
+                $kode = $s->nis ?: $s->nisn;
+                $png = $generator->getBarcode($kode, $generator::TYPE_CODE_128, 2, 50);
+                $s->barcode_png = 'data:image/png;base64,' . base64_encode($png);
+            }
+        });
+
+        $model = (int) $request->model;
+
+        return Pdf::loadView('siswa.pdf-kartu-massal', ['siswaList' => $siswaList, 'model' => $model])
+            ->setPaper('a4', 'portrait')
+            ->download('kartu-siswa-kelas-'.str_replace(['|',' '], '-', $request->kelas_rombel).'.pdf');
     }
 
     // ── Import ────────────────────────────────────────────────────────────────

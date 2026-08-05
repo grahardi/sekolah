@@ -45,7 +45,7 @@
                 <a href="{{ route('siswa.nilai.index', $siswa) }}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="ti ti-clipboard-list"></i> Nilai Rapor</a>
                 <a href="{{ route('siswa.arsip.show', $siswa) }}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="ti ti-folder"></i> Arsip Berkas</a>
                 <a href="{{ route('siswa.prestasi.index', $siswa) }}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="ti ti-trophy"></i> Prestasi</a>
-                <a href="{{ route('siswa.kartu.pdf', $siswa) }}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="ti ti-id"></i> Kartu Siswa PDF</a>
+                <a href="{{ route('siswa.kartu.pilih-model', $siswa) }}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="ti ti-id"></i> Kartu Siswa PDF</a>
                 @if(auth()->user()->isAdmin())
                 <div style="border-top:1px solid #f1f5f9;margin:4px 0;"></div>
                 <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" onsubmit="return confirm('Hapus siswa ini secara permanen?')">

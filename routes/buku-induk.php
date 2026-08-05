@@ -17,6 +17,7 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
 
     Route::prefix('siswa')->name('siswa.')->group(function () {
         Route::get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
+        Route::middleware('admin')->get('/kartu-massal', [SiswaController::class, 'cetakKartuMassal'])->name('kartu.massal');
 
         // Bisa diakses admin & induk (VIEW ONLY)
         Route::get('/', [SiswaController::class, 'index'])->name('index');
@@ -27,6 +28,7 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
         Route::get('/{siswa}', [SiswaController::class, 'show'])->name('show');
         Route::get('/{siswa}/buku-induk-pdf', [SiswaController::class, 'cetakBukuInduk'])->name('buku-induk.pdf');
         Route::get('/{siswa}/kartu-pdf', [SiswaController::class, 'cetakKartu'])->name('kartu.pdf');
+        Route::get('/{siswa}/kartu/pilih-model', [SiswaController::class, 'pilihModelKartu'])->name('kartu.pilih-model');
         Route::get('/{siswa}/arsip', [ArsipController::class, 'show'])->name('arsip.show');
         Route::get('/{siswa}/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
         Route::get('/{siswa}/nilai', [NilaiController::class, 'index'])->name('nilai.index');
