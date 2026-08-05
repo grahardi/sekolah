@@ -18,6 +18,10 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
     Route::prefix('siswa')->name('siswa.')->group(function () {
         // Bisa diakses admin & induk (VIEW ONLY)
         Route::get('/', [SiswaController::class, 'index'])->name('index');
+
+        // HARUS di atas /{siswa} - kalau dibawah, "create" ketangkep jadi ID siswa
+        Route::middleware('admin')->get('/create', [SiswaController::class, 'create'])->name('create');
+
         Route::get('/{siswa}', [SiswaController::class, 'show'])->name('show');
         Route::get('/{siswa}/buku-induk-pdf', [SiswaController::class, 'cetakBukuInduk'])->name('buku-induk.pdf');
         Route::get('/{siswa}/kartu-pdf', [SiswaController::class, 'cetakKartu'])->name('kartu.pdf');
@@ -27,7 +31,6 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
 
         // HANYA ADMIN (tambah / edit / hapus / import / export)
         Route::middleware('admin')->group(function () {
-            Route::get('/create', [SiswaController::class, 'create'])->name('create');
             Route::post('/', [SiswaController::class, 'store'])->name('store');
             Route::get('/{siswa}/edit', [SiswaController::class, 'edit'])->name('edit');
             Route::put('/{siswa}', [SiswaController::class, 'update'])->name('update');
