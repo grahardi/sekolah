@@ -36,7 +36,14 @@ class SekolahProfilController extends Controller
             'status_sekolah' => 'nullable|string|max:100',
             'bentuk_pendidikan' => 'nullable|string|max:100',
             'kkm' => 'nullable|integer|min:0|max:100',
+            'logo_sekolah' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('logo_sekolah')) {
+            $validated['logo_sekolah'] = $request->file('logo_sekolah')->store('kop-surat', 'public');
+        } else {
+            unset($validated['logo_sekolah']); // jangan timpa yg sudah ada kalau tidak upload baru
+        }
 
         $sekolah->update($validated);
 

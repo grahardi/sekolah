@@ -14,7 +14,7 @@
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
-    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; border: 1px solid #333; }
+    table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; border: 1px solid #333; }
     table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; font-size: 11px; text-align: center; vertical-align: middle; }
     table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
     table.nilai td.nama { text-align: left; }
@@ -122,17 +122,12 @@
 </div>
 
 <table class="nilai">
-    <colgroup>
-        <col style="width:4%;"><col style="width:47%;">
-        <col style="width:7%;"><col style="width:7%;"><col style="width:7%;"><col style="width:7%;">
-        <col style="width:10%;">
-    </colgroup>
     <thead>
         <tr>
-            <th>No</th>
-            <th>Mata Pelajaran</th>
-            <th>TP 1</th><th>TP 2</th><th>TP 3</th><th>TP 4</th>
-            <th>STS</th>
+            <th width="5%">No</th>
+            <th width="30%">Mata Pelajaran</th>
+            <th width="9%">TP 1</th><th width="9%">TP 2</th><th width="9%">TP 3</th><th width="9%">TP 4</th>
+            <th width="10%">STS</th>
         </tr>
     </thead>
     <tbody>
