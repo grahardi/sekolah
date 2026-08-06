@@ -26,8 +26,9 @@
     .grid-2 .gap { display: table-cell; width: 4%; }
     .box-title { font-size: 11px; font-weight: bold; margin: 0 0 6px; }
     .box { border: 1px solid #333; padding: 9px; font-size: 10.5px; min-height: 75px; }
+    .box-noborder { border: none; padding: 6px 9px; min-height: 75px; }
     .qr-box { text-align: center; }
-    .qr-box img { width: 100px; height: 100px; }
+    .qr-box img { width: 65px; height: 65px; }
 
     .ttd-grid { display: table; width: 100%; margin-top: 12px; }
     .ttd-col { display: table-cell; width: 33.3%; text-align: center; font-size: 10.5px; vertical-align: top; }
@@ -151,7 +152,7 @@
 <div class="grid-2">
     <div class="col">
         <p class="box-title">Scan Riwayat Siswa</p>
-        <div class="box qr-box">
+        <div class="box box-noborder qr-box">
             @if($qrPng)<img src="{{ $qrPng }}" alt="QR">@else<p style="color:#94a3b8;">QR tidak tersedia</p>@endif
         </div>
     </div>
