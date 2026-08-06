@@ -5,22 +5,21 @@
 <style>
     * { font-family: 'DejaVu Sans', sans-serif; box-sizing: border-box; }
     body { font-size: {{ ($sekolah->uts_font_size ?? 'normal') === 'kecil' ? '10px' : (($sekolah->uts_font_size ?? 'normal') === 'besar' ? '13px' : '11.5px') }}; color: #1a1a1a; margin: 0; }
-    h1 { text-align:center; font-size: 15px; margin: 0 0 3px; text-transform: uppercase; }
-    h2 { text-align:center; font-size: 11.5px; margin: 0 0 16px; font-weight: normal; }
+    h1 { text-align:center; font-size: 15px; margin: 0 0 14px; text-transform: uppercase; }
     .identitas { display: table; width: 100%; margin-bottom: 16px; font-size: 11.5px; }
-    .identitas-col { display: table-cell; width: 50%; }
+    .identitas-col-kiri { display: table-cell; width: 56%; vertical-align: top; }
+    .identitas-col-kanan { display: table-cell; width: 44%; vertical-align: top; padding-left: 30px; }
     .identitas-row { display: table; width: 100%; margin-bottom: 3px; }
-    .identitas-label { display: table-cell; width: 100px; }
+    .identitas-label { display: table-cell; width: 95px; }
     .identitas-sep { display: table-cell; width: 12px; }
     .identitas-val { display: table-cell; font-weight: bold; }
 
     table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 16px; border: 1px solid #333; }
-    table.nilai th, table.nilai td { border: 1px solid #333; padding: 5px 6px; font-size: 11px; text-align: center; vertical-align: middle; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
+    table.nilai th, table.nilai td { border: 1px solid #333; padding: 8px 6px; font-size: 11px; text-align: center; vertical-align: middle; }
+    table.nilai th { background: {{ ['putih'=>'#ffffff','biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3','abu'=>'#e2e8f0'][$sekolah->uts_warna_tabel ?? 'biru'] }}; font-weight: bold; font-size: 10.5px; }
     table.nilai td.nama { text-align: left; }
     table.nilai td.angka { font-weight: bold; font-size: 13px; }
     table.nilai td.angka-sts { font-size: 14px; }
-    .sel-angka { font-weight: bold; font-size: 13px; }
 
     .grid-2 { display: table; width: 100%; margin-bottom: 16px; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
@@ -35,7 +34,6 @@
     .ttd-space { height: 48px; }
     .ttd-nama { font-weight: bold; text-decoration: underline; }
 
-    .bar-atas { background: #1a1a1a; height: 5px; margin-bottom: 10px; }
     .kop { display: table; width: 100%; margin-bottom: 6px; }
     .kop-row { display: table-row; }
     .kop-cell { display: table-cell; vertical-align: middle; }
@@ -62,17 +60,14 @@
     if (!empty($sekolah->email)) $kontakBaris[] = 'Pos-el: ' . $sekolah->email;
     $kontakBaris = implode(' &middot; ', $kontakBaris);
 
-    // Nama mapel yg terlalu panjang disingkat khusus di cetak UTS - DomPDF di
-    // sini terbukti tidak bisa diandalkan mengatur lebar kolom, jadi cara
-    // paling pasti supaya muat 2 baris adalah persingkat teksnya sendiri.
+    $kelasInt = (int) $siswa->kelas;
+    if ($kelasInt <= 6) { $fase = 'C'; }
+    elseif ($kelasInt <= 9) { $fase = 'D'; }
+    else { $fase = 'E'; }
+
+    // PJOK masih disingkat sementara (nama sangat panjang) - IPA/IPS dikembalikan ke nama lengkap
     $singkatMapel = [
-        'Ilmu Pengetahuan Alam (IPA)' => 'IPA',
-        'Ilmu Pengetahuan Sosial (IPS)' => 'IPS',
-        'Pendidikan Agama dan Budi Pekerti' => 'Pend. Agama & Budi Pekerti',
         'Pendidikan Jasmani, Olahraga, dan Kesehatan' => 'PJOK',
-        'Pendidikan Pancasila dan Kewarganegaraan' => 'PPKn',
-        'Bahasa dan Sastra Indonesia' => 'Bahasa Indonesia',
-        'Bimbingan Konseling' => 'BK',
     ];
 @endphp
 
@@ -107,27 +102,34 @@
 <div class="garis-tebal"></div>
 @endif
 
-<h1 style="text-transform:uppercase;margin-top:6px;">Laporan Hasil Belajar Tengah Semester</h1>
-<h2>Tahun Pelajaran {{ $tahunAktif->nama }}</h2>
+<h1>Laporan Hasil Belajar Tengah Semester</h1>
 
 <div class="identitas">
-    <div class="identitas-col">
+    <div class="identitas-col-kiri">
         <div class="identitas-row"><div class="identitas-label">Nama Siswa</div><div class="identitas-sep">:</div><div class="identitas-val">{{ strtoupper($siswa->nama_lengkap) }}</div></div>
         <div class="identitas-row"><div class="identitas-label">NIS / NISN</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $siswa->nis }} / {{ $siswa->nisn }}</div></div>
+        <div class="identitas-row"><div class="identitas-label">Sekolah</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $sekolahNama }}</div></div>
+        <div class="identitas-row"><div class="identitas-label">Alamat Sekolah</div><div class="identitas-sep">:</div><div class="identitas-val" style="font-weight:normal;">{{ $sekolah->alamat }}</div></div>
     </div>
-    <div class="identitas-col">
+    <div class="identitas-col-kanan">
         <div class="identitas-row"><div class="identitas-label">Kelas</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $siswa->rombel_lengkap }}</div></div>
-        <div class="identitas-row"><div class="identitas-label">Semester</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $semester == 2 ? 'Genap' : 'Ganjil' }}</div></div>
+        <div class="identitas-row"><div class="identitas-label">Fase</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $fase }}</div></div>
+        <div class="identitas-row"><div class="identitas-label">Semester</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $semester }} ({{ $semester == 1 ? 'Ganjil' : 'Genap' }})</div></div>
+        <div class="identitas-row"><div class="identitas-label">Tahun Ajaran</div><div class="identitas-sep">:</div><div class="identitas-val">{{ $tahunAktif->nama }}</div></div>
     </div>
 </div>
 
 <table class="nilai">
     <thead>
         <tr>
+            <th colspan="2" width="34%">Komponen</th>
+            <th colspan="4" width="46%">Tujuan Pembelajaran</th>
+            <th rowspan="2" width="10%">STS</th>
+        </tr>
+        <tr>
             <th width="5%">No</th>
-            <th width="30%">Mata Pelajaran</th>
+            <th width="29%">Mata Pelajaran</th>
             <th width="9%">TP 1</th><th width="9%">TP 2</th><th width="9%">TP 3</th><th width="9%">TP 4</th>
-            <th width="10%">STS</th>
         </tr>
     </thead>
     <tbody>

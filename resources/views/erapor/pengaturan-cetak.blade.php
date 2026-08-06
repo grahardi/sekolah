@@ -125,8 +125,8 @@
 
         <div style="margin-bottom:18px;">
             <label class="form-label">Warna Dasar Tabel</label>
-            <div style="display:flex;gap:10px;margin-top:6px;">
-                @foreach(['biru' => ['Biru Muda', '#dbeafe'], 'hijau' => ['Hijau', '#dcfce7'], 'kuning' => ['Kuning', '#fef9c3']] as $val => $info)
+            <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
+                @foreach(['putih' => ['Putih', '#ffffff'], 'biru' => ['Biru Muda', '#dbeafe'], 'hijau' => ['Hijau', '#dcfce7'], 'kuning' => ['Kuning', '#fef9c3'], 'abu' => ['Abu-abu', '#e2e8f0']] as $val => $info)
                 <label style="flex:1;display:flex;align-items:center;gap:8px;border:2px solid {{ $sekolah->rapor_warna_tabel === $val ? '#1E3A5F' : '#e2e8f0' }};border-radius:8px;padding:10px 12px;cursor:pointer;">
                     <input type="radio" name="rapor_warna_tabel" value="{{ $val }}" {{ $sekolah->rapor_warna_tabel === $val ? 'checked' : '' }}>
                     <span style="width:20px;height:20px;border-radius:5px;background:{{ $info[1] }};display:inline-block;border:1px solid #cbd5e1;"></span>
@@ -182,8 +182,8 @@
 
         <div>
             <label class="form-label">Warna Dasar Tabel</label>
-            <div style="display:flex;gap:10px;margin-top:6px;">
-                @foreach(['biru' => ['Biru Muda', '#dbeafe'], 'hijau' => ['Hijau', '#dcfce7'], 'kuning' => ['Kuning', '#fef9c3']] as $val => $info)
+            <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
+                @foreach(['putih' => ['Putih', '#ffffff'], 'biru' => ['Biru Muda', '#dbeafe'], 'hijau' => ['Hijau', '#dcfce7'], 'kuning' => ['Kuning', '#fef9c3'], 'abu' => ['Abu-abu', '#e2e8f0']] as $val => $info)
                 <label style="flex:1;display:flex;align-items:center;gap:8px;border:2px solid {{ $sekolah->uts_warna_tabel === $val ? '#1E3A5F' : '#e2e8f0' }};border-radius:8px;padding:10px 12px;cursor:pointer;">
                     <input type="radio" name="uts_warna_tabel" value="{{ $val }}" {{ $sekolah->uts_warna_tabel === $val ? 'checked' : '' }}>
                     <span style="width:20px;height:20px;border-radius:5px;background:{{ $info[1] }};display:inline-block;border:1px solid #cbd5e1;"></span>

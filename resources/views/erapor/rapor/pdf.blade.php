@@ -27,12 +27,12 @@
     .section-title { font-size: 13px; font-weight: bold; margin: 16px 0 7px; }
 
     table.nilai { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-    table.nilai th { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 7px; font-size: 11px; text-align: center; }
+    table.nilai th { background: {{ ['putih'=>'#ffffff','biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3','abu'=>'#e2e8f0'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 7px; font-size: 11px; text-align: center; }
     table.nilai td { border: 1px solid #333; padding: 6px 7px; font-size: 11px; vertical-align: top; }
     table.nilai td.center { text-align: center; }
 
     .box { border: 1px solid #333; padding: 9px 11px; font-size: 11px; margin-bottom: 10px; }
-    .box-header { background: {{ ['biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 9px; font-size: 12px; font-weight: bold; margin-bottom: 0; }
+    .box-header { background: {{ ['putih'=>'#ffffff','biru'=>'#dbeafe','hijau'=>'#dcfce7','kuning'=>'#fef9c3','abu'=>'#e2e8f0'][$sekolah->rapor_warna_tabel ?? 'biru'] }}; border: 1px solid #333; padding: 6px 9px; font-size: 12px; font-weight: bold; margin-bottom: 0; }
 
     .grid-2 { display: table; width: 100%; }
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
