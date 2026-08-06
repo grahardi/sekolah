@@ -8,7 +8,7 @@
     h1 { text-align:center; font-size: 15px; margin: 0 0 14px; text-transform: uppercase; }
     .identitas { display: table; width: 100%; margin-bottom: 16px; font-size: 11.5px; }
     .identitas-col-kiri { display: table-cell; width: 56%; vertical-align: top; }
-    .identitas-col-kanan { display: table-cell; width: 44%; vertical-align: top; padding-left: 30px; }
+    .identitas-col-kanan { display: table-cell; width: 44%; vertical-align: top; padding-left: 58px; }
     .identitas-row { display: table; width: 100%; margin-bottom: 3px; }
     .identitas-label { display: table-cell; width: 95px; }
     .identitas-sep { display: table-cell; width: 12px; }
