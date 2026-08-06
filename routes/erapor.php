@@ -94,6 +94,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/penilaian/import-kelas', [PenilaianController::class, 'importTemplateKelas'])->name('penilaian.import-kelas');
         Route::post('/penilaian', [PenilaianController::class, 'store'])->name('penilaian.store');
         Route::get('/penilaian/{penilaian}', [PenilaianController::class, 'show'])->name('penilaian.show');
+        Route::get('/penilaian/{penilaian}/edit', [PenilaianController::class, 'edit'])->name('penilaian.edit');
+        Route::put('/penilaian/{penilaian}', [PenilaianController::class, 'update'])->name('penilaian.update');
         Route::get('/penilaian/{penilaian}/template-nilai', [PenilaianController::class, 'downloadTemplateNilai'])->name('penilaian.template-nilai');
         Route::post('/penilaian/{penilaian}/import-nilai', [PenilaianController::class, 'importNilai'])->name('penilaian.import-nilai');
         Route::post('/penilaian/{penilaian}/nilai', [PenilaianController::class, 'saveNilai'])->name('penilaian.save-nilai');

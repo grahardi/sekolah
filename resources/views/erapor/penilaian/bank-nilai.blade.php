@@ -68,6 +68,7 @@
                 </td>
                 <td style="padding:10px 18px;text-align:right;white-space:nowrap;">
                     <a href="{{ route('erapor.penilaian.show', $p) }}" class="btn btn-sm" style="background:#16a34a;color:#fff;"><i class="ti ti-edit"></i> Input Nilai</a>
+                    <a href="{{ route('erapor.penilaian.edit', $p) }}" class="btn btn-secondary btn-sm"><i class="ti ti-settings"></i> Edit</a>
                     <form action="{{ route('erapor.penilaian.destroy', $p) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus penilaian ini?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm"><i class="ti ti-trash"></i></button></form>
                 </td>
             </tr>

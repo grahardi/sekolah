@@ -3,6 +3,7 @@
 @section('page-title', $penilaian->nama_penilaian)
 
 @section('header-actions')
+    <a href="{{ route('erapor.penilaian.edit', $penilaian) }}" class="btn btn-secondary"><i class="ti ti-edit"></i> Edit</a>
     <a href="{{ route('erapor.penilaian.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
 @endsection
 

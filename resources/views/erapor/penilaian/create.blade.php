@@ -72,6 +72,7 @@
         <div>
             <label class="form-label">Jenis Penilaian <span style="color:#ef4444">*</span></label>
             <select name="subjenis_penilaian" id="subjenis_penilaian" class="form-input" required onchange="muatTp(); aturBobotOtomatis();">
+                <option value="" disabled selected>-- Pilih jenis penilaian --</option>
                 <option value="Sumatif TP">Sumatif - TP</option>
                 <option value="Sumatif Tengah Semester">Penilaian Tengah Semester</option>
                 <option value="Sumatif Akhir Semester">Penilaian Semester Akhir</option>

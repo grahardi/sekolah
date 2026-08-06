@@ -172,7 +172,9 @@ class PenilaianController extends Controller
             'bobot_penilaian' => 'required|integer|min:1|max:100',
             'semester' => 'required|integer|in:1,2',
             'tanggal_penilaian' => 'nullable|date',
-            'tp_ids' => 'nullable|array',
+            'tp_ids' => 'required_if:subjenis_penilaian,Sumatif TP|array|min:1',
+        ], [
+            'tp_ids.required_if' => 'Pilih minimal 1 Tujuan Pembelajaran yang diuji.',
         ]);
 
         [$kelas, $rombel] = array_pad(explode('|', $data['kelas_rombel']), 2, null);
@@ -227,6 +229,68 @@ class PenilaianController extends Controller
         }
 
         return redirect()->route('erapor.penilaian.show', $penilaian)->with('success', 'Penilaian dibuat. Sekarang input nilai siswa.');
+    }
+
+    public function edit(Penilaian $penilaian)
+    {
+        $user = auth()->user();
+        if ($user->role === 'guru') {
+            $guruSaya = Guru::where('user_id', $user->id)->first();
+            abort_unless($guruSaya && $guruSaya->id == $penilaian->guru_id, 403, 'Kamu cuma bisa mengedit penilaian milikmu sendiri.');
+        }
+
+        $penilaian->load('tujuanPembelajarans');
+        $tpTerpilih = $penilaian->tujuanPembelajarans->pluck('id')->toArray();
+
+        $mapelList = MataPelajaran::orderBy('nama')->get();
+        $tpList = TujuanPembelajaran::where('mata_pelajaran_id', $penilaian->mata_pelajaran_id)
+            ->where('semester', $penilaian->semester)
+            ->where('tahun_ajaran_id', $penilaian->tahun_ajaran_id)
+            ->whereHas('kelasList', function ($q) use ($penilaian) {
+                $q->where('kelas', $penilaian->kelas)->where('rombel', $penilaian->rombel);
+            })
+            ->get(['id', 'kode_tp', 'deskripsi_tp']);
+
+        return view('erapor.penilaian.edit', [
+            'penilaian' => $penilaian,
+            'tpList' => $tpList,
+            'tpTerpilih' => $tpTerpilih,
+        ]);
+    }
+
+    public function update(Request $request, Penilaian $penilaian)
+    {
+        $user = auth()->user();
+        if ($user->role === 'guru') {
+            $guruSaya = Guru::where('user_id', $user->id)->first();
+            abort_unless($guruSaya && $guruSaya->id == $penilaian->guru_id, 403, 'Kamu cuma bisa mengedit penilaian milikmu sendiri.');
+        }
+
+        $data = $request->validate([
+            'nama_penilaian' => 'required|string|max:150',
+            'bobot_penilaian' => 'required|integer|min:1|max:100',
+            'tanggal_penilaian' => 'nullable|date',
+            'tp_ids' => 'nullable|array',
+        ]);
+
+        if ($penilaian->subjenis_penilaian === 'Sumatif TP' && empty($data['tp_ids'])) {
+            return back()->withInput()->withErrors(['tp_ids' => 'Pilih minimal 1 Tujuan Pembelajaran yang diuji.']);
+        }
+
+        // Subjenis (Sumatif TP/PTS/UAS), mapel, kelas, semester, tahun ajaran
+        // SENGAJA tidak bisa diubah lewat edit - kalau beda konteks, buat baru
+        // saja, biar nilai yg sudah masuk gak jadi rancu.
+        $penilaian->update([
+            'nama_penilaian' => $data['nama_penilaian'],
+            'bobot_penilaian' => $data['bobot_penilaian'],
+            'tanggal_penilaian' => $data['tanggal_penilaian'] ?? null,
+        ]);
+
+        if ($penilaian->subjenis_penilaian === 'Sumatif TP') {
+            $penilaian->tujuanPembelajarans()->sync($data['tp_ids'] ?? []);
+        }
+
+        return redirect()->route('erapor.penilaian.show', $penilaian)->with('success', 'Penilaian berhasil diperbarui.');
     }
 
     public function show(Penilaian $penilaian)
