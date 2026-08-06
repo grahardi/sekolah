@@ -25,10 +25,10 @@
     .grid-2 .col { display: table-cell; width: 48%; vertical-align: top; }
     .grid-2 .gap { display: table-cell; width: 4%; }
     .box-title { font-size: 11px; font-weight: bold; margin: 0 0 6px; }
-    .box { border: 1px solid #333; padding: 9px; font-size: 10.5px; min-height: 75px; }
-    .box-noborder { border: none; padding: 6px 9px; min-height: 75px; }
+    .box { border: 1px solid #333; padding: 9px; font-size: 10.5px; min-height: 95px; }
+    .box-noborder { border: none; padding: 6px 9px; min-height: 95px; }
     .qr-box { text-align: center; }
-    .qr-box img { width: 65px; height: 65px; }
+    .qr-box img { width: 90px; height: 90px; }
 
     .ttd-grid { display: table; width: 100%; margin-top: 12px; }
     .ttd-col { display: table-cell; width: 33.3%; text-align: center; font-size: 10.5px; vertical-align: top; }
