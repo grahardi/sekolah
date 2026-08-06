@@ -67,6 +67,7 @@
                         @empty
                         <p style="font-size:12px;color:#94a3b8;">Belum ada nilai TP.</p>
                         @endforelse
+                        <div class="tp-cell" style="border-color:#1E3A5F;background:#eff6ff;"><div class="n" style="color:#1E3A5F;font-weight:600;">STS/UTS</div><div class="v" style="color:#1E3A5F;">{{ $m['sts'] ?? '-' }}</div></div>
                     </div>
                 </div>
                 @empty

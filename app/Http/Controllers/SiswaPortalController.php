@@ -90,7 +90,8 @@ class SiswaPortalController extends Controller
             foreach ($mapelList as $mapel) {
                 $hasil = RaporCalculator::hitung($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
                 $perTp = RaporCalculator::nilaiPerTp($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
-                $mapelData->push(['mapel' => $mapel, 'nilai_akhir' => $hasil['nilai_akhir'], 'per_tp' => $perTp]);
+                $sts = RaporCalculator::nilaiSts($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
+                $mapelData->push(['mapel' => $mapel, 'nilai_akhir' => $hasil['nilai_akhir'], 'per_tp' => $perTp, 'sts' => $sts]);
             }
         }
 
