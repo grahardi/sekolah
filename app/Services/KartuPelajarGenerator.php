@@ -42,7 +42,8 @@ class KartuPelajarGenerator
             // ── Model 2: Hijau, aksen emas ──
             imagefilledrectangle($img, 0, 0, self::LEBAR, 118, $hijau);
             imagefilledrectangle($img, 0, 118, self::LEBAR, 124, $emas);
-            self::gambarLogoBulat($img, 60, 60, 44, $putih, $hijau, $fontBold);
+            self::gambarAksenBackground($img, $hijau, 124);
+            self::gambarLogoBulat($img, $siswa, 60, 60, 44, $putih, $hijau, $fontBold);
             self::teks($img, $fontBold, 30, $putihTeks, 122, 30, 'KARTU PELAJAR', false);
             self::teks($img, $fontBold, 24, imagecolorallocate($img, 253, 224, 71), 122, 66, $sekolahNama, false);
 
@@ -55,7 +56,8 @@ class KartuPelajarGenerator
             // ── Model 3: Header biru muda, subtitle bar biru tua, foto di kanan ──
             imagefilledrectangle($img, 0, 0, self::LEBAR, 96, $biruMuda);
             imagefilledrectangle($img, 0, 96, self::LEBAR, 132, $biruTua3);
-            self::gambarLogoBulat($img, 56, 48, 40, $biru, $putih, $fontBold);
+            self::gambarAksenBackground($img, $biruMuda, 132);
+            self::gambarLogoBulat($img, $siswa, 56, 48, 40, $biru, $putih, $fontBold);
             self::teks($img, $fontBold, 24, $hitamTeks, 112, 16, $sekolahNama, false);
             self::teks($img, $fontReguler, 15, $abuTeks, 112, 46, $alamatSekolah ?: 'Kartu Identitas Pelajar', false);
             self::teks($img, $fontBold, 18, $putihTeks, self::LEBAR / 2, 108, 'KARTU IDENTITAS PELAJAR', true);
@@ -68,7 +70,8 @@ class KartuPelajarGenerator
         } else {
             // ── Model 1 (default): Biru solid ──
             imagefilledrectangle($img, 0, 0, self::LEBAR, 118, $biru);
-            self::gambarLogoBulat($img, 60, 59, 44, $putih, $biru, $fontBold);
+            self::gambarAksenBackground($img, $biru, 118);
+            self::gambarLogoBulat($img, $siswa, 60, 59, 44, $putih, $biru, $fontBold);
             self::teks($img, $fontBold, 30, $putihTeks, 122, 26, 'KARTU PELAJAR', false);
             self::teks($img, $fontBold, 24, $putihTeks, 122, 62, $sekolahNama, false);
             if ($alamatSekolah) self::teks($img, $fontReguler, 14, imagecolorallocate($img, 191, 219, 254), 122, 92, $alamatSekolah, false);
@@ -88,10 +91,40 @@ class KartuPelajarGenerator
         return $data;
     }
 
-    /** Lingkaran logo sederhana (inisial sekolah) - dipakai kalau blm ada logo asli */
-    private static function gambarLogoBulat($img, int $cx, int $cy, int $r, $warnaLingkaran, $warnaTeks, string $fontBold): void
+    /** Lingkaran logo - pakai logo sekolah yg diupload, atau Tut Wuri Handayani sbg default */
+    private static function gambarLogoBulat($img, Siswa $siswa, int $cx, int $cy, int $r, $warnaLingkaran, $warnaTeks, string $fontBold): void
     {
-        imagefilledellipse($img, $cx, $cy, $r * 2, $r * 2, $warnaLingkaran);
+        imagefilledellipse($img, $cx, $cy, $r * 2 + 6, $r * 2 + 6, $warnaLingkaran);
+
+        $logoPath = null;
+        $logoSekolah = $siswa->sekolah->logo_sekolah ?? null;
+        if ($logoSekolah && file_exists(storage_path('app/public/' . $logoSekolah))) {
+            $logoPath = storage_path('app/public/' . $logoSekolah);
+        } else {
+            $fallback = resource_path('seed-assets/tutwuri.png');
+            if (file_exists($fallback)) $logoPath = $fallback;
+        }
+
+        if (! $logoPath) return;
+
+        $logo = @imagecreatefromstring(@file_get_contents($logoPath));
+        if (! $logo) return;
+
+        $srcW = imagesx($logo); $srcH = imagesy($logo);
+        $ukuran = (int) ($r * 1.7);
+        imagealphablending($img, true);
+        imagecopyresampled($img, $logo, $cx - (int)($ukuran / 2), $cy - (int)($ukuran / 2), 0, 0, $ukuran, $ukuran, $srcW, $srcH);
+        imagedestroy($logo);
+    }
+
+    /** Aksen dekoratif tipis di background body kartu - biar tidak polos kosong */
+    private static function gambarAksenBackground($img, $warnaAksen, int $mulaiY): void
+    {
+        $warnaTransparan = imagecolorallocatealpha($img, imagecolorsforindex($img, $warnaAksen)['red'], imagecolorsforindex($img, $warnaAksen)['green'], imagecolorsforindex($img, $warnaAksen)['blue'], 110);
+        imagealphablending($img, true);
+        // Lingkaran besar transparan pojok kanan bawah sbg aksen
+        imagefilledellipse($img, self::LEBAR - 40, self::TINGGI - 20, 260, 260, $warnaTransparan);
+        imagefilledellipse($img, self::LEBAR - 100, self::TINGGI + 40, 180, 180, $warnaTransparan);
     }
 
     private static function gambarFoto($img, Siswa $siswa, int $x, int $y, int $w, int $h, $borderColor, int $borderW): void
