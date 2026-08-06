@@ -25,6 +25,15 @@
             </select>
         </div>
         <div>
+            <label class="form-label">Kategori</label>
+            <select name="kategori_pegawai" class="form-input" onchange="this.form.submit()">
+                <option value="">Semua Kategori</option>
+                @foreach(['Guru','Tenaga Kependidikan','Kepala Sekolah'] as $k)
+                <option value="{{ $k }}" {{ ($filters['kategori_pegawai'] ?? '') === $k ? 'selected' : '' }}>{{ $k }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
             <label class="form-label">Status Kepegawaian</label>
             <select name="jenis_kepegawaian" class="form-input" onchange="this.form.submit()">
                 <option value="">Semua Status</option>
@@ -85,7 +94,12 @@
                         </div>
                     </td>
                     <td style="padding:12px 10px;">
-                        <p style="font-weight:600;color:#1e40af;margin:0;">{{ $p->jabatan ?? '-' }}</p>
+                        <p style="font-weight:600;color:#1e40af;margin:0;">
+                            {{ $p->jabatan ?? '-' }}
+                            @if($p->kategori_pegawai)
+                            <span class="badge" style="background:{{ $p->kategori_pegawai === 'Guru' ? '#eff6ff' : ($p->kategori_pegawai === 'Kepala Sekolah' ? '#fef3c7' : '#f0fdf4') }};color:{{ $p->kategori_pegawai === 'Guru' ? '#1E3A5F' : ($p->kategori_pegawai === 'Kepala Sekolah' ? '#92400e' : '#166534') }};font-weight:600;font-size:10px;margin-left:6px;">{{ $p->kategori_pegawai }}</span>
+                            @endif
+                        </p>
                         @if($p->isAsn())
                         <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $p->pangkat }} @if($p->golongan) · Gol. {{ $p->golongan }} @endif</p>
                         @else

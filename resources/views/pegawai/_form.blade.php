@@ -14,6 +14,15 @@
         <input type="text" name="nik" value="{{ $fv('nik') }}" class="form-input" placeholder="Nomor Induk Kependudukan" maxlength="20">
     </div>
     <div>
+        <label class="form-label">Kategori</label>
+        <select name="kategori_pegawai" class="form-input">
+            <option value="">-- Pilih --</option>
+            @foreach(['Guru','Tenaga Kependidikan','Kepala Sekolah'] as $k)
+            <option value="{{ $k }}" {{ $fv('kategori_pegawai') === $k ? 'selected' : '' }}>{{ $k }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div>
         <label class="form-label">Jenis Kelamin <span style="color:#ef4444">*</span></label>
         <select name="jenis_kelamin" class="form-input" required>
             <option value="L" {{ $fv('jenis_kelamin') === 'L' ? 'selected' : '' }}>Laki-laki</option>

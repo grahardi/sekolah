@@ -18,7 +18,7 @@ class PegawaiController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja']);
+        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja', 'kategori_pegawai']);
 
         $pegawais = Pegawai::filter($filters)
             ->orderBy('nama_lengkap')
@@ -80,19 +80,19 @@ class PegawaiController extends Controller
     // ── Export ──────────────────────────────────────────────────────────
     public function exportChoice(Request $request)
     {
-        return view('pegawai.export', ['query' => $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja'])]);
+        return view('pegawai.export', ['query' => $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja', 'kategori_pegawai'])]);
     }
 
     public function exportExcel(Request $request)
     {
-        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja']);
+        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja', 'kategori_pegawai']);
         return (new PegawaiExport($filters))->download('data-pegawai-' . now()->format('Ymd') . '.xlsx');
     }
 
     public function exportPdfAll(Request $request)
     {
         ini_set('memory_limit', '512M');
-        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja']);
+        $filters = $request->only(['search', 'status_aktif', 'jenis_kepegawaian', 'unit_kerja', 'kategori_pegawai']);
         $pegawais = Pegawai::filter($filters)->orderBy('nama_lengkap')->get();
         return Pdf::loadView('pegawai.pdf-list', compact('pegawais'))
             ->setPaper('a4', 'landscape')
@@ -227,12 +227,14 @@ class PegawaiController extends Controller
     {
         return $request->validate([
             'nip_nuptk' => 'nullable|string|max:30',
+            'nik' => 'nullable|string|max:20',
             'nama_lengkap' => 'required|string|max:150',
             'jenis_kelamin' => 'required|in:L,P',
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
             'jenis_kepegawaian' => 'required|in:' . implode(',', self::JENIS_KEPEGAWAIAN),
             'jabatan' => 'nullable|string|max:150',
+            'kategori_pegawai' => 'nullable|in:Guru,Tenaga Kependidikan,Kepala Sekolah',
             'unit_kerja' => 'nullable|string|max:100',
             'golongan' => 'nullable|string|max:20',
             'pangkat' => 'nullable|string|max:100',

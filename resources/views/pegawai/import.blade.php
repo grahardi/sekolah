@@ -14,8 +14,8 @@
             <div style="width:56px;height:56px;background:#eff6ff;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                 <i class="ti ti-file-import" style="font-size:28px;color:#1d4ed8;"></i>
             </div>
-            <h2 style="font-size:17px;font-weight:800;color:#0f172a;margin:0 0 6px;">Import Langsung dari Dapodik</h2>
-            <p style="font-size:13px;color:#64748b;margin:0;">Upload file "Daftar Guru/PTK" asli hasil unduhan Dapodik, tanpa perlu diubah dulu</p>
+            <h2 style="font-size:17px;font-weight:800;color:#0f172a;margin:0 0 6px;">Import Langsung dari Dapodik (Guru & Tendik)</h2>
+            <p style="font-size:13px;color:#64748b;margin:0;">Upload file "Daftar Guru/PTK" ATAU "Daftar Tenaga Kependidikan (Tendik)" asli hasil unduhan Dapodik - formatnya sama, sistem otomatis kenali kategorinya (Guru/Tendik/Kepala Sekolah) dari kolom "Jenis PTK"</p>
         </div>
 
         <div style="padding:0 28px 28px;">
@@ -23,7 +23,7 @@
                 <i class="ti ti-info-circle" style="font-size:20px;color:#2563EB;flex-shrink:0;margin-top:1px;"></i>
                 <div>
                     <p style="font-size:12px;color:#1e40af;margin:0;">
-                        Ambil file dari Dapodik: menu <strong>PTK</strong> &rarr; tombol <strong>Unduh</strong> &rarr; <strong>Daftar Guru</strong>.
+                        Ambil file dari Dapodik: menu <strong>PTK</strong> &rarr; tombol <strong>Unduh</strong> &rarr; <strong>Daftar Guru</strong> (utk guru) atau <strong>Daftar Tendik</strong> (utk tenaga kependidikan).
                         File-nya bernama <code>daftar-guru-NAMA_SEKOLAH-tanggal.xlsx</code> - upload persis seperti itu,
                         tidak perlu diedit kolomnya.
                     </p>

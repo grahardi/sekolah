@@ -14,7 +14,7 @@ class Pegawai extends Model
     protected $fillable = [
         'sekolah_id',
         'nip_nuptk', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir',
-        'jenis_kepegawaian', 'jabatan', 'unit_kerja',
+        'jenis_kepegawaian', 'jabatan', 'kategori_pegawai', 'unit_kerja',
         'golongan', 'pangkat', 'tmt_cpns', 'tmt_pns', 'no_sk_pangkat',
         'tmt_pangkat_terakhir', 'tmt_gaji_berkala_terakhir',
         'pendidikan_terakhir', 'no_hp', 'email', 'alamat', 'foto',
@@ -99,6 +99,7 @@ class Pegawai extends Model
                 ->orWhere('jabatan', 'ilike', "%{$v}%")))
             ->when($filters['status_aktif'] ?? null, fn ($q, $v) => $q->where('status_aktif', $v))
             ->when($filters['jenis_kepegawaian'] ?? null, fn ($q, $v) => $q->where('jenis_kepegawaian', $v))
+            ->when($filters['kategori_pegawai'] ?? null, fn ($q, $v) => $q->where('kategori_pegawai', $v))
             ->when($filters['unit_kerja'] ?? null, fn ($q, $v) => $q->where('unit_kerja', $v));
     }
 }

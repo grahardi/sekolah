@@ -84,6 +84,16 @@ class PegawaiDapodikImport
         return null;
     }
 
+    /** Sederhanakan "Jenis PTK" Dapodik jadi 3 kategori: Guru / Tenaga Kependidikan / Kepala Sekolah */
+    private function kategoriDariJenisPtk(?string $jenisPtk): ?string
+    {
+        if (! $jenisPtk) return null;
+        $j = strtolower($jenisPtk);
+        if (str_contains($j, 'kepala sekolah')) return 'Kepala Sekolah';
+        if (str_contains($j, 'guru')) return 'Guru';
+        return 'Tenaga Kependidikan';
+    }
+
     private function val($sheet, string $col, int $row): ?string
     {
         $v = $sheet->getCell($col . $row)->getValue();
@@ -131,6 +141,7 @@ class PegawaiDapodikImport
                 'tanggal_lahir' => $this->parseDate($this->val($sheet, self::COL_TANGGAL_LAHIR, $row)),
                 'jenis_kepegawaian' => $jenisKepegawaian,
                 'jabatan' => $jabatan,
+                'kategori_pegawai' => $this->kategoriDariJenisPtk($this->val($sheet, self::COL_JENIS_PTK, $row)),
                 'golongan' => $golongan,
                 'tmt_cpns' => $this->parseDate($this->val($sheet, self::COL_TANGGAL_CPNS, $row)),
                 'tmt_pns' => $this->parseDate($this->val($sheet, self::COL_TMT_PNS, $row)),
