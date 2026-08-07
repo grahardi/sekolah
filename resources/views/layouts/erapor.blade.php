@@ -95,6 +95,18 @@
         }
         .topbar-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: #1E293B; }
 
+        /* ── Mobile: sidebar jadi overlay (nutupin), bukan geser halaman ── */
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 35; }
+        .sb-toggle-mobile { display: none; background: none; border: none; cursor: pointer; padding: 6px; margin-right: 4px; }
+        .sb-toggle-mobile i { font-size: 22px; color: #1E293B; }
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); transition: transform .25s ease; }
+            .sidebar.sb-open { transform: translateX(0); }
+            .main-wrap { margin-left: 0 !important; }
+            .sidebar-backdrop.sb-open { display: block; }
+            .sb-toggle-mobile { display: inline-flex; align-items: center; justify-content: center; }
+        }
+
         /* ── Buttons ─────────────────────────────── */
         .btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none; transition:all .12s; cursor:pointer; border:none; line-height:1; }
         .btn i { font-size:16px; }
@@ -296,9 +308,16 @@
 </aside>
 
 {{-- ── Main ─────────────────────────────────────────────────────────────── --}}
+<div class="sidebar-backdrop" onclick="document.querySelector('.sidebar').classList.remove('sb-open'); this.classList.remove('sb-open');"></div>
+
 <div class="main-wrap">
     <header class="topbar">
-        <span class="topbar-title">@yield('page-title','Buku Induk Siswa')</span>
+        <div style="display:flex;align-items:center;">
+            <button class="sb-toggle-mobile" onclick="document.querySelector('.sidebar').classList.toggle('sb-open'); document.querySelector('.sidebar-backdrop').classList.toggle('sb-open');">
+                <i class="ti ti-menu-2"></i>
+            </button>
+            <span class="topbar-title">@yield('page-title','Buku Induk Siswa')</span>
+        </div>
         <div style="display:flex;align-items:center;gap:10px;">
             @yield('header-actions')
         </div>
