@@ -34,8 +34,7 @@ class ExoSyncService
             if (! $jurusanUmum) {
                 $jurusanId = (string) \Illuminate\Support\Str::uuid();
                 $conn->table('jurusans')->insert([
-                    'id' => $jurusanId, 'kode_jurusan' => 'UMUM', 'nama' => 'Umum',
-                    'created_at' => now(), 'updated_at' => now(),
+                    'id' => $jurusanId, 'kode' => 'UMUM', 'nama' => 'Umum',
                 ]);
             } else {
                 $jurusanId = $jurusanUmum->id;
@@ -98,11 +97,13 @@ class ExoSyncService
                             $pesertaId = (string) \Illuminate\Support\Str::uuid();
                             $conn->table('pesertas')->insert([
                                 'id' => $pesertaId,
+                                'sesi' => 1, // "Sesi 1" default
                                 'no_ujian' => $noUjian,
                                 'nama' => $siswa->nama_lengkap,
                                 'password' => password_hash((string) random_int(100000, 999999), PASSWORD_BCRYPT),
                                 'jurusan_id' => $jurusanId,
                                 'agama_id' => $agamaId,
+                                'status' => 1, // 1 = aktif
                                 'created_at' => now(), 'updated_at' => now(),
                             ]);
                             $dibuatSiswa++;
@@ -117,12 +118,12 @@ class ExoSyncService
                             $diupdateSiswa++;
                         }
 
-                        $conn->table('group_members')->where('user_id', $pesertaId)->delete();
+                        $conn->table('group_members')->where('student_id', $pesertaId)->delete();
                         $conn->table('group_members')->insert([
                             'id' => (string) \Illuminate\Support\Str::uuid(),
                             'group_id' => $subGrupId,
-                            'user_id' => $pesertaId,
-                            'created_at' => now(),
+                            'student_id' => $pesertaId,
+                            'created_at' => now(), 'updated_at' => now(),
                         ]);
                     }
                 }
