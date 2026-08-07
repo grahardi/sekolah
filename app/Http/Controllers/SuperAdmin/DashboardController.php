@@ -15,7 +15,7 @@ class DashboardController extends Controller
     {
         $search = $request->input('search');
 
-        $sekolahs = Sekolah::withCount(['users', 'siswas'])
+        $sekolahs = Sekolah::withCount(['users', 'siswas' => fn ($q) => $q->withoutGlobalScopes()])
             ->when($search, fn ($q) => $q->where('nama', 'ilike', "%{$search}%")->orWhere('npsn', 'ilike', "%{$search}%"))
             ->orderByDesc('created_at')
             ->paginate(15)
