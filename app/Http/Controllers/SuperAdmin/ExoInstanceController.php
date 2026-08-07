@@ -38,9 +38,12 @@ class ExoInstanceController extends Controller
         ]);
     }
 
-    // Folder dasar tempat semua instance Extraordinary di-extract - scan
-    // otomatis subfolder di sini utk dropdown pilih path, bukan ketik manual.
+    // Folder dasar tempat semua instance Extraordinary di-extract.
     private const BASE_PATH = '/home/aginza/sekolah';
+
+    // Path binary psql - aaPanel install PostgreSQL di lokasi sendiri,
+    // bukan /usr/bin/ standar, jadi harus path lengkap.
+    private const PSQL_BIN = '/www/server/pgsql/bin/psql';
 
     /**
      * Cari file binary main-amd64 di folder - nama persisnya bisa beda
@@ -103,10 +106,14 @@ class ExoInstanceController extends Controller
         // 2. Jalankan SQL master ke database baru - pakai psql via shell,
         //    krn file dump bisa berisi sintaks kompleks (COPY, fungsi, dll)
         //    yg gak reliable dieksekusi lewat PDO::exec() biasa.
+        if (! file_exists(self::PSQL_BIN)) {
+            return ['ok' => false, 'pesan' => 'Binary psql tidak ditemukan di ' . self::PSQL_BIN . ' - cek lagi lokasi instalasi PostgreSQL di server ini.'];
+        }
+
         $masterSqlPath = storage_path('app/exo/master.sql');
         $prosesImport = \Illuminate\Support\Facades\Process::timeout(120)
             ->env(['PGPASSWORD' => $rootPassword])
-            ->run(['psql', '-h', 'localhost', '-U', 'postgres', '-d', $dbName, '-f', $masterSqlPath]);
+            ->run([self::PSQL_BIN, '-h', 'localhost', '-U', 'postgres', '-d', $dbName, '-f', $masterSqlPath]);
 
         if (! $prosesImport->successful()) {
             return ['ok' => false, 'pesan' => 'Database dibuat, tapi gagal import SQL master: ' . $prosesImport->errorOutput()];
