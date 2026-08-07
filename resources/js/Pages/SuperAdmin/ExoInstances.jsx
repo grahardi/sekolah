@@ -51,6 +51,11 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
         router.post(`/admin-portal/exo/${instance.id}/test-connection`, {}, { preserveScroll: true });
     };
 
+    const sinkronSiswa = (instance) => {
+        if (! confirm(`Sinkron data siswa ${instance.sekolah_nama} ke ${instance.nama}? Ini akan buat/update grup kelas dan akun peserta.`)) return;
+        router.post(`/admin-portal/exo/${instance.id}/sinkron-siswa`, {}, { preserveScroll: true });
+    };
+
     const jalankan = (instance) => {
         if (! confirm(`Jalankan ${instance.nama}? Ini akan menjalankan perintah nohup di server.`)) return;
         router.post(`/admin-portal/exo/${instance.id}/run`, {}, { preserveScroll: true });
@@ -260,9 +265,16 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
                                 <button type="button" onClick={() => setEditSekolah(null)} className="px-3 py-1.5 rounded-lg bg-navy/5 text-navy/60 text-xs">Batal</button>
                             </form>
                         ) : (
-                            <button onClick={() => { setEditSekolah(i.id); formSekolah.setData('sekolah_id', i.sekolah_id || ''); }} className="text-xs text-teal hover:underline mb-4 block">
-                                <i className="ti ti-school mr-1" /> {i.sekolah_nama ? `Terhubung: ${i.sekolah_nama}` : 'Hubungkan ke Sekolah'}
-                            </button>
+                            <div className="flex items-center gap-3 mb-4">
+                                <button onClick={() => { setEditSekolah(i.id); formSekolah.setData('sekolah_id', i.sekolah_id || ''); }} className="text-xs text-teal hover:underline block">
+                                    <i className="ti ti-school mr-1" /> {i.sekolah_nama ? `Terhubung: ${i.sekolah_nama}` : 'Hubungkan ke Sekolah'}
+                                </button>
+                                {i.sekolah_nama && (
+                                    <button onClick={() => sinkronSiswa(i)} className="text-xs text-navy/50 hover:text-navy hover:underline">
+                                        <i className="ti ti-refresh mr-1" /> Sinkron Siswa
+                                    </button>
+                                )}
+                            </div>
                         )}
 
                         {i.sedang_jalan ? (

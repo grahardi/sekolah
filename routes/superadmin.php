@@ -20,5 +20,6 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::post('/exo/{exoInstance}/run', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'run'])->name('exo.run');
     Route::post('/exo/{exoInstance}/stop', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'stop'])->name('exo.stop');
     Route::put('/exo/{exoInstance}/sekolah', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'hubungkanSekolah'])->name('exo.sekolah');
+    Route::post('/exo/{exoInstance}/sinkron-siswa', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'sinkronSiswa'])->name('exo.sinkron-siswa');
     Route::delete('/exo/{exoInstance}', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'destroy'])->name('exo.destroy');
 });
