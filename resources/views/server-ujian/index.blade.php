@@ -5,6 +5,10 @@
 
 @section('content')
 
+<p style="font-size:13px;color:#64748b;margin:-8px 0 20px;max-width:600px;">
+    Kelola server Extraordinary CBT (Server Ujian) khusus sekolahmu — nyalakan/matikan sesuai kebutuhan ujian.
+</p>
+
 @if($instance)
     @php $port = $instance->bacaEnv('SERVER_PORT'); @endphp
     <div class="card" style="max-width:600px;overflow:hidden;">
@@ -40,12 +44,9 @@
             </div>
 
             @if($instance->admin_email_tersambung)
-            <div style="background:#eff6ff;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-                <i class="ti ti-user-circle" style="font-size:22px;color:#2563EB;"></i>
-                <div>
-                    <p style="font-size:11px;color:#64748b;margin:0;">Login pakai akun sekolah.co.id kamu</p>
-                    <p style="font-size:13px;font-weight:600;color:#0f172a;margin:1px 0 0;font-family:monospace;">{{ $instance->admin_email_tersambung }}</p>
-                </div>
+            <div style="background:#f0fdf4;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <i class="ti ti-shield-check" style="font-size:22px;color:#16a34a;flex-shrink:0;"></i>
+                <p style="font-size:13px;color:#166534;margin:0;font-weight:600;">Silahkan Login dengan User dan Password Portal di Server Ujian</p>
             </div>
             @endif
             @else
