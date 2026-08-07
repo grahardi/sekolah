@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
-export default function ExoInstances({ instances, masterSqlTersedia }) {
+export default function ExoInstances({ instances, masterSqlTersedia, diagnostik }) {
     const [showTambah, setShowTambah] = useState(false);
     const [editKey, setEditKey] = useState(null); // id instance yg lagi diedit license key-nya
 
@@ -55,6 +55,15 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
                 Kelola instance server Extraordinary CBT yang ter-install di server yang sama.
                 Port cuma bisa dilihat (diatur langsung di server), License Key bisa diubah dari sini.
             </p>
+
+            {diagnostik && (
+                <div className="text-xs font-mono bg-navy text-white rounded-lg p-4 mb-6 max-w-lg">
+                    <p className="mb-1 opacity-60">DIAGNOSTIK (via PHP-FPM, bukan CLI):</p>
+                    <p>open_basedir: <span className={diagnostik.open_basedir === '(tidak ada batasan)' ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.open_basedir}</span></p>
+                    <p>Folder /home/aginza/sekolah ada: <span className={diagnostik.test_folder_ada ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.test_folder_ada ? 'YA' : 'TIDAK'}</span></p>
+                    <p>instance1/.env terbaca: <span className={diagnostik.test_env_ada ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.test_env_ada ? 'YA' : 'TIDAK'}</span></p>
+                </div>
+            )}
             <p className="text-xs text-amber-700 bg-yellow-50 rounded-lg px-4 py-2.5 mb-6 max-w-2xl">
                 <i className="ti ti-alert-triangle mr-1" /> Tombol "Jalankan" perlu izin eksekusi yang benar di server (lihat catatan admin).
                 Kalau gagal, jalankan manual dulu lewat terminal untuk memastikan izinnya benar.

@@ -30,6 +30,11 @@ class ExoInstanceController extends Controller
         return Inertia::render('SuperAdmin/ExoInstances', [
             'instances' => $instances,
             'masterSqlTersedia' => $this->masterSqlTersedia(),
+            'diagnostik' => [
+                'open_basedir' => ini_get('open_basedir') ?: '(tidak ada batasan)',
+                'test_folder_ada' => is_dir(self::BASE_PATH),
+                'test_env_ada' => file_exists(self::BASE_PATH . '/instance1/.env'),
+            ],
         ]);
     }
 
