@@ -8,7 +8,7 @@ class ExoInstance extends Model
 {
     protected $table = 'exo_instances';
     protected $fillable = [
-        'nama', 'slug', 'path', 'port', 'is_aktif', 'terakhir_dijalankan',
+        'nama', 'slug', 'path', 'port', 'is_aktif', 'terakhir_dijalankan', 'sekolah_id',
         'db_host', 'db_port', 'db_name', 'db_user', 'db_pass',
     ];
     protected $casts = [
@@ -22,6 +22,18 @@ class ExoInstance extends Model
         'db_user' => 'encrypted',
         'db_pass' => 'encrypted',
     ];
+
+    public function sekolah() { return $this->belongsTo(\App\Models\Sekolah::class); }
+
+    /** Cek proses instance ini beneran jalan lewat port yg dipakai (lebih reliable drpd cocokkan command line) */
+    public function cekPid(): ?int
+    {
+        if (! $this->port) return null;
+
+        $result = \Illuminate\Support\Facades\Process::run(['bash', '-c', "lsof -t -i :{$this->port} -sTCP:LISTEN 2>/dev/null | head -1"]);
+        $pid = trim($result->output());
+        return $pid !== '' ? (int) $pid : null;
+    }
 
     /** Konfigurasi & kembalikan koneksi DB dinamis ke database instance ini */
     public function dbConnection(): \Illuminate\Database\Connection

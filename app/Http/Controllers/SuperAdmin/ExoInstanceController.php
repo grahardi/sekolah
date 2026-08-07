@@ -13,7 +13,8 @@ class ExoInstanceController extends Controller
 {
     public function index(): Response
     {
-        $instances = ExoInstance::orderBy('nama')->get()->map(function ($i) {
+        $instances = ExoInstance::with('sekolah')->orderBy('nama')->get()->map(function ($i) {
+            $pid = $i->cekPid();
             return [
                 'id' => $i->id,
                 'nama' => $i->nama,
@@ -24,17 +25,17 @@ class ExoInstanceController extends Controller
                 'port_saat_ini' => $i->bacaEnv('SERVER_PORT'), // VIEW ONLY - dibaca langsung dari .env
                 'license_key_terisi' => filled($i->bacaEnv('SERVER_SECRET_LICENSE_KEY')),
                 'db_terisi' => filled($i->db_host) && filled($i->db_name),
+                'sedang_jalan' => $pid !== null,
+                'pid' => $pid,
+                'sekolah_id' => $i->sekolah_id,
+                'sekolah_nama' => $i->sekolah?->nama,
             ];
         });
 
         return Inertia::render('SuperAdmin/ExoInstances', [
             'instances' => $instances,
             'masterSqlTersedia' => $this->masterSqlTersedia(),
-            'diagnostik' => [
-                'open_basedir' => ini_get('open_basedir') ?: '(tidak ada batasan)',
-                'test_folder_ada' => is_dir(self::BASE_PATH),
-                'test_env_ada' => file_exists(self::BASE_PATH . '/instance1/.env'),
-            ],
+            'sekolahList' => \App\Models\Sekolah::orderBy('nama')->get(['id', 'nama']),
         ]);
     }
 
@@ -220,6 +221,10 @@ class ExoInstanceController extends Controller
      */
     public function run(ExoInstance $exoInstance)
     {
+        if ($exoInstance->cekPid() !== null) {
+            return back()->with('error', "{$exoInstance->nama} sudah jalan.");
+        }
+
         $path = rtrim($exoInstance->path, '/');
         $namaBinary = $this->cariNamaBinary($path);
         abort_unless($namaBinary !== null, 404, 'Binary main-amd64 tidak ditemukan di path instance ini.');
@@ -231,7 +236,66 @@ class ExoInstanceController extends Controller
 
         $exoInstance->update(['terakhir_dijalankan' => now()]);
 
-        return back()->with('success', "Perintah jalankan {$exoInstance->nama} sudah dikirim. Cek status/log manual di server kalau perlu (nohup.out di {$path}).");
+        return back()->with('success', "{$exoInstance->nama} berhasil dijalankan.");
+    }
+
+    public function stop(ExoInstance $exoInstance)
+    {
+        $pid = $exoInstance->cekPid();
+        if ($pid === null) {
+            return back()->with('error', "{$exoInstance->nama} sedang tidak jalan.");
+        }
+
+        Process::run(['kill', (string) $pid]);
+        sleep(1);
+
+        return back()->with('success', "{$exoInstance->nama} dihentikan.");
+    }
+
+    /**
+     * Hubungkan instance ke sekolah + coba samakan akun admin di Extraordinary
+     * dgn akun admin sekolah kita (email+password hash) KALAU format hash-nya
+     * sama-sama bcrypt. Perlu kredensial DB sudah diisi & DB terhubung.
+     */
+    public function hubungkanSekolah(Request $request, ExoInstance $exoInstance)
+    {
+        $data = $request->validate(['sekolah_id' => 'required|exists:sekolahs,id']);
+        $exoInstance->update(['sekolah_id' => $data['sekolah_id']]);
+
+        if (! $exoInstance->db_host) {
+            return back()->with('success', "Instance dihubungkan ke sekolah. (Isi kredensial DB dulu kalau mau sinkron akun admin juga.)");
+        }
+
+        $admin = \App\Models\User::where('sekolah_id', $data['sekolah_id'])->where('role', 'admin')->first();
+        if (! $admin) {
+            return back()->with('success', 'Instance dihubungkan ke sekolah. (Tidak ada akun admin di sekolah itu, sinkron akun dilewati.)');
+        }
+
+        try {
+            $conn = $exoInstance->dbConnection();
+            $userExo = $conn->table('users')->first(); // ambil 1 baris contoh utk cek format hash
+
+            if (! $userExo || ! isset($userExo->password)) {
+                return back()->with('success', 'Instance dihubungkan ke sekolah. (Tabel users di Extraordinary tidak ditemukan/kosong, sinkron akun dilewati.)');
+            }
+
+            $formatBcrypt = (bool) preg_match('/^\$2[aby]\$/', $userExo->password);
+            if (! $formatBcrypt) {
+                return back()->with('success', 'Instance dihubungkan ke sekolah. (Format enkripsi password Extraordinary beda dari kita, TIDAK bisa disamakan otomatis - login tetap terpisah.)');
+            }
+
+            // Password hash Laravel (bcrypt) & format di Extraordinary SAMA -
+            // update user admin exo pakai email+hash password admin kita apa
+            // adanya (tidak perlu tau password asli, cukup salin hash-nya).
+            $conn->table('users')->where('id', $userExo->id)->update([
+                'email' => $admin->email,
+                'password' => $admin->password, // hash bcrypt Laravel, langsung dipakai
+            ]);
+
+            return back()->with('success', "Instance dihubungkan ke sekolah, DAN akun admin Extraordinary berhasil disamakan dgn login admin sekolah.co.id ({$admin->email}) - format hash sama-sama bcrypt.");
+        } catch (\Throwable $e) {
+            return back()->with('success', 'Instance dihubungkan ke sekolah. (Gagal cek/sinkron akun: ' . $e->getMessage() . ')');
+        }
     }
 
     public function destroy(ExoInstance $exoInstance)

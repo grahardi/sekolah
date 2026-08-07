@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
-export default function ExoInstances({ instances, masterSqlTersedia, diagnostik }) {
+export default function ExoInstances({ instances, masterSqlTersedia, sekolahList }) {
     const [showTambah, setShowTambah] = useState(false);
     const [editKey, setEditKey] = useState(null); // id instance yg lagi diedit license key-nya
 
@@ -11,6 +11,18 @@ export default function ExoInstances({ instances, masterSqlTersedia, diagnostik 
     const formDb = useForm({ db_host: '', db_port: '5432', db_name: '', db_user: '', db_pass: '' });
     const [editDb, setEditDb] = useState(null);
     const formSql = useForm({ master_sql: null });
+    const [editSekolah, setEditSekolah] = useState(null);
+    const formSekolah = useForm({ sekolah_id: '' });
+
+    const submitSekolah = (e, instance) => {
+        e.preventDefault();
+        formSekolah.put(`/admin-portal/exo/${instance.id}/sekolah`, { onSuccess: () => setEditSekolah(null) });
+    };
+
+    const hentikan = (instance) => {
+        if (! confirm(`Hentikan ${instance.nama}?`)) return;
+        router.post(`/admin-portal/exo/${instance.id}/stop`, {}, { preserveScroll: true });
+    };
 
     const submitSql = (e) => {
         e.preventDefault();
@@ -55,15 +67,6 @@ export default function ExoInstances({ instances, masterSqlTersedia, diagnostik 
                 Kelola instance server Extraordinary CBT yang ter-install di server yang sama.
                 Port cuma bisa dilihat (diatur langsung di server), License Key bisa diubah dari sini.
             </p>
-
-            {diagnostik && (
-                <div className="text-xs font-mono bg-navy text-white rounded-lg p-4 mb-6 max-w-lg">
-                    <p className="mb-1 opacity-60">DIAGNOSTIK (via PHP-FPM, bukan CLI):</p>
-                    <p>open_basedir: <span className={diagnostik.open_basedir === '(tidak ada batasan)' ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.open_basedir}</span></p>
-                    <p>Folder /home/aginza/sekolah ada: <span className={diagnostik.test_folder_ada ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.test_folder_ada ? 'YA' : 'TIDAK'}</span></p>
-                    <p>instance1/.env terbaca: <span className={diagnostik.test_env_ada ? 'text-emerald-400' : 'text-red-400'}>{diagnostik.test_env_ada ? 'YA' : 'TIDAK'}</span></p>
-                </div>
-            )}
             <p className="text-xs text-amber-700 bg-yellow-50 rounded-lg px-4 py-2.5 mb-6 max-w-2xl">
                 <i className="ti ti-alert-triangle mr-1" /> Tombol "Jalankan" perlu izin eksekusi yang benar di server (lihat catatan admin).
                 Kalau gagal, jalankan manual dulu lewat terminal untuk memastikan izinnya benar.
@@ -148,7 +151,10 @@ export default function ExoInstances({ instances, masterSqlTersedia, diagnostik 
                     <div key={i.id} className="rounded-2xl bg-white border border-navy/10 p-5">
                         <div className="flex items-start justify-between mb-3">
                             <div>
-                                <p className="font-display font-700 text-navy">{i.nama}</p>
+                                <p className="font-display font-700 text-navy flex items-center gap-2">
+                                    {i.nama}
+                                    <span className={`inline-block h-2 w-2 rounded-full ${i.sedang_jalan ? 'bg-emerald-500' : 'bg-navy/20'}`} title={i.sedang_jalan ? 'Sedang jalan' : 'Tidak jalan'} />
+                                </p>
                                 <p className="text-xs text-navy/40 font-mono">{i.path}</p>
                             </div>
                             <button onClick={() => hapus(i)} className="text-red-400 hover:text-red-600 text-xs">
@@ -156,14 +162,25 @@ export default function ExoInstances({ instances, masterSqlTersedia, diagnostik 
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs text-navy/60 mb-4">
-                            <span>Port: <span className="font-mono font-medium text-navy">{i.port_saat_ini || '-'}</span> <span className="text-navy/30">(view only)</span></span>
+                        <div className="flex items-center gap-2 text-xs text-navy/60 mb-2 flex-wrap">
+                            <span className={`px-2 py-0.5 rounded-full ${i.sedang_jalan ? 'bg-emerald-50 text-emerald-700' : 'bg-navy/5 text-navy/50'}`}>
+                                {i.sedang_jalan ? `Jalan (PID ${i.pid})` : 'Tidak jalan'}
+                            </span>
                             <span className={`px-2 py-0.5 rounded-full ${i.license_key_terisi ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
                                 {i.license_key_terisi ? 'License terisi' : 'License kosong'}
                             </span>
                             <span className={`px-2 py-0.5 rounded-full ${i.db_terisi ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
                                 {i.db_terisi ? 'DB terhubung' : 'DB belum diisi'}
                             </span>
+                        </div>
+
+                        <div className="text-xs text-navy/60 mb-4">
+                            Port: <span className="font-mono font-medium text-navy">{i.port_saat_ini || '-'}</span>
+                            {i.sedang_jalan && i.port_saat_ini && (
+                                <a href={`https://sekolah.co.id:${i.port_saat_ini}`} target="_blank" rel="noreferrer" className="ml-2 text-teal hover:underline">
+                                    <i className="ti ti-external-link" /> sekolah.co.id:{i.port_saat_ini}
+                                </a>
+                            )}
                         </div>
 
                         {editKey === i.id ? (
@@ -212,9 +229,31 @@ export default function ExoInstances({ instances, masterSqlTersedia, diagnostik 
                             </div>
                         )}
 
-                        <button onClick={() => jalankan(i)} className="w-full px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600">
-                            <i className="ti ti-player-play mr-1" /> Jalankan Server
-                        </button>
+                        {editSekolah === i.id ? (
+                            <form onSubmit={(e) => submitSekolah(e, i)} className="mb-3 flex gap-2">
+                                <select value={formSekolah.data.sekolah_id} onChange={(e) => formSekolah.setData('sekolah_id', e.target.value)}
+                                    className="flex-1 rounded-lg border border-navy/15 px-3 py-2 text-xs">
+                                    <option value="">-- Pilih sekolah --</option>
+                                    {sekolahList.map((s) => <option key={s.id} value={s.id}>{s.nama}</option>)}
+                                </select>
+                                <button type="submit" disabled={formSekolah.processing} className="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-medium disabled:opacity-50">Simpan</button>
+                                <button type="button" onClick={() => setEditSekolah(null)} className="px-3 py-1.5 rounded-lg bg-navy/5 text-navy/60 text-xs">Batal</button>
+                            </form>
+                        ) : (
+                            <button onClick={() => { setEditSekolah(i.id); formSekolah.setData('sekolah_id', i.sekolah_id || ''); }} className="text-xs text-teal hover:underline mb-4 block">
+                                <i className="ti ti-school mr-1" /> {i.sekolah_nama ? `Terhubung: ${i.sekolah_nama}` : 'Hubungkan ke Sekolah'}
+                            </button>
+                        )}
+
+                        {i.sedang_jalan ? (
+                            <button onClick={() => hentikan(i)} className="w-full px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600">
+                                <i className="ti ti-player-stop mr-1" /> Hentikan Server
+                            </button>
+                        ) : (
+                            <button onClick={() => jalankan(i)} className="w-full px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600">
+                                <i className="ti ti-player-play mr-1" /> Jalankan Server
+                            </button>
+                        )}
                         {i.terakhir_dijalankan && (
                             <p className="text-[11px] text-navy/40 mt-2">Terakhir dijalankan: {new Date(i.terakhir_dijalankan).toLocaleString('id-ID')}</p>
                         )}

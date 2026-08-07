@@ -18,5 +18,7 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::put('/exo/{exoInstance}/db-creds', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'updateDbCreds'])->name('exo.db-creds');
     Route::post('/exo/{exoInstance}/test-connection', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'testConnection'])->name('exo.test-connection');
     Route::post('/exo/{exoInstance}/run', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'run'])->name('exo.run');
+    Route::post('/exo/{exoInstance}/stop', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'stop'])->name('exo.stop');
+    Route::put('/exo/{exoInstance}/sekolah', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'hubungkanSekolah'])->name('exo.sekolah');
     Route::delete('/exo/{exoInstance}', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'destroy'])->name('exo.destroy');
 });
