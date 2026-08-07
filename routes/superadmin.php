@@ -8,5 +8,6 @@ use Illuminate\Support\Facades\Route;
 // 'super-admin' (cek kolom is_super_admin di tabel users).
 Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name('superadmin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/log-aktivitas', [DashboardController::class, 'logAktivitas'])->name('log-aktivitas');
     Route::get('/sekolah/{sekolah}', [DashboardController::class, 'show'])->name('sekolah.show');
 });

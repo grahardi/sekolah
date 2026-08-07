@@ -34,11 +34,36 @@ class DashboardController extends Controller
 
     public function show(Sekolah $sekolah): Response
     {
-        $sekolah->loadCount(['users', 'siswas']);
+        $sekolah->loadCount(['users', 'siswas' => fn ($q) => $q->withoutGlobalScopes()]);
         $sekolah->load(['users' => fn ($q) => $q->orderBy('role')]);
 
         return Inertia::render('SuperAdmin/SekolahDetail', [
             'sekolah' => $sekolah,
+        ]);
+    }
+
+    public function logAktivitas(Request $request): Response
+    {
+        $eventFilter = $request->input('event');
+        $search = $request->input('search');
+
+        $logs = \App\Models\ActivityLog::with(['user', 'sekolah'])
+            ->when($eventFilter, fn ($q, $v) => $q->where('event', $v))
+            ->when($search, fn ($q, $v) => $q->where(fn ($qq) => $qq
+                ->where('nama_snapshot', 'ilike', "%{$v}%")
+                ->orWhere('email_snapshot', 'ilike', "%{$v}%")))
+            ->orderByDesc('created_at')
+            ->paginate(25)
+            ->withQueryString();
+
+        return Inertia::render('SuperAdmin/LogAktivitas', [
+            'logs' => $logs,
+            'filters' => ['event' => $eventFilter, 'search' => $search],
+            'stats' => [
+                'total_login' => \App\Models\ActivityLog::where('event', 'login')->count(),
+                'total_logout' => \App\Models\ActivityLog::where('event', 'logout')->count(),
+                'total_registrasi' => \App\Models\ActivityLog::where('event', 'registrasi')->count(),
+            ],
         ]);
     }
 }

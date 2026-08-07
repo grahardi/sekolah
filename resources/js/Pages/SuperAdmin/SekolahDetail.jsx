@@ -1,9 +1,9 @@
 import { Link } from '@inertiajs/react';
-import PortalLayout from '../../Layouts/PortalLayout';
+import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
 export default function SekolahDetail({ sekolah }) {
     return (
-        <PortalLayout title={sekolah.nama} breadcrumb={['Portal', 'Admin Portal', sekolah.nama]}>
+        <SuperAdminLayout title={sekolah.nama} breadcrumb={['Dashboard', sekolah.nama]}>
             <Link href="/admin-portal" className="text-sm text-teal font-medium mb-4 inline-block">&larr; Kembali ke daftar sekolah</Link>
 
             <div className="rounded-2xl bg-white border border-navy/10 p-6 mb-6">
@@ -65,6 +65,6 @@ export default function SekolahDetail({ sekolah }) {
                     </tbody>
                 </table>
             </div>
-        </PortalLayout>
+        </SuperAdminLayout>
     );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
-import PortalLayout from '../../Layouts/PortalLayout';
+import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
 export default function Dashboard({ sekolahs, stats, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -11,7 +11,7 @@ export default function Dashboard({ sekolahs, stats, filters }) {
     };
 
     return (
-        <PortalLayout title="Admin Portal" breadcrumb={['Portal', 'Admin Portal']}>
+        <SuperAdminLayout title="Dashboard" breadcrumb={["Dashboard"]}>
             <p className="text-navy/60 mb-6 max-w-2xl">
                 Kelola seluruh sekolah yang terdaftar di sekolah.co.id - ini beda dari
                 Buku Induk, yang cuma mengurus satu sekolah.
@@ -96,6 +96,6 @@ export default function Dashboard({ sekolahs, stats, filters }) {
                     ))}
                 </div>
             )}
-        </PortalLayout>
+        </SuperAdminLayout>
     );
 }
