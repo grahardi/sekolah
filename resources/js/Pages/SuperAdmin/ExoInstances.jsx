@@ -197,8 +197,8 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
                         <div className="text-xs text-navy/60 mb-4">
                             Port: <span className="font-mono font-medium text-navy">{i.port_saat_ini || '-'}</span>
                             {i.sedang_jalan && i.port_saat_ini && (
-                                <a href={`https://sekolah.co.id:${i.port_saat_ini}`} target="_blank" rel="noreferrer" className="ml-2 text-teal hover:underline">
-                                    <i className="ti ti-external-link" /> sekolah.co.id:{i.port_saat_ini}
+                                <a href={`http://163.227.0.18:${i.port_saat_ini}/adm#/`} target="_blank" rel="noreferrer" className="ml-2 text-teal hover:underline">
+                                    <i className="ti ti-external-link" /> 163.227.0.18:{i.port_saat_ini}
                                 </a>
                             )}
                         </div>

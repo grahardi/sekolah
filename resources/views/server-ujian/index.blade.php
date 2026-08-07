@@ -23,7 +23,7 @@
 
         @if($sedangJalan)
         <div style="display:flex;gap:10px;margin-bottom:16px;">
-            <a href="https://sekolah.co.id:{{ $port }}/adm#/" target="_blank" class="btn btn-primary" style="flex:1;justify-content:center;">
+            <a href="http://163.227.0.18:{{ $port }}/adm#/" target="_blank" class="btn btn-primary" style="flex:1;justify-content:center;">
                 <i class="ti ti-external-link"></i> Buka Server Ujian
             </a>
             <form action="{{ route('server-ujian.stop', $instance) }}" method="POST" style="flex:1;">
@@ -52,6 +52,16 @@
             <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">Password khusus ini dibuat sistem, terpisah dari password login sekolah.co.id kamu.</p>
         </div>
         @endif
+
+        <div style="border:1px dashed #cbd5e1;border-radius:10px;padding:14px 16px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div>
+                <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;"><i class="ti ti-device-mobile"></i> Aplikasi APK untuk Siswa</p>
+                <p style="font-size:11.5px;color:#94a3b8;margin:2px 0 0;">Generate aplikasi ujian Android khusus sekolahmu.</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" disabled style="opacity:.5;cursor:not-allowed;white-space:nowrap;">
+                <i class="ti ti-clock"></i> Segera Hadir
+            </button>
+        </div>
 
         @else
         <form action="{{ route('server-ujian.run', $instance) }}" method="POST">
