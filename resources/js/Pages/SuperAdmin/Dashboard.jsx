@@ -20,17 +20,17 @@ export default function Dashboard({ sekolahs, stats, filters }) {
             {/* Stat cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 {[
-                    { label: 'Total Sekolah', value: stats.total_sekolah, bg: 'bg-blue-50', text: 'text-blue-700', icon: 'ti-building' },
-                    { label: 'Total Pengguna', value: stats.total_user, bg: 'bg-purple-50', text: 'text-purple-700', icon: 'ti-users' },
-                    { label: 'Total Siswa', value: stats.total_siswa, bg: 'bg-emerald-50', text: 'text-emerald-700', icon: 'ti-school' },
-                    { label: 'Total Kelas', value: stats.total_kelas, bg: 'bg-amber-50', text: 'text-amber-700', icon: 'ti-door' },
-                    { label: 'Total Guru', value: stats.total_guru, bg: 'bg-rose-50', text: 'text-rose-700', icon: 'ti-user-check' },
-                    { label: 'Total TP', value: stats.total_tp, bg: 'bg-cyan-50', text: 'text-cyan-700', icon: 'ti-target-arrow' },
+                    { label: 'Total Sekolah', value: stats.total_sekolah, bg: 'bg-blue-500', icon: 'ti-building' },
+                    { label: 'Total Pengguna', value: stats.total_user, bg: 'bg-purple-500', icon: 'ti-users' },
+                    { label: 'Total Siswa', value: stats.total_siswa, bg: 'bg-emerald-500', icon: 'ti-school' },
+                    { label: 'Total Kelas', value: stats.total_kelas, bg: 'bg-amber-500', icon: 'ti-door' },
+                    { label: 'Total Guru', value: stats.total_guru, bg: 'bg-rose-500', icon: 'ti-user-check' },
+                    { label: 'Total TP', value: stats.total_tp, bg: 'bg-cyan-500', icon: 'ti-target-arrow' },
                 ].map((s) => (
                     <div key={s.label} className={`rounded-2xl ${s.bg} p-5`}>
-                        <i className={`ti ${s.icon} ${s.text} text-lg`} />
-                        <p className={`font-display font-700 text-3xl ${s.text} mt-2`}>{s.value?.toLocaleString('id-ID') ?? 0}</p>
-                        <p className="text-xs text-navy/50 mt-1">{s.label}</p>
+                        <i className={`ti ${s.icon} text-white/80 text-lg`} />
+                        <p className="font-display font-700 text-3xl text-white mt-2">{s.value?.toLocaleString('id-ID') ?? 0}</p>
+                        <p className="text-xs text-white/75 mt-1">{s.label}</p>
                     </div>
                 ))}
             </div>

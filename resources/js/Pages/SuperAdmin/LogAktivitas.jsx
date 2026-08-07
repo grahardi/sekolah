@@ -27,20 +27,20 @@ export default function LogAktivitas({ logs, filters, stats }) {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-                <button onClick={() => gantiEvent('login')} className={`text-left rounded-2xl bg-emerald-50 p-5 transition-shadow ${filters.event === 'login' ? 'ring-2 ring-emerald-400' : ''}`}>
-                    <i className="ti ti-login-2 text-emerald-700 text-lg" />
-                    <p className="font-display font-700 text-3xl text-emerald-700 mt-2">{stats.total_login}</p>
-                    <p className="text-xs text-navy/50 mt-1">Total Login</p>
+                <button onClick={() => gantiEvent('login')} className={`text-left rounded-2xl bg-emerald-500 p-5 transition-shadow ${filters.event === 'login' ? 'ring-2 ring-emerald-300 ring-offset-2' : ''}`}>
+                    <i className="ti ti-login-2 text-white/80 text-lg" />
+                    <p className="font-display font-700 text-3xl text-white mt-2">{stats.total_login}</p>
+                    <p className="text-xs text-white/75 mt-1">Total Login</p>
                 </button>
-                <button onClick={() => gantiEvent('logout')} className={`text-left rounded-2xl bg-slate-100 p-5 transition-shadow ${filters.event === 'logout' ? 'ring-2 ring-slate-400' : ''}`}>
-                    <i className="ti ti-logout text-slate-600 text-lg" />
-                    <p className="font-display font-700 text-3xl text-slate-600 mt-2">{stats.total_logout}</p>
-                    <p className="text-xs text-navy/50 mt-1">Total Logout</p>
+                <button onClick={() => gantiEvent('logout')} className={`text-left rounded-2xl bg-slate-500 p-5 transition-shadow ${filters.event === 'logout' ? 'ring-2 ring-slate-300 ring-offset-2' : ''}`}>
+                    <i className="ti ti-logout text-white/80 text-lg" />
+                    <p className="font-display font-700 text-3xl text-white mt-2">{stats.total_logout}</p>
+                    <p className="text-xs text-white/75 mt-1">Total Logout</p>
                 </button>
-                <button onClick={() => gantiEvent('registrasi')} className={`text-left rounded-2xl bg-blue-50 p-5 transition-shadow ${filters.event === 'registrasi' ? 'ring-2 ring-blue-400' : ''}`}>
-                    <i className="ti ti-user-plus text-blue-700 text-lg" />
-                    <p className="font-display font-700 text-3xl text-blue-700 mt-2">{stats.total_registrasi}</p>
-                    <p className="text-xs text-navy/50 mt-1">Total Registrasi</p>
+                <button onClick={() => gantiEvent('registrasi')} className={`text-left rounded-2xl bg-blue-500 p-5 transition-shadow ${filters.event === 'registrasi' ? 'ring-2 ring-blue-300 ring-offset-2' : ''}`}>
+                    <i className="ti ti-user-plus text-white/80 text-lg" />
+                    <p className="font-display font-700 text-3xl text-white mt-2">{stats.total_registrasi}</p>
+                    <p className="text-xs text-white/75 mt-1">Total Registrasi</p>
                 </button>
             </div>
 
