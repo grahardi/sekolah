@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 const MENU = [
     { key: 'dashboard', label: 'Dashboard', href: '/admin-portal' },
     { key: 'log-aktivitas', label: 'Log Aktivitas', href: '/admin-portal/log-aktivitas' },
+    { key: 'exo', label: 'Extraordinary CBT', href: '/admin-portal/exo' },
 ];
 
 export default function SuperAdminLayout({ title, breadcrumb = [], children }) {
