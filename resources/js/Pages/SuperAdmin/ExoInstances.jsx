@@ -2,14 +2,20 @@ import { useState } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
-export default function ExoInstances({ instances }) {
+export default function ExoInstances({ instances, masterSqlTersedia }) {
     const [showTambah, setShowTambah] = useState(false);
     const [editKey, setEditKey] = useState(null); // id instance yg lagi diedit license key-nya
 
-    const formTambah = useForm({ nama: '', slug: '', path: '' });
+    const formTambah = useForm({ nama: '', slug: '', path: '', provision_otomatis: false });
     const formKey = useForm({ license_key: '' });
     const formDb = useForm({ db_host: '', db_port: '5432', db_name: '', db_user: '', db_pass: '' });
     const [editDb, setEditDb] = useState(null);
+    const formSql = useForm({ master_sql: null });
+
+    const submitSql = (e) => {
+        e.preventDefault();
+        formSql.post('/admin-portal/exo/master-sql', { forceFormData: true, onSuccess: () => formSql.reset() });
+    };
 
     const submitTambah = (e) => {
         e.preventDefault();
@@ -51,6 +57,23 @@ export default function ExoInstances({ instances }) {
                 Kalau gagal, jalankan manual dulu lewat terminal untuk memastikan izinnya benar.
             </p>
 
+            <div className="rounded-2xl bg-white border border-navy/10 p-5 mb-6 max-w-lg">
+                <p className="text-sm font-medium text-navy mb-1">SQL Master (untuk provisioning otomatis)</p>
+                <p className="text-xs text-navy/50 mb-3">
+                    {masterSqlTersedia ? (
+                        <span className="text-emerald-600"><i className="ti ti-circle-check mr-1" />Sudah terupload, siap dipakai.</span>
+                    ) : (
+                        <span className="text-red-500">Belum ada file SQL master.</span>
+                    )}
+                </p>
+                <form onSubmit={submitSql} className="flex items-center gap-2">
+                    <input type="file" accept=".sql" onChange={(e) => formSql.setData('master_sql', e.target.files[0])} className="text-xs flex-1" />
+                    <button type="submit" disabled={formSql.processing || !formSql.data.master_sql} className="px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-medium disabled:opacity-40">
+                        Upload
+                    </button>
+                </form>
+            </div>
+
             <button onClick={() => setShowTambah(!showTambah)} className="mb-5 px-4 py-2.5 rounded-lg bg-teal text-white text-sm font-medium hover:bg-teal/90">
                 <i className="ti ti-plus mr-1" /> Tambah Instance
             </button>
@@ -73,12 +96,22 @@ export default function ExoInstances({ instances }) {
                         <div>
                             <label className="text-xs font-medium text-navy/60">Path Instalasi (absolut)</label>
                             <input value={formTambah.data.path} onChange={(e) => formTambah.setData('path', e.target.value)}
-                                placeholder="/home/aginza/ujian" className="w-full mt-1 rounded-lg border border-navy/15 px-3 py-2 text-sm font-mono" />
+                                placeholder="/home/aginza/exo/ujian" className="w-full mt-1 rounded-lg border border-navy/15 px-3 py-2 text-sm font-mono" />
+                            <p className="text-[11px] text-navy/40 mt-1">Folder ini harus sudah berisi hasil extract Extraordinary CBT (main-amd64 + .env bawaan) sebelum ditambahkan di sini.</p>
                             {formTambah.errors.path && <p className="text-xs text-red-600 mt-1">{formTambah.errors.path}</p>}
                         </div>
+                        <label className="flex items-start gap-2 mt-1 p-3 rounded-lg bg-teal/5 cursor-pointer">
+                            <input type="checkbox" checked={formTambah.data.provision_otomatis}
+                                onChange={(e) => formTambah.setData('provision_otomatis', e.target.checked)}
+                                disabled={!masterSqlTersedia} className="mt-0.5" />
+                            <span className="text-xs text-navy/70">
+                                <strong>Provisioning otomatis</strong> — buat database + user Postgres baru, jalankan SQL master, pilih port acak (12000-13000), lalu tulis semua ke <code className="font-mono">.env</code> instance ini.
+                                {!masterSqlTersedia && <span className="block text-red-500 mt-0.5">Upload SQL master dulu di atas untuk mengaktifkan opsi ini.</span>}
+                            </span>
+                        </label>
                     </div>
                     <button type="submit" disabled={formTambah.processing} className="mt-4 px-4 py-2 rounded-lg bg-teal text-white text-sm font-medium disabled:opacity-50">
-                        Simpan
+                        {formTambah.processing ? 'Memproses...' : 'Simpan'}
                     </button>
                 </form>
             )}
