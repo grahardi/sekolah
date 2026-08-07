@@ -75,11 +75,12 @@ class ServerUjianController extends Controller
         return back()->with('success', 'Server Ujian dihentikan.');
     }
 
-    public function sinkronSiswa(ExoInstance $instance)
+    public function sinkronSiswa(Request $request, ExoInstance $instance)
     {
         abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
 
-        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance);
+        $identifier = $request->input('identifier', 'nisn') === 'nis' ? 'nis' : 'nisn';
+        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance, $identifier);
 
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }

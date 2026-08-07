@@ -6,7 +6,7 @@ use App\Models\ExoInstance;
 
 class ExoSyncService
 {
-    public static function sinkronSiswa(ExoInstance $exoInstance): array
+    public static function sinkronSiswa(ExoInstance $exoInstance, string $identifier = 'nisn'): array
     {
         if (! $exoInstance->sekolah_id) {
             return ['ok' => false, 'pesan' => 'Instance belum terhubung ke sekolah manapun.'];
@@ -74,7 +74,7 @@ class ExoSyncService
                     }
 
                     foreach ($siswaSatuKelas as $siswa) {
-                        $noUjian = $siswa->nisn ?: $siswa->nis;
+                        $noUjian = $identifier === 'nis' ? ($siswa->nis ?: $siswa->nisn) : ($siswa->nisn ?: $siswa->nis);
                         if (! $noUjian) { $dilewati++; continue; }
 
                         $namaAgama = strtoupper(trim($siswa->agama ?? 'ISLAM'));
@@ -92,6 +92,10 @@ class ExoSyncService
                         }
 
                         $pesertaAda = $conn->table('pesertas')->where('no_ujian', $noUjian)->first();
+                        // Password TEKS BIASA (bukan di-hash) - ini kode ujian
+                        // sekali pakai/gampang diganti tiap sesi, bukan
+                        // kredensial permanen kayak akun admin.
+                        $passwordBaru = (string) random_int(100000, 999999);
 
                         if (! $pesertaAda) {
                             $pesertaId = (string) \Illuminate\Support\Str::uuid();
@@ -100,7 +104,7 @@ class ExoSyncService
                                 'sesi' => 1, // "Sesi 1" default
                                 'no_ujian' => $noUjian,
                                 'nama' => $siswa->nama_lengkap,
-                                'password' => password_hash((string) random_int(100000, 999999), PASSWORD_BCRYPT),
+                                'password' => $passwordBaru,
                                 'jurusan_id' => $jurusanId,
                                 'agama_id' => $agamaId,
                                 'status' => 1, // 1 = aktif
@@ -111,6 +115,7 @@ class ExoSyncService
                             $pesertaId = $pesertaAda->id;
                             $conn->table('pesertas')->where('id', $pesertaId)->update([
                                 'nama' => $siswa->nama_lengkap,
+                                'password' => $passwordBaru,
                                 'jurusan_id' => $jurusanId,
                                 'agama_id' => $agamaId,
                                 'updated_at' => now(),
