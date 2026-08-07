@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
@@ -11,6 +11,29 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
     const formDb = useForm({ db_host: '', db_port: '5432', db_name: '', db_user: '', db_pass: '' });
     const [editDb, setEditDb] = useState(null);
     const formSql = useForm({ master_sql: null });
+
+    const [folders, setFolders] = useState([]);
+    const [basePath, setBasePath] = useState('/home/aginza/sekolah');
+    const [scanning, setScanning] = useState(false);
+    const [scanError, setScanError] = useState(null);
+    const [modePathManual, setModePathManual] = useState(false);
+
+    const scanFolders = (path) => {
+        setScanning(true);
+        setScanError(null);
+        fetch(`/admin-portal/exo/scan-folder?base_path=${encodeURIComponent(path)}`)
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.error) { setScanError(data.error); setFolders([]); }
+                else { setFolders(data.folders); }
+            })
+            .catch(() => setScanError('Gagal memindai folder.'))
+            .finally(() => setScanning(false));
+    };
+
+    useEffect(() => {
+        if (showTambah && !modePathManual) scanFolders(basePath);
+    }, [showTambah]);
 
     const submitSql = (e) => {
         e.preventDefault();
@@ -97,10 +120,61 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
                             {formTambah.errors.slug && <p className="text-xs text-red-600 mt-1">{formTambah.errors.slug}</p>}
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-navy/60">Path Instalasi (absolut)</label>
-                            <input value={formTambah.data.path} onChange={(e) => formTambah.setData('path', e.target.value)}
-                                placeholder="/home/aginza/exo/ujian" className="w-full mt-1 rounded-lg border border-navy/15 px-3 py-2 text-sm font-mono" />
-                            <p className="text-[11px] text-navy/40 mt-1">Folder ini harus sudah berisi hasil extract Extraordinary CBT (main-amd64 + .env bawaan) sebelum ditambahkan di sini.</p>
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-xs font-medium text-navy/60">Path Instalasi</label>
+                                <button type="button" onClick={() => setModePathManual(!modePathManual)} className="text-[11px] text-teal hover:underline">
+                                    {modePathManual ? 'Pilih dari daftar folder' : 'Ketik manual'}
+                                </button>
+                            </div>
+
+                            {modePathManual ? (
+                                <input value={formTambah.data.path} onChange={(e) => formTambah.setData('path', e.target.value)}
+                                    placeholder="/home/aginza/exo/ujian" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm font-mono" />
+                            ) : (
+                                <>
+                                    <div className="flex gap-2 mb-2">
+                                        <input value={basePath} onChange={(e) => setBasePath(e.target.value)}
+                                            className="flex-1 rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" placeholder="Folder dasar, mis. /home/aginza/sekolah" />
+                                        <button type="button" onClick={() => scanFolders(basePath)} disabled={scanning}
+                                            className="px-3 py-2 rounded-lg bg-navy/5 text-navy/70 text-xs font-medium disabled:opacity-50">
+                                            {scanning ? 'Memindai...' : 'Pindai'}
+                                        </button>
+                                    </div>
+
+                                    {scanError && <p className="text-xs text-red-500 mb-2">{scanError}</p>}
+
+                                    <div className="space-y-1.5 max-h-56 overflow-y-auto">
+                                        {folders.length === 0 && !scanning && !scanError && (
+                                            <p className="text-xs text-navy/40">Tidak ada folder ditemukan di path itu.</p>
+                                        )}
+                                        {folders.map((f) => {
+                                            const disabled = !f.valid || f.sudah_dipakai;
+                                            const dipilih = formTambah.data.path === f.path;
+                                            return (
+                                                <label key={f.path}
+                                                    className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs cursor-pointer ${
+                                                        disabled ? 'opacity-50 cursor-not-allowed bg-navy/[0.02]' : dipilih ? 'border-teal bg-teal/5' : 'border-navy/10 hover:border-navy/20'
+                                                    }`}>
+                                                    <span className="flex items-center gap-2">
+                                                        <input type="radio" name="folder_pilihan" disabled={disabled}
+                                                            checked={dipilih}
+                                                            onChange={() => formTambah.setData('path', f.path)} />
+                                                        <span className="font-mono">{f.nama_folder}</span>
+                                                    </span>
+                                                    {f.sudah_dipakai ? (
+                                                        <span className="text-amber-600 text-[11px]">Terpakai: {f.sudah_dipakai}</span>
+                                                    ) : !f.valid ? (
+                                                        <span className="text-red-500 text-[11px]">{f.catatan}</span>
+                                                    ) : (
+                                                        <span className="text-emerald-600 text-[11px]">Tersedia</span>
+                                                    )}
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </>
+                            )}
+                            <p className="text-[11px] text-navy/40 mt-1">Folder harus sudah berisi hasil extract Extraordinary CBT (main-amd64 + .env bawaan).</p>
                             {formTambah.errors.path && <p className="text-xs text-red-600 mt-1">{formTambah.errors.path}</p>}
                         </div>
                         <label className="flex items-start gap-2 mt-1 p-3 rounded-lg bg-teal/5 cursor-pointer">

@@ -33,6 +33,41 @@ class ExoInstanceController extends Controller
         ]);
     }
 
+    // Folder dasar tempat semua instance Extraordinary di-extract - scan
+    // otomatis subfolder di sini utk dropdown pilih path, bukan ketik manual.
+    private const BASE_PATH = '/home/aginza/sekolah';
+
+    public function scanFolder(Request $request)
+    {
+        $basePath = $request->input('base_path', self::BASE_PATH);
+
+        if (! is_dir($basePath)) {
+            return response()->json(['error' => "Folder {$basePath} tidak ditemukan."], 404);
+        }
+
+        $pathTerpakai = ExoInstance::pluck('path', 'nama')->flip(); // path => nama, buat lookup cepat
+
+        $folders = collect(scandir($basePath))
+            ->reject(fn ($f) => in_array($f, ['.', '..']))
+            ->filter(fn ($f) => is_dir("{$basePath}/{$f}"))
+            ->map(function ($f) use ($basePath, $pathTerpakai) {
+                $fullPath = "{$basePath}/{$f}";
+                $adaEnv = file_exists("{$fullPath}/.env");
+                $adaBinary = file_exists("{$fullPath}/main-amd64");
+
+                return [
+                    'nama_folder' => $f,
+                    'path' => $fullPath,
+                    'valid' => $adaEnv && $adaBinary,
+                    'catatan' => ! $adaEnv ? 'Tidak ada .env' : (! $adaBinary ? 'Tidak ada main-amd64' : null),
+                    'sudah_dipakai' => $pathTerpakai->has($fullPath) ? $pathTerpakai->get($fullPath) : null,
+                ];
+            })
+            ->values();
+
+        return response()->json(['folders' => $folders, 'base_path' => $basePath]);
+    }
+
     public function uploadMasterSql(Request $request)
     {
         $request->validate(['master_sql' => 'required|file|max:51200']); // maks 50MB

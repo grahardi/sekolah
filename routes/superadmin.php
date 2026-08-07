@@ -12,6 +12,7 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::get('/sekolah/{sekolah}', [DashboardController::class, 'show'])->name('sekolah.show');
 
     Route::get('/exo', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'index'])->name('exo.index');
+    Route::get('/exo/scan-folder', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'scanFolder'])->name('exo.scan-folder');
     Route::post('/exo/master-sql', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'uploadMasterSql'])->name('exo.master-sql');
     Route::post('/exo', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'store'])->name('exo.store');
     Route::put('/exo/{exoInstance}/license-key', [\App\Http\Controllers\SuperAdmin\ExoInstanceController::class, 'updateLicenseKey'])->name('exo.license-key');
