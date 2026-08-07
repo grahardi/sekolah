@@ -36,20 +36,12 @@
 
         @if($instance->admin_email_tersambung)
         <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;font-size:13px;">
-            <p style="font-weight:600;color:#0f172a;margin:0 0 8px;"><i class="ti ti-key"></i> Login cepat ke Server Ujian</p>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <p style="font-weight:600;color:#0f172a;margin:0 0 8px;"><i class="ti ti-key"></i> Login ke Server Ujian</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="color:#64748b;">Email</span>
                 <span style="font-family:monospace;font-weight:600;">{{ $instance->admin_email_tersambung }}</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:#64748b;">Password</span>
-                <span style="display:flex;align-items:center;gap:8px;">
-                    <span id="pw-text" style="font-family:monospace;font-weight:600;">••••••••••••</span>
-                    <button type="button" onclick="const el=document.getElementById('pw-text'); el.textContent = el.textContent==='••••••••••••' ? '{{ $instance->admin_password_tersambung }}' : '••••••••••••';" class="btn btn-secondary btn-sm"><i class="ti ti-eye"></i></button>
-                    <button type="button" onclick="navigator.clipboard.writeText('{{ $instance->admin_password_tersambung }}')" class="btn btn-secondary btn-sm"><i class="ti ti-copy"></i></button>
-                </span>
-            </div>
-            <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">Password khusus ini dibuat sistem, terpisah dari password login sekolah.co.id kamu.</p>
+            <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">Gunakan <strong>password yang sama</strong> seperti login sekolah.co.id kamu.</p>
         </div>
         @endif
 
