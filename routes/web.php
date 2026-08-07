@@ -65,6 +65,13 @@ require __DIR__.'/pengguna.php';
 require __DIR__.'/superadmin.php';
 require __DIR__.'/manajemen-sekolah.php';
 
+Route::middleware(['web', 'auth'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');
+    Route::post('/request', [\App\Http\Controllers\ServerUjianController::class, 'ajukanRequest'])->name('request');
+    Route::post('/{instance}/run', [\App\Http\Controllers\ServerUjianController::class, 'run'])->name('run');
+    Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
+});
+
 // Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin
 Route::prefix('siswa')->name('siswa-portal.')->group(function () {
     Route::get('/login', [\App\Http\Controllers\SiswaPortalController::class, 'showLogin'])->name('login');

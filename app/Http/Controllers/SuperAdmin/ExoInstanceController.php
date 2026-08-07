@@ -36,6 +36,7 @@ class ExoInstanceController extends Controller
             'instances' => $instances,
             'masterSqlTersedia' => $this->masterSqlTersedia(),
             'sekolahList' => \App\Models\Sekolah::orderBy('nama')->get(['id', 'nama']),
+            'requests' => \App\Models\ExoRequest::with(['sekolah', 'diminta'])->where('status', 'Menunggu')->orderByDesc('created_at')->get(),
         ]);
     }
 
@@ -262,8 +263,11 @@ class ExoInstanceController extends Controller
         $data = $request->validate(['sekolah_id' => 'required|exists:sekolahs,id']);
         $exoInstance->update(['sekolah_id' => $data['sekolah_id']]);
 
+        // Tandai request (kalau ada yg masih Menunggu) jadi Selesai
+        \App\Models\ExoRequest::where('sekolah_id', $data['sekolah_id'])->where('status', 'Menunggu')->update(['status' => 'Selesai']);
+
         if (! $exoInstance->db_host) {
-            return back()->with('success', "Instance dihubungkan ke sekolah. (Isi kredensial DB dulu kalau mau sinkron akun admin juga.)");
+            return back()->with('success', 'Instance dihubungkan ke sekolah. (Isi kredensial DB dulu kalau mau sinkron akun admin juga.)');
         }
 
         $admin = \App\Models\User::where('sekolah_id', $data['sekolah_id'])->where('role', 'admin')->first();
@@ -284,15 +288,26 @@ class ExoInstanceController extends Controller
                 return back()->with('success', 'Instance dihubungkan ke sekolah. (Format enkripsi password Extraordinary beda dari kita, TIDAK bisa disamakan otomatis - login tetap terpisah.)');
             }
 
-            // Password hash Laravel (bcrypt) & format di Extraordinary SAMA -
-            // update user admin exo pakai email+hash password admin kita apa
-            // adanya (tidak perlu tau password asli, cukup salin hash-nya).
+            // PENTING: kita TIDAK PERNAH tau password asli admin (cuma hash-nya
+            // di sisi kita), jadi tidak bisa "pinjam" hash itu utk auto-isi
+            // form login nanti. Sebagai gantinya, generate password acak
+            // SENDIRI yg KITA simpan (terenkripsi), lalu pakai itu utk user
+            // admin exo - jadi kita punya kredensial yg kita tau persis utk
+            // bantu auto-isi form Server Ujian nanti, tanpa ganggu password
+            // asli admin di sekolah.co.id sama sekali.
+            $passwordTitipan = \Illuminate\Support\Str::random(20);
+
             $conn->table('users')->where('id', $userExo->id)->update([
                 'email' => $admin->email,
-                'password' => $admin->password, // hash bcrypt Laravel, langsung dipakai
+                'password' => password_hash($passwordTitipan, PASSWORD_BCRYPT),
             ]);
 
-            return back()->with('success', "Instance dihubungkan ke sekolah, DAN akun admin Extraordinary berhasil disamakan dgn login admin sekolah.co.id ({$admin->email}) - format hash sama-sama bcrypt.");
+            $exoInstance->update([
+                'admin_email_tersambung' => $admin->email,
+                'admin_password_tersambung' => $passwordTitipan,
+            ]);
+
+            return back()->with('success', "Instance dihubungkan ke sekolah, akun admin Extraordinary disamakan emailnya ({$admin->email}) dgn password titipan yg kita simpan sendiri utk bantu auto-isi login nanti.");
         } catch (\Throwable $e) {
             return back()->with('success', 'Instance dihubungkan ke sekolah. (Gagal cek/sinkron akun: ' . $e->getMessage() . ')');
         }

@@ -13,7 +13,7 @@ const MENU = [
     { key: 'kepegawaian', label: 'Kepegawaian', href: '/kepegawaian', icon: UsersIcon, disabled: false, external: true },
     { key: 'erapor', label: 'E-Rapor', href: '/erapor', icon: DocIcon, disabled: false, external: true },
     { key: 'pengguna', label: 'Manajemen User', href: '/pengguna', icon: ShieldIcon, disabled: false, external: true },
-    { key: 'ujian', label: 'Server Ujian', href: '/ujian', icon: DocIcon, disabled: true },
+    { key: 'ujian', label: 'Server Ujian', href: '/server-ujian', icon: DocIcon, disabled: false, external: true },
     { key: 'bk', label: 'Program BK', href: '/bk', icon: HeartIcon, disabled: false, external: true },
     { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen-sekolah', icon: GearIcon, disabled: false, external: true },
     { key: 'modul-ajar', label: 'Modul Ajar', href: '/modul-ajar', icon: DocIcon },
@@ -39,7 +39,8 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const menuBerdasarkanRole = user?.role !== 'admin'
         ? MENU.filter((m) => m.key !== 'profil-sekolah' && !(user?.role === 'guru' && HIDDEN_UNTUK_GURU.includes(m.key)))
         : MENU;
-    const menuItems = user?.is_super_admin ? [...menuBerdasarkanRole, SUPERADMIN_ITEM] : menuBerdasarkanRole;
+    const menuTanpaUjianDemo = user?.is_demo_sekolah ? menuBerdasarkanRole.filter((m) => m.key !== 'ujian') : menuBerdasarkanRole;
+    const menuItems = user?.is_super_admin ? [...menuTanpaUjianDemo, SUPERADMIN_ITEM] : menuTanpaUjianDemo;
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 

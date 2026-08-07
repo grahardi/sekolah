@@ -10,6 +10,7 @@ class ExoInstance extends Model
     protected $fillable = [
         'nama', 'slug', 'path', 'port', 'is_aktif', 'terakhir_dijalankan', 'sekolah_id',
         'db_host', 'db_port', 'db_name', 'db_user', 'db_pass',
+        'admin_email_tersambung', 'admin_password_tersambung',
     ];
     protected $casts = [
         'is_aktif' => 'boolean',
@@ -21,6 +22,8 @@ class ExoInstance extends Model
         'db_name' => 'encrypted',
         'db_user' => 'encrypted',
         'db_pass' => 'encrypted',
+        'admin_email_tersambung' => 'encrypted',
+        'admin_password_tersambung' => 'encrypted',
     ];
 
     public function sekolah() { return $this->belongsTo(\App\Models\Sekolah::class); }

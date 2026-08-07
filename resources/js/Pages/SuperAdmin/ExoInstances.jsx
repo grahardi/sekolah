@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
-export default function ExoInstances({ instances, masterSqlTersedia, sekolahList }) {
+export default function ExoInstances({ instances, masterSqlTersedia, sekolahList, requests }) {
     const [showTambah, setShowTambah] = useState(false);
     const [editKey, setEditKey] = useState(null); // id instance yg lagi diedit license key-nya
 
@@ -67,6 +67,26 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
                 Kelola instance server Extraordinary CBT yang ter-install di server yang sama.
                 Port cuma bisa dilihat (diatur langsung di server), License Key bisa diubah dari sini.
             </p>
+
+            {requests && requests.length > 0 && (
+                <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 mb-6 max-w-2xl">
+                    <p className="text-sm font-medium text-amber-800 mb-3">
+                        <i className="ti ti-bell-ringing mr-1" /> {requests.length} Permintaan Server Ujian Menunggu
+                    </p>
+                    <div className="space-y-2">
+                        {requests.map((r) => (
+                            <div key={r.id} className="flex items-center justify-between bg-white rounded-lg px-4 py-2.5 text-sm">
+                                <div>
+                                    <p className="font-medium text-navy">{r.sekolah?.nama}</p>
+                                    <p className="text-xs text-navy/50">Diminta oleh {r.diminta?.name || '-'} &middot; {new Date(r.created_at).toLocaleDateString('id-ID')}</p>
+                                    {r.catatan && <p className="text-xs text-navy/60 mt-1">"{r.catatan}"</p>}
+                                </div>
+                                <span className="text-xs text-amber-600">Menunggu</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             <p className="text-xs text-amber-700 bg-yellow-50 rounded-lg px-4 py-2.5 mb-6 max-w-2xl">
                 <i className="ti ti-alert-triangle mr-1" /> Tombol "Jalankan" perlu izin eksekusi yang benar di server (lihat catatan admin).
                 Kalau gagal, jalankan manual dulu lewat terminal untuk memastikan izinnya benar.

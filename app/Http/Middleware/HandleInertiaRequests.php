@@ -19,7 +19,10 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? array_merge(
+                    $request->user()->toArray(),
+                    ['is_demo_sekolah' => $request->user()->sekolah?->is_demo ?? false]
+                ) : null,
             ],
             // Dipakai buat banner "Sedang login sebagai Guru X - Kembali ke Admin"
             // di PortalLayout, kalau admin lagi impersonate akun guru.
