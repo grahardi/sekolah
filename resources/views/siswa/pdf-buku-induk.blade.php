@@ -12,6 +12,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; backg
 .judul-dok p  { font-size:9pt; margin-top:5px; }
 .no-induk     { text-align:left; font-size:8.5pt; margin-bottom:10px; }
 .sek { background:#000; color:#fff; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
+.section-blok { page-break-inside: avoid; }
 table.data { width:100%; border-collapse:collapse; }
 table.data td { padding:2.5px 6px; font-size:9pt; vertical-align:top; line-height:1.4; }
 table.data td.no  { width:22px; text-align:right; padding-right:4px; }
@@ -42,6 +43,7 @@ table.nilai tr.alt td { background:#f5f5f5; }
     &nbsp;&nbsp;&nbsp; Tahun Masuk&nbsp;:&nbsp;<strong>{{ $siswa->tahun_masuk }}</strong>
 </div>
 
+<div class="section-blok">
 <div class="sek">A. KETERANGAN TENTANG DIRI SISWA</div>
 <table class="data">
     @php
@@ -61,7 +63,9 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(9,  'Nomor Telepon Siswa',       $siswa->no_telepon) @endphp
     @php baris(10, 'Email',                     $siswa->email) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">B. KETERANGAN TEMPAT TINGGAL</div>
 <table class="data">
     @php baris(11, 'Alamat (Jalan/Gg.)',   $siswa->alamat) @endphp
@@ -72,14 +76,18 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(16, 'Kode Pos',             $siswa->kode_pos) @endphp
     @php baris(17, 'Koordinat (Lat, Long)',($siswa->lintang && $siswa->bujur) ? number_format($siswa->lintang,7) . ', ' . number_format($siswa->bujur,7) : null) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">C. KETERANGAN KESEHATAN</div>
 <table class="data">
     @php baris(18, 'Golongan Darah',       $siswa->golongan_darah) @endphp
     @php baris(19, 'Tinggi / Berat Badan', ($siswa->tinggi_badan ?: '-') . ' cm / ' . ($siswa->berat_badan ?: '-') . ' kg') @endphp
     @php baris(20, 'Riwayat Penyakit',     $siswa->riwayat_penyakit) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">D. KETERANGAN PENDIDIKAN</div>
 <table class="data">
     @php baris(21, 'Asal Sekolah SD/MI',  $siswa->asal_sekolah) @endphp
@@ -90,7 +98,9 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(26, 'Tahun Masuk',         $siswa->tahun_masuk) @endphp
     @php baris(27, 'Status',              ucfirst($siswa->status)) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">E. KETERANGAN TENTANG AYAH KANDUNG</div>
 <table class="data">
     @php baris(28, 'Nama Ayah',           $siswa->nama_ayah) @endphp
@@ -101,7 +111,9 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(33, 'Penghasilan/Bulan',   $siswa->penghasilan_ayah) @endphp
     @php baris(34, 'No. Telepon',         $siswa->no_telepon_ortu) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">F. KETERANGAN TENTANG IBU KANDUNG</div>
 <table class="data">
     @php baris(35, 'Nama Ibu',            $siswa->nama_ibu) @endphp
@@ -111,7 +123,9 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(39, 'Pekerjaan',           $siswa->pekerjaan_ibu) @endphp
     @php baris(40, 'Penghasilan/Bulan',   $siswa->penghasilan_ibu) @endphp
 </table>
+</div>
 
+<div class="section-blok">
 <div class="sek">G. KETERANGAN TENTANG WALI</div>
 <table class="data">
     @php baris(41, 'Nama Wali',   $siswa->nama_wali) @endphp
@@ -119,6 +133,7 @@ table.nilai tr.alt td { background:#f5f5f5; }
     @php baris(43, 'No. Telepon', $siswa->nama_wali ? $siswa->no_telepon_ortu : null) @endphp
     @php baris(44, 'Alamat',      $siswa->nama_wali ? $siswa->alamat_ortu : null) @endphp
 </table>
+</div>
 
 <div class="foto-section">
     <div class="foto-frame">
