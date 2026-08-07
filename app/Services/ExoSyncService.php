@@ -19,8 +19,8 @@ class ExoSyncService
         'BUDHA' => 'b835ff17-369c-4250-a565-000a06953adf',
         'BUDDHA' => 'b835ff17-369c-4250-a565-000a06953adf',
         'HINDU' => '8194f3f2-501b-420f-a496-85fded97beb0',
-        'KONGHUCU' => '8194f3f2-501b-420f-a496-85fded97beb0',
-        'KONG HU CU' => '8194f3f2-501b-420f-a496-85fded97beb0',
+        'KONGHUCU' => '7c03497a-6df3-46db-9ff9-99a9c7b49b14',
+        'KONG HU CU' => '7c03497a-6df3-46db-9ff9-99a9c7b49b14',
     ];
 
     public static function sinkronSiswa(ExoInstance $exoInstance, string $identifier = 'nisn', string $mode = 'update'): array
