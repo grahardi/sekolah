@@ -61,9 +61,9 @@
                     <option value="update">Update (tambah/perbarui)</option>
                     <option value="reset">Reset (hapus semua dulu)</option>
                 </select>
-                <select name="sertakan_foto" class="form-input" style="max-width:180px;">
-                    <option value="0" selected>Gunakan Foto dari Induk: Tidak</option>
-                    <option value="1">Gunakan Foto dari Induk: Ya</option>
+                <select name="sertakan_foto" class="form-input" style="max-width:170px;">
+                    <option value="0" selected>Tanpa Foto Induk</option>
+                    <option value="1">Gunakan Foto Induk</option>
                 </select>
                 <button type="submit" class="btn btn-secondary" style="flex:1;justify-content:center;min-width:140px;">
                     <i class="ti ti-refresh"></i> Sinkron Data Siswa
