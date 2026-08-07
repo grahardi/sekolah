@@ -23,8 +23,8 @@
 
         @if($sedangJalan)
         <div style="display:flex;gap:10px;margin-bottom:16px;">
-            <a href="{{ route('server-ujian.auto-login', $instance) }}" target="_blank" class="btn btn-primary" style="flex:1;justify-content:center;">
-                <i class="ti ti-login-2"></i> Buka Server Ujian
+            <a href="http://163.227.0.18:{{ $port }}/adm#/" target="_blank" class="btn btn-primary" style="flex:1;justify-content:center;">
+                <i class="ti ti-external-link"></i> Buka Server Ujian
             </a>
             <form action="{{ route('server-ujian.stop', $instance) }}" method="POST" style="flex:1;">
                 @csrf
