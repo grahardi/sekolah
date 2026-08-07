@@ -6,7 +6,7 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
     const [showTambah, setShowTambah] = useState(false);
     const [editKey, setEditKey] = useState(null); // id instance yg lagi diedit license key-nya
 
-    const formTambah = useForm({ nama: '', slug: '', path: '', provision_otomatis: false });
+    const formTambah = useForm({ nama: '', slug: '', path: '', provision_otomatis: false, db_root_password: '' });
     const formKey = useForm({ license_key: '' });
     const formDb = useForm({ db_host: '', db_port: '5432', db_name: '', db_user: '', db_pass: '' });
     const [editDb, setEditDb] = useState(null);
@@ -19,7 +19,10 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
 
     const submitTambah = (e) => {
         e.preventDefault();
-        formTambah.post('/admin-portal/exo', { onSuccess: () => { setShowTambah(false); formTambah.reset(); } });
+        formTambah.post('/admin-portal/exo', {
+            onSuccess: () => { setShowTambah(false); formTambah.reset(); },
+            onFinish: () => formTambah.setData('db_root_password', ''),
+        });
     };
 
     const submitKey = (e, instance) => {
@@ -109,6 +112,15 @@ export default function ExoInstances({ instances, masterSqlTersedia }) {
                                 {!masterSqlTersedia && <span className="block text-red-500 mt-0.5">Upload SQL master dulu di atas untuk mengaktifkan opsi ini.</span>}
                             </span>
                         </label>
+                        {formTambah.data.provision_otomatis && (
+                            <div>
+                                <label className="text-xs font-medium text-navy/60">Password Root PostgreSQL</label>
+                                <input type="password" value={formTambah.data.db_root_password} onChange={(e) => formTambah.setData('db_root_password', e.target.value)}
+                                    placeholder="Password user 'postgres' di server" className="w-full mt-1 rounded-lg border border-navy/15 px-3 py-2 text-sm" autoComplete="off" />
+                                <p className="text-[11px] text-navy/40 mt-1">Cuma dipakai sekali saat ini untuk bikin database baru - <strong>tidak pernah disimpan</strong> di mana pun.</p>
+                                {formTambah.errors.db_root_password && <p className="text-xs text-red-600 mt-1">{formTambah.errors.db_root_password}</p>}
+                            </div>
+                        )}
                     </div>
                     <button type="submit" disabled={formTambah.processing} className="mt-4 px-4 py-2 rounded-lg bg-teal text-white text-sm font-medium disabled:opacity-50">
                         {formTambah.processing ? 'Memproses...' : 'Simpan'}

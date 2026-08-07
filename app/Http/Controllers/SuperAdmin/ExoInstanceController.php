@@ -48,38 +48,45 @@ class ExoInstanceController extends Controller
     }
 
     /**
-     * Provisioning otomatis: buat database+user Postgres baru, jalankan SQL
-     * master ke situ, tentukan port acak, lalu tulis semuanya ke .env di
-     * path yg sudah ditentukan. Butuh akses shell ke `psql`/`createdb` -
-     * kalau server belum dikonfigurasi utk ini, akan gagal dgn pesan jelas.
+     * Provisioning otomatis: buat database+user Postgres baru (pakai
+     * password root Postgres yg diketik admin SAAT ITU JUGA, tidak pernah
+     * disimpan ke database sama sekali), jalankan SQL master, tentukan
+     * port acak, lalu tulis semuanya ke .env di path yg sudah ditentukan.
      */
-    private function provisionOtomatis(array $data): array
+    private function provisionOtomatis(array $data, string $rootPassword): array
     {
         $dbName = 'exo_' . $data['slug'];
         $dbUser = 'exo_' . $data['slug'];
         $dbPass = \Illuminate\Support\Str::random(24);
 
-        // Cari port acak 12000-13000 yg belum dipakai instance lain
         $portTerpakai = ExoInstance::pluck('port')->filter()->map(fn ($p) => (int) $p)->toArray();
         do {
             $port = rand(12000, 13000);
         } while (in_array($port, $portTerpakai));
 
-        // 1. Buat role + database via psql (butuh akses postgres superuser
-        //    di server - biasanya lewat `sudo -u postgres`)
-        $sqlSetup = "CREATE USER \"{$dbUser}\" WITH PASSWORD '{$dbPass}'; CREATE DATABASE \"{$dbName}\" OWNER \"{$dbUser}\";";
-        $prosesSetup = \Illuminate\Support\Facades\Process::timeout(30)
-            ->run(['sudo', '-u', 'postgres', 'psql', '-c', $sqlSetup]);
-
-        if (! $prosesSetup->successful()) {
-            return ['ok' => false, 'pesan' => 'Gagal membuat database: ' . $prosesSetup->errorOutput()];
+        // 1. Konek sbg postgres superuser via PDO (password cuma dipakai
+        //    sekali di request ini, gak pernah ditulis ke storage/DB kita).
+        try {
+            $pdo = new \PDO("pgsql:host=localhost;port=5432;dbname=postgres", 'postgres', $rootPassword);
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'pesan' => 'Password root Postgres salah atau gagal konek: ' . $e->getMessage()];
         }
 
-        // 2. Jalankan SQL master ke database baru itu
+        try {
+            $pdo->exec("CREATE USER \"{$dbUser}\" WITH PASSWORD " . $pdo->quote($dbPass));
+            $pdo->exec("CREATE DATABASE \"{$dbName}\" OWNER \"{$dbUser}\"");
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'pesan' => 'Gagal membuat user/database: ' . $e->getMessage()];
+        }
+
+        // 2. Jalankan SQL master ke database baru - pakai psql via shell,
+        //    krn file dump bisa berisi sintaks kompleks (COPY, fungsi, dll)
+        //    yg gak reliable dieksekusi lewat PDO::exec() biasa.
         $masterSqlPath = storage_path('app/exo/master.sql');
         $prosesImport = \Illuminate\Support\Facades\Process::timeout(120)
-            ->env(['PGPASSWORD' => $dbPass])
-            ->run(['psql', '-h', 'localhost', '-U', $dbUser, '-d', $dbName, '-f', $masterSqlPath]);
+            ->env(['PGPASSWORD' => $rootPassword])
+            ->run(['psql', '-h', 'localhost', '-U', 'postgres', '-d', $dbName, '-f', $masterSqlPath]);
 
         if (! $prosesImport->successful()) {
             return ['ok' => false, 'pesan' => 'Database dibuat, tapi gagal import SQL master: ' . $prosesImport->errorOutput()];
@@ -115,11 +122,7 @@ class ExoInstanceController extends Controller
             'slug' => 'required|string|max:50|unique:exo_instances,slug|alpha_dash',
             'path' => 'required|string|max:255',
             'provision_otomatis' => 'nullable|boolean',
-            'db_host' => 'nullable|string|max:255',
-            'db_port' => 'nullable|string|max:10',
-            'db_name' => 'nullable|string|max:100',
-            'db_user' => 'nullable|string|max:100',
-            'db_pass' => 'nullable|string|max:255',
+            'db_root_password' => 'required_if:provision_otomatis,1|nullable|string',
         ]);
 
         abort_unless(file_exists(rtrim($data['path'], '/') . '/.env'), 422, 'File .env tidak ditemukan di path itu. Pastikan folder Extraordinary CBT sudah di-extract dulu di path tsb.');
@@ -127,7 +130,7 @@ class ExoInstanceController extends Controller
         if ($request->boolean('provision_otomatis')) {
             abort_unless($this->masterSqlTersedia(), 422, 'Upload file SQL master dulu sebelum provisioning otomatis.');
 
-            $hasil = $this->provisionOtomatis($data);
+            $hasil = $this->provisionOtomatis($data, $data['db_root_password']);
             abort_unless($hasil['ok'], 422, $hasil['pesan']);
 
             $data = array_merge($data, [
@@ -137,7 +140,9 @@ class ExoInstanceController extends Controller
             ]);
         }
 
-        unset($data['provision_otomatis']);
+        // db_root_password SENGAJA tidak pernah masuk ke ExoInstance::create()
+        // - cuma dipakai sekali di request ini utk provisioning, lalu dibuang.
+        unset($data['provision_otomatis'], $data['db_root_password']);
         ExoInstance::create($data);
 
         return back()->with('success', $request->boolean('provision_otomatis')
