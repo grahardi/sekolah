@@ -277,13 +277,13 @@ class ExoInstanceController extends Controller
 
         try {
             $conn = $exoInstance->dbConnection();
-            $userExo = $conn->table('users')->first(); // ambil 1 baris contoh utk cek format hash
+            $contohUser = $conn->table('users')->first(); // ambil 1 baris contoh utk cek format hash & kolom yg ada
 
-            if (! $userExo || ! isset($userExo->password)) {
+            if (! $contohUser || ! isset($contohUser->password)) {
                 return back()->with('success', 'Instance dihubungkan ke sekolah. (Tabel users di Extraordinary tidak ditemukan/kosong, sinkron akun dilewati.)');
             }
 
-            $formatBcrypt = (bool) preg_match('/^\$2[aby]\$/', $userExo->password);
+            $formatBcrypt = (bool) preg_match('/^\$2[aby]\$/', $contohUser->password);
             if (! $formatBcrypt) {
                 return back()->with('success', 'Instance dihubungkan ke sekolah. (Format enkripsi password Extraordinary beda dari kita, TIDAK bisa disamakan otomatis - login tetap terpisah.)');
             }
@@ -291,23 +291,37 @@ class ExoInstanceController extends Controller
             // PENTING: kita TIDAK PERNAH tau password asli admin (cuma hash-nya
             // di sisi kita), jadi tidak bisa "pinjam" hash itu utk auto-isi
             // form login nanti. Sebagai gantinya, generate password acak
-            // SENDIRI yg KITA simpan (terenkripsi), lalu pakai itu utk user
-            // admin exo - jadi kita punya kredensial yg kita tau persis utk
-            // bantu auto-isi form Server Ujian nanti, tanpa ganggu password
-            // asli admin di sekolah.co.id sama sekali.
+            // SENDIRI yg KITA simpan (terenkripsi), pakai itu utk akun baru
+            // di exo - jadi kita punya kredensial yg kita tau persis utk
+            // bantu auto-isi form Server Ujian nanti.
             $passwordTitipan = \Illuminate\Support\Str::random(20);
 
-            $conn->table('users')->where('id', $userExo->id)->update([
-                'email' => $admin->email,
-                'password' => password_hash($passwordTitipan, PASSWORD_BCRYPT),
-            ]);
+            // INSERT baris BARU (bukan timpa akun yg sudah ada) - lebih aman,
+            // gak ganggu akun admin lain yg mungkin sudah dipakai di exo itu.
+            $sudahAda = $conn->table('users')->where('email', $admin->email)->exists();
+            if (! $sudahAda) {
+                $conn->table('users')->insert([
+                    'id' => \Illuminate\Support\Str::uuid()->toString(),
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'password' => password_hash($passwordTitipan, PASSWORD_BCRYPT),
+                    'role' => 'EVIL', // role admin di Extraordinary CBT
+                    'created_at' => now(),
+                    'updated_at' => null,
+                ]);
+            } else {
+                $conn->table('users')->where('email', $admin->email)->update([
+                    'password' => password_hash($passwordTitipan, PASSWORD_BCRYPT),
+                    'updated_at' => now(),
+                ]);
+            }
 
             $exoInstance->update([
                 'admin_email_tersambung' => $admin->email,
                 'admin_password_tersambung' => $passwordTitipan,
             ]);
 
-            return back()->with('success', "Instance dihubungkan ke sekolah, akun admin Extraordinary disamakan emailnya ({$admin->email}) dgn password titipan yg kita simpan sendiri utk bantu auto-isi login nanti.");
+            return back()->with('success', "Instance dihubungkan ke sekolah, akun admin baru dibuat di Extraordinary ({$admin->email}) dgn password titipan yg kita simpan sendiri utk bantu auto-isi login nanti.");
         } catch (\Throwable $e) {
             return back()->with('success', 'Instance dihubungkan ke sekolah. (Gagal cek/sinkron akun: ' . $e->getMessage() . ')');
         }
