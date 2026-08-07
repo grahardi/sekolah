@@ -37,6 +37,17 @@ class ExoInstanceController extends Controller
     // otomatis subfolder di sini utk dropdown pilih path, bukan ketik manual.
     private const BASE_PATH = '/home/aginza/sekolah';
 
+    /**
+     * Cari file binary main-amd64 di folder - nama persisnya bisa beda
+     * antar versi (mis. main-amd64, main-amd64-tika, dst), jadi dicari pola
+     * "main-amd64*" bukan nama eksak.
+     */
+    private function cariNamaBinary(string $path): ?string
+    {
+        $kandidat = glob("{$path}/main-amd64*");
+        return ! empty($kandidat) ? basename($kandidat[0]) : null;
+    }
+
     public function scanFolder(Request $request)
     {
         $basePath = $request->input('base_path', self::BASE_PATH);
@@ -53,13 +64,14 @@ class ExoInstanceController extends Controller
             ->map(function ($f) use ($basePath, $pathTerpakai) {
                 $fullPath = "{$basePath}/{$f}";
                 $adaEnv = file_exists("{$fullPath}/.env");
-                $adaBinary = file_exists("{$fullPath}/main-amd64");
+                $namaBinary = $this->cariNamaBinary($fullPath);
+                $adaBinary = $namaBinary !== null;
 
                 return [
                     'nama_folder' => $f,
                     'path' => $fullPath,
                     'valid' => $adaEnv && $adaBinary,
-                    'catatan' => ! $adaEnv ? 'Tidak ada .env' : (! $adaBinary ? 'Tidak ada main-amd64' : null),
+                    'catatan' => ! $adaEnv ? 'Tidak ada .env' : (! $adaBinary ? 'Tidak ada file main-amd64*' : null),
                     'sudah_dipakai' => $pathTerpakai->has($fullPath) ? $pathTerpakai->get($fullPath) : null,
                 ];
             })
@@ -225,11 +237,12 @@ class ExoInstanceController extends Controller
     public function run(ExoInstance $exoInstance)
     {
         $path = rtrim($exoInstance->path, '/');
-        abort_unless(file_exists("{$path}/main-amd64"), 404, 'Binary main-amd64 tidak ditemukan di path instance ini.');
+        $namaBinary = $this->cariNamaBinary($path);
+        abort_unless($namaBinary !== null, 404, 'Binary main-amd64 tidak ditemukan di path instance ini.');
 
-        // nohup ./main-amd64 > nohup.out 2>&1 & disown - dijalankan via bash -c
+        // nohup ./{binary} > nohup.out 2>&1 & disown - dijalankan via bash -c
         // biar redirect & background process-nya kepakai dgn benar.
-        $result = Process::path($path)->timeout(5)->start('bash -c "nohup ./main-amd64 > nohup.out 2>&1 & disown"');
+        $result = Process::path($path)->timeout(5)->start("bash -c \"nohup ./{$namaBinary} > nohup.out 2>&1 & disown\"");
         sleep(1); // kasih waktu proses mulai sebelum kita cek
 
         $exoInstance->update(['terakhir_dijalankan' => now()]);
