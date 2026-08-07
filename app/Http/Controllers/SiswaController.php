@@ -132,7 +132,9 @@ class SiswaController extends Controller
         $pdf->getDomPDF()->set_option('margin_left',   0);
         $pdf->getDomPDF()->set_option('margin_right',  0);
         $pdf->setPaper('a4', 'portrait');
-        return $pdf->download('buku-induk-'.$siswa->nisn.'.pdf');
+        return $pdf->stream('buku-induk-'.$siswa->nisn.'.pdf')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
     /** Pilih model kartu pelajar sebelum cetak */

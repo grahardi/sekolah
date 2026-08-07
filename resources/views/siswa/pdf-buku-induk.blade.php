@@ -16,7 +16,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; backg
 table.data { width:100%; border-collapse:collapse; }
 table.data td { padding:2.5px 6px; font-size:9pt; vertical-align:top; line-height:1.4; }
 table.data td.no  { width:22px; text-align:right; padding-right:4px; }
-table.data td.lbl { width:46%; }
+table.data td.lbl { width:32%; text-align:left; }
 table.data td.ttd { width:6px; text-align:center; }
 table.data td.val { border-bottom:1px solid #777; }
 table.nilai { width:100%; border-collapse:collapse; font-size:8.5pt; margin-top:4px; }
