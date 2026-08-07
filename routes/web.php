@@ -70,6 +70,7 @@ Route::middleware(['web', 'auth'])->prefix('server-ujian')->name('server-ujian.'
     Route::post('/request', [\App\Http\Controllers\ServerUjianController::class, 'ajukanRequest'])->name('request');
     Route::get('/{instance}/auto-login', [\App\Http\Controllers\ServerUjianController::class, 'autoLogin'])->name('auto-login');
     Route::post('/{instance}/run', [\App\Http\Controllers\ServerUjianController::class, 'run'])->name('run');
+    Route::post('/{instance}/sinkron-siswa', [\App\Http\Controllers\ServerUjianController::class, 'sinkronSiswa'])->name('sinkron-siswa');
     Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
 });
 

@@ -49,6 +49,13 @@
                 <p style="font-size:13px;color:#166534;margin:0;font-weight:600;">Silahkan Login dengan User dan Password Portal di Server Ujian</p>
             </div>
             @endif
+
+            <form action="{{ route('server-ujian.sinkron-siswa', $instance) }}" method="POST" onsubmit="return confirm('Sinkron data siswa aktif ke Server Ujian? Ini akan buat/update grup kelas dan akun peserta.')">
+                @csrf
+                <button type="submit" class="btn btn-secondary" style="width:100%;justify-content:center;padding:10px;">
+                    <i class="ti ti-refresh"></i> Sinkron Data Siswa
+                </button>
+            </form>
             @else
             <form action="{{ route('server-ujian.run', $instance) }}" method="POST">
                 @csrf
