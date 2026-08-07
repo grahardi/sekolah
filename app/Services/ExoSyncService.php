@@ -120,19 +120,27 @@ class ExoSyncService
                         // beneran punya foto asli (bukan avatar inisial default).
                         // Fallback ke foto di Berkas kalau foto profil kosong,
                         // sama kayak logic foto_url.
+                        //
+                        // SENGAJA pakai copy() (bukan symlink) dan SENGAJA
+                        // tidak menimpa file yg SUDAH ADA di sisi Extraordinary
+                        // - kalau proctor upload foto manual lewat Extraordinary
+                        // utk siswa itu, sinkron berikutnya gak akan menghapus/
+                        // menimpanya. Symlink juga dihindari krn kalau nanti ada
+                        // yg upload manual, tulisannya bisa "menembus" ke file
+                        // ASLI kita di Buku Induk (bukan cuma sisi Extraordinary).
                         $avaValue = $pesertaAda->ava ?? null;
                         $fotoPath = $siswa->foto ?: ($siswa->arsipBerkas->foto ?? null);
                         if ($sertakanFoto && $folderFoto && $fotoPath) {
-                            $sumberPath = storage_path('app/public/' . $fotoPath);
-                            if (file_exists($sumberPath)) {
-                                $tujuanPath = "{$folderFoto}/{$noUjian}.jpg";
-                                @unlink($tujuanPath); // buang link/file lama dulu kalau ada
-                                $berhasil = @symlink($sumberPath, $tujuanPath);
-                                if (! $berhasil) $berhasil = @copy($sumberPath, $tujuanPath);
-                                if ($berhasil) {
+                            $tujuanPath = "{$folderFoto}/{$noUjian}.jpg";
+                            if (! file_exists($tujuanPath)) {
+                                $sumberPath = storage_path('app/public/' . $fotoPath);
+                                if (file_exists($sumberPath) && @copy($sumberPath, $tujuanPath)) {
                                     $avaValue = "exo-output-photo/{$noUjian}.jpg";
                                     $fotoTersinkron++;
                                 }
+                            } elseif (! $avaValue) {
+                                // File udah ada di folder tapi kolom ava blm keisi (mis. dari luar sistem kita) - kaitkan aja
+                                $avaValue = "exo-output-photo/{$noUjian}.jpg";
                             }
                         }
 
