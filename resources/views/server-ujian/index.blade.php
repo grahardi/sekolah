@@ -50,13 +50,17 @@
             </div>
             @endif
 
-            <form action="{{ route('server-ujian.sinkron-siswa', $instance) }}" method="POST" onsubmit="return confirm('Sinkron data siswa aktif ke Server Ujian? Ini akan buat/update grup kelas dan akun peserta.')" style="display:flex;gap:8px;">
+            <form action="{{ route('server-ujian.sinkron-siswa', $instance) }}" method="POST" onsubmit="return confirm(this.mode.value === 'reset' ? 'RESET akan HAPUS SEMUA grup & peserta lama sebelum sinkron ulang. Yakin?' : 'Sinkron data siswa aktif ke Server Ujian?')" style="display:flex;gap:8px;flex-wrap:wrap;">
                 @csrf
-                <select name="identifier" class="form-input" style="max-width:160px;">
+                <select name="identifier" class="form-input" style="max-width:150px;">
                     <option value="nisn">Pakai NISN</option>
                     <option value="nis">Pakai No. Induk (NIS)</option>
                 </select>
-                <button type="submit" class="btn btn-secondary" style="flex:1;justify-content:center;">
+                <select name="mode" class="form-input" style="max-width:150px;">
+                    <option value="update">Update (tambah/perbarui)</option>
+                    <option value="reset">Reset (hapus semua dulu)</option>
+                </select>
+                <button type="submit" class="btn btn-secondary" style="flex:1;justify-content:center;min-width:140px;">
                     <i class="ti ti-refresh"></i> Sinkron Data Siswa
                 </button>
             </form>

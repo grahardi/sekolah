@@ -54,8 +54,16 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
     const sinkronSiswa = (instance) => {
         const identifier = prompt('Pakai identifier apa untuk login siswa?\nKetik "nisn" atau "nis"', 'nisn');
         if (identifier === null) return;
-        if (! confirm(`Sinkron data siswa ${instance.sekolah_nama} ke ${instance.nama} (pakai ${identifier.toUpperCase()})? Ini akan buat/update grup kelas dan akun peserta.`)) return;
-        router.post(`/admin-portal/exo/${instance.id}/sinkron-siswa`, { identifier: identifier === 'nis' ? 'nis' : 'nisn' }, { preserveScroll: true });
+        const mode = prompt('Mode sinkron?\nKetik "update" (tambah/perbarui) atau "reset" (HAPUS SEMUA data lama dulu)', 'update');
+        if (mode === null) return;
+        const konfirmasi = mode === 'reset'
+            ? `RESET akan HAPUS SEMUA grup & peserta lama di ${instance.nama} sebelum sinkron ulang. Yakin?`
+            : `Sinkron data siswa ${instance.sekolah_nama} ke ${instance.nama} (pakai ${identifier.toUpperCase()})?`;
+        if (! confirm(konfirmasi)) return;
+        router.post(`/admin-portal/exo/${instance.id}/sinkron-siswa`, {
+            identifier: identifier === 'nis' ? 'nis' : 'nisn',
+            mode: mode === 'reset' ? 'reset' : 'update',
+        }, { preserveScroll: true });
     };
 
     const jalankan = (instance) => {

@@ -80,7 +80,8 @@ class ServerUjianController extends Controller
         abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
 
         $identifier = $request->input('identifier', 'nisn') === 'nis' ? 'nis' : 'nisn';
-        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance, $identifier);
+        $mode = $request->input('mode', 'update') === 'reset' ? 'reset' : 'update';
+        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance, $identifier, $mode);
 
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }

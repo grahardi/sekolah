@@ -320,7 +320,8 @@ class ExoInstanceController extends Controller
     public function sinkronSiswa(Request $request, ExoInstance $exoInstance)
     {
         $identifier = $request->input('identifier', 'nisn') === 'nis' ? 'nis' : 'nisn';
-        $hasil = \App\Services\ExoSyncService::sinkronSiswa($exoInstance, $identifier);
+        $mode = $request->input('mode', 'update') === 'reset' ? 'reset' : 'update';
+        $hasil = \App\Services\ExoSyncService::sinkronSiswa($exoInstance, $identifier, $mode);
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }
 
