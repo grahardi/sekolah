@@ -68,6 +68,7 @@ require __DIR__.'/manajemen-sekolah.php';
 Route::middleware(['web', 'auth'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');
     Route::post('/request', [\App\Http\Controllers\ServerUjianController::class, 'ajukanRequest'])->name('request');
+    Route::get('/{instance}/auto-login', [\App\Http\Controllers\ServerUjianController::class, 'autoLogin'])->name('auto-login');
     Route::post('/{instance}/run', [\App\Http\Controllers\ServerUjianController::class, 'run'])->name('run');
     Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
 });

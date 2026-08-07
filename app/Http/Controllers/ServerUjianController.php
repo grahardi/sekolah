@@ -74,4 +74,33 @@ class ServerUjianController extends Controller
 
         return back()->with('success', 'Server Ujian dihentikan.');
     }
+
+    public function autoLogin(ExoInstance $instance)
+    {
+        abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
+        abort_unless($instance->admin_email_tersambung && $instance->admin_password_tersambung, 422, 'Kredensial login belum di-generate. Hubungi admin sistem.');
+
+        $port = $instance->bacaEnv('SERVER_PORT');
+        $baseUrl = "http://163.227.0.18:{$port}";
+
+        $token = null;
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->post("{$baseUrl}/api/v1/token/generate", [
+                'email' => $instance->admin_email_tersambung,
+                'password' => $instance->admin_password_tersambung,
+            ]);
+            $token = $response->json('data.token');
+        } catch (\Throwable $e) {
+            // biarkan $token null, halaman fallback tetap tampilkan cara manual
+        }
+
+        return view('server-ujian.auto-login', [
+            'baseUrl' => $baseUrl,
+            'token' => $token,
+            // KEY OBFUSCATED dari build frontend exo SAAT INI - bisa berubah
+            // kalau mereka update versi frontend-nya, karena namanya hasil
+            // minifikasi/obfuscation, bukan nama tetap yg didokumentasikan.
+            'localStorageKey' => '5m7VQI69HS2PrcToRMYt',
+        ]);
+    }
 }
