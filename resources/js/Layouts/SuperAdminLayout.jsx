@@ -12,7 +12,7 @@ export default function SuperAdminLayout({ title, breadcrumb = [], children }) {
     const isActive = (href) => url === href || (href !== '/admin-portal' && url.startsWith(href));
 
     return (
-        <div className="min-h-screen bg-slate-50 flex">
+        <div className="min-h-screen bg-gray-50 flex">
             <aside className="w-60 bg-navy flex-shrink-0 flex flex-col">
                 <div className="px-5 py-5 flex items-center gap-2.5 border-b border-white/10">
                     <div className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center">

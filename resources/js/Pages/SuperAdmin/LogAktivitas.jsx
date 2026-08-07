@@ -4,7 +4,7 @@ import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
 const EVENT_STYLE = {
     login: { label: 'Login', bg: 'bg-emerald-50', text: 'text-emerald-700' },
-    logout: { label: 'Logout', bg: 'bg-slate-100', text: 'text-slate-600' },
+    logout: { label: 'Logout', bg: 'bg-gray-100', text: 'text-gray-600' },
     registrasi: { label: 'Registrasi', bg: 'bg-blue-50', text: 'text-blue-700' },
 };
 
@@ -32,7 +32,7 @@ export default function LogAktivitas({ logs, filters, stats }) {
                     <p className="font-display font-700 text-3xl text-white mt-2">{stats.total_login}</p>
                     <p className="text-xs text-white/75 mt-1">Total Login</p>
                 </button>
-                <button onClick={() => gantiEvent('logout')} className={`text-left rounded-2xl bg-slate-500 p-5 transition-shadow ${filters.event === 'logout' ? 'ring-2 ring-slate-300 ring-offset-2' : ''}`}>
+                <button onClick={() => gantiEvent('logout')} className={`text-left rounded-2xl bg-gray-500 p-5 transition-shadow ${filters.event === 'logout' ? 'ring-2 ring-gray-300 ring-offset-2' : ''}`}>
                     <i className="ti ti-logout text-white/80 text-lg" />
                     <p className="font-display font-700 text-3xl text-white mt-2">{stats.total_logout}</p>
                     <p className="text-xs text-white/75 mt-1">Total Logout</p>
@@ -77,7 +77,7 @@ export default function LogAktivitas({ logs, filters, stats }) {
                             <tr><td colSpan={5} className="px-5 py-8 text-center text-navy/40">Belum ada catatan aktivitas.</td></tr>
                         )}
                         {logs.data.map((log) => {
-                            const style = EVENT_STYLE[log.event] || { label: log.event, bg: 'bg-slate-100', text: 'text-slate-600' };
+                            const style = EVENT_STYLE[log.event] || { label: log.event, bg: 'bg-gray-100', text: 'text-gray-600' };
                             return (
                                 <tr key={log.id} className="border-t border-navy/5 hover:bg-navy/[0.02]">
                                     <td className="px-5 py-3 text-navy/60 text-xs whitespace-nowrap">

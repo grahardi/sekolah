@@ -23,7 +23,7 @@ export default function Dashboard({ sekolahs, stats, filters }) {
                     { label: 'Total Sekolah', value: stats.total_sekolah, bg: 'bg-blue-500', icon: 'ti-building' },
                     { label: 'Total Pengguna', value: stats.total_user, bg: 'bg-purple-500', icon: 'ti-users' },
                     { label: 'Total Siswa', value: stats.total_siswa, bg: 'bg-emerald-500', icon: 'ti-school' },
-                    { label: 'Total Kelas', value: stats.total_kelas, bg: 'bg-amber-500', icon: 'ti-door' },
+                    { label: 'Total Kelas', value: stats.total_kelas, bg: 'bg-orange-500', icon: 'ti-door' },
                     { label: 'Total Guru', value: stats.total_guru, bg: 'bg-rose-500', icon: 'ti-user-check' },
                     { label: 'Total TP', value: stats.total_tp, bg: 'bg-cyan-500', icon: 'ti-target-arrow' },
                 ].map((s) => (

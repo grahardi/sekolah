@@ -13,7 +13,7 @@ const MODULES = [
     },
     {
         key: 'bk', title: 'Program BK', desc: 'Survey/asesmen siswa (DCM, AUM), pantau progress pengisian.',
-        href: '/bk', status: 'aktif', color: 'bg-teal', bg: 'bg-amber-100', external: true,
+        href: '/bk', status: 'aktif', color: 'bg-teal', bg: 'bg-yellow-100', external: true,
     },
     {
         key: 'lab', title: 'Lab Interaktif', desc: 'Simulasi sains interaktif untuk Fisika, Matematika, dan Biologi.',
@@ -29,7 +29,7 @@ const MODULES = [
     },
     {
         key: 'ujian', title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-100',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-gray-100',
     },
     {
         key: 'manajemen', title: 'Manajemen Sekolah', desc: 'Absensi harian siswa, data siswa & guru terpadu.',
@@ -37,7 +37,7 @@ const MODULES = [
     },
     {
         key: 'sarpras', title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-slate-100',
+        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-gray-100',
     },
 ];
 
@@ -54,7 +54,7 @@ export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
     const STAT_CARDS = [
         { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB', bg: 'bg-sky-100' },
         { label: 'Total Pegawai', value: stats?.total_pegawai ?? 0, href: '/kepegawaian', icon: 'ti-id-badge-2', color: '#16A34A', bg: 'bg-emerald-100' },
-        { label: 'Survey Dibuat', value: stats?.total_survey ?? 0, href: '/bk', icon: 'ti-clipboard-list', color: '#D97706', bg: 'bg-amber-100' },
+        { label: 'Survey Dibuat', value: stats?.total_survey ?? 0, href: '/bk', icon: 'ti-clipboard-list', color: '#D97706', bg: 'bg-yellow-100' },
         { label: 'Akun Pengguna', value: stats?.total_user ?? 0, href: '/pengguna', icon: 'ti-user-shield', color: '#7C3AED', bg: 'bg-violet-100' },
     ];
 
