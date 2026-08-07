@@ -27,6 +27,12 @@ class DashboardController extends Controller
                 'total_sekolah' => Sekolah::count(),
                 'total_user'    => User::count(),
                 'total_siswa'   => \App\Models\Siswa::withoutGlobalScopes()->count(),
+                'total_kelas'   => \App\Models\Siswa::withoutGlobalScopes()->whereNotNull('kelas')
+                    ->select('sekolah_id', 'kelas', 'rombel')
+                    ->groupBy('sekolah_id', 'kelas', 'rombel')
+                    ->get()->count(),
+                'total_guru'    => \App\Models\Guru::withoutGlobalScopes()->count(),
+                'total_tp'      => \App\Models\TujuanPembelajaran::withoutGlobalScopes()->count(),
             ],
             'filters' => ['search' => $search],
         ]);

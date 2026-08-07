@@ -18,19 +18,21 @@ export default function Dashboard({ sekolahs, stats, filters }) {
             </p>
 
             {/* Stat cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-                <div className="rounded-2xl bg-white border border-navy/10 p-5">
-                    <p className="text-xs font-mono text-navy/40 uppercase tracking-wide">Total Sekolah</p>
-                    <p className="font-display font-700 text-3xl text-navy mt-1">{stats.total_sekolah}</p>
-                </div>
-                <div className="rounded-2xl bg-white border border-navy/10 p-5">
-                    <p className="text-xs font-mono text-navy/40 uppercase tracking-wide">Total Akun Pengguna</p>
-                    <p className="font-display font-700 text-3xl text-navy mt-1">{stats.total_user}</p>
-                </div>
-                <div className="rounded-2xl bg-white border border-navy/10 p-5">
-                    <p className="text-xs font-mono text-navy/40 uppercase tracking-wide">Total Data Siswa</p>
-                    <p className="font-display font-700 text-3xl text-navy mt-1">{stats.total_siswa}</p>
-                </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                {[
+                    { label: 'Total Sekolah', value: stats.total_sekolah, bg: 'bg-blue-50', text: 'text-blue-700', icon: 'ti-building' },
+                    { label: 'Total Pengguna', value: stats.total_user, bg: 'bg-purple-50', text: 'text-purple-700', icon: 'ti-users' },
+                    { label: 'Total Siswa', value: stats.total_siswa, bg: 'bg-emerald-50', text: 'text-emerald-700', icon: 'ti-school' },
+                    { label: 'Total Kelas', value: stats.total_kelas, bg: 'bg-amber-50', text: 'text-amber-700', icon: 'ti-door' },
+                    { label: 'Total Guru', value: stats.total_guru, bg: 'bg-rose-50', text: 'text-rose-700', icon: 'ti-user-check' },
+                    { label: 'Total TP', value: stats.total_tp, bg: 'bg-cyan-50', text: 'text-cyan-700', icon: 'ti-target-arrow' },
+                ].map((s) => (
+                    <div key={s.label} className={`rounded-2xl ${s.bg} p-5`}>
+                        <i className={`ti ${s.icon} ${s.text} text-lg`} />
+                        <p className={`font-display font-700 text-3xl ${s.text} mt-2`}>{s.value?.toLocaleString('id-ID') ?? 0}</p>
+                        <p className="text-xs text-navy/50 mt-1">{s.label}</p>
+                    </div>
+                ))}
             </div>
 
             {/* Search */}
