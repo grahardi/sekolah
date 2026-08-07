@@ -16,6 +16,15 @@ return new class extends Migration
             $table->string('port')->nullable(); // dibaca dari .env, VIEW ONLY di portal
             $table->boolean('is_aktif')->default(true);
             $table->timestamp('terakhir_dijalankan')->nullable();
+
+            // Kredensial koneksi DB PostgreSQL live milik instance ini - buat
+            // sinkron data (kirim siswa, ambil hasil ujian). Terenkripsi.
+            $table->text('db_host')->nullable();
+            $table->text('db_port')->nullable();
+            $table->text('db_name')->nullable();
+            $table->text('db_user')->nullable();
+            $table->text('db_pass')->nullable();
+
             $table->timestamps();
         });
     }

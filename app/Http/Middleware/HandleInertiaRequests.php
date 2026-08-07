@@ -24,6 +24,10 @@ class HandleInertiaRequests extends Middleware
             // Dipakai buat banner "Sedang login sebagai Guru X - Kembali ke Admin"
             // di PortalLayout, kalau admin lagi impersonate akun guru.
             'impersonating' => session('impersonating_admin_id') ? true : false,
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }

@@ -7,8 +7,54 @@ use Illuminate\Database\Eloquent\Model;
 class ExoInstance extends Model
 {
     protected $table = 'exo_instances';
-    protected $fillable = ['nama', 'slug', 'path', 'port', 'is_aktif', 'terakhir_dijalankan'];
-    protected $casts = ['is_aktif' => 'boolean', 'terakhir_dijalankan' => 'datetime'];
+    protected $fillable = [
+        'nama', 'slug', 'path', 'port', 'is_aktif', 'terakhir_dijalankan',
+        'db_host', 'db_port', 'db_name', 'db_user', 'db_pass',
+    ];
+    protected $casts = [
+        'is_aktif' => 'boolean',
+        'terakhir_dijalankan' => 'datetime',
+        // Kredensial DB dienkripsi otomatis di database - aman kalau backup
+        // database kita sendiri bocor, kredensial exo tetap gak kebaca mentah.
+        'db_host' => 'encrypted',
+        'db_port' => 'encrypted',
+        'db_name' => 'encrypted',
+        'db_user' => 'encrypted',
+        'db_pass' => 'encrypted',
+    ];
+
+    /** Konfigurasi & kembalikan koneksi DB dinamis ke database instance ini */
+    public function dbConnection(): \Illuminate\Database\Connection
+    {
+        $namaKoneksi = "exo_{$this->id}";
+
+        config([
+            "database.connections.{$namaKoneksi}" => [
+                'driver' => 'pgsql',
+                'host' => $this->db_host,
+                'port' => $this->db_port ?: 5432,
+                'database' => $this->db_name,
+                'username' => $this->db_user,
+                'password' => $this->db_pass,
+                'charset' => 'utf8',
+                'prefix' => '',
+                'schema' => 'public',
+                'sslmode' => 'prefer',
+            ],
+        ]);
+
+        return \Illuminate\Support\Facades\DB::connection($namaKoneksi);
+    }
+
+    public function tesKoneksiDb(): array
+    {
+        try {
+            $this->dbConnection()->select('select 1');
+            return ['ok' => true, 'pesan' => 'Koneksi berhasil.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'pesan' => $e->getMessage()];
+        }
+    }
 
     private function envPath(): string
     {

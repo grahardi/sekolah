@@ -8,6 +8,8 @@ export default function ExoInstances({ instances }) {
 
     const formTambah = useForm({ nama: '', slug: '', path: '' });
     const formKey = useForm({ license_key: '' });
+    const formDb = useForm({ db_host: '', db_port: '5432', db_name: '', db_user: '', db_pass: '' });
+    const [editDb, setEditDb] = useState(null);
 
     const submitTambah = (e) => {
         e.preventDefault();
@@ -17,6 +19,15 @@ export default function ExoInstances({ instances }) {
     const submitKey = (e, instance) => {
         e.preventDefault();
         formKey.put(`/admin-portal/exo/${instance.id}/license-key`, { onSuccess: () => { setEditKey(null); formKey.reset(); } });
+    };
+
+    const submitDb = (e, instance) => {
+        e.preventDefault();
+        formDb.put(`/admin-portal/exo/${instance.id}/db-creds`, { onSuccess: () => { setEditDb(null); formDb.reset(); } });
+    };
+
+    const tesKoneksi = (instance) => {
+        router.post(`/admin-portal/exo/${instance.id}/test-connection`, {}, { preserveScroll: true });
     };
 
     const jalankan = (instance) => {
@@ -93,6 +104,9 @@ export default function ExoInstances({ instances }) {
                             <span className={`px-2 py-0.5 rounded-full ${i.license_key_terisi ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
                                 {i.license_key_terisi ? 'License terisi' : 'License kosong'}
                             </span>
+                            <span className={`px-2 py-0.5 rounded-full ${i.db_terisi ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
+                                {i.db_terisi ? 'DB terhubung' : 'DB belum diisi'}
+                            </span>
                         </div>
 
                         {editKey === i.id ? (
@@ -114,6 +128,31 @@ export default function ExoInstances({ instances }) {
                             <button onClick={() => setEditKey(i.id)} className="text-xs text-teal hover:underline mb-3 block">
                                 <i className="ti ti-key mr-1" /> {i.license_key_terisi ? 'Ubah' : 'Isi'} License Key
                             </button>
+                        )}
+
+                        {editDb === i.id ? (
+                            <form onSubmit={(e) => submitDb(e, i)} className="mb-3 space-y-2">
+                                <input type="text" value={formDb.data.db_host} onChange={(e) => formDb.setData('db_host', e.target.value)} placeholder="Host (mis. localhost)" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" />
+                                <input type="text" value={formDb.data.db_port} onChange={(e) => formDb.setData('db_port', e.target.value)} placeholder="Port" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" />
+                                <input type="text" value={formDb.data.db_name} onChange={(e) => formDb.setData('db_name', e.target.value)} placeholder="Nama Database" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" />
+                                <input type="text" value={formDb.data.db_user} onChange={(e) => formDb.setData('db_user', e.target.value)} placeholder="Username" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" />
+                                <input type="password" value={formDb.data.db_pass} onChange={(e) => formDb.setData('db_pass', e.target.value)} placeholder="Password" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-xs font-mono" />
+                                <div className="flex gap-2">
+                                    <button type="submit" disabled={formDb.processing} className="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-medium disabled:opacity-50">Simpan</button>
+                                    <button type="button" onClick={() => setEditDb(null)} className="px-3 py-1.5 rounded-lg bg-navy/5 text-navy/60 text-xs">Batal</button>
+                                </div>
+                            </form>
+                        ) : (
+                            <div className="flex items-center gap-3 mb-3">
+                                <button onClick={() => setEditDb(i.id)} className="text-xs text-teal hover:underline">
+                                    <i className="ti ti-database mr-1" /> {i.db_terisi ? 'Ubah' : 'Isi'} Kredensial DB
+                                </button>
+                                {i.db_terisi && (
+                                    <button onClick={() => tesKoneksi(i)} className="text-xs text-navy/50 hover:text-navy hover:underline">
+                                        <i className="ti ti-plug mr-1" /> Tes Koneksi
+                                    </button>
+                                )}
+                            </div>
                         )}
 
                         <button onClick={() => jalankan(i)} className="w-full px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600">

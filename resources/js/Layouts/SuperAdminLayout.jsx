@@ -9,6 +9,7 @@ const MENU = [
 export default function SuperAdminLayout({ title, breadcrumb = [], children }) {
     const { props, url } = usePage();
     const user = props?.auth?.user;
+    const flash = props?.flash || {};
 
     const isActive = (href) => url === href || (href !== '/admin-portal' && url.startsWith(href));
 
@@ -50,7 +51,15 @@ export default function SuperAdminLayout({ title, breadcrumb = [], children }) {
                     <p className="text-[11px] text-navy/40 mb-0.5">{['System Panel', ...breadcrumb].join(' / ')}</p>
                     <h1 className="font-display font-700 text-xl text-navy">{title}</h1>
                 </header>
-                <main className="p-8">{children}</main>
+                <main className="p-8">
+                    {flash.success && (
+                        <div className="mb-5 rounded-xl bg-emerald-50 text-emerald-700 text-sm px-4 py-3">{flash.success}</div>
+                    )}
+                    {flash.error && (
+                        <div className="mb-5 rounded-xl bg-red-50 text-red-700 text-sm px-4 py-3">{flash.error}</div>
+                    )}
+                    {children}
+                </main>
             </div>
         </div>
     );

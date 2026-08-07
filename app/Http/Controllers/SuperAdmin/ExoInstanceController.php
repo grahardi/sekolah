@@ -23,6 +23,7 @@ class ExoInstanceController extends Controller
                 'terakhir_dijalankan' => $i->terakhir_dijalankan,
                 'port_saat_ini' => $i->bacaEnv('SERVER_PORT'), // VIEW ONLY - dibaca langsung dari .env
                 'license_key_terisi' => filled($i->bacaEnv('SERVER_SECRET_LICENSE_KEY')),
+                'db_terisi' => filled($i->db_host) && filled($i->db_name),
             ];
         });
 
@@ -35,6 +36,11 @@ class ExoInstanceController extends Controller
             'nama' => 'required|string|max:100',
             'slug' => 'required|string|max:50|unique:exo_instances,slug|alpha_dash',
             'path' => 'required|string|max:255',
+            'db_host' => 'nullable|string|max:255',
+            'db_port' => 'nullable|string|max:10',
+            'db_name' => 'nullable|string|max:100',
+            'db_user' => 'nullable|string|max:100',
+            'db_pass' => 'nullable|string|max:255',
         ]);
 
         abort_unless(file_exists(rtrim($data['path'], '/') . '/.env'), 422, 'File .env tidak ditemukan di path itu. Cek lagi path-nya.');
@@ -42,6 +48,28 @@ class ExoInstanceController extends Controller
         ExoInstance::create($data);
 
         return back()->with('success', 'Instance berhasil ditambahkan.');
+    }
+
+    public function updateDbCreds(Request $request, ExoInstance $exoInstance)
+    {
+        $data = $request->validate([
+            'db_host' => 'required|string|max:255',
+            'db_port' => 'required|string|max:10',
+            'db_name' => 'required|string|max:100',
+            'db_user' => 'required|string|max:100',
+            'db_pass' => 'required|string|max:255',
+        ]);
+
+        $exoInstance->update($data);
+
+        return back()->with('success', "Kredensial database {$exoInstance->nama} disimpan.");
+    }
+
+    public function testConnection(ExoInstance $exoInstance)
+    {
+        $hasil = $exoInstance->tesKoneksiDb();
+
+        return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }
 
     public function updateLicenseKey(Request $request, ExoInstance $exoInstance)
