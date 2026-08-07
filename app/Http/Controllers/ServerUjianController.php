@@ -81,7 +81,8 @@ class ServerUjianController extends Controller
 
         $identifier = $request->input('identifier', 'nisn') === 'nis' ? 'nis' : 'nisn';
         $mode = $request->input('mode', 'update') === 'reset' ? 'reset' : 'update';
-        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance, $identifier, $mode);
+        $sertakanFoto = $request->boolean('sertakan_foto');
+        $hasil = \App\Services\ExoSyncService::sinkronSiswa($instance, $identifier, $mode, $sertakanFoto);
 
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }

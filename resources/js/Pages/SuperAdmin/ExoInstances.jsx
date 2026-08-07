@@ -56,6 +56,7 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
         if (identifier === null) return;
         const mode = prompt('Mode sinkron?\nKetik "update" (tambah/perbarui) atau "reset" (HAPUS SEMUA data lama dulu)', 'update');
         if (mode === null) return;
+        const foto = confirm('Sertakan foto dari Buku Induk juga? (OK = Ya, Cancel = Tidak)');
         const konfirmasi = mode === 'reset'
             ? `RESET akan HAPUS SEMUA grup & peserta lama di ${instance.nama} sebelum sinkron ulang. Yakin?`
             : `Sinkron data siswa ${instance.sekolah_nama} ke ${instance.nama} (pakai ${identifier.toUpperCase()})?`;
@@ -63,6 +64,7 @@ export default function ExoInstances({ instances, masterSqlTersedia, sekolahList
         router.post(`/admin-portal/exo/${instance.id}/sinkron-siswa`, {
             identifier: identifier === 'nis' ? 'nis' : 'nisn',
             mode: mode === 'reset' ? 'reset' : 'update',
+            sertakan_foto: foto,
         }, { preserveScroll: true });
     };
 

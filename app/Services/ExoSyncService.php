@@ -23,7 +23,7 @@ class ExoSyncService
         'KONG HU CU' => '7c03497a-6df3-46db-9ff9-99a9c7b49b14',
     ];
 
-    public static function sinkronSiswa(ExoInstance $exoInstance, string $identifier = 'nisn', string $mode = 'update'): array
+    public static function sinkronSiswa(ExoInstance $exoInstance, string $identifier = 'nisn', string $mode = 'update', bool $sertakanFoto = false): array
     {
         if (! $exoInstance->sekolah_id) {
             return ['ok' => false, 'pesan' => 'Instance belum terhubung ke sekolah manapun.'];
@@ -36,6 +36,7 @@ class ExoSyncService
             ->where('sekolah_id', $exoInstance->sekolah_id)
             ->where('status', 'aktif')
             ->whereNotNull('kelas')
+            ->when($sertakanFoto, fn ($q) => $q->with('arsipBerkas'))
             ->get();
 
         if ($siswaList->isEmpty()) {
@@ -58,7 +59,18 @@ class ExoSyncService
             // Jurusan "Umum" - pakai ID tetap yg sudah ada dari hasil provisioning
             $jurusanId = self::JURUSAN_UMUM_ID;
 
-            $dibuatGrup = 0; $dibuatSiswa = 0; $diupdateSiswa = 0; $dilewati = 0;
+            // Siapkan folder foto kalau opsi foto diaktifkan - pola path dari
+            // data asli yg sudah dikonfirmasi: {STORAGE_PATH}/exo-output-photo/{no_ujian}.jpg
+            $folderFoto = null;
+            if ($sertakanFoto) {
+                $storagePath = rtrim($exoInstance->bacaEnv('STORAGE_PATH') ?: '', '/');
+                if ($storagePath) {
+                    $folderFoto = $storagePath . '/exo-output-photo';
+                    if (! is_dir($folderFoto)) @mkdir($folderFoto, 0775, true);
+                }
+            }
+
+            $dibuatGrup = 0; $dibuatSiswa = 0; $diupdateSiswa = 0; $dilewati = 0; $fotoTersinkron = 0;
 
             foreach ($siswaList->groupBy('kelas') as $kelas => $siswaSatuAngkatan) {
                 $namaGrupInduk = "Kelas {$kelas}";
@@ -104,6 +116,26 @@ class ExoSyncService
                         // kredensial permanen kayak akun admin.
                         $passwordBaru = (string) random_int(100000, 999999);
 
+                        // Foto - cuma proses kalau opsi diaktifkan DAN siswa
+                        // beneran punya foto asli (bukan avatar inisial default).
+                        // Fallback ke foto di Berkas kalau foto profil kosong,
+                        // sama kayak logic foto_url.
+                        $avaValue = $pesertaAda->ava ?? null;
+                        $fotoPath = $siswa->foto ?: ($siswa->arsipBerkas->foto ?? null);
+                        if ($sertakanFoto && $folderFoto && $fotoPath) {
+                            $sumberPath = storage_path('app/public/' . $fotoPath);
+                            if (file_exists($sumberPath)) {
+                                $tujuanPath = "{$folderFoto}/{$noUjian}.jpg";
+                                @unlink($tujuanPath); // buang link/file lama dulu kalau ada
+                                $berhasil = @symlink($sumberPath, $tujuanPath);
+                                if (! $berhasil) $berhasil = @copy($sumberPath, $tujuanPath);
+                                if ($berhasil) {
+                                    $avaValue = "exo-output-photo/{$noUjian}.jpg";
+                                    $fotoTersinkron++;
+                                }
+                            }
+                        }
+
                         if (! $pesertaAda) {
                             $pesertaId = (string) \Illuminate\Support\Str::uuid();
                             $conn->table('pesertas')->insert([
@@ -115,6 +147,7 @@ class ExoSyncService
                                 'jurusan_id' => $jurusanId,
                                 'agama_id' => $agamaId,
                                 'status' => 1, // 1 = aktif
+                                'ava' => $avaValue,
                                 'created_at' => now(), 'updated_at' => now(),
                             ]);
                             $dibuatSiswa++;
@@ -125,6 +158,7 @@ class ExoSyncService
                                 'password' => $passwordBaru,
                                 'jurusan_id' => $jurusanId,
                                 'agama_id' => $agamaId,
+                                'ava' => $avaValue,
                                 'updated_at' => now(),
                             ]);
                             $diupdateSiswa++;
@@ -142,9 +176,10 @@ class ExoSyncService
             }
 
             $awalan = $mode === 'reset' ? 'Reset & sinkron selesai' : 'Sinkron selesai';
+            $pesanFoto = $sertakanFoto ? ", {$fotoTersinkron} foto tersambung" : '';
             return [
                 'ok' => true,
-                'pesan' => "{$awalan}: {$dibuatGrup} grup/subgrup dibuat, {$dibuatSiswa} siswa baru, {$diupdateSiswa} siswa diperbarui" . ($dilewati ? ", {$dilewati} dilewati (NIS/NISN kosong)" : '') . '.',
+                'pesan' => "{$awalan}: {$dibuatGrup} grup/subgrup dibuat, {$dibuatSiswa} siswa baru, {$diupdateSiswa} siswa diperbarui{$pesanFoto}" . ($dilewati ? ", {$dilewati} dilewati (NIS/NISN kosong)" : '') . '.',
             ];
         } catch (\Throwable $e) {
             return ['ok' => false, 'pesan' => 'Gagal sinkron: ' . $e->getMessage()];
