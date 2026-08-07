@@ -48,38 +48,6 @@ class ExoInstanceController extends Controller
         return ! empty($kandidat) ? basename($kandidat[0]) : null;
     }
 
-    public function scanFolder(Request $request)
-    {
-        $basePath = $request->input('base_path', self::BASE_PATH);
-
-        if (! is_dir($basePath)) {
-            return response()->json(['error' => "Folder {$basePath} tidak ditemukan."], 404);
-        }
-
-        $pathTerpakai = ExoInstance::pluck('path', 'nama')->flip(); // path => nama, buat lookup cepat
-
-        $folders = collect(scandir($basePath))
-            ->reject(fn ($f) => in_array($f, ['.', '..']))
-            ->filter(fn ($f) => is_dir("{$basePath}/{$f}"))
-            ->map(function ($f) use ($basePath, $pathTerpakai) {
-                $fullPath = "{$basePath}/{$f}";
-                $adaEnv = file_exists("{$fullPath}/.env");
-                $namaBinary = $this->cariNamaBinary($fullPath);
-                $adaBinary = $namaBinary !== null;
-
-                return [
-                    'nama_folder' => $f,
-                    'path' => $fullPath,
-                    'valid' => $adaEnv && $adaBinary,
-                    'catatan' => ! $adaEnv ? 'Tidak ada .env' : (! $adaBinary ? 'Tidak ada file main-amd64*' : null),
-                    'sudah_dipakai' => $pathTerpakai->has($fullPath) ? $pathTerpakai->get($fullPath) : null,
-                ];
-            })
-            ->values();
-
-        return response()->json(['folders' => $folders, 'base_path' => $basePath]);
-    }
-
     public function uploadMasterSql(Request $request)
     {
         $request->validate(['master_sql' => 'required|file|max:51200']); // maks 50MB
@@ -167,12 +135,16 @@ class ExoInstanceController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:100',
             'slug' => 'required|string|max:50|unique:exo_instances,slug|alpha_dash',
-            'path' => 'required|string|max:255',
+            'nama_folder' => 'required|string|max:100|regex:/^[a-zA-Z0-9_-]+$/',
             'provision_otomatis' => 'nullable|boolean',
             'db_root_password' => 'required_if:provision_otomatis,1|nullable|string',
         ]);
 
-        abort_unless(file_exists(rtrim($data['path'], '/') . '/.env'), 422, 'File .env tidak ditemukan di path itu. Pastikan folder Extraordinary CBT sudah di-extract dulu di path tsb.');
+        $data['path'] = self::BASE_PATH . '/' . trim($data['nama_folder'], '/');
+        unset($data['nama_folder']);
+
+        abort_unless(is_dir($data['path']), 422, "Folder {$data['path']} tidak ditemukan. Pastikan sudah di-extract dulu.");
+        abort_unless(file_exists($data['path'] . '/.env'), 422, 'File .env tidak ditemukan di folder itu. Pastikan folder Extraordinary CBT sudah di-extract dulu di path tsb.');
 
         if ($request->boolean('provision_otomatis')) {
             abort_unless($this->masterSqlTersedia(), 422, 'Upload file SQL master dulu sebelum provisioning otomatis.');
