@@ -283,6 +283,11 @@ class RaporController extends Controller
             'kotaTtd' => $kotaTtd,
         ])->setPaper($ukuranKertas, $sekolah->rapor_orientasi);
 
+        // Samakan margin atas semua halaman (1cm) - tanpa ini halaman
+        // pertama bisa kelihatan mepet krn beda perlakuan dgn halaman
+        // berikutnya (sama kayak kasus yg sudah diperbaiki di Buku Induk).
+        $pdf->getDomPDF()->set_option('margin_top', 28);
+
         return $pdf->stream('rapor-' . str_replace(' ', '-', $rapor->siswa->nama_lengkap) . '.pdf')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
