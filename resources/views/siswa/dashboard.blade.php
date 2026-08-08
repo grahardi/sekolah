@@ -59,6 +59,7 @@
         ['label' => 'Export Data', 'icon' => 'ti-file-export', 'bg' => '#fde68a', 'warna' => '#a16207', 'href' => route('siswa.export.choice')],
         ['label' => 'Kenaikan Kelas', 'icon' => 'ti-arrow-up-circle', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('kenaikan.index')],
         ['label' => 'Import Berkas', 'icon' => 'ti-folder-plus', 'bg' => '#fbcfe8', 'warna' => '#be185d', 'href' => route('siswa.import.berkas.form')],
+        ['label' => 'Cetak Massal', 'icon' => 'ti-printer', 'bg' => '#c7d2fe', 'warna' => '#4338ca', 'href' => route('siswa.cetak-massal.pilih')],
     ];
 @endphp
 <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:14px;">

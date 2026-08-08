@@ -18,6 +18,8 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
     Route::prefix('siswa')->name('siswa.')->group(function () {
         Route::get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
         Route::middleware('admin')->get('/kartu-massal', [SiswaController::class, 'cetakKartuMassal'])->name('kartu.massal');
+        Route::get('/cetak-massal', [SiswaController::class, 'pilihCetakMassal'])->name('cetak-massal.pilih');
+        Route::post('/cetak-massal', [SiswaController::class, 'cetakMassal'])->name('cetak-massal');
 
         // Bisa diakses admin & induk (VIEW ONLY)
         Route::get('/', [SiswaController::class, 'index'])->name('index');

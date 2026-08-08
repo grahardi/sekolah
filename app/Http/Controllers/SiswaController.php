@@ -127,12 +127,50 @@ class SiswaController extends Controller
         $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
         $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-        $pdf->getDomPDF()->set_option('margin_top',    0);
+        $pdf->getDomPDF()->set_option('margin_top',    28); // ~1cm, berlaku di SEMUA halaman (bukan cuma hal.1 kayak CSS padding)
         $pdf->getDomPDF()->set_option('margin_bottom', 0);
         $pdf->getDomPDF()->set_option('margin_left',   0);
         $pdf->getDomPDF()->set_option('margin_right',  0);
         $pdf->setPaper('a4', 'portrait');
         return $pdf->stream('buku-induk-'.$siswa->nisn.'.pdf')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
+    }
+
+    /** Halaman pilih siswa untuk cetak massal Buku Induk */
+    public function pilihCetakMassal()
+    {
+        $siswaList = Siswa::where('status', 'aktif')->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')->get(['id', 'nama_lengkap', 'kelas', 'rombel', 'nis', 'nisn']);
+
+        $kelasRombelList = $siswaList->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+
+        $angkatanList = $siswaList->pluck('kelas')->unique()->sort()->values();
+
+        return view('siswa.cetak-massal-pilih', compact('siswaList', 'kelasRombelList', 'angkatanList'));
+    }
+
+    public function cetakMassal(Request $request)
+    {
+        $request->validate(['siswa_ids' => 'required|array|min:1', 'siswa_ids.*' => 'exists:siswas,id']);
+
+        $siswaList = Siswa::whereIn('id', $request->siswa_ids)
+            ->with(['nilaiRapors', 'nilaiP5s', 'nilaiEkskuls', 'kehadirans', 'riwayatKelas', 'prestasis'])
+            ->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')
+            ->get();
+
+        abort_if($siswaList->isEmpty(), 404, 'Tidak ada siswa yang dipilih.');
+
+        $pdf = Pdf::loadView('siswa.pdf-buku-induk-massal', compact('siswaList'));
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
+        $pdf->getDomPDF()->set_option('margin_top',    28);
+        $pdf->getDomPDF()->set_option('margin_bottom', 0);
+        $pdf->getDomPDF()->set_option('margin_left',   0);
+        $pdf->getDomPDF()->set_option('margin_right',  0);
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->stream('buku-induk-massal-' . now()->format('Y-m-d') . '.pdf')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
     }
