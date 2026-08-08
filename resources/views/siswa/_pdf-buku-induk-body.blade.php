@@ -67,6 +67,8 @@
 </div>
 
 <p class="spacer-baris">&nbsp;</p>
+<p class="spacer-baris">&nbsp;</p>
+<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">E. KETERANGAN TENTANG AYAH KANDUNG</div>
 <table class="data">
