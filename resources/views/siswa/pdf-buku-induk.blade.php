@@ -12,7 +12,8 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; backg
 .judul-dok p  { font-size:9pt; margin-top:5px; }
 .no-induk     { text-align:left; font-size:8.5pt; margin-bottom:10px; }
 .sek { background:#000; color:#fff; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
-.section-blok { page-break-inside: avoid; margin-top: 8mm; }
+.section-blok { page-break-inside: avoid; }
+.spacer-baris { font-size:8mm; line-height:8mm; color:#fff; }
 table.data { width:100%; border-collapse:collapse; }
 table.data td { padding:2.5px 6px; font-size:9pt; vertical-align:top; line-height:1.4; }
 table.data td.no  { width:22px; text-align:right; padding-right:4px; }
