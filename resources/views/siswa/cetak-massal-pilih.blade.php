@@ -42,7 +42,7 @@
             <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;"><span id="jumlah-terpilih">0</span> siswa dipilih</p>
             <button type="submit" class="btn btn-primary"><i class="ti ti-download"></i> Unduh ZIP (PDF per siswa)</button>
         </div>
-        <div style="max-height:520px;overflow-y:auto;">
+        <div>
             <table style="width:100%;border-collapse:collapse;">
                 <thead style="position:sticky;top:0;background:#f8fafc;">
                     <tr>
@@ -53,8 +53,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($siswaList as $s)
-                    <tr style="border-top:1px solid #f1f5f9;" data-kelas-rombel="{{ $s->kelas }}|{{ $s->rombel }}" data-kelas="{{ $s->kelas }}">
+                    @foreach($siswaList as $i => $s)
+                    <tr class="row-siswa" data-halaman="{{ intdiv($i, 20) }}" style="border-top:1px solid #f1f5f9;" data-kelas-rombel="{{ $s->kelas }}|{{ $s->rombel }}" data-kelas="{{ $s->kelas }}">
                         <td style="padding:8px 18px;">
                             <input type="checkbox" name="siswa_ids[]" value="{{ $s->id }}" class="cb-siswa" onchange="updateJumlah()">
                         </td>
@@ -66,8 +66,40 @@
                 </tbody>
             </table>
         </div>
+        <div id="nav-halaman" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:14px;border-top:1px solid #e2e8f0;flex-wrap:wrap;"></div>
     </div>
 </form>
+
+<script>
+const UKURAN_HALAMAN = 20;
+let halamanSekarang = 0;
+
+function totalHalaman() {
+    return Math.max(1, Math.ceil(document.querySelectorAll('.row-siswa').length / UKURAN_HALAMAN));
+}
+
+function tampilkanHalaman(n) {
+    const total = totalHalaman();
+    halamanSekarang = Math.min(Math.max(0, n), total - 1);
+    document.querySelectorAll('.row-siswa').forEach(row => {
+        row.style.display = (parseInt(row.dataset.halaman) === halamanSekarang) ? '' : 'none';
+    });
+    renderNav(total);
+}
+
+function renderNav(total) {
+    const nav = document.getElementById('nav-halaman');
+    if (total <= 1) { nav.innerHTML = ''; return; }
+    let html = `<button type="button" onclick="tampilkanHalaman(${halamanSekarang - 1})" class="btn btn-secondary btn-sm" ${halamanSekarang === 0 ? 'disabled' : ''}>&laquo; Sebelumnya</button>`;
+    for (let i = 0; i < total; i++) {
+        html += `<button type="button" onclick="tampilkanHalaman(${i})" class="btn btn-sm" style="min-width:32px;${i === halamanSekarang ? 'background:#1E3A5F;color:#fff;' : 'background:#f1f5f9;color:#475569;'}">${i + 1}</button>`;
+    }
+    html += `<button type="button" onclick="tampilkanHalaman(${halamanSekarang + 1})" class="btn btn-secondary btn-sm" ${halamanSekarang === total - 1 ? 'disabled' : ''}>Selanjutnya &raquo;</button>`;
+    nav.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => tampilkanHalaman(0));
+</script>
 
 <script>
 function updateJumlah() {
