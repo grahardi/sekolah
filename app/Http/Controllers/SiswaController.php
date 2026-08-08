@@ -127,10 +127,9 @@ class SiswaController extends Controller
         $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
         $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-        $pdf->getDomPDF()->set_option('margin_top',    28); // ~1cm, berlaku di SEMUA halaman (bukan cuma hal.1 kayak CSS padding)
-        $pdf->getDomPDF()->set_option('margin_bottom', 0);
-        $pdf->getDomPDF()->set_option('margin_left',   0);
-        $pdf->getDomPDF()->set_option('margin_right',  0);
+        // Margin sekarang diatur via CSS @page di view-nya (lebih reliable
+        // konsisten di semua halaman drpd set_option margin_top yg sempat
+        // dicoba tapi ternyata gak selalu kepakai di halaman ke-2 dst).
         $pdf->setPaper('a4', 'portrait');
         return $pdf->stream('buku-induk-'.$siswa->nisn.'.pdf')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -173,10 +172,7 @@ class SiswaController extends Controller
             $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
             $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
             $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-            $pdf->getDomPDF()->set_option('margin_top',    28);
-            $pdf->getDomPDF()->set_option('margin_bottom', 0);
-            $pdf->getDomPDF()->set_option('margin_left',   0);
-            $pdf->getDomPDF()->set_option('margin_right',  0);
+            // Margin diatur via CSS @page di view-nya
             $pdf->setPaper('a4', 'portrait');
 
             $namaFile = \Illuminate\Support\Str::slug($siswa->nama_lengkap) . '-' . $siswa->nisn . '.pdf';

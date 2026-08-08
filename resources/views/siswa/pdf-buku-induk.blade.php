@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
+@page { margin: 28pt 20mm 10mm 20mm; }
 body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; background:#fff; }
-.page { padding:0 20mm 10mm 20mm; }
+.page { padding:0; }
 .halaman-baru { page-break-before: always; }
 .judul-dok { text-align:center; margin-bottom:10px; width:100%; }
 .judul-dok h2 { font-size:12pt; font-weight:bold; text-transform:uppercase; letter-spacing:2px; border:2.5px solid #000; display:inline-block; padding:5px 18px; }
