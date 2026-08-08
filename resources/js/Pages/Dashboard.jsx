@@ -29,7 +29,7 @@ const MODULES = [
     },
     {
         key: 'ujian', title: 'Ujian Digital', desc: 'Ujian online terjadwal dengan bank soal dan pengawasan otomatis.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-gray-100',
+        href: '/server-ujian', status: 'aktif', color: 'bg-teal', bg: 'bg-orange-100', external: true,
     },
     {
         key: 'manajemen', title: 'Manajemen Sekolah', desc: 'Absensi harian siswa, data siswa & guru terpadu.',

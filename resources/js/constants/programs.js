@@ -34,7 +34,7 @@ export const PROGRAMS = [
     {
         slug: 'persuratan',
         title: 'Persuratan',
-        status: 'Segera',
+        status: 'Aktif',
         summary: 'Surat masuk-keluar dan arsip digital sekolah.',
         detail: 'Sedang dikembangkan - akan mencakup pencatatan nomor surat otomatis, template surat resmi, dan pelacakan disposisi.',
     },
@@ -59,9 +59,11 @@ export const PROGRAMS = [
     {
         slug: 'program-ujian',
         title: 'Program Ujian',
-        status: 'Segera',
+        status: 'Aktif',
         summary: 'Ujian online terjadwal dengan bank soal.',
-        detail: 'Sedang dikembangkan - ujian online dengan bank soal, pengacakan otomatis, dan pengawasan digital.',
+        detail: 'Ujian online (CBT) terintegrasi - kelola server ujian, sinkronkan data siswa dari Buku Induk otomatis (nama, kelas, agama), dan siswa bisa langsung login pakai NIS/NISN mereka.',
+        href: '/server-ujian',
+        cta: 'Buka Program Ujian',
     },
 ];
 
