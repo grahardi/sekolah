@@ -31,7 +31,6 @@
 </table>
 </div>
 
-<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">B. KETERANGAN TEMPAT TINGGAL</div>
 <table class="data">
@@ -45,7 +44,6 @@
 </table>
 </div>
 
-<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">C. KETERANGAN KESEHATAN</div>
 <table class="data">
@@ -55,7 +53,6 @@
 </table>
 </div>
 
-<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">D. KETERANGAN PENDIDIKAN</div>
 <table class="data">
@@ -83,7 +80,6 @@
 </table>
 </div>
 
-<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">F. KETERANGAN TENTANG IBU KANDUNG</div>
 <table class="data">
@@ -96,7 +92,6 @@
 </table>
 </div>
 
-<p class="spacer-baris">&nbsp;</p>
 <div class="section-blok">
 <div class="sek">G. KETERANGAN TENTANG WALI</div>
 <table class="data">
