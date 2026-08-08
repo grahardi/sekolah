@@ -3,7 +3,7 @@
 @section('page-title', 'Cetak Massal - Buku Induk Siswa')
 
 @section('content')
-<form action="{{ route('siswa.cetak-massal') }}" method="POST" target="_blank" id="form-cetak-massal">
+<form action="{{ route('siswa.cetak-massal') }}" method="POST" id="form-cetak-massal">
     @csrf
 
     <div class="card" style="padding:18px;margin-bottom:16px;">
@@ -40,7 +40,7 @@
     <div class="card" style="padding:0;overflow:hidden;">
         <div style="padding:14px 18px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
             <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;"><span id="jumlah-terpilih">0</span> siswa dipilih</p>
-            <button type="submit" class="btn btn-primary"><i class="ti ti-printer"></i> Cetak PDF</button>
+            <button type="submit" class="btn btn-primary"><i class="ti ti-download"></i> Unduh ZIP (PDF per siswa)</button>
         </div>
         <div style="max-height:520px;overflow-y:auto;">
             <table style="width:100%;border-collapse:collapse;">

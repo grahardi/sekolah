@@ -161,18 +161,30 @@ class SiswaController extends Controller
 
         abort_if($siswaList->isEmpty(), 404, 'Tidak ada siswa yang dipilih.');
 
-        $pdf = Pdf::loadView('siswa.pdf-buku-induk-massal', compact('siswaList'));
-        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
-        $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-        $pdf->getDomPDF()->set_option('margin_top',    28);
-        $pdf->getDomPDF()->set_option('margin_bottom', 0);
-        $pdf->getDomPDF()->set_option('margin_left',   0);
-        $pdf->getDomPDF()->set_option('margin_right',  0);
-        $pdf->setPaper('a4', 'portrait');
+        // Generate PDF satu-satu pakai view yg SAMA dgn cetak individual
+        // (sudah pasti jalan), lalu di-ZIP - lebih simpel & aman drpd
+        // gabungkan semua ke 1 file PDF (function baris() bentrok kalau
+        // di-include berulang dlm 1 request yg sama).
+        $zip = new \ZipArchive();
+        $zipPath = storage_path('app/temp-buku-induk-' . uniqid() . '.zip');
+        $zip->open($zipPath, \ZipArchive::CREATE);
 
-        return $pdf->stream('buku-induk-massal-' . now()->format('Y-m-d') . '.pdf')
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Pragma', 'no-cache');
+        foreach ($siswaList as $siswa) {
+            $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
+            $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+            $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
+            $pdf->getDomPDF()->set_option('margin_top',    28);
+            $pdf->getDomPDF()->set_option('margin_bottom', 0);
+            $pdf->getDomPDF()->set_option('margin_left',   0);
+            $pdf->getDomPDF()->set_option('margin_right',  0);
+            $pdf->setPaper('a4', 'portrait');
+
+            $namaFile = \Illuminate\Support\Str::slug($siswa->nama_lengkap) . '-' . $siswa->nisn . '.pdf';
+            $zip->addFromString($namaFile, $pdf->output());
+        }
+        $zip->close();
+
+        return response()->download($zipPath, 'buku-induk-massal-' . now()->format('Y-m-d') . '.zip')->deleteFileAfterSend(true);
     }
 
     /** Pilih model kartu pelajar sebelum cetak */
