@@ -37,7 +37,7 @@ const MODULES = [
     },
     {
         key: 'sarpras', title: 'Program Sarpras', desc: 'Pendataan dan pengelolaan sarana-prasarana sekolah.',
-        href: '#', status: 'segera', color: 'bg-navy', bg: 'bg-gray-100',
+        href: '/sarpras', status: 'aktif', color: 'bg-teal', bg: 'bg-indigo-100', external: true,
     },
 ];
 
