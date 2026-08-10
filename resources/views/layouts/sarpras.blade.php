@@ -195,6 +195,10 @@
            class="sb-item {{ request()->routeIs('sarpras.categories.*') ? 'active' : '' }}">
             <i class="ti ti-category"></i><span>Kategori</span>
         </a>
+        <a href="{{ route('sarpras.master-data.index') }}"
+           class="sb-item {{ request()->routeIs('sarpras.master-data.*') ? 'active' : '' }}">
+            <i class="ti ti-map-pin"></i><span>Lokasi & Sumber Dana</span>
+        </a>
         <div class="sb-item-demo" title="Segera hadir">
             <i class="ti ti-tool"></i><span>Riwayat Kerusakan</span><span class="sb-demo-badge">Segera</span>
         </div>
