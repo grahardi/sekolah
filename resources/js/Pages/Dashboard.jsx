@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import PortalLayout from '../Layouts/PortalLayout';
 
@@ -41,15 +40,9 @@ const MODULES = [
     },
 ];
 
-export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
+export default function Dashboard({ stats, sekolah, bkStats }) {
     const { props } = usePage();
     const user = props?.auth?.user;
-    const [halamanKelas, setHalamanKelas] = useState(0);
-    const PER_HALAMAN_KELAS = 10;
-    const totalHalamanKelas = rekapKelas ? Math.ceil(rekapKelas.length / PER_HALAMAN_KELAS) : 0;
-    const rekapKelasHalamanIni = rekapKelas
-        ? rekapKelas.slice(halamanKelas * PER_HALAMAN_KELAS, (halamanKelas + 1) * PER_HALAMAN_KELAS)
-        : [];
 
     const STAT_CARDS = [
         { label: 'Total Siswa', value: stats?.total_siswa ?? 0, href: '/buku-induk', icon: 'ti-users', color: '#2563EB', bg: 'bg-sky-100' },
@@ -131,68 +124,6 @@ export default function Dashboard({ stats, sekolah, rekapKelas, bkStats }) {
             {/* Rekap Sekolah - inti dashboard, model kartu 2 kolom */}
             <h3 className="font-display font-600 text-lg text-navy mb-3">Rekap Sekolah</h3>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-                {/* Rekap siswa per kelas */}
-                <div className="rounded-2xl bg-white border border-black/5 p-5">
-                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
-                        <i className="ti ti-chart-bar" style={{ color: '#2563EB' }} /> Rekap Siswa per Kelas
-                    </h4>
-                    {rekapKelas && rekapKelas.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="text-left text-navy/50 text-xs uppercase border-b border-black/5">
-                                        <th className="pb-2">Kelas</th><th className="pb-2 text-center">L</th><th className="pb-2 text-center">P</th><th className="pb-2 text-center">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {rekapKelasHalamanIni.map((r, i) => (
-                                        <tr key={i} className="border-b border-black/5 last:border-0">
-                                            <td className="py-1.5 font-600">{r.rombel ? `${r.kelas} - ${r.rombel}` : r.kelas}</td>
-                                            <td className="py-1.5 text-center text-blue-700">{r.laki}</td>
-                                            <td className="py-1.5 text-center text-pink-700">{r.perempuan}</td>
-                                            <td className="py-1.5 text-center font-700">{r.total}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            {totalHalamanKelas > 1 && (
-                                <div className="flex items-center justify-between mt-3 pt-2 border-t border-black/5">
-                                    <button
-                                        type="button"
-                                        disabled={halamanKelas === 0}
-                                        onClick={() => setHalamanKelas((h) => Math.max(0, h - 1))}
-                                        className="text-xs text-navy/60 disabled:opacity-30 hover:text-teal transition-colors"
-                                    >&larr; Sebelumnya</button>
-                                    <span className="text-xs text-navy/40">Halaman {halamanKelas + 1} / {totalHalamanKelas}</span>
-                                    <button
-                                        type="button"
-                                        disabled={halamanKelas >= totalHalamanKelas - 1}
-                                        onClick={() => setHalamanKelas((h) => Math.min(totalHalamanKelas - 1, h + 1))}
-                                        className="text-xs text-navy/60 disabled:opacity-30 hover:text-teal transition-colors"
-                                    >Selanjutnya &rarr;</button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-navy/50">Belum ada data siswa aktif.</p>
-                    )}
-                </div>
-
-                {/* Fitur yang sudah aktif */}
-                <div className="rounded-2xl bg-white border border-black/5 p-5">
-                    <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
-                        <i className="ti ti-apps" style={{ color: '#16A34A' }} /> Fitur yang Sudah Aktif
-                    </h4>
-                    <div className="flex flex-col gap-2">
-                        {MODULES.filter((m) => m.status === 'aktif').map((m) => (
-                            <a key={m.key} href={m.href} className="flex items-center justify-between text-sm py-1.5 border-b border-black/5 last:border-0 hover:text-teal transition-colors">
-                                <span className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${m.color}`} /> {m.title}</span>
-                                <i className="ti ti-chevron-right text-navy/30" style={{ fontSize: '14px' }} />
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Total guru */}
                 <div className="rounded-2xl bg-white border border-black/5 p-5">
                     <h4 className="font-display font-600 text-sm text-navy mb-3 flex items-center gap-2">
