@@ -46,19 +46,33 @@
     <div class="card" style="margin-top:20px;">
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-files" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#7c3aed;"></i> Berkas Lain</span></div>
         <div class="card-body">
+            @php
+            $paletWarna = [
+                ['bg' => '#eff6ff', 'border' => '#bfdbfe', 'icon' => '#2563eb', 'text' => '#1e40af'],
+                ['bg' => '#f0fdf4', 'border' => '#bbf7d0', 'icon' => '#16a34a', 'text' => '#166534'],
+                ['bg' => '#fefce8', 'border' => '#fde68a', 'icon' => '#ca8a04', 'text' => '#854d0e'],
+                ['bg' => '#fdf2f8', 'border' => '#fbcfe8', 'icon' => '#db2777', 'text' => '#9d174d'],
+                ['bg' => '#f5f3ff', 'border' => '#ddd6fe', 'icon' => '#7c3aed', 'text' => '#5b21b6'],
+                ['bg' => '#ecfeff', 'border' => '#a5f3fc', 'icon' => '#0891b2', 'text' => '#155e75'],
+                ['bg' => '#fff7ed', 'border' => '#fed7aa', 'icon' => '#ea580c', 'text' => '#9a3412'],
+            ];
+            @endphp
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;">
                 @foreach($arsip->berkasLainUrls() as $b)
-                @php $sudahAdaLabel = filled($b['label']); @endphp
+                @php
+                $sudahAdaLabel = filled($b['label']);
+                $warna = $paletWarna[$b['index'] % count($paletWarna)];
+                @endphp
                 <button type="button" onclick="document.getElementById('modal-berkas-lain-{{ $b['index'] }}').style.display='flex'"
-                    style="border:1px solid {{ $sudahAdaLabel ? '#c4b5fd' : '#e2e8f0' }};background:{{ $sudahAdaLabel ? '#f5f3ff' : '#fff' }};border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;">
+                    style="border:1px solid {{ $sudahAdaLabel ? $warna['border'] : '#e2e8f0' }};background:{{ $sudahAdaLabel ? $warna['bg'] : '#fff' }};border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;">
                     @if($b['is_image'])
                     <img src="{{ $b['url'] }}" style="width:100%;height:60px;object-fit:cover;border-radius:6px;margin-bottom:6px;">
                     @else
-                    <div style="width:100%;height:60px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
-                        <i class="ti ti-file-text" style="font-size:22px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
+                    <div style="width:100%;height:60px;background:{{ $sudahAdaLabel ? $warna['border'] : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
+                        <i class="ti ti-file-text" style="font-size:22px;color:{{ $sudahAdaLabel ? $warna['icon'] : '#94a3b8' }};"></i>
                     </div>
                     @endif
-                    <p style="font-size:11px;margin:0;word-break:break-word;{{ $sudahAdaLabel ? 'color:#5b21b6;font-weight:600;' : 'color:#94a3b8;' }}">
+                    <p style="font-size:11px;margin:0;word-break:break-word;{{ $sudahAdaLabel ? "color:{$warna['text']};font-weight:600;" : 'color:#94a3b8;' }}">
                         @if($sudahAdaLabel)<i class="ti ti-tag" style="font-size:10px;"></i> {{ $b['label'] }}
                         @else {{ \Illuminate\Support\Str::limit($b['nama_asli'], 18) }}
                         @endif
@@ -71,6 +85,7 @@
 
     {{-- Modal per berkas: preview + edit label + pindahkan --}}
     @foreach($arsip->berkasLainUrls() as $b)
+    @php $warnaModal = $paletWarna[$b['index'] % count($paletWarna)]; @endphp
     <div id="modal-berkas-lain-{{ $b['index'] }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
         <div class="card" style="max-width:380px;width:100%;padding:22px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -80,10 +95,10 @@
 
             <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:14px;">
                 @if($b['is_image'])
-                <img src="{{ $b['url'] }}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:{{ filled($b['label']) ? '#f5f3ff' : '#f8fafc' }};">
+                <img src="{{ $b['url'] }}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:{{ filled($b['label']) ? $warnaModal['bg'] : '#f8fafc' }};">
                 @else
-                <div style="width:100%;height:140px;background:{{ filled($b['label']) ? '#ede9fe' : '#f1f5f9' }};border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                    <i class="ti ti-file-text" style="font-size:36px;color:{{ filled($b['label']) ? '#7c3aed' : '#94a3b8' }};"></i>
+                <div style="width:100%;height:140px;background:{{ filled($b['label']) ? $warnaModal['border'] : '#f1f5f9' }};border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                    <i class="ti ti-file-text" style="font-size:36px;color:{{ filled($b['label']) ? $warnaModal['icon'] : '#94a3b8' }};"></i>
                 </div>
                 @endif
                 <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">{{ $b['nama_asli'] }} &middot; buka file asli</p>

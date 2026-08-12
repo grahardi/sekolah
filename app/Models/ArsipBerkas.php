@@ -69,20 +69,21 @@ class ArsipBerkas extends Model
     /** Ubah label 1 entri berkas_lain berdasarkan index-nya di array */
     public function updateLabelBerkasLain(int $index, string $label): bool
     {
-        $daftar = $this->berkas_lain ?? [];
+        // array_values() dulu - jaga2 ada key non-sequential dari proses
+        // sebelumnya (mis. bekas unset() yg gak ke-reindex), krn kalau key
+        // aslinya udah geser, index dari tampilan gak nyambung ke elemen yg benar.
+        $daftar = array_values($this->berkas_lain ?? []);
         if (! array_key_exists($index, $daftar)) return false;
 
         $daftar[$index]['label'] = $label;
 
-        // Update kolom langsung (bukan cuma set properti+save) - lebih pasti
-        // ke-detect sbg perubahan drpd modifikasi array bersarang di cast.
         return $this->newQuery()->where('id', $this->id)->update(['berkas_lain' => $daftar]) > 0;
     }
 
     /** Pindahkan 1 entri berkas_lain ke field spesifik (KK/Akta/dst), hapus dari array */
     public function pindahkanBerkasLain(int $index, string $fieldTujuan): ?string
     {
-        $daftar = $this->berkas_lain ?? [];
+        $daftar = array_values($this->berkas_lain ?? []);
         if (! array_key_exists($index, $daftar)) return null;
 
         $path = $daftar[$index]['path'];
