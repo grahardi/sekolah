@@ -54,29 +54,44 @@
     $detailAyah = $hasil->detailAyahHasilScan();
     $detailIbu = $hasil->detailIbuHasilScan();
     @endphp
-    <table style="width:100%;border-collapse:collapse;">
-        <thead style="background:#f8fafc;">
-            <tr>
-                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;width:160px;">Field</th>
-                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;">Data Induk</th>
-                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#7c3aed;">Hasil Scan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td colspan="3" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Ayah</td></tr>
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ayah', 'nilaiInduk' => $siswa->nama_ayah, 'nilaiScan' => $hasil->namaAyahHasilScan(), 'fieldTujuan' => 'nama_ayah', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ayah', 'nilaiInduk' => $siswa->nik_ayah, 'nilaiScan' => $detailAyah['nik'] ?? null, 'fieldTujuan' => 'nik_ayah', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ayah', 'nilaiInduk' => $siswa->tahun_lahir_ayah, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailAyah['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ayah', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ayah', 'nilaiInduk' => $siswa->pekerjaan_ayah, 'nilaiScan' => $detailAyah['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ayah', 'siswa' => $siswa])
+    <form action="{{ route('siswa.scan-kk.terapkan-massal', $siswa) }}" method="POST" id="form-terapkan-massal">
+        @csrf
+        <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f8fafc;">
+                <tr>
+                    <th style="padding:9px 12px;text-align:left;width:36px;"><input type="checkbox" id="cb-semua" onclick="document.querySelectorAll('.cb-terapkan').forEach(cb => cb.checked = this.checked)"></th>
+                    <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;width:150px;">Field</th>
+                    <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;">Data Induk</th>
+                    <th style="padding:9px 12px;text-align:left;font-size:11px;color:#7c3aed;">Hasil Scan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Keluarga</td></tr>
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Alamat', 'nilaiInduk' => $siswa->alamat, 'nilaiScan' => $hasil->data_kk['alamat'] ?? null, 'fieldTujuan' => 'alamat', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Anak ke-', 'nilaiInduk' => $siswa->anak_ke, 'nilaiScan' => $hasil->data_kk['anak_ke'] ?? null, 'fieldTujuan' => 'anak_ke', 'siswa' => $siswa])
 
-            <tr><td colspan="3" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Ibu</td></tr>
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ibu', 'nilaiInduk' => $siswa->nama_ibu, 'nilaiScan' => $hasil->namaIbuHasilScan(), 'fieldTujuan' => 'nama_ibu', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ibu', 'nilaiInduk' => $siswa->nik_ibu, 'nilaiScan' => $detailIbu['nik'] ?? null, 'fieldTujuan' => 'nik_ibu', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ibu', 'nilaiInduk' => $siswa->tahun_lahir_ibu, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailIbu['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ibu', 'siswa' => $siswa])
-            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ibu', 'nilaiInduk' => $siswa->pekerjaan_ibu, 'nilaiScan' => $detailIbu['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ibu', 'siswa' => $siswa])
-        </tbody>
-    </table>
-    <div style="padding:10px 18px;">
+                <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Ayah</td></tr>
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ayah', 'nilaiInduk' => $siswa->nama_ayah, 'nilaiScan' => $hasil->namaAyahHasilScan(), 'fieldTujuan' => 'nama_ayah', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ayah', 'nilaiInduk' => $siswa->nik_ayah, 'nilaiScan' => $detailAyah['nik'] ?? null, 'fieldTujuan' => 'nik_ayah', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ayah', 'nilaiInduk' => $siswa->tahun_lahir_ayah, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailAyah['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ayah', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ayah', 'nilaiInduk' => $siswa->pekerjaan_ayah, 'nilaiScan' => $detailAyah['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ayah', 'siswa' => $siswa])
+
+                <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Ibu</td></tr>
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ibu', 'nilaiInduk' => $siswa->nama_ibu, 'nilaiScan' => $hasil->namaIbuHasilScan(), 'fieldTujuan' => 'nama_ibu', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ibu', 'nilaiInduk' => $siswa->nik_ibu, 'nilaiScan' => $detailIbu['nik'] ?? null, 'fieldTujuan' => 'nik_ibu', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ibu', 'nilaiInduk' => $siswa->tahun_lahir_ibu, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailIbu['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ibu', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ibu', 'nilaiInduk' => $siswa->pekerjaan_ibu, 'nilaiScan' => $detailIbu['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ibu', 'siswa' => $siswa])
+            </tbody>
+        </table>
+        <div style="padding:14px 18px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+            <label style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" onclick="document.getElementById('cb-semua').click()"> Centang semua yang berbeda
+            </label>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-check"></i> Terapkan yang Dicentang</button>
+        </div>
+    </form>
+
+    <div style="padding:0 18px 14px;">
         <details>
             <summary style="font-size:11px;color:#94a3b8;cursor:pointer;">Lihat data lengkap hasil OCR</summary>
             <pre style="font-size:10px;background:#f8fafc;padding:10px;border-radius:6px;overflow-x:auto;margin-top:6px;">{{ json_encode($hasil->data_kk, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>

@@ -105,6 +105,7 @@ class GeminiOcrService
         Kamu adalah sistem OCR Kartu Keluarga Indonesia. Ekstrak data berikut ke JSON:
         - no_kk, alamat, rt, rw, kode_pos, desa_kelurahan, kecamatan, kabupaten_kota, provinsi
         - nama_ayah_siswa, nama_ibu_siswa (cari dari kolom 'Nama Ayah'/'Nama Ibu' milik siswa bernama mirip "{$namaSiswa}")
+        - anak_ke: perkiraan siswa ini anak ke berapa dalam keluarga (hitung dari urutan anak² yg statusnya "Anak" dlm KK, diurutkan dari yg tertua berdasarkan tanggal lahir). Kalau gak yakin/gak bisa dipastikan, isi null.
 
         ATURAN PENTING: Pada blok 'anggota_keluarga', HANYA masukkan maksimal 3 orang:
         1. Siswa (namanya paling mirip "{$namaSiswa}"), 2. Ayah Siswa, 3. Ibu Siswa. Abaikan Kakek/Nenek/Paman.
@@ -115,7 +116,7 @@ class GeminiOcrService
           "skor_kejelasan": 100,
           "no_kk": "", "alamat": "", "rt": "", "rw": "", "kode_pos": "",
           "desa_kelurahan": "", "kecamatan": "", "kabupaten_kota": "", "provinsi": "",
-          "nama_ayah_siswa": "", "nama_ibu_siswa": "",
+          "nama_ayah_siswa": "", "nama_ibu_siswa": "", "anak_ke": null,
           "anggota_keluarga": [{"nama_lengkap": "", "nik": "", "jenis_kelamin": "", "tempat_lahir": "", "tanggal_lahir": "", "agama": "", "pendidikan": "", "jenis_pekerjaan": ""}]
         }
         PROMPT;

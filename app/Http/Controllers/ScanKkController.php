@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 class ScanKkController extends Controller
 {
+    private const FIELD_BISA_DITERAPKAN = 'nama_ayah,nama_ibu,nik_ayah,nik_ibu,tahun_lahir_ayah,tahun_lahir_ibu,pekerjaan_ayah,pekerjaan_ibu,alamat,anak_ke';
+
     public function index()
     {
         $siswaList = Siswa::where('status', 'aktif')
@@ -157,12 +159,37 @@ class ScanKkController extends Controller
     public function terapkan(Request $request, Siswa $siswa)
     {
         $request->validate([
-            'field' => 'required|in:nama_ayah,nama_ibu,nik_ayah,nik_ibu,tahun_lahir_ayah,tahun_lahir_ibu,pekerjaan_ayah,pekerjaan_ibu',
+            'field' => 'required|in:' . self::FIELD_BISA_DITERAPKAN,
             'nilai' => 'required|string|max:150',
         ]);
 
         $siswa->update([$request->field => $request->nilai]);
 
         return back()->with('success', 'Data induk berhasil diperbarui dari hasil scan.');
+    }
+
+    /** Terapkan banyak field sekaligus (centang massal) */
+    public function terapkanMassal(Request $request, Siswa $siswa)
+    {
+        $request->validate([
+            'fields' => 'required|array|min:1',
+            'fields.*' => 'in:' . self::FIELD_BISA_DITERAPKAN,
+            'nilai' => 'required|array',
+        ]);
+
+        $dataUpdate = [];
+        foreach ($request->fields as $field) {
+            if (array_key_exists($field, $request->nilai) && $request->nilai[$field] !== '') {
+                $dataUpdate[$field] = $request->nilai[$field];
+            }
+        }
+
+        if (empty($dataUpdate)) {
+            return back()->with('error', 'Tidak ada field yang dicentang.');
+        }
+
+        $siswa->update($dataUpdate);
+
+        return back()->with('success', count($dataUpdate) . ' field berhasil diperbarui dari hasil scan.');
     }
 }
