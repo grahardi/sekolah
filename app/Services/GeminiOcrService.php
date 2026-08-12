@@ -14,7 +14,7 @@ class GeminiOcrService
 
     public function __construct(private Sekolah $sekolah)
     {
-        $this->model = env('GEMINI_MODEL', 'gemini-2.0-flash');
+        $this->model = env('GEMINI_MODEL', 'gemini-3.5-flash-lite');
     }
 
     private function apiKey(): ?string
@@ -78,7 +78,6 @@ class GeminiOcrService
                 ]],
                 'generationConfig' => [
                     'response_mime_type' => 'application/json',
-                    'temperature' => 0.1,
                 ],
             ]
         );
