@@ -67,23 +67,38 @@ class GeminiOcrService
 
         $base64 = base64_encode(Storage::disk('public')->get($pathPdfRelatif));
 
-        $response = Http::timeout(60)->post(
-            "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}",
-            [
-                'contents' => [[
-                    'parts' => [
-                        ['inline_data' => ['mime_type' => 'application/pdf', 'data' => $base64]],
-                        ['text' => $prompt],
-                    ],
-                ]],
-                'generationConfig' => [
-                    'response_mime_type' => 'application/json',
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}";
+        $body = [
+            'contents' => [[
+                'parts' => [
+                    ['inline_data' => ['mime_type' => 'application/pdf', 'data' => $base64]],
+                    ['text' => $prompt],
                 ],
-            ]
-        );
+            ]],
+            'generationConfig' => [
+                'response_mime_type' => 'application/json',
+            ],
+        ];
 
-        if ($response->failed()) {
-            throw new \Exception('Gemini API error: ' . $response->status() . ' - ' . $response->body());
+        // Retry otomatis kalau timeout/server sibuk (503/429) - PDF kadang butuh
+        // waktu lebih dari sekali coba, sama spt pola di script Python aslinya.
+        $percobaanMaks = 3;
+        $response = null;
+        for ($percobaan = 1; $percobaan <= $percobaanMaks; $percobaan++) {
+            try {
+                $response = Http::timeout(120)->post($url, $body);
+                if ($response->successful()) break;
+                if (! in_array($response->status(), [429, 503]) || $percobaan === $percobaanMaks) break;
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                if ($percobaan === $percobaanMaks) {
+                    throw new \Exception("Gemini API timeout setelah {$percobaanMaks}x percobaan: " . $e->getMessage());
+                }
+            }
+            sleep($percobaan * 3); // 3s, lalu 6s sebelum coba lagi
+        }
+
+        if (! $response || $response->failed()) {
+            throw new \Exception('Gemini API error: ' . ($response?->status() ?? '?') . ' - ' . ($response?->body() ?? 'tidak ada respons'));
         }
 
         $teks = $response->json('candidates.0.content.parts.0.text');
