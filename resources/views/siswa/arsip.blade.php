@@ -45,57 +45,73 @@
     @if($arsip->berkas_lain)
     <div class="card" style="margin-top:20px;">
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-files" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#7c3aed;"></i> Berkas Lain</span></div>
-        <div class="card-body">
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;">
-                @foreach($arsip->berkasLainUrls() as $b)
-                @php $sudahAdaLabel = filled($b['label']); @endphp
-                <div style="border:1px solid {{ $sudahAdaLabel ? '#c4b5fd' : '#e2e8f0' }};background:{{ $sudahAdaLabel ? '#f5f3ff' : '#fff' }};border-radius:10px;padding:10px;">
-                    <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:8px;">
-                        @if($b['is_image'])
-                        <img src="{{ $b['url'] }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">
-                        @else
-                        <div style="width:100%;height:80px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                            <i class="ti ti-file-text" style="font-size:24px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
-                        </div>
-                        @endif
-                    </a>
-
-                    @if($sudahAdaLabel)
-                    <div id="tampil-label-{{ $b['index'] }}" style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;">
-                        <p style="font-size:12px;color:#5b21b6;font-weight:600;margin:0;word-break:break-word;"><i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}</p>
-                        <button type="button" onclick="document.getElementById('tampil-label-{{ $b['index'] }}').style.display='none'; document.getElementById('form-label-{{ $b['index'] }}').style.display='flex';" class="btn btn-secondary btn-sm" style="flex-shrink:0;padding:3px 6px;" title="Edit keterangan">
-                            <i class="ti ti-pencil" style="font-size:11px;"></i>
-                        </button>
-                    </div>
-                    @else
-                    <p style="font-size:10.5px;color:#94a3b8;margin:0 0 6px;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 24) }}</p>
-                    @endif
-
-                    <form id="form-label-{{ $b['index'] }}" action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:{{ $sudahAdaLabel ? 'none' : 'flex' }};gap:4px;margin-bottom:6px;">
-                        @csrf
-                        <input type="hidden" name="index" value="{{ $b['index'] }}">
-                        <input type="text" name="label" value="{{ $b['label'] }}" placeholder="Jenis dokumen, mis. Sertifikat" class="form-input" style="font-size:11px;padding:5px 8px;flex:1;">
-                        <button type="submit" class="btn btn-secondary btn-sm" title="Simpan keterangan"><i class="ti ti-check" style="font-size:12px;"></i></button>
-                    </form>
-
-                    <form action="{{ route('siswa.arsip.berkas-lain.pindah', $siswa) }}" method="POST" onsubmit="return confirm('Pindahkan berkas ini ke kategori terpilih?')">
-                        @csrf
-                        <input type="hidden" name="index" value="{{ $b['index'] }}">
-                        <select name="field_tujuan" onchange="this.form.submit()" class="form-input" style="font-size:11px;padding:5px 6px;">
-                            <option value="" disabled selected>Pindahkan ke...</option>
-                            <option value="kartu_keluarga">Kartu Keluarga</option>
-                            <option value="akta_lahir">Akta Lahir</option>
-                            <option value="ijazah_sd">Ijazah SD/MI</option>
-                            <option value="ijazah">Ijazah SMP</option>
-                            <option value="transkrip_nilai">Transkrip Nilai</option>
-                            <option value="sertifikat_tka">Sertifikat TKA</option>
-                        </select>
-                    </form>
+        <div class="card-body" style="padding:8px 0;">
+            @foreach($arsip->berkasLainUrls() as $b)
+            @php $sudahAdaLabel = filled($b['label']); @endphp
+            <button type="button" onclick="document.getElementById('modal-berkas-lain-{{ $b['index'] }}').style.display='flex'"
+                style="width:100%;display:flex;align-items:center;gap:12px;padding:10px 18px;border:none;background:{{ $sudahAdaLabel ? '#f5f3ff' : 'transparent' }};text-align:left;cursor:pointer;border-bottom:1px solid #f1f5f9;">
+                @if($b['is_image'])
+                <img src="{{ $b['url'] }}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+                @else
+                <div style="width:36px;height:36px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="ti ti-file-text" style="font-size:16px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
                 </div>
-                @endforeach
-            </div>
+                @endif
+                <span style="flex:1;font-size:13px;{{ $sudahAdaLabel ? 'color:#5b21b6;font-weight:600;' : 'color:#64748b;' }}">
+                    @if($sudahAdaLabel)<i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}
+                    @else {{ \Illuminate\Support\Str::limit($b['nama_asli'], 40) }}
+                    @endif
+                </span>
+                <i class="ti ti-chevron-right" style="color:#cbd5e1;font-size:14px;"></i>
+            </button>
+            @endforeach
         </div>
     </div>
+
+    {{-- Modal per berkas: preview + edit label + pindahkan --}}
+    @foreach($arsip->berkasLainUrls() as $b)
+    <div id="modal-berkas-lain-{{ $b['index'] }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
+        <div class="card" style="max-width:380px;width:100%;padding:22px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Detail Berkas</p>
+                <button type="button" onclick="document.getElementById('modal-berkas-lain-{{ $b['index'] }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;line-height:1;">&times;</button>
+            </div>
+
+            <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:14px;">
+                @if($b['is_image'])
+                <img src="{{ $b['url'] }}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#f8fafc;">
+                @else
+                <div style="width:100%;height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                    <i class="ti ti-file-text" style="font-size:36px;color:#94a3b8;"></i>
+                </div>
+                @endif
+                <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">{{ $b['nama_asli'] }} &middot; buka file asli</p>
+            </a>
+
+            <form action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:flex;gap:6px;margin-bottom:12px;">
+                @csrf
+                <input type="hidden" name="index" value="{{ $b['index'] }}">
+                <input type="text" name="label" value="{{ $b['label'] }}" placeholder="Jenis dokumen, mis. Sertifikat" class="form-input" style="flex:1;font-size:13px;">
+                <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+            </form>
+
+            <form action="{{ route('siswa.arsip.berkas-lain.pindah', $siswa) }}" method="POST" onsubmit="return confirm('Pindahkan berkas ini ke kategori terpilih?')">
+                @csrf
+                <input type="hidden" name="index" value="{{ $b['index'] }}">
+                <label class="form-label">Atau pindahkan ke kategori</label>
+                <select name="field_tujuan" onchange="this.form.submit()" class="form-input">
+                    <option value="" disabled selected>-- Pindahkan ke... --</option>
+                    <option value="kartu_keluarga">Kartu Keluarga</option>
+                    <option value="akta_lahir">Akta Lahir</option>
+                    <option value="ijazah_sd">Ijazah SD/MI</option>
+                    <option value="ijazah">Ijazah SMP</option>
+                    <option value="transkrip_nilai">Transkrip Nilai</option>
+                    <option value="sertifikat_tka">Sertifikat TKA</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    @endforeach
     @endif
 
     @if(auth()->user()->isAdmin())
