@@ -40,6 +40,7 @@ class Sekolah extends Model
         'rapor_threshold_cukup',
         'logo_kabupaten',
         'logo_sekolah',
+        'gemini_api_key',
         'watermark_rapor',
         'rapor_tampilkan_watermark',
         'rapor_header_custom',
@@ -58,7 +59,22 @@ class Sekolah extends Model
         'rapor_tampilkan_watermark' => 'boolean',
         'rapor_pakai_header_custom' => 'boolean',
         'rapor_tanggal_manual' => 'date',
+        'gemini_api_key' => 'encrypted',
     ];
+
+    /**
+     * Key Gemini yg dipakai sekolah ini: pakai punya sendiri kalau sudah
+     * diisi, kalau tidak fallback ke key default milik sekolah.co.id (.env).
+     */
+    public function geminiApiKeyEfektif(): ?string
+    {
+        return $this->gemini_api_key ?: env('GEMINI_API_KEY_DEFAULT');
+    }
+
+    public function pakaiApiKeySendiri(): bool
+    {
+        return filled($this->gemini_api_key);
+    }
 
     public function users(): HasMany
     {

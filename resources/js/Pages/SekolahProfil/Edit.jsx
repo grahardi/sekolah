@@ -17,6 +17,7 @@ export default function Edit({ sekolah }) {
         status_sekolah: sekolah?.status_sekolah ?? '',
         bentuk_pendidikan: sekolah?.bentuk_pendidikan ?? '',
         kkm: sekolah?.kkm ?? 75,
+        gemini_api_key: sekolah?.gemini_api_key ?? '',
     });
 
     const submit = (e) => {
@@ -92,6 +93,15 @@ export default function Edit({ sekolah }) {
                     <p className="text-sm font-semibold text-navy mb-3">Kriteria Ketuntasan Minimal (KKM)</p>
                 </div>
                 {field('KKM', 'kkm')}
+
+                <div className="pt-4 mt-2 border-t border-navy/10">
+                    <p className="text-sm font-semibold text-navy mb-1">Integrasi AI (Scan Dokumen)</p>
+                    <p className="text-xs text-navy/50 mb-3">
+                        Dipakai untuk fitur Scan KK/Akta otomatis. Kosongkan untuk pakai key default sekolah.co.id,
+                        atau isi API key Gemini milikmu sendiri kalau punya.
+                    </p>
+                </div>
+                {field('Gemini API Key (opsional)', 'gemini_api_key', { placeholder: 'Kosongkan untuk pakai default sekolah.co.id', type: 'password' })}
 
                 <div className="flex gap-3 pt-2">
                     <button

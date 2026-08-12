@@ -37,12 +37,18 @@ class SekolahProfilController extends Controller
             'bentuk_pendidikan' => 'nullable|string|max:100',
             'kkm' => 'nullable|integer|min:0|max:100',
             'logo_sekolah' => 'nullable|image|max:2048',
+            'gemini_api_key' => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('logo_sekolah')) {
             $validated['logo_sekolah'] = $request->file('logo_sekolah')->store('kop-surat', 'public');
         } else {
             unset($validated['logo_sekolah']); // jangan timpa yg sudah ada kalau tidak upload baru
+        }
+
+        // String kosong = sengaja dikosongkan (balik ke key default sekolah.co.id)
+        if (($validated['gemini_api_key'] ?? null) === '') {
+            $validated['gemini_api_key'] = null;
         }
 
         $sekolah->update($validated);
