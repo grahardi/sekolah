@@ -20,17 +20,37 @@
 @if(! $hasil->exists)
 <div style="background:#eff6ff;color:#1e40af;padding:14px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;justify-content:space-between;">
     <span><i class="ti ti-info-circle"></i> Siswa ini belum pernah discan.</span>
-    <form action="{{ route('siswa.scan-kk.satu', $siswa) }}" method="POST" onsubmit="return confirm('Scan berkas KK/Akta siswa ini sekarang?')">
-        @csrf
-        <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-scan"></i> Scan Sekarang</button>
-    </form>
+    <div style="display:flex;gap:8px;">
+        @if($siswa->arsipBerkas?->kartu_keluarga)
+        <button type="button" onclick="document.getElementById('modal-lihat-kk').style.display='flex'" class="btn btn-secondary btn-sm"><i class="ti ti-file-text"></i> Lihat KK</button>
+        @endif
+        <form action="{{ route('siswa.scan-kk.satu', $siswa) }}" method="POST" onsubmit="return confirm('Scan berkas KK/Akta siswa ini sekarang?')">
+            @csrf
+            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-scan"></i> Scan Sekarang</button>
+        </form>
+    </div>
 </div>
 @else
-<div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
+    @if($siswa->arsipBerkas?->kartu_keluarga)
+    <button type="button" onclick="document.getElementById('modal-lihat-kk').style.display='flex'" class="btn btn-secondary btn-sm"><i class="ti ti-file-text"></i> Lihat KK</button>
+    @endif
     <form action="{{ route('siswa.scan-kk.satu', $siswa) }}" method="POST" onsubmit="return confirm('Scan ulang berkas KK/Akta siswa ini?')">
         @csrf
         <button type="submit" class="btn btn-secondary btn-sm"><i class="ti ti-refresh"></i> Scan Ulang</button>
     </form>
+</div>
+@endif
+
+@if($siswa->arsipBerkas?->kartu_keluarga)
+<div id="modal-lihat-kk" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:70;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:720px;width:100%;height:85vh;padding:16px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <p style="font-size:14px;font-weight:700;color:#0f172a;margin:0;"><i class="ti ti-id"></i> Kartu Keluarga (Lihat Saja)</p>
+            <button type="button" onclick="document.getElementById('modal-lihat-kk').style.display='none'" style="border:none;background:none;font-size:22px;color:#94a3b8;cursor:pointer;line-height:1;">&times;</button>
+        </div>
+        <iframe src="{{ Illuminate\Support\Facades\Storage::disk('public')->url($siswa->arsipBerkas->kartu_keluarga) }}" style="flex:1;width:100%;border:1px solid #e2e8f0;border-radius:8px;"></iframe>
+    </div>
 </div>
 @endif
 
