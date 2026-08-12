@@ -72,7 +72,36 @@ class SiswaController extends Controller
     public function show(Siswa $siswa)
     {
         $siswa->load(['nilaiRapors','nilaiP5s','nilaiEkskuls','kehadirans','riwayatKelas']);
-        return view('siswa.show', compact('siswa'));
+
+        // Urutan sama spt daftar siswa: kelas -> rombel -> nama - biar navigasi
+        // sebelumnya/berikutnya konsisten sama urutan yg keliatan di list.
+        $siswaSebelumnya = Siswa::where('status', 'aktif')
+            ->where(function ($q) use ($siswa) {
+                $q->where('kelas', '<', $siswa->kelas)
+                  ->orWhere(function ($q2) use ($siswa) {
+                      $q2->where('kelas', $siswa->kelas)->where('rombel', '<', $siswa->rombel ?? '');
+                  })
+                  ->orWhere(function ($q2) use ($siswa) {
+                      $q2->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel ?? '')->where('nama_lengkap', '<', $siswa->nama_lengkap);
+                  });
+            })
+            ->orderByDesc('kelas')->orderByDesc('rombel')->orderByDesc('nama_lengkap')
+            ->first();
+
+        $siswaBerikutnya = Siswa::where('status', 'aktif')
+            ->where(function ($q) use ($siswa) {
+                $q->where('kelas', '>', $siswa->kelas)
+                  ->orWhere(function ($q2) use ($siswa) {
+                      $q2->where('kelas', $siswa->kelas)->where('rombel', '>', $siswa->rombel ?? '');
+                  })
+                  ->orWhere(function ($q2) use ($siswa) {
+                      $q2->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel ?? '')->where('nama_lengkap', '>', $siswa->nama_lengkap);
+                  });
+            })
+            ->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')
+            ->first();
+
+        return view('siswa.show', compact('siswa', 'siswaSebelumnya', 'siswaBerikutnya'));
     }
 
     public function edit(Siswa $siswa) { return view('siswa.edit', compact('siswa')); }

@@ -3,6 +3,16 @@
 @section('page-title', 'Detail Siswa')
 
 @section('header-actions')
+    @if($siswaSebelumnya)
+    <a href="{{ route('siswa.show', $siswaSebelumnya) }}" class="btn btn-secondary" title="{{ $siswaSebelumnya->nama_lengkap }}"><i class="ti ti-chevron-left"></i></a>
+    @else
+    <span class="btn btn-secondary" style="opacity:.4;cursor:not-allowed;"><i class="ti ti-chevron-left"></i></span>
+    @endif
+    @if($siswaBerikutnya)
+    <a href="{{ route('siswa.show', $siswaBerikutnya) }}" class="btn btn-secondary" title="{{ $siswaBerikutnya->nama_lengkap }}"><i class="ti ti-chevron-right"></i></a>
+    @else
+    <span class="btn btn-secondary" style="opacity:.4;cursor:not-allowed;"><i class="ti ti-chevron-right"></i></span>
+    @endif
     <a href="{{ route('siswa.buku-induk.pdf', $siswa) }}" class="btn btn-secondary"><i class="ti ti-printer"></i> Cetak Buku Induk</a>
     @if(auth()->user()->isAdmin())
     <a href="{{ route('siswa.edit', $siswa) }}" class="btn btn-primary"><i class="ti ti-pencil"></i> Edit</a>
