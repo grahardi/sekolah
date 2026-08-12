@@ -140,6 +140,7 @@
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-man" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#1d4ed8;"></i> Data Ayah</span></div>
         <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div style="grid-column:span 2;"><label class="form-label">Nama Ayah</label><input type="text" name="nama_ayah" value="{{ $fv('nama_ayah') }}" class="form-input"></div>
+            <div><label class="form-label">NIK Ayah</label><input type="text" name="nik_ayah" value="{{ $fv('nik_ayah') }}" class="form-input" maxlength="16" placeholder="16 digit"></div>
             <div><label class="form-label">Tahun Lahir</label><input type="number" name="tahun_lahir_ayah" value="{{ $fv('tahun_lahir_ayah') }}" min="1940" max="{{ date('Y') - 15 }}" class="form-input" placeholder="1980"></div>
             <div>
                 <label class="form-label">Jenjang Pendidikan</label>
@@ -163,6 +164,7 @@
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-woman" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#ec4899;"></i> Data Ibu</span></div>
         <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div style="grid-column:span 2;"><label class="form-label">Nama Ibu</label><input type="text" name="nama_ibu" value="{{ $fv('nama_ibu') }}" class="form-input"></div>
+            <div><label class="form-label">NIK Ibu</label><input type="text" name="nik_ibu" value="{{ $fv('nik_ibu') }}" class="form-input" maxlength="16" placeholder="16 digit"></div>
             <div><label class="form-label">Tahun Lahir</label><input type="number" name="tahun_lahir_ibu" value="{{ $fv('tahun_lahir_ibu') }}" min="1940" max="{{ date('Y') - 15 }}" class="form-input" placeholder="1982"></div>
             <div>
                 <label class="form-label">Jenjang Pendidikan</label>

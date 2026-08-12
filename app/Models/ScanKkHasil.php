@@ -39,4 +39,35 @@ class ScanKkHasil extends Model
     {
         return $this->data_kk['nama_ibu_siswa'] ?? null;
     }
+
+    /** Cari detail (nik/tgl lahir/pekerjaan) ayah atau ibu di array anggota_keluarga, dicocokkan dari nama */
+    private function detailAnggota(?string $namaYangDicari): ?array
+    {
+        if (! $namaYangDicari) return null;
+        $anggota = $this->data_kk['anggota_keluarga'] ?? [];
+        foreach ($anggota as $a) {
+            if (isset($a['nama_lengkap']) && strtoupper(trim($a['nama_lengkap'])) === strtoupper(trim($namaYangDicari))) {
+                return $a;
+            }
+        }
+        return null;
+    }
+
+    public function detailAyahHasilScan(): ?array
+    {
+        return $this->detailAnggota($this->namaAyahHasilScan());
+    }
+
+    public function detailIbuHasilScan(): ?array
+    {
+        return $this->detailAnggota($this->namaIbuHasilScan());
+    }
+
+    /** Ambil tahun dari tanggal_lahir (format bebas, cari 4 digit terakhir yg masuk akal sbg tahun) */
+    public static function ekstrakTahun(?string $tanggalLahir): ?int
+    {
+        if (! $tanggalLahir) return null;
+        if (preg_match('/(19|20)\d{2}/', $tanggalLahir, $m)) return (int) $m[0];
+        return null;
+    }
 }

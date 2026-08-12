@@ -52,44 +52,22 @@
         </div>
 
         @if($hasil->status_kk === 'ok')
+        @php
+        $detailAyah = $hasil->detailAyahHasilScan();
+        $detailIbu = $hasil->detailIbuHasilScan();
+        @endphp
         <div style="font-size:13px;">
-            <div style="padding:8px 0;border-bottom:1px solid #f1f5f9;">
-                <p style="font-size:11px;color:#94a3b8;margin:0;">Nama Ayah (data induk)</p>
-                <p style="margin:0;color:#0f172a;">{{ $siswa->nama_ayah ?: '-' }}</p>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9;">
-                <div>
-                    <p style="font-size:11px;color:#7c3aed;margin:0;">Nama Ayah (hasil scan)</p>
-                    <p style="margin:0;font-weight:600;color:{{ $hasil->namaAyahHasilScan() && $hasil->namaAyahHasilScan() !== $siswa->nama_ayah ? '#dc2626' : '#0f172a' }};">{{ $hasil->namaAyahHasilScan() ?: '-' }}</p>
-                </div>
-                @if($hasil->namaAyahHasilScan() && $hasil->namaAyahHasilScan() !== $siswa->nama_ayah)
-                <form action="{{ route('siswa.scan-kk.terapkan', $siswa) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="field" value="nama_ayah">
-                    <input type="hidden" name="nilai" value="{{ $hasil->namaAyahHasilScan() }}">
-                    <button type="submit" class="btn btn-secondary btn-sm">Terapkan</button>
-                </form>
-                @endif
-            </div>
+            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:10px 0 4px;">Data Ayah</p>
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ayah', 'nilaiInduk' => $siswa->nama_ayah, 'nilaiScan' => $hasil->namaAyahHasilScan(), 'fieldTujuan' => 'nama_ayah', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ayah', 'nilaiInduk' => $siswa->nik_ayah, 'nilaiScan' => $detailAyah['nik'] ?? null, 'fieldTujuan' => 'nik_ayah', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ayah', 'nilaiInduk' => $siswa->tahun_lahir_ayah, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailAyah['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ayah', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ayah', 'nilaiInduk' => $siswa->pekerjaan_ayah, 'nilaiScan' => $detailAyah['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ayah', 'siswa' => $siswa])
 
-            <div style="padding:8px 0;border-bottom:1px solid #f1f5f9;margin-top:6px;">
-                <p style="font-size:11px;color:#94a3b8;margin:0;">Nama Ibu (data induk)</p>
-                <p style="margin:0;color:#0f172a;">{{ $siswa->nama_ibu ?: '-' }}</p>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
-                <div>
-                    <p style="font-size:11px;color:#7c3aed;margin:0;">Nama Ibu (hasil scan)</p>
-                    <p style="margin:0;font-weight:600;color:{{ $hasil->namaIbuHasilScan() && $hasil->namaIbuHasilScan() !== $siswa->nama_ibu ? '#dc2626' : '#0f172a' }};">{{ $hasil->namaIbuHasilScan() ?: '-' }}</p>
-                </div>
-                @if($hasil->namaIbuHasilScan() && $hasil->namaIbuHasilScan() !== $siswa->nama_ibu)
-                <form action="{{ route('siswa.scan-kk.terapkan', $siswa) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="field" value="nama_ibu">
-                    <input type="hidden" name="nilai" value="{{ $hasil->namaIbuHasilScan() }}">
-                    <button type="submit" class="btn btn-secondary btn-sm">Terapkan</button>
-                </form>
-                @endif
-            </div>
+            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:14px 0 4px;">Data Ibu</p>
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Ibu', 'nilaiInduk' => $siswa->nama_ibu, 'nilaiScan' => $hasil->namaIbuHasilScan(), 'fieldTujuan' => 'nama_ibu', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Ibu', 'nilaiInduk' => $siswa->nik_ibu, 'nilaiScan' => $detailIbu['nik'] ?? null, 'fieldTujuan' => 'nik_ibu', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tahun Lahir Ibu', 'nilaiInduk' => $siswa->tahun_lahir_ibu, 'nilaiScan' => \App\Models\ScanKkHasil::ekstrakTahun($detailIbu['tanggal_lahir'] ?? null), 'fieldTujuan' => 'tahun_lahir_ibu', 'siswa' => $siswa])
+            @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ibu', 'nilaiInduk' => $siswa->pekerjaan_ibu, 'nilaiScan' => $detailIbu['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ibu', 'siswa' => $siswa])
 
             <details style="margin-top:12px;">
                 <summary style="font-size:11px;color:#94a3b8;cursor:pointer;">Lihat data lengkap hasil OCR</summary>

@@ -22,8 +22,8 @@ class Siswa extends Model
         'no_sttb_sd','asal_sekolah','no_un_sd',
         'anak_ke',
         'golongan_darah','tinggi_badan','berat_badan','riwayat_penyakit',
-        'nama_ayah','tahun_lahir_ayah','pendidikan_ayah','pekerjaan_ayah','penghasilan_ayah',
-        'nama_ibu','tahun_lahir_ibu','pendidikan_ibu','pekerjaan_ibu','penghasilan_ibu',
+        'nama_ayah','nik_ayah','tahun_lahir_ayah','pendidikan_ayah','pekerjaan_ayah','penghasilan_ayah',
+        'nama_ibu','nik_ibu','tahun_lahir_ibu','pendidikan_ibu','pekerjaan_ibu','penghasilan_ibu',
         'nama_wali','pekerjaan_wali','no_telepon_ortu','alamat_ortu',
         'foto',
     ];

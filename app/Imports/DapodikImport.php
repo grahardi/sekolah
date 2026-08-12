@@ -103,6 +103,7 @@ class DapodikImport
                         'pendidikan_ayah' => $get('AA') ?: null,
                         'pekerjaan_ayah' => $get('AB') ?: null,
                         'penghasilan_ayah' => $get('AC') ?: null,
+                        'nik_ayah' => $get('AD') ?: null, // asumsi kolom NIK - cek lagi kesesuaiannya
 
                         // Data Ibu (AE-AJ)
                         'nama_ibu' => $get('AE') ?: null,
@@ -110,6 +111,7 @@ class DapodikImport
                         'pendidikan_ibu' => $get('AG') ?: null,
                         'pekerjaan_ibu' => $get('AH') ?: null,
                         'penghasilan_ibu' => $get('AI') ?: null,
+                        'nik_ibu' => $get('AJ') ?: null, // asumsi kolom NIK - cek lagi kesesuaiannya
 
                         // Data Wali (AK-AP)
                         'nama_wali' => $get('AK') ?: null,

@@ -157,7 +157,7 @@ class ScanKkController extends Controller
     public function terapkan(Request $request, Siswa $siswa)
     {
         $request->validate([
-            'field' => 'required|in:nama_ayah,nama_ibu',
+            'field' => 'required|in:nama_ayah,nama_ibu,nik_ayah,nik_ibu,tahun_lahir_ayah,tahun_lahir_ibu,pekerjaan_ayah,pekerjaan_ibu',
             'nilai' => 'required|string|max:150',
         ]);
 
