@@ -82,6 +82,8 @@ class ScanKkController extends Controller
 
             $hasil->siswa_id = $siswa->id;
             $hasil->discan_at = now();
+        $hasil->dikonfirmasi_at = null; // data baru, perlu dikonfirmasi ulang
+        $hasil->dikonfirmasi_oleh_user_id = null;
             $hasil->save();
 
             if ($hasil->status_kk === 'error' || $hasil->status_akta === 'error') {
@@ -147,6 +149,8 @@ class ScanKkController extends Controller
 
         $hasil->siswa_id = $siswa->id;
         $hasil->discan_at = now();
+        $hasil->dikonfirmasi_at = null; // data baru, perlu dikonfirmasi ulang
+        $hasil->dikonfirmasi_oleh_user_id = null;
         $hasil->save();
 
         $sukses = $hasil->status_kk !== 'error' && $hasil->status_akta !== 'error';
@@ -164,6 +168,7 @@ class ScanKkController extends Controller
         ]);
 
         $siswa->update([$request->field => $request->nilai]);
+        $this->tandaiSudahDikonfirmasi($siswa);
 
         return back()->with('success', 'Data induk berhasil diperbarui dari hasil scan.');
     }
@@ -189,7 +194,24 @@ class ScanKkController extends Controller
         }
 
         $siswa->update($dataUpdate);
+        $this->tandaiSudahDikonfirmasi($siswa);
 
         return back()->with('success', count($dataUpdate) . ' field berhasil diperbarui dari hasil scan.');
+    }
+
+    /** Konfirmasi tanpa ubah data apa pun - dipakai kalau semua field hasil scan sudah sama persis dgn data induk */
+    public function tandaiUpdate(Siswa $siswa)
+    {
+        $this->tandaiSudahDikonfirmasi($siswa);
+
+        return back()->with('success', 'Data ditandai sudah diperiksa & sesuai.');
+    }
+
+    private function tandaiSudahDikonfirmasi(Siswa $siswa): void
+    {
+        ScanKkHasil::where('siswa_id', $siswa->id)->update([
+            'dikonfirmasi_at' => now(),
+            'dikonfirmasi_oleh_user_id' => auth()->id(),
+        ]);
     }
 }

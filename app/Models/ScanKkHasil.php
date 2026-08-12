@@ -10,14 +10,20 @@ class ScanKkHasil extends Model
     protected $fillable = [
         'siswa_id', 'status_kk', 'skor_kk', 'data_kk',
         'status_akta', 'skor_akta', 'no_akta', 'data_akta',
-        'pesan_error', 'discan_at',
+        'pesan_error', 'discan_at', 'dikonfirmasi_at', 'dikonfirmasi_oleh_user_id',
     ];
 
     protected $casts = [
         'data_kk' => 'array',
         'data_akta' => 'array',
         'discan_at' => 'datetime',
+        'dikonfirmasi_at' => 'datetime',
     ];
+
+    public function sudahDikonfirmasi(): bool
+    {
+        return $this->dikonfirmasi_at !== null;
+    }
 
     public function siswa()
     {

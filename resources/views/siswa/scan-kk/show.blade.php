@@ -34,7 +34,14 @@
 </div>
 @endif
 
-<p style="font-size:14px;font-weight:700;color:#0f172a;margin:-6px 0 16px;">{{ $siswa->nama_lengkap }} &middot; {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
+<p style="font-size:14px;font-weight:700;color:#0f172a;margin:-6px 0 4px;">{{ $siswa->nama_lengkap }} &middot; {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
+@if($hasil->exists && $hasil->sudahDikonfirmasi())
+<p style="font-size:12px;color:#16a34a;margin:0 0 16px;"><i class="ti ti-shield-check"></i> Dikonfirmasi {{ $hasil->dikonfirmasi_at->locale('id')->diffForHumans() }}</p>
+@elseif($hasil->exists)
+<p style="font-size:12px;color:#d97706;margin:0 0 16px;"><i class="ti ti-alert-triangle"></i> Sudah discan, tapi belum dikonfirmasi admin.</p>
+@else
+<div style="margin-bottom:16px;"></div>
+@endif
 
 {{-- Kartu Keluarga --}}
 <div class="card" style="padding:0;overflow:hidden;margin-bottom:20px;">
@@ -84,12 +91,30 @@
             </tbody>
         </table>
         <div style="padding:14px 18px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-            <label style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <label id="label-centang-semua" style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
                 <input type="checkbox" onclick="document.getElementById('cb-semua').click()"> Centang semua yang berbeda
             </label>
-            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-check"></i> Terapkan yang Dicentang</button>
+            <p id="label-sudah-sama" style="font-size:12px;color:#16a34a;display:none;margin:0;"><i class="ti ti-circle-check"></i> Semua data sudah sama.</p>
+            <button type="submit" id="btn-terapkan-massal" class="btn btn-primary btn-sm"><i class="ti ti-check"></i> Terapkan yang Dicentang</button>
         </div>
     </form>
+
+    <form action="{{ route('siswa.scan-kk.tandai-update', $siswa) }}" method="POST" id="form-tandai-update" style="display:none;padding:0 18px 14px;">
+        @csrf
+        <button type="submit" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-shield-check"></i> Tandai Update</button>
+    </form>
+
+    <script>
+    (function () {
+        const jumlahBerbeda = document.querySelectorAll('.cb-terapkan').length;
+        if (jumlahBerbeda === 0) {
+            document.getElementById('label-centang-semua').style.display = 'none';
+            document.getElementById('label-sudah-sama').style.display = 'block';
+            document.getElementById('btn-terapkan-massal').style.display = 'none';
+            document.getElementById('form-tandai-update').style.display = 'block';
+        }
+    })();
+    </script>
 
     <div style="padding:0 18px 14px;">
         <details>

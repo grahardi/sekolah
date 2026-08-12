@@ -32,7 +32,7 @@
             <h2 style="font-size:15px;font-weight:800;color:#0f172a;margin:0 0 4px;">{{ $siswa->nama_lengkap }}</h2>
             <p style="font-size:12px;color:#64748b;margin:0 0 10px;">{{ $siswa->jenis_kelamin_lengkap }}</p>
             <span class="badge badge-{{ $siswa->status }}" style="font-size:12px;padding:4px 14px;">{{ ucfirst($siswa->status) }}</span>
-            @if($siswa->scanKkHasil?->status_kk === 'ok')
+            @if($siswa->scanKkHasil?->sudahDikonfirmasi())
             <div style="margin-top:6px;">
                 <a href="{{ route('siswa.scan-kk.show', $siswa) }}" style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;text-decoration:none;">
                     <i class="ti ti-shield-check" style="font-size:12px;"></i> Sudah Update KK
