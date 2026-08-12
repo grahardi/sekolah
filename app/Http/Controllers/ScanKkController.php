@@ -99,8 +99,8 @@ class ScanKkController extends Controller
 
     public function show(Siswa $siswa)
     {
-        $hasil = ScanKkHasil::where('siswa_id', $siswa->id)->first();
-        abort_unless($hasil, 404, 'Siswa ini belum pernah discan.');
+        $hasil = ScanKkHasil::where('siswa_id', $siswa->id)->first()
+            ?? new ScanKkHasil(['siswa_id' => $siswa->id, 'status_kk' => 'belum', 'status_akta' => 'belum']);
 
         return view('siswa.scan-kk.show', compact('siswa', 'hasil'));
     }

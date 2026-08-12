@@ -3,6 +3,7 @@
         'pokok'   => ['label' => 'Data Pokok',    'icon' => 'ti-id-badge-2',     'route' => route('siswa.show',    $siswa)],
         'nilai'   => ['label' => 'Nilai Rapor',   'icon' => 'ti-clipboard-list', 'route' => route('siswa.nilai.index', $siswa)],
         'arsip'   => ['label' => 'Arsip Berkas',  'icon' => 'ti-folder',         'route' => route('siswa.arsip.show',  $siswa)],
+        'ocr'     => ['label' => 'Hasil OCR',     'icon' => 'ti-scan',           'route' => route('siswa.scan-kk.show', $siswa)],
         'prestasi'=> ['label' => 'Prestasi',      'icon' => 'ti-trophy',         'route' => route('siswa.prestasi.index', $siswa)],
     ];
 @endphp

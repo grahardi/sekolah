@@ -7,9 +7,17 @@
 @endsection
 
 @section('content')
+@include('siswa._subnav', ['active' => 'ocr'])
 
 @if(session('success'))
 <div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">{{ session('success') }}</div>
+@endif
+
+@if(! $hasil->exists)
+<div style="background:#eff6ff;color:#1e40af;padding:14px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;justify-content:space-between;">
+    <span><i class="ti ti-info-circle"></i> Siswa ini belum pernah discan.</span>
+    <a href="{{ route('siswa.scan-kk.index') }}" class="btn btn-primary btn-sm">Scan Sekarang</a>
+</div>
 @endif
 
 <p style="font-size:14px;font-weight:700;color:#0f172a;margin:-6px 0 16px;">{{ $siswa->nama_lengkap }} &middot; {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
