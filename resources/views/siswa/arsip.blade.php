@@ -45,26 +45,27 @@
     @if($arsip->berkas_lain)
     <div class="card" style="margin-top:20px;">
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-files" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#7c3aed;"></i> Berkas Lain</span></div>
-        <div class="card-body" style="padding:8px 0;">
-            @foreach($arsip->berkasLainUrls() as $b)
-            @php $sudahAdaLabel = filled($b['label']); @endphp
-            <button type="button" onclick="document.getElementById('modal-berkas-lain-{{ $b['index'] }}').style.display='flex'"
-                style="width:100%;display:flex;align-items:center;gap:12px;padding:10px 18px;border:none;background:{{ $sudahAdaLabel ? '#f5f3ff' : 'transparent' }};text-align:left;cursor:pointer;border-bottom:1px solid #f1f5f9;">
-                @if($b['is_image'])
-                <img src="{{ $b['url'] }}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;">
-                @else
-                <div style="width:36px;height:36px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="ti ti-file-text" style="font-size:16px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
-                </div>
-                @endif
-                <span style="flex:1;font-size:13px;{{ $sudahAdaLabel ? 'color:#5b21b6;font-weight:600;' : 'color:#64748b;' }}">
-                    @if($sudahAdaLabel)<i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}
-                    @else {{ \Illuminate\Support\Str::limit($b['nama_asli'], 40) }}
+        <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;">
+                @foreach($arsip->berkasLainUrls() as $b)
+                @php $sudahAdaLabel = filled($b['label']); @endphp
+                <button type="button" onclick="document.getElementById('modal-berkas-lain-{{ $b['index'] }}').style.display='flex'"
+                    style="border:1px solid {{ $sudahAdaLabel ? '#c4b5fd' : '#e2e8f0' }};background:{{ $sudahAdaLabel ? '#f5f3ff' : '#fff' }};border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;">
+                    @if($b['is_image'])
+                    <img src="{{ $b['url'] }}" style="width:100%;height:60px;object-fit:cover;border-radius:6px;margin-bottom:6px;">
+                    @else
+                    <div style="width:100%;height:60px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
+                        <i class="ti ti-file-text" style="font-size:22px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
+                    </div>
                     @endif
-                </span>
-                <i class="ti ti-chevron-right" style="color:#cbd5e1;font-size:14px;"></i>
-            </button>
-            @endforeach
+                    <p style="font-size:11px;margin:0;word-break:break-word;{{ $sudahAdaLabel ? 'color:#5b21b6;font-weight:600;' : 'color:#94a3b8;' }}">
+                        @if($sudahAdaLabel)<i class="ti ti-tag" style="font-size:10px;"></i> {{ $b['label'] }}
+                        @else {{ \Illuminate\Support\Str::limit($b['nama_asli'], 18) }}
+                        @endif
+                    </p>
+                </button>
+                @endforeach
+            </div>
         </div>
     </div>
 
