@@ -125,7 +125,8 @@
                     <i class="ti ti-file-text" style="font-size:36px;color:{{ filled($b['label']) ? $warnaModal['icon'] : '#94a3b8' }};"></i>
                 </div>
                 @endif
-                <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">{{ $b['nama_asli'] }} &middot; buka file asli</p>
+                <p style="font-size:11px;color:#94a3b8;margin:8px 0 10px;">{{ $b['nama_asli'] }}</p>
+                <span class="btn btn-primary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-eye"></i> Lihat File Asli</span>
             </a>
 
             <form action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:flex;gap:6px;margin-bottom:12px;">
