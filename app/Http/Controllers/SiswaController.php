@@ -43,6 +43,7 @@ class SiswaController extends Controller
         $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
 
         $siswas = Siswa::filter($filters)
+            ->with('scanKkHasil')
             ->orderBy('nama_lengkap')
             ->paginate(15)
             ->withQueryString();

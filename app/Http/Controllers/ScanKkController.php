@@ -177,14 +177,18 @@ class ScanKkController extends Controller
     public function terapkanMassal(Request $request, Siswa $siswa)
     {
         $request->validate([
-            'fields' => 'required|array|min:1',
+            'fields' => 'nullable|array',
             'fields.*' => 'in:' . self::FIELD_BISA_DITERAPKAN,
-            'nilai' => 'required|array',
+            'nilai' => 'nullable|array',
         ]);
+
+        if (empty($request->fields)) {
+            return back()->with('error', 'Belum ada perubahan yang dicentang. Kalau memang tidak ada yang perlu diubah, pakai tombol "Update Status Saja".');
+        }
 
         $dataUpdate = [];
         foreach ($request->fields as $field) {
-            if (array_key_exists($field, $request->nilai) && $request->nilai[$field] !== '') {
+            if (array_key_exists($field, $request->nilai ?? []) && $request->nilai[$field] !== '') {
                 $dataUpdate[$field] = $request->nilai[$field];
             }
         }

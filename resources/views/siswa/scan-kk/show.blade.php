@@ -3,7 +3,7 @@
 @section('page-title', 'Hasil Scan KK & Akta')
 
 @section('header-actions')
-    <a href="{{ route('siswa.scan-kk.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
+    <a href="{{ route('siswa.show', $siswa) }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
 @endsection
 
 @section('content')
@@ -95,31 +95,16 @@
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Pekerjaan Ibu', 'nilaiInduk' => $siswa->pekerjaan_ibu, 'nilaiScan' => $detailIbu['jenis_pekerjaan'] ?? null, 'fieldTujuan' => 'pekerjaan_ibu', 'siswa' => $siswa])
             </tbody>
         </table>
-        <div style="padding:14px 18px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-            <label id="label-centang-semua" style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <div style="padding:14px 18px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <label style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
                 <input type="checkbox" onclick="document.getElementById('cb-semua').click()"> Centang semua yang berbeda
             </label>
-            <p id="label-sudah-sama" style="font-size:12px;color:#16a34a;display:none;margin:0;"><i class="ti ti-circle-check"></i> Semua data sudah sama.</p>
-            <button type="submit" id="btn-terapkan-massal" class="btn btn-primary btn-sm"><i class="ti ti-check"></i> Terapkan yang Dicentang</button>
+            <div style="display:flex;gap:8px;">
+                <button type="submit" formaction="{{ route('siswa.scan-kk.tandai-update', $siswa) }}" class="btn btn-secondary btn-sm"><i class="ti ti-shield-check"></i> Update Status Saja</button>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-check"></i> Terapkan Perubahan</button>
+            </div>
         </div>
     </form>
-
-    <form action="{{ route('siswa.scan-kk.tandai-update', $siswa) }}" method="POST" id="form-tandai-update" style="display:none;padding:0 18px 14px;">
-        @csrf
-        <button type="submit" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-shield-check"></i> Tandai Update</button>
-    </form>
-
-    <script>
-    (function () {
-        const jumlahBerbeda = document.querySelectorAll('.cb-terapkan').length;
-        if (jumlahBerbeda === 0) {
-            document.getElementById('label-centang-semua').style.display = 'none';
-            document.getElementById('label-sudah-sama').style.display = 'block';
-            document.getElementById('btn-terapkan-massal').style.display = 'none';
-            document.getElementById('form-tandai-update').style.display = 'block';
-        }
-    })();
-    </script>
 
     <div style="padding:0 18px 14px;">
         <details>

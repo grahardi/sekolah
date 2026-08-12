@@ -126,7 +126,12 @@
                                          onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($siswa->nama_lengkap) }}&background=dbeafe&color=1d4ed8&size=36'">
                                 </div>
                                 <div>
-                                    <p style="font-size:13px;font-weight:700;color:#111827;margin:0;">{{ $siswa->nama_lengkap }}</p>
+                                    <p style="font-size:13px;font-weight:700;color:#111827;margin:0;display:flex;align-items:center;gap:5px;">
+                                        {{ $siswa->nama_lengkap }}
+                                        @if($siswa->scanKkHasil?->sudahDikonfirmasi())
+                                        <i class="ti ti-shield-check" style="font-size:13px;color:#16a34a;" title="Sudah Update KK"></i>
+                                        @endif
+                                    </p>
                                     <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $siswa->jenis_kelamin_lengkap }}</p>
                                 </div>
                             </div>
