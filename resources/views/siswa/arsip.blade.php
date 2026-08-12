@@ -79,10 +79,10 @@
 
             <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:14px;">
                 @if($b['is_image'])
-                <img src="{{ $b['url'] }}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:#f8fafc;">
+                <img src="{{ $b['url'] }}" style="width:100%;max-height:220px;object-fit:contain;border-radius:8px;background:{{ filled($b['label']) ? '#f5f3ff' : '#f8fafc' }};">
                 @else
-                <div style="width:100%;height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                    <i class="ti ti-file-text" style="font-size:36px;color:#94a3b8;"></i>
+                <div style="width:100%;height:140px;background:{{ filled($b['label']) ? '#ede9fe' : '#f1f5f9' }};border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                    <i class="ti ti-file-text" style="font-size:36px;color:{{ filled($b['label']) ? '#7c3aed' : '#94a3b8' }};"></i>
                 </div>
                 @endif
                 <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">{{ $b['nama_asli'] }} &middot; buka file asli</p>
