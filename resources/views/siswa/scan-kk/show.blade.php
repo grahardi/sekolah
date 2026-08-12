@@ -78,6 +78,13 @@
                 </tr>
             </thead>
             <tbody>
+                @php $detailSiswa = $hasil->detailSiswaHasilScan(); @endphp
+                <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Siswa</td></tr>
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Siswa', 'nilaiInduk' => $siswa->nama_lengkap, 'nilaiScan' => $detailSiswa['nama_lengkap'] ?? null, 'fieldTujuan' => 'nama_lengkap', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Siswa', 'nilaiInduk' => $siswa->nik, 'nilaiScan' => $detailSiswa['nik'] ?? null, 'fieldTujuan' => 'nik', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tanggal Lahir', 'nilaiInduk' => $siswa->tanggal_lahir?->format('d-m-Y'), 'nilaiScan' => $detailSiswa['tanggal_lahir'] ?? null, 'fieldTujuan' => 'tanggal_lahir', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'No. Kartu Keluarga', 'nilaiInduk' => $siswa->no_kk, 'nilaiScan' => $hasil->data_kk['no_kk'] ?? null, 'fieldTujuan' => 'no_kk', 'siswa' => $siswa])
+
                 <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Keluarga</td></tr>
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Alamat', 'nilaiInduk' => $siswa->alamat, 'nilaiScan' => $hasil->data_kk['alamat'] ?? null, 'fieldTujuan' => 'alamat', 'siswa' => $siswa])
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Anak ke-', 'nilaiInduk' => $siswa->anak_ke, 'nilaiScan' => $hasil->data_kk['anak_ke'] ?? null, 'fieldTujuan' => 'anak_ke', 'siswa' => $siswa])

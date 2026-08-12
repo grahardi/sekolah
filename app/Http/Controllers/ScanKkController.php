@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ScanKkController extends Controller
 {
-    private const FIELD_BISA_DITERAPKAN = 'nama_ayah,nama_ibu,nik_ayah,nik_ibu,tahun_lahir_ayah,tahun_lahir_ibu,pekerjaan_ayah,pekerjaan_ibu,alamat,anak_ke';
+    private const FIELD_BISA_DITERAPKAN = 'nama_ayah,nama_ibu,nik_ayah,nik_ibu,tahun_lahir_ayah,tahun_lahir_ibu,pekerjaan_ayah,pekerjaan_ibu,alamat,anak_ke,nama_lengkap,nik,tanggal_lahir,no_kk';
 
     public function index()
     {

@@ -69,6 +69,12 @@ class ScanKkHasil extends Model
         return $this->detailAnggota($this->namaIbuHasilScan());
     }
 
+    /** Detail siswa sendiri dari anggota_keluarga - ambil entri PERTAMA (sesuai urutan yg diminta di prompt: 1.Siswa 2.Ayah 3.Ibu), bukan cocokkan nama krn ejaan OCR bisa beda dari data induk kita */
+    public function detailSiswaHasilScan(): ?array
+    {
+        return $this->data_kk['anggota_keluarga'][0] ?? null;
+    }
+
     /** Ambil tahun dari tanggal_lahir (format bebas, cari 4 digit terakhir yg masuk akal sbg tahun) */
     public static function ekstrakTahun(?string $tanggalLahir): ?int
     {
