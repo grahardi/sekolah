@@ -13,10 +13,24 @@
 <div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">{{ session('success') }}</div>
 @endif
 
+@if(session('error'))
+<div style="background:#fef2f2;color:#991b1b;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">{{ session('error') }}</div>
+@endif
+
 @if(! $hasil->exists)
 <div style="background:#eff6ff;color:#1e40af;padding:14px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;justify-content:space-between;">
     <span><i class="ti ti-info-circle"></i> Siswa ini belum pernah discan.</span>
-    <a href="{{ route('siswa.scan-kk.index') }}" class="btn btn-primary btn-sm">Scan Sekarang</a>
+    <form action="{{ route('siswa.scan-kk.satu', $siswa) }}" method="POST" onsubmit="return confirm('Scan berkas KK/Akta siswa ini sekarang?')">
+        @csrf
+        <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-scan"></i> Scan Sekarang</button>
+    </form>
+</div>
+@else
+<div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+    <form action="{{ route('siswa.scan-kk.satu', $siswa) }}" method="POST" onsubmit="return confirm('Scan ulang berkas KK/Akta siswa ini?')">
+        @csrf
+        <button type="submit" class="btn btn-secondary btn-sm"><i class="ti ti-refresh"></i> Scan Ulang</button>
+    </form>
 </div>
 @endif
 

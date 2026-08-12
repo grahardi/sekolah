@@ -105,6 +105,54 @@ class ScanKkController extends Controller
         return view('siswa.scan-kk.show', compact('siswa', 'hasil'));
     }
 
+    /** Scan langsung 1 siswa (dari halaman detailnya sendiri) - beda dgn scanBulk yg proses banyak siswa sekaligus */
+    public function scanSatu(Siswa $siswa)
+    {
+        $sekolah = auth()->user()->sekolah;
+        $service = new GeminiOcrService($sekolah);
+
+        $hasil = ScanKkHasil::firstOrNew(['siswa_id' => $siswa->id]);
+        $arsip = $siswa->arsipBerkas;
+
+        if (! $arsip?->kartu_keluarga && ! $arsip?->akta_lahir) {
+            return back()->with('error', 'Belum ada berkas KK atau Akta Lahir untuk siswa ini.');
+        }
+
+        if ($arsip->kartu_keluarga) {
+            try {
+                $dataKk = $service->scanKk($arsip->kartu_keluarga, $siswa->nama_lengkap);
+                $hasil->status_kk = 'ok';
+                $hasil->skor_kk = (int) ($dataKk['skor_kejelasan'] ?? 0);
+                $hasil->data_kk = $dataKk;
+            } catch (\Throwable $e) {
+                $hasil->status_kk = 'error';
+                $hasil->pesan_error = $e->getMessage();
+            }
+        }
+
+        if ($arsip->akta_lahir) {
+            try {
+                $dataAkta = $service->scanAkta($arsip->akta_lahir);
+                $hasil->status_akta = 'ok';
+                $hasil->skor_akta = (int) ($dataAkta['skor_kejelasan_akta'] ?? 0);
+                $hasil->no_akta = $dataAkta['nomor_registrasi_akta'] ?? null;
+                $hasil->data_akta = $dataAkta;
+            } catch (\Throwable $e) {
+                $hasil->status_akta = 'error';
+                $hasil->pesan_error = ($hasil->pesan_error ? $hasil->pesan_error . ' | ' : '') . $e->getMessage();
+            }
+        }
+
+        $hasil->siswa_id = $siswa->id;
+        $hasil->discan_at = now();
+        $hasil->save();
+
+        $sukses = $hasil->status_kk !== 'error' && $hasil->status_akta !== 'error';
+
+        return redirect()->route('siswa.scan-kk.show', $siswa)
+            ->with($sukses ? 'success' : 'error', $sukses ? 'Scan berhasil.' : 'Scan selesai tapi ada yg error: ' . $hasil->pesan_error);
+    }
+
     /** Terapkan hasil OCR (nama ayah/ibu) ke data induk siswa */
     public function terapkan(Request $request, Siswa $siswa)
     {

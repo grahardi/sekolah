@@ -64,6 +64,7 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
             Route::post('/{siswa}/arsip/hapus', [ArsipController::class, 'hapusBerkas'])->name('arsip.hapus');
 
             Route::post('/{siswa}/scan-kk/terapkan', [\App\Http\Controllers\ScanKkController::class, 'terapkan'])->name('scan-kk.terapkan');
+            Route::post('/{siswa}/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'scanSatu'])->name('scan-kk.satu');
 
             Route::post('/{siswa}/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
             Route::delete('/{siswa}/prestasi/{prestasi}', [PrestasiController::class, 'destroy'])->name('prestasi.destroy');
