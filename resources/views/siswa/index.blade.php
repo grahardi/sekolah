@@ -126,12 +126,7 @@
                                          onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($siswa->nama_lengkap) }}&background=dbeafe&color=1d4ed8&size=36'">
                                 </div>
                                 <div>
-                                    <p style="font-size:13px;font-weight:700;color:#111827;margin:0;display:flex;align-items:center;gap:5px;">
-                                        {{ $siswa->nama_lengkap }}
-                                        @if($siswa->scanKkHasil?->sudahDikonfirmasi())
-                                        <i class="ti ti-shield-check" style="font-size:13px;color:#16a34a;" title="Sudah Update KK"></i>
-                                        @endif
-                                    </p>
+                                    <p style="font-size:13px;font-weight:700;color:#111827;margin:0;">{{ $siswa->nama_lengkap }}</p>
                                     <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $siswa->jenis_kelamin_lengkap }}</p>
                                 </div>
                             </div>
@@ -151,6 +146,9 @@
                         </td>
                         <td style="padding:12px 16px;">
                             <span class="badge badge-{{ $siswa->status }}">{{ ucfirst($siswa->status) }}</span>
+                            @if($siswa->scanKkHasil?->sudahDikonfirmasi())
+                            <i class="ti ti-shield-check" style="font-size:14px;color:#16a34a;margin-left:4px;vertical-align:-2px;" title="Sudah Update KK"></i>
+                            @endif
                         </td>
                         <td style="padding:12px 16px;">
                             <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
