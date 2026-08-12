@@ -53,9 +53,13 @@ class ArsipController extends Controller
         ]);
 
         $arsip = $siswa->arsipBerkas;
-        abort_unless($arsip, 404);
+        abort_unless($arsip, 404, 'Data arsip tidak ditemukan.');
 
-        $arsip->updateLabelBerkasLain((int) $request->index, $request->label ?? '');
+        $berhasil = $arsip->updateLabelBerkasLain((int) $request->index, $request->label ?? '');
+
+        if (! $berhasil) {
+            return back()->withErrors(['error' => 'Gagal menyimpan keterangan - index berkas tidak valid.']);
+        }
 
         return back()->with('success', 'Keterangan berkas berhasil diperbarui.');
     }

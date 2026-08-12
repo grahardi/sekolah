@@ -61,12 +61,17 @@
                     </a>
 
                     @if($sudahAdaLabel)
-                    <p style="font-size:12px;color:#5b21b6;font-weight:600;margin:0 0 6px;word-break:break-word;"><i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}</p>
+                    <div id="tampil-label-{{ $b['index'] }}" style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;">
+                        <p style="font-size:12px;color:#5b21b6;font-weight:600;margin:0;word-break:break-word;"><i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}</p>
+                        <button type="button" onclick="document.getElementById('tampil-label-{{ $b['index'] }}').style.display='none'; document.getElementById('form-label-{{ $b['index'] }}').style.display='flex';" class="btn btn-secondary btn-sm" style="flex-shrink:0;padding:3px 6px;" title="Edit keterangan">
+                            <i class="ti ti-pencil" style="font-size:11px;"></i>
+                        </button>
+                    </div>
                     @else
                     <p style="font-size:10.5px;color:#94a3b8;margin:0 0 6px;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 24) }}</p>
                     @endif
 
-                    <form action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:flex;gap:4px;margin-bottom:6px;">
+                    <form id="form-label-{{ $b['index'] }}" action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:{{ $sudahAdaLabel ? 'none' : 'flex' }};gap:4px;margin-bottom:6px;">
                         @csrf
                         <input type="hidden" name="index" value="{{ $b['index'] }}">
                         <input type="text" name="label" value="{{ $b['label'] }}" placeholder="Jenis dokumen, mis. Sertifikat" class="form-input" style="font-size:11px;padding:5px 8px;flex:1;">
