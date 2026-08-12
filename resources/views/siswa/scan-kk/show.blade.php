@@ -82,6 +82,7 @@
                 <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">Data Siswa</td></tr>
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Nama Siswa', 'nilaiInduk' => $siswa->nama_lengkap, 'nilaiScan' => $detailSiswa['nama_lengkap'] ?? null, 'fieldTujuan' => 'nama_lengkap', 'siswa' => $siswa])
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'NIK Siswa', 'nilaiInduk' => $siswa->nik, 'nilaiScan' => $detailSiswa['nik'] ?? null, 'fieldTujuan' => 'nik', 'siswa' => $siswa])
+                @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tempat Lahir', 'nilaiInduk' => $siswa->tempat_lahir, 'nilaiScan' => $detailSiswa['tempat_lahir'] ?? null, 'fieldTujuan' => 'tempat_lahir', 'siswa' => $siswa])
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'Tanggal Lahir', 'nilaiInduk' => $siswa->tanggal_lahir?->format('d-m-Y'), 'nilaiScan' => $detailSiswa['tanggal_lahir'] ?? null, 'fieldTujuan' => 'tanggal_lahir', 'siswa' => $siswa])
                 @include('siswa.scan-kk._baris-bandingkan', ['label' => 'No. Kartu Keluarga', 'nilaiInduk' => $siswa->no_kk, 'nilaiScan' => $hasil->data_kk['no_kk'] ?? null, 'fieldTujuan' => 'no_kk', 'siswa' => $siswa])
 
@@ -126,10 +127,10 @@
     @endif
 </div>
 
-{{-- Akta Lahir - taruh di bawah, terpisah, biar gak ganggu tampilan tabel KK --}}
-<div class="card" style="padding:18px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;"><i class="ti ti-certificate" style="color:#16a34a;"></i> Akta Lahir</p>
+{{-- Akta Lahir - taruh di bawah, terpisah, biar gak ganggu tampilan tabel KK. View-only (tanpa Terapkan), krn KK & Akta jarang beda tapi tetap perlu dicek manual kalau memang beda --}}
+<div class="card" style="padding:0;overflow:hidden;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f1f5f9;">
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;"><i class="ti ti-certificate" style="color:#16a34a;"></i> Akta Lahir <span style="font-size:11px;color:#94a3b8;font-weight:400;">(cuma tampilan, bandingkan manual)</span></p>
         @if($hasil->status_akta === 'ok')
         <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;">Skor: {{ $hasil->skor_akta }}%</span>
         @elseif($hasil->status_akta === 'error')
@@ -140,12 +141,28 @@
     </div>
 
     @if($hasil->status_akta === 'ok')
-    <p style="font-size:11px;color:#94a3b8;margin:0;">No. Registrasi Akta (hasil scan)</p>
-    <p style="font-size:15px;font-weight:700;color:#0f172a;margin:2px 0 0;font-family:monospace;">{{ $hasil->no_akta }}</p>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f8fafc;">
+            <tr>
+                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;width:160px;">Field</th>
+                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;">Data Induk</th>
+                <th style="padding:9px 12px;text-align:left;font-size:11px;color:#16a34a;">Hasil Scan Akta</th>
+            </tr>
+        </thead>
+        <tbody>
+            @include('siswa.scan-kk._baris-view-saja', ['label' => 'Nama', 'nilaiInduk' => $siswa->nama_lengkap, 'nilaiScan' => $hasil->data_akta['nama_anak'] ?? null])
+            @include('siswa.scan-kk._baris-view-saja', ['label' => 'Tempat Lahir', 'nilaiInduk' => $siswa->tempat_lahir, 'nilaiScan' => $hasil->data_akta['tempat_lahir'] ?? null])
+            @include('siswa.scan-kk._baris-view-saja', ['label' => 'Tanggal Lahir', 'nilaiInduk' => $siswa->tanggal_lahir?->format('d-m-Y'), 'nilaiScan' => $hasil->data_akta['tanggal_lahir'] ?? null])
+        </tbody>
+    </table>
+    <div style="padding:14px 18px;border-top:1px solid #f1f5f9;">
+        <p style="font-size:11px;color:#94a3b8;margin:0;">No. Registrasi Akta (hasil scan)</p>
+        <p style="font-size:15px;font-weight:700;color:#0f172a;margin:2px 0 0;font-family:monospace;">{{ $hasil->no_akta }}</p>
+    </div>
     @elseif($hasil->status_akta === 'error')
-    <p style="font-size:12px;color:#991b1b;">{{ $hasil->pesan_error }}</p>
+    <p style="font-size:12px;color:#991b1b;padding:14px 18px;">{{ $hasil->pesan_error }}</p>
     @else
-    <p style="font-size:12px;color:#94a3b8;">Belum ada berkas Akta atau belum discan.</p>
+    <p style="font-size:12px;color:#94a3b8;padding:14px 18px;">Belum ada berkas Akta atau belum discan.</p>
     @endif
 </div>
 

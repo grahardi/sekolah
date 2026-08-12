@@ -139,16 +139,24 @@ class GeminiOcrService
     {
         $prompt = <<<PROMPT
         Kamu adalah sistem OCR khusus Akta Kelahiran Indonesia.
-        Tugas utamamu adalah mengekstrak 'Nomor Registrasi Akta Kelahiran'.
+        Ekstrak data berikut ke JSON:
+        - nama_anak: nama lengkap anak sesuai tertulis di akta
+        - tempat_lahir: nama kota/kabupaten tempat lahir sesuai tertulis di akta
+        - tanggal_lahir: tanggal lahir sesuai tertulis di akta (format bebas, tulis apa adanya spt di dokumen)
+        - nomor_registrasi_akta: 'Nomor Registrasi Akta Kelahiran'
 
-        ATURAN PENTING:
+        ATURAN PENTING utk nomor_registrasi_akta:
         1. JANGAN ambil nomor seri cetakan di pojok kanan/kiri atas (contoh SALAH: AL. 705.xxx).
         2. JANGAN ambil NIK.
         3. Nomor Registrasi yang BENAR ada di TENGAH dokumen, setelah kalimat "Berdasarkan Akta Kelahiran Nomor" atau "By virtue of Birth Certificate Number".
         4. Contoh format benar: 3507-LT-02022015-0190 atau serupa.
 
         FORMAT JSON WAJIB:
-        {"skor_kejelasan_akta": 100, "nomor_registrasi_akta": "string"}
+        {
+          "skor_kejelasan_akta": 100,
+          "nama_anak": "", "tempat_lahir": "", "tanggal_lahir": "",
+          "nomor_registrasi_akta": "string"
+        }
         PROMPT;
 
         return $this->panggilGemini($pathPdf, $prompt);
