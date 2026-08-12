@@ -7,7 +7,7 @@ $berbeda = isset($berbedaOverride) ? $berbedaOverride : ($nilaiScan && trim(strt
     <td style="padding:9px 12px;font-size:13px;font-weight:600;color:{{ $berbeda ? '#dc2626' : '#0f172a' }};">
         {{ $nilaiScan ?: '-' }}
         @if($berbeda)
-        <span style="font-size:10px;color:#dc2626;margin-left:4px;">(beda dari KK)</span>
+        <span style="font-size:10px;color:#dc2626;margin-left:4px;">(beda dari data induk)</span>
         @endif
     </td>
 </tr>

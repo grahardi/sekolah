@@ -138,7 +138,9 @@ class ScanKkHasil extends Model
 
         $tanggal = $kataKeAngka($bagianTanggal);
 
-        // Tahun: format umum "DUA RIBU TIGA BELAS" / "DUA RIBU DUA PULUH SATU" dst
+        // Tahun: format umum "DUA RIBU TIGA BELAS" / "TAHUN DUA RIBU DUA PULUH SATU" dst
+        // (kata "TAHUN" kadang disisipkan sebelum angka tahun, kadang tidak - buang dulu kalau ada)
+        $bagianTahun = preg_replace('/^\s*TAHUN\s+/', '', trim($bagianTahun));
         $tahun = null;
         if (preg_match('/^(\w+)\s+RIBU\s*(.*)$/', trim($bagianTahun), $mTahun)) {
             $ribuan = ($angkaSatuan[$mTahun[1]] ?? 0) * 1000;
