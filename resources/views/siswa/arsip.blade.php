@@ -33,6 +33,28 @@
         </div>
     </div>
 
+    @if($arsip->berkas_lain)
+    <div class="card" style="margin-top:20px;">
+        <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-files" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#7c3aed;"></i> Berkas Lain</span></div>
+        <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+                @foreach($arsip->berkasLainUrls() as $b)
+                <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:center;display:block;">
+                    @if($b['is_image'])
+                    <img src="{{ $b['url'] }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px;">
+                    @else
+                    <div style="width:100%;height:80px;background:#f1f5f9;border-radius:6px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;">
+                        <i class="ti ti-file-text" style="font-size:24px;color:#94a3b8;"></i>
+                    </div>
+                    @endif
+                    <p style="font-size:11px;color:#64748b;margin:0;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 22) }}</p>
+                </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
     @if(auth()->user()->isAdmin())
     <div class="card" style="margin-top:20px;">
         <div class="card-body">

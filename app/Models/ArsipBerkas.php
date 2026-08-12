@@ -13,7 +13,12 @@ class ArsipBerkas extends Model
         'siswa_id',
         'foto','kartu_keluarga','akta_lahir','ijazah_sd',
         'ijazah','transkrip_nilai','sertifikat_tka',
+        'berkas_lain',
         'catatan',
+    ];
+
+    protected $casts = [
+        'berkas_lain' => 'array',
     ];
 
     public function siswa()
@@ -50,5 +55,23 @@ class ArsipBerkas extends Model
     public function getUrl(string $field): ?string
     {
         return $this->$field ? Storage::disk('public')->url($this->$field) : null;
+    }
+
+    /** Tambah 1 entri ke berkas_lain (dipanggil dari import) */
+    public function tambahBerkasLain(string $path, string $namaAsli): void
+    {
+        $daftar = $this->berkas_lain ?? [];
+        $daftar[] = ['path' => $path, 'nama_asli' => $namaAsli];
+        $this->berkas_lain = $daftar;
+        $this->save();
+    }
+
+    public function berkasLainUrls(): array
+    {
+        return collect($this->berkas_lain ?? [])->map(fn ($b) => [
+            'url' => Storage::disk('public')->url($b['path']),
+            'nama_asli' => $b['nama_asli'],
+            'is_image' => in_array(strtolower(pathinfo($b['path'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp']),
+        ])->toArray();
     }
 }
