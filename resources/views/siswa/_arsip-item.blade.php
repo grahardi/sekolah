@@ -12,7 +12,7 @@
             <p style="font-size:11px;color:#94a3b8;margin:0;">{{ $hasFile ? 'File tersimpan' : 'Belum ada berkas' }}</p>
         </div>
         @if($hasFile)
-            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-secondary btn-sm"><i class="ti ti-eye"></i> Lihat</a>
+            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary btn-sm"><i class="ti ti-eye"></i> Lihat</a>
             @if(auth()->user()->isAdmin())
             <a href="{{ route('siswa.arsip.hapus', $siswa) }}"
                onclick="hapusBerkas(event, this, '{{ $field }}', '{{ addslashes($meta['label']) }}')"

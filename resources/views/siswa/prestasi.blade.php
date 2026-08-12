@@ -50,7 +50,7 @@
                             <td style="padding:10px 14px;font-weight:700;color:#111827;white-space:nowrap;">🏅 {{ $p->juara }}</td>
                             <td style="padding:10px 14px;">
                                 @if($p->sertifikat)
-                                    <a href="{{ $p->sertifikat_url }}" target="_blank" class="btn btn-secondary btn-sm"><i class="ti ti-paperclip"></i> Lihat</a>
+                                    <a href="{{ $p->sertifikat_url }}" target="_blank" class="btn btn-primary btn-sm"><i class="ti ti-paperclip"></i> Lihat</a>
                                 @elseif(auth()->user()->isAdmin())
                                     <form action="{{ route('siswa.prestasi.sertifikat', [$siswa, $p]) }}" method="POST" enctype="multipart/form-data" style="display:inline;">
                                         @csrf
