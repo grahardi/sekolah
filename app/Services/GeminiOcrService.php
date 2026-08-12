@@ -22,6 +22,37 @@ class GeminiOcrService
         return $this->sekolah->geminiApiKeyEfektif();
     }
 
+    /** Tes cepat: cuma kirim teks sederhana, gak perlu PDF - buat verifikasi API key & model valid */
+    public function tesKoneksi(): array
+    {
+        $apiKey = $this->apiKey();
+        if (! $apiKey) {
+            return ['ok' => false, 'pesan' => 'API key belum diatur (baik default sekolah.co.id maupun milik sekolah).'];
+        }
+
+        try {
+            $response = Http::timeout(20)->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}",
+                [
+                    'contents' => [['parts' => [['text' => 'Balas dengan kata "OK" saja.']]]],
+                ]
+            );
+
+            if ($response->failed()) {
+                return ['ok' => false, 'pesan' => "Gagal (HTTP {$response->status()}): " . $response->body()];
+            }
+
+            $teks = $response->json('candidates.0.content.parts.0.text');
+            if (! $teks) {
+                return ['ok' => false, 'pesan' => 'Respons kosong/format tidak sesuai. Cek nama model (GEMINI_MODEL di .env).'];
+            }
+
+            return ['ok' => true, 'pesan' => "Koneksi berhasil! Model '{$this->model}' merespons dengan benar."];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'pesan' => 'Error: ' . $e->getMessage()];
+        }
+    }
+
     /** Kirim 1 file PDF ke Gemini, minta hasil JSON sesuai prompt */
     private function panggilGemini(string $pathPdfRelatif, string $prompt): array
     {

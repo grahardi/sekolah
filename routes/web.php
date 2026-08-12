@@ -37,6 +37,7 @@ Route::get('/program/{slug}', function (string $slug) {
 Route::middleware(['web', 'auth', 'admin'])->group(function () {
     Route::get('/profil-sekolah', [App\Http\Controllers\SekolahProfilController::class, 'edit'])->name('sekolah.profil.edit');
     Route::put('/profil-sekolah', [App\Http\Controllers\SekolahProfilController::class, 'update'])->name('sekolah.profil.update');
+    Route::post('/profil-sekolah/tes-gemini', [App\Http\Controllers\SekolahProfilController::class, 'tesGeminiApiKey'])->name('sekolah.profil.tes-gemini');
 });
 
 // Beranda portal setelah login.

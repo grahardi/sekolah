@@ -55,4 +55,14 @@ class SekolahProfilController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Profil sekolah berhasil diperbarui.');
     }
+
+    public function tesGeminiApiKey(Request $request)
+    {
+        $sekolah = $request->user()->sekolah;
+        abort_unless($sekolah, 404);
+
+        $hasil = (new \App\Services\GeminiOcrService($sekolah))->tesKoneksi();
+
+        return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
+    }
 }

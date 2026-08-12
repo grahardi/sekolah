@@ -1,7 +1,14 @@
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, usePage, router } from '@inertiajs/react';
 import PortalLayout from '../../Layouts/PortalLayout';
 
 export default function Edit({ sekolah }) {
+    const { props } = usePage();
+    const flash = props?.flash || {};
+
+    const tesGemini = () => {
+        router.post('/profil-sekolah/tes-gemini', {}, { preserveScroll: true });
+    };
+
     const { data, setData, put, processing, errors } = useForm({
         nama: sekolah?.nama ?? '',
         alamat: sekolah?.alamat ?? '',
@@ -45,6 +52,13 @@ export default function Edit({ sekolah }) {
                 Data ini ditampilkan di beranda portal. NPSN tidak bisa diubah di sini karena
                 itu identitas resmi dari data referensi Kemendikdasmen.
             </p>
+
+            {flash.success && (
+                <div className="mb-4 rounded-lg bg-emerald-50 text-emerald-700 text-sm px-4 py-3 max-w-2xl">{flash.success}</div>
+            )}
+            {flash.error && (
+                <div className="mb-4 rounded-lg bg-red-50 text-red-700 text-sm px-4 py-3 max-w-2xl">{flash.error}</div>
+            )}
 
             <form onSubmit={submit} className="rounded-2xl bg-white border border-navy/10 p-6 max-w-2xl space-y-4">
                 <div>
@@ -102,6 +116,13 @@ export default function Edit({ sekolah }) {
                     </p>
                 </div>
                 {field('Gemini API Key (opsional)', 'gemini_api_key', { placeholder: 'Kosongkan untuk pakai default sekolah.co.id', type: 'password' })}
+                <button
+                    type="button"
+                    onClick={tesGemini}
+                    className="bg-navy/5 text-navy/70 font-medium rounded-lg px-4 py-2 text-xs hover:bg-navy/10"
+                >
+                    <i className="ti ti-plug"></i> Tes Koneksi API
+                </button>
 
                 <div className="flex gap-3 pt-2">
                     <button
