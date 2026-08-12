@@ -14,12 +14,12 @@
     $nilaiGrid = [];
     foreach ($siswa->nilaiRapors as $n) $nilaiGrid[$n->kelas][$n->semester][$n->mata_pelajaran] = $n->nilai;
     $kolom = [
-        ['label' => 'VII / 1',  'kelas' => 'VII',  'sem' => 1],
-        ['label' => 'VII / 2',  'kelas' => 'VII',  'sem' => 2],
-        ['label' => 'VIII / 1', 'kelas' => 'VIII', 'sem' => 1],
-        ['label' => 'VIII / 2', 'kelas' => 'VIII', 'sem' => 2],
-        ['label' => 'IX / 1',   'kelas' => 'IX',   'sem' => 1],
-        ['label' => 'IX / 2',   'kelas' => 'IX',   'sem' => 2],
+        ['label' => '7 / 1',  'kelas' => '7',  'sem' => 1],
+        ['label' => '7 / 2',  'kelas' => '7',  'sem' => 2],
+        ['label' => '8 / 1', 'kelas' => '8', 'sem' => 1],
+        ['label' => '8 / 2', 'kelas' => '8', 'sem' => 2],
+        ['label' => '9 / 1',   'kelas' => '9',   'sem' => 1],
+        ['label' => '9 / 2',   'kelas' => '9',   'sem' => 2],
     ];
 @endphp
 

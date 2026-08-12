@@ -108,7 +108,7 @@
                 <label class="form-label">Kelas <span style="color:#ef4444">*</span></label>
                 <select name="kelas" class="form-input" required>
                     <option value="">-- Pilih --</option>
-                    @foreach(['VII','VIII','IX'] as $k)
+                    @foreach(['7','8','9'] as $k)
                         <option value="{{ $k }}" {{ $fv('kelas') == $k ? 'selected' : '' }}>Kelas {{ $k }}</option>
                     @endforeach
                 </select>
