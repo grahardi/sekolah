@@ -58,19 +58,47 @@ class ArsipBerkas extends Model
     }
 
     /** Tambah 1 entri ke berkas_lain (dipanggil dari import) */
-    public function tambahBerkasLain(string $path, string $namaAsli): void
+    public function tambahBerkasLain(string $path, string $namaAsli, ?string $label = null): void
     {
         $daftar = $this->berkas_lain ?? [];
-        $daftar[] = ['path' => $path, 'nama_asli' => $namaAsli];
+        $daftar[] = ['path' => $path, 'nama_asli' => $namaAsli, 'label' => $label];
         $this->berkas_lain = $daftar;
         $this->save();
     }
 
+    /** Ubah label 1 entri berkas_lain berdasarkan index-nya di array */
+    public function updateLabelBerkasLain(int $index, string $label): void
+    {
+        $daftar = $this->berkas_lain ?? [];
+        if (isset($daftar[$index])) {
+            $daftar[$index]['label'] = $label;
+            $this->berkas_lain = $daftar;
+            $this->save();
+        }
+    }
+
+    /** Pindahkan 1 entri berkas_lain ke field spesifik (KK/Akta/dst), hapus dari array */
+    public function pindahkanBerkasLain(int $index, string $fieldTujuan): ?string
+    {
+        $daftar = $this->berkas_lain ?? [];
+        if (! isset($daftar[$index])) return null;
+
+        $path = $daftar[$index]['path'];
+        unset($daftar[$index]);
+        $this->berkas_lain = array_values($daftar);
+        $this->{$fieldTujuan} = $path;
+        $this->save();
+
+        return $path;
+    }
+
     public function berkasLainUrls(): array
     {
-        return collect($this->berkas_lain ?? [])->map(fn ($b) => [
+        return collect($this->berkas_lain ?? [])->map(fn ($b, $i) => [
+            'index' => $i,
             'url' => Storage::disk('public')->url($b['path']),
             'nama_asli' => $b['nama_asli'],
+            'label' => $b['label'] ?? null,
             'is_image' => in_array(strtolower(pathinfo($b['path'], PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp']),
         ])->toArray();
     }

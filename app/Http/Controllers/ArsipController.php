@@ -45,6 +45,41 @@ class ArsipController extends Controller
         return back()->with('success','Arsip berkas berhasil disimpan.');
     }
 
+    public function updateLabelBerkasLain(Request $request, Siswa $siswa)
+    {
+        $request->validate([
+            'index' => 'required|integer|min:0',
+            'label' => 'required|string|max:150',
+        ]);
+
+        $arsip = $siswa->arsipBerkas;
+        abort_unless($arsip, 404);
+
+        $arsip->updateLabelBerkasLain((int) $request->index, $request->label);
+
+        return back()->with('success', 'Keterangan berkas berhasil diperbarui.');
+    }
+
+    public function pindahkanBerkasLain(Request $request, Siswa $siswa)
+    {
+        $request->validate([
+            'index' => 'required|integer|min:0',
+            'field_tujuan' => 'required|in:kartu_keluarga,akta_lahir,ijazah_sd,ijazah,transkrip_nilai,sertifikat_tka',
+        ]);
+
+        $arsip = $siswa->arsipBerkas;
+        abort_unless($arsip, 404);
+
+        // Kalau field tujuan sudah ada isinya, hapus file lama dulu spy gak nyampah
+        if ($arsip->{$request->field_tujuan}) {
+            Storage::disk('public')->delete($arsip->{$request->field_tujuan});
+        }
+
+        $arsip->pindahkanBerkasLain((int) $request->index, $request->field_tujuan);
+
+        return back()->with('success', 'Berkas berhasil dipindahkan.');
+    }
+
     public function hapusBerkas(Request $request, Siswa $siswa)
     {
         $request->validate([

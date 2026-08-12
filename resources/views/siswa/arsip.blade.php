@@ -37,18 +37,41 @@
     <div class="card" style="margin-top:20px;">
         <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-files" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#7c3aed;"></i> Berkas Lain</span></div>
         <div class="card-body">
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;">
                 @foreach($arsip->berkasLainUrls() as $b)
-                <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;border:1px solid #e2e8f0;border-radius:10px;padding:10px;text-align:center;display:block;">
-                    @if($b['is_image'])
-                    <img src="{{ $b['url'] }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px;">
-                    @else
-                    <div style="width:100%;height:80px;background:#f1f5f9;border-radius:6px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;">
-                        <i class="ti ti-file-text" style="font-size:24px;color:#94a3b8;"></i>
-                    </div>
-                    @endif
-                    <p style="font-size:11px;color:#64748b;margin:0;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 22) }}</p>
-                </a>
+                <div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;">
+                    <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:8px;">
+                        @if($b['is_image'])
+                        <img src="{{ $b['url'] }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">
+                        @else
+                        <div style="width:100%;height:80px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                            <i class="ti ti-file-text" style="font-size:24px;color:#94a3b8;"></i>
+                        </div>
+                        @endif
+                    </a>
+                    <p style="font-size:10.5px;color:#94a3b8;margin:0 0 6px;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 24) }}</p>
+
+                    <form action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:flex;gap:4px;margin-bottom:6px;">
+                        @csrf
+                        <input type="hidden" name="index" value="{{ $b['index'] }}">
+                        <input type="text" name="label" value="{{ $b['label'] }}" placeholder="Jenis dokumen, mis. Sertifikat" class="form-input" style="font-size:11px;padding:5px 8px;flex:1;">
+                        <button type="submit" class="btn btn-secondary btn-sm" title="Simpan keterangan"><i class="ti ti-check" style="font-size:12px;"></i></button>
+                    </form>
+
+                    <form action="{{ route('siswa.arsip.berkas-lain.pindah', $siswa) }}" method="POST" onsubmit="return confirm('Pindahkan berkas ini ke kategori terpilih?')">
+                        @csrf
+                        <input type="hidden" name="index" value="{{ $b['index'] }}">
+                        <select name="field_tujuan" onchange="this.form.submit()" class="form-input" style="font-size:11px;padding:5px 6px;">
+                            <option value="" disabled selected>Pindahkan ke...</option>
+                            <option value="kartu_keluarga">Kartu Keluarga</option>
+                            <option value="akta_lahir">Akta Lahir</option>
+                            <option value="ijazah_sd">Ijazah SD/MI</option>
+                            <option value="ijazah">Ijazah SMP</option>
+                            <option value="transkrip_nilai">Transkrip Nilai</option>
+                            <option value="sertifikat_tka">Sertifikat TKA</option>
+                        </select>
+                    </form>
+                </div>
                 @endforeach
             </div>
         </div>

@@ -106,7 +106,7 @@ class ImportBerkasLama extends Command
                     $namaTujuan = "{$siswa->nisn}_berkas{$nomorLain}.{$ekstensi}";
                 }
 
-                $tujuanRelatif = "berkas/{$siswa->id}/{$namaTujuan}";
+                $tujuanRelatif = "arsip/{$siswa->id}/{$namaTujuan}";
                 $this->line("    [{$urutan}] {$namaFile} -> {$jenis} ({$tujuanRelatif})");
 
                 $rencana[] = ['file_asal' => $namaFile, 'jenis' => $jenis, 'path_tujuan' => $tujuanRelatif];

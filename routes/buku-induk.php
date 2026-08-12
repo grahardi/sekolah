@@ -55,6 +55,8 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
             Route::get('/import/template', [SiswaController::class, 'downloadTemplate'])->name('import.template');
 
             Route::post('/{siswa}/arsip', [ArsipController::class, 'update'])->name('arsip.update');
+            Route::post('/{siswa}/arsip/berkas-lain/label', [ArsipController::class, 'updateLabelBerkasLain'])->name('arsip.berkas-lain.label');
+            Route::post('/{siswa}/arsip/berkas-lain/pindah', [ArsipController::class, 'pindahkanBerkasLain'])->name('arsip.berkas-lain.pindah');
             Route::post('/{siswa}/arsip/hapus', [ArsipController::class, 'hapusBerkas'])->name('arsip.hapus');
 
             Route::post('/{siswa}/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
