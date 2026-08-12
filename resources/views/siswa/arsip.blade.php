@@ -9,6 +9,15 @@
 @section('content')
 @include('siswa._subnav', ['active' => 'arsip'])
 
+@if(session('success'))
+<div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">{{ session('success') }}</div>
+@endif
+@if($errors->any())
+<div style="background:#fef2f2;color:#991b1b;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">
+    @foreach($errors->all() as $e)<p style="margin:2px 0;">{{ $e }}</p>@endforeach
+</div>
+@endif
+
 <form action="{{ route('siswa.arsip.update', $siswa) }}" method="POST" enctype="multipart/form-data" id="form-arsip">
     @csrf
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -39,17 +48,23 @@
         <div class="card-body">
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;">
                 @foreach($arsip->berkasLainUrls() as $b)
-                <div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;">
+                @php $sudahAdaLabel = filled($b['label']); @endphp
+                <div style="border:1px solid {{ $sudahAdaLabel ? '#c4b5fd' : '#e2e8f0' }};background:{{ $sudahAdaLabel ? '#f5f3ff' : '#fff' }};border-radius:10px;padding:10px;">
                     <a href="{{ $b['url'] }}" target="_blank" style="text-decoration:none;display:block;text-align:center;margin-bottom:8px;">
                         @if($b['is_image'])
                         <img src="{{ $b['url'] }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;">
                         @else
-                        <div style="width:100%;height:80px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                            <i class="ti ti-file-text" style="font-size:24px;color:#94a3b8;"></i>
+                        <div style="width:100%;height:80px;background:{{ $sudahAdaLabel ? '#ede9fe' : '#f1f5f9' }};border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                            <i class="ti ti-file-text" style="font-size:24px;color:{{ $sudahAdaLabel ? '#7c3aed' : '#94a3b8' }};"></i>
                         </div>
                         @endif
                     </a>
+
+                    @if($sudahAdaLabel)
+                    <p style="font-size:12px;color:#5b21b6;font-weight:600;margin:0 0 6px;word-break:break-word;"><i class="ti ti-tag" style="font-size:11px;"></i> {{ $b['label'] }}</p>
+                    @else
                     <p style="font-size:10.5px;color:#94a3b8;margin:0 0 6px;word-break:break-all;">{{ \Illuminate\Support\Str::limit($b['nama_asli'], 24) }}</p>
+                    @endif
 
                     <form action="{{ route('siswa.arsip.berkas-lain.label', $siswa) }}" method="POST" style="display:flex;gap:4px;margin-bottom:6px;">
                         @csrf

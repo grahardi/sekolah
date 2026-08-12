@@ -49,13 +49,13 @@ class ArsipController extends Controller
     {
         $request->validate([
             'index' => 'required|integer|min:0',
-            'label' => 'required|string|max:150',
+            'label' => 'nullable|string|max:150',
         ]);
 
         $arsip = $siswa->arsipBerkas;
         abort_unless($arsip, 404);
 
-        $arsip->updateLabelBerkasLain((int) $request->index, $request->label);
+        $arsip->updateLabelBerkasLain((int) $request->index, $request->label ?? '');
 
         return back()->with('success', 'Keterangan berkas berhasil diperbarui.');
     }
