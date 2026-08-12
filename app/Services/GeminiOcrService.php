@@ -116,8 +116,7 @@ class GeminiOcrService
         4. Validasi silang: cari lagi di TABEL ATAS baris dgn nama yg SAMA PERSIS dgn nama_ayah_siswa hasil langkah 2-3. Kalau baris itu ketemu dan NOMOR URUT-nya BUKAN 1 (bukan Kepala Keluarga), berarti struktur KK ini tidak biasa - isi field "peringatan" dgn penjelasan singkat.
 
         Ekstrak juga data berikut ke JSON:
-        - alamat: HANYA nama jalan/gang saja (mis. "Jl. Tanjung Sari" atau "Tanjung Sari"). JANGAN gabungkan dgn RT/RW/kelurahan/kecamatan/kode pos - itu semua masing² sudah ada field terpisah di bawah, isi terpisah juga.
-        - rt, rw, kode_pos, desa_kelurahan, kecamatan, kabupaten_kota, provinsi, no_kk
+        - no_kk, alamat, rt, rw, kode_pos, desa_kelurahan, kecamatan, kabupaten_kota, provinsi
         - anak_ke: perkiraan siswa ini anak ke berapa dalam keluarga (hitung dari urutan anak² berstatus "Anak" dlm KK, diurutkan dari yg tertua berdasarkan tanggal lahir). Kalau gak yakin, isi null.
 
         ATURAN PENTING: Pada blok 'anggota_keluarga', HANYA masukkan maksimal 3 orang: 1. Siswa, 2. Ayah Siswa, 3. Ibu Siswa (hasil langkah 2, JANGAN tertukar). Abaikan Kakek/Nenek/Paman/lainnya.
