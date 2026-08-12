@@ -21,6 +21,9 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
         Route::get('/cetak-massal', [SiswaController::class, 'pilihCetakMassal'])->name('cetak-massal.pilih');
         Route::post('/cetak-massal', [SiswaController::class, 'cetakMassal'])->name('cetak-massal');
 
+        Route::get('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'index'])->name('scan-kk.index');
+        Route::post('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'scanBulk'])->name('scan-kk.bulk');
+
         // Bisa diakses admin & induk (VIEW ONLY)
         Route::get('/', [SiswaController::class, 'index'])->name('index');
 
@@ -28,6 +31,7 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
         Route::middleware('admin')->get('/create', [SiswaController::class, 'create'])->name('create');
 
         Route::get('/{siswa}', [SiswaController::class, 'show'])->name('show');
+        Route::get('/{siswa}/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'show'])->name('scan-kk.show');
         Route::get('/{siswa}/buku-induk-pdf', [SiswaController::class, 'cetakBukuInduk'])->name('buku-induk.pdf');
         Route::get('/{siswa}/kartu-pdf', [SiswaController::class, 'cetakKartu'])->name('kartu.pdf');
         Route::get('/{siswa}/kartu/pilih-model', [SiswaController::class, 'pilihModelKartu'])->name('kartu.pilih-model');
@@ -58,6 +62,8 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(func
             Route::post('/{siswa}/arsip/berkas-lain/label', [ArsipController::class, 'updateLabelBerkasLain'])->name('arsip.berkas-lain.label');
             Route::post('/{siswa}/arsip/berkas-lain/pindah', [ArsipController::class, 'pindahkanBerkasLain'])->name('arsip.berkas-lain.pindah');
             Route::post('/{siswa}/arsip/hapus', [ArsipController::class, 'hapusBerkas'])->name('arsip.hapus');
+
+            Route::post('/{siswa}/scan-kk/terapkan', [\App\Http\Controllers\ScanKkController::class, 'terapkan'])->name('scan-kk.terapkan');
 
             Route::post('/{siswa}/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
             Route::delete('/{siswa}/prestasi/{prestasi}', [PrestasiController::class, 'destroy'])->name('prestasi.destroy');

@@ -60,6 +60,7 @@
         ['label' => 'Export Data', 'icon' => 'ti-file-export', 'bg' => '#fde68a', 'warna' => '#a16207', 'href' => route('siswa.export.choice')],
         ['label' => 'Kenaikan Kelas', 'icon' => 'ti-arrow-up-circle', 'bg' => '#fecaca', 'warna' => '#b91c1c', 'href' => route('kenaikan.index')],
         ['label' => 'Import Berkas', 'icon' => 'ti-folder-plus', 'bg' => '#fbcfe8', 'warna' => '#be185d', 'href' => route('siswa.import.berkas.form')],
+        ['label' => 'Scan KK & Akta', 'icon' => 'ti-scan', 'bg' => '#a5f3fc', 'warna' => '#0e7490', 'href' => route('siswa.scan-kk.index')],
     ];
 @endphp
 <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:14px;">
