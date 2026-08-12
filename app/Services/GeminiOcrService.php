@@ -103,21 +103,22 @@ class GeminiOcrService
     {
         $prompt = <<<PROMPT
         Kamu adalah sistem OCR Kartu Keluarga (KK) Indonesia. Dokumen KK punya 2 bagian tabel:
-        1. TABEL ATAS (Daftar Anggota Keluarga): kolom No., Nama Lengkap, NIK, dll - tiap orang punya nomor urut.
-        2. TABEL BAWAH (biasanya judulnya "NAMA ORANG TUA" / mengandung kolom "Nama Ayah" dan "Nama Ibu"): berisi nama ayah & ibu KANDUNG untuk TIAP orang, dicocokkan lewat NOMOR URUT yang SAMA dengan tabel atas (bukan nama).
+        1. TABEL ATAS (Daftar Anggota Keluarga): kolom No., Nama Lengkap, NIK, Status Hubungan Dalam Keluarga, dll.
+        2. TABEL BAWAH (biasanya mengandung kolom "Nama Ayah" dan "Nama Ibu" per orang, dgn No. yg sama seperti tabel atas): berisi nama ayah & ibu KANDUNG utk tiap anggota.
 
-        LANGKAH WAJIB (JANGAN DILEWATI):
-        Langkah 1: Di TABEL ATAS, cari baris dengan nama paling mirip dengan "{$namaSiswa}". Catat NOMOR URUT (No.) baris itu.
-        Langkah 2: Di TABEL BAWAH, cari baris dengan NOMOR URUT YANG SAMA PERSIS dari Langkah 1. Ambil isi kolom "Nama Ayah" dan "Nama Ibu" DARI BARIS ITU SAJA.
-
-        KESALAHAN YANG SERING TERJADI (HINDARI): JANGAN asal ambil nama ayah/ibu dari nomor urut 1 (Kepala Keluarga) atau dari baris pertama yang terlihat. Nama ayah/ibu WAJIB diambil dari baris dengan nomor urut yang SAMA PERSIS dengan nomor urut siswa "{$namaSiswa}" di tabel atas, meskipun siswa itu bukan orang pertama dalam KK.
+        LANGKAH WAJIB:
+        1. Di TABEL ATAS, cari baris dgn nama paling mirip "{$namaSiswa}". Catat NOMOR URUT-nya.
+        2. Di TABEL BAWAH, cari baris dgn NOMOR URUT YANG SAMA. HATI-HATI jangan tertukar kolom:
+           - Kolom "Nama Ayah" -> ini isinya untuk field nama_ayah_siswa
+           - Kolom "Nama Ibu" -> ini isinya untuk field nama_ibu_siswa
+           (Kolom "Nama Ayah" TIDAK PERNAH diisi nama perempuan, kolom "Nama Ibu" TIDAK PERNAH diisi nama laki-laki - pakai ini utk cek ulang jangan sampai tertukar)
+        3. Validasi silang: cari lagi di TABEL ATAS baris dgn nama yg SAMA PERSIS dgn nama_ayah_siswa hasil langkah 2. Kalau baris itu ketemu dan NOMOR URUT-nya BUKAN 1 (bukan Kepala Keluarga), berarti struktur KK ini tidak biasa - isi field "peringatan" dgn penjelasan singkat.
 
         Ekstrak juga data berikut ke JSON:
         - no_kk, alamat, rt, rw, kode_pos, desa_kelurahan, kecamatan, kabupaten_kota, provinsi
-        - anak_ke: perkiraan siswa ini anak ke berapa dalam keluarga (hitung dari urutan anak² yg statusnya "Anak" dlm KK, diurutkan dari yg tertua berdasarkan tanggal lahir). Kalau gak yakin/gak bisa dipastikan, isi null.
+        - anak_ke: perkiraan siswa ini anak ke berapa dalam keluarga (hitung dari urutan anak² berstatus "Anak" dlm KK, diurutkan dari yg tertua berdasarkan tanggal lahir). Kalau gak yakin, isi null.
 
-        ATURAN PENTING: Pada blok 'anggota_keluarga', HANYA masukkan maksimal 3 orang:
-        1. Siswa (namanya paling mirip "{$namaSiswa}"), 2. Ayah Siswa (hasil Langkah 2), 3. Ibu Siswa (hasil Langkah 2). Abaikan Kakek/Nenek/Paman/anggota keluarga lain.
+        ATURAN PENTING: Pada blok 'anggota_keluarga', HANYA masukkan maksimal 3 orang: 1. Siswa, 2. Ayah Siswa, 3. Ibu Siswa (hasil langkah 2, JANGAN tertukar). Abaikan Kakek/Nenek/Paman/lainnya.
         Tiap anggota cukup: nik, nama_lengkap, jenis_kelamin, tempat_lahir, tanggal_lahir, agama, pendidikan, jenis_pekerjaan.
 
         FORMAT JSON WAJIB:
@@ -125,8 +126,8 @@ class GeminiOcrService
           "skor_kejelasan": 100,
           "no_kk": "", "alamat": "", "rt": "", "rw": "", "kode_pos": "",
           "desa_kelurahan": "", "kecamatan": "", "kabupaten_kota": "", "provinsi": "",
-          "nomor_urut_siswa_di_tabel_atas": null,
           "nama_ayah_siswa": "", "nama_ibu_siswa": "", "anak_ke": null,
+          "peringatan": null,
           "anggota_keluarga": [{"nama_lengkap": "", "nik": "", "jenis_kelamin": "", "tempat_lahir": "", "tanggal_lahir": "", "agama": "", "pendidikan": "", "jenis_pekerjaan": ""}]
         }
         PROMPT;

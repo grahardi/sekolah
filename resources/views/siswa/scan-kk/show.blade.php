@@ -61,6 +61,11 @@
     $detailAyah = $hasil->detailAyahHasilScan();
     $detailIbu = $hasil->detailIbuHasilScan();
     @endphp
+    @if(! empty($hasil->data_kk['peringatan']))
+    <div style="background:#fef9c3;color:#854d0e;padding:10px 18px;font-size:12px;border-bottom:1px solid #f1f5f9;">
+        <i class="ti ti-alert-triangle"></i> <strong>Perlu dicek manual:</strong> {{ $hasil->data_kk['peringatan'] }}
+    </div>
+    @endif
     <form action="{{ route('siswa.scan-kk.terapkan-massal', $siswa) }}" method="POST" id="form-terapkan-massal">
         @csrf
         <table style="width:100%;border-collapse:collapse;">
