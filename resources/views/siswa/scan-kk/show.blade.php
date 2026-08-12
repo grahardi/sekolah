@@ -152,7 +152,13 @@
         <tbody>
             @include('siswa.scan-kk._baris-view-saja', ['label' => 'Nama', 'nilaiInduk' => $siswa->nama_lengkap, 'nilaiScan' => $hasil->data_akta['nama_anak'] ?? null])
             @include('siswa.scan-kk._baris-view-saja', ['label' => 'Tempat Lahir', 'nilaiInduk' => $siswa->tempat_lahir, 'nilaiScan' => $hasil->data_akta['tempat_lahir'] ?? null])
-            @include('siswa.scan-kk._baris-view-saja', ['label' => 'Tanggal Lahir', 'nilaiInduk' => $siswa->tanggal_lahir?->format('d-m-Y'), 'nilaiScan' => $hasil->data_akta['tanggal_lahir'] ?? null])
+            @php
+            $tglIndukNormal = $siswa->tanggal_lahir?->format('d-m-Y');
+            $tglAktaAsli = $hasil->data_akta['tanggal_lahir'] ?? null;
+            $tglAktaNormal = \App\Models\ScanKkHasil::normalisasiTanggal($tglAktaAsli);
+            $tglBerbeda = $tglAktaAsli && $tglAktaNormal !== $tglIndukNormal;
+            @endphp
+            @include('siswa.scan-kk._baris-view-saja', ['label' => 'Tanggal Lahir', 'nilaiInduk' => $tglIndukNormal, 'nilaiScan' => $tglAktaAsli, 'berbedaOverride' => $tglBerbeda])
         </tbody>
     </table>
     <div style="padding:14px 18px;border-top:1px solid #f1f5f9;">

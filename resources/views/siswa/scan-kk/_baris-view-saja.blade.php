@@ -1,5 +1,5 @@
 @php
-$berbeda = $nilaiScan && trim(strtoupper($nilaiScan)) !== trim(strtoupper((string) $nilaiInduk));
+$berbeda = isset($berbedaOverride) ? $berbedaOverride : ($nilaiScan && trim(strtoupper($nilaiScan)) !== trim(strtoupper((string) $nilaiInduk)));
 @endphp
 <tr style="border-top:1px solid #f1f5f9;">
     <td style="padding:9px 12px;font-size:12px;color:#64748b;">{{ $label }}</td>
