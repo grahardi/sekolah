@@ -23,7 +23,7 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div class="card">
             <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-folder" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#1d4ed8;"></i> Berkas Masuk / Aktif</span></div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
                 @foreach(\App\Models\ArsipBerkas::berkasAktif() as $field => $meta)
                     @include('siswa._arsip-item', ['field' => $field, 'meta' => $meta, 'arsip' => $arsip])
                 @endforeach
@@ -34,7 +34,7 @@
                 <span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-folder-check" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#16a34a;"></i> Berkas Kelulusan</span>
                 @if($siswa->status !== 'lulus')<span style="font-size:11px;color:#94a3b8;">Hanya untuk siswa lulus</span>@endif
             </div>
-            <div class="card-body" style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
                 @foreach(\App\Models\ArsipBerkas::berkasLulus() as $field => $meta)
                     @include('siswa._arsip-item', ['field' => $field, 'meta' => $meta, 'arsip' => $arsip])
                 @endforeach
@@ -42,28 +42,9 @@
         </div>
     </div>
 
-
-    @if(auth()->user()->isAdmin())
-    <div class="card" style="margin-top:20px;">
-        <div class="card-body">
-            <label class="form-label">Catatan Arsip</label>
-            <textarea name="catatan" rows="2" class="form-input" placeholder="Catatan tambahan...">{{ $arsip->catatan }}</textarea>
-        </div>
-    </div>
-
     <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-        <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Simpan Arsip</button>
+        <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Simpan Berkas</button>
     </div>
-    @else
-    @if($arsip->catatan)
-    <div class="card" style="margin-top:20px;">
-        <div class="card-body">
-            <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0 0 6px;">Catatan Arsip</p>
-            <p style="font-size:13px;color:#374151;margin:0;">{{ $arsip->catatan }}</p>
-        </div>
-    </div>
-    @endif
-    @endif
 </form>
 
     @if($arsip->berkas_lain)
@@ -155,6 +136,27 @@
     @endforeach
     @endif
 
+@if(auth()->user()->isAdmin())
+<form action="{{ route('siswa.arsip.update', $siswa) }}" method="POST" style="margin-top:20px;">
+    @csrf
+    <div class="card">
+        <div class="card-body">
+            <label class="form-label">Catatan Arsip</label>
+            <textarea name="catatan" rows="2" class="form-input" placeholder="Catatan tambahan...">{{ $arsip->catatan }}</textarea>
+        </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+        <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-device-floppy"></i> Simpan Catatan</button>
+    </div>
+</form>
+@elseif($arsip->catatan)
+<div class="card" style="margin-top:20px;">
+    <div class="card-body">
+        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0 0 6px;">Catatan Arsip</p>
+        <p style="font-size:13px;color:#374151;margin:0;">{{ $arsip->catatan }}</p>
+    </div>
+</div>
+@endif
 
 <form action="{{ route('siswa.arsip.hapus', $siswa) }}" method="POST" id="form-hapus-berkas" style="display:none;">
     @csrf
