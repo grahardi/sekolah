@@ -78,6 +78,16 @@
             </form>
             @endif
 
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+                <p style="font-size:12px;font-weight:700;color:#0f172a;margin:0 0 4px;"><i class="ti ti-key"></i> License Key</p>
+                <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Update key lisensi Server Ujian sendiri. Perubahan baru berlaku setelah server di-restart (Hentikan lalu Jalankan lagi).</p>
+                <form action="{{ route('server-ujian.license-key', $instance) }}" method="POST" style="display:flex;gap:8px;" onsubmit="return confirm('Simpan License Key baru? Restart server setelah ini supaya berlaku.')">
+                    @csrf
+                    <input type="password" name="license_key" class="form-input" placeholder="Masukkan License Key baru" required style="flex:1;font-size:12px;">
+                    <button type="submit" class="btn btn-secondary btn-sm">Simpan</button>
+                </form>
+            </div>
+
             <div style="border:1px dashed #cbd5e1;border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div style="width:38px;height:38px;border-radius:10px;background:#fce7f3;display:flex;align-items:center;justify-content:center;flex-shrink:0;">

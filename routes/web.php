@@ -74,6 +74,7 @@ Route::middleware(['web', 'auth'])->prefix('server-ujian')->name('server-ujian.'
     Route::post('/{instance}/run', [\App\Http\Controllers\ServerUjianController::class, 'run'])->name('run');
     Route::post('/{instance}/sinkron-siswa', [\App\Http\Controllers\ServerUjianController::class, 'sinkronSiswa'])->name('sinkron-siswa');
     Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
+    Route::post('/{instance}/license-key', [\App\Http\Controllers\ServerUjianController::class, 'updateLicenseKey'])->name('license-key');
 });
 
 // Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin

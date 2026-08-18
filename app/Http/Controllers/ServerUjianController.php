@@ -87,6 +87,21 @@ class ServerUjianController extends Controller
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }
 
+    public function updateLicenseKey(Request $request, ExoInstance $instance)
+    {
+        abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
+
+        $data = $request->validate(['license_key' => 'required|string|max:255']);
+
+        $ok = $instance->tulisEnv('SERVER_SECRET_LICENSE_KEY', $data['license_key']);
+
+        if (! $ok) {
+            return back()->with('error', 'Gagal menyimpan License Key - file .env instance tidak ditemukan.');
+        }
+
+        return back()->with('success', 'License Key berhasil disimpan. Restart Server Ujian (Hentikan lalu Jalankan lagi) supaya perubahan berlaku.');
+    }
+
     public function autoLogin(ExoInstance $instance)
     {
         abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
