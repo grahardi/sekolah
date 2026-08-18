@@ -43,6 +43,14 @@
                 </form>
             </div>
 
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+                <p style="font-size:11px;font-weight:700;color:#64748b;margin:0 0 6px;"><i class="ti ti-link"></i> Tautan untuk Siswa (bagikan manual)</p>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" readonly id="link-siswa" value="http://163.227.0.18:{{ $port }}/#/" class="form-input" style="flex:1;font-size:12px;font-family:monospace;background:#fff;" onclick="this.select()">
+                    <button type="button" onclick="salinTautanSiswa()" class="btn btn-secondary btn-sm" id="btn-salin-tautan"><i class="ti ti-copy"></i> Salin</button>
+                </div>
+            </div>
+
             @if($instance->admin_email_tersambung)
             <div style="background:#f0fdf4;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;">
                 <i class="ti ti-shield-check" style="font-size:22px;color:#16a34a;flex-shrink:0;"></i>
@@ -132,5 +140,18 @@
         </form>
     </div>
 @endif
+
+<script>
+function salinTautanSiswa() {
+    const input = document.getElementById('link-siswa');
+    const btn = document.getElementById('btn-salin-tautan');
+    input.select();
+    navigator.clipboard.writeText(input.value).then(() => {
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<i class="ti ti-check"></i> Tersalin!';
+        setTimeout(() => { btn.innerHTML = teksAsli; }, 2000);
+    });
+}
+</script>
 
 @endsection
