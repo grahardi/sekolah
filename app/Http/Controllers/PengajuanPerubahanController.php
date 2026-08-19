@@ -14,6 +14,7 @@ class PengajuanPerubahanController extends Controller
     {
         $query = Siswa::where('status', 'aktif')->with('pengajuanPerubahan');
 
+        $waliKelasSaya = null;
         if (! auth()->user()->isAdmin()) {
             $kelasWaliList = $this->kelasRombelWaliGuru();
             if ($kelasWaliList->isEmpty()) {
@@ -24,12 +25,18 @@ class PengajuanPerubahanController extends Controller
                         $q->orWhere(fn ($q2) => $q2->where('kelas', $kw->kelas)->where('rombel', $kw->rombel));
                     }
                 });
+                // Ambil record WaliKelas asli (bukan cuma kelas/rombel) buat tampilkan token-nya
+                $guru = Guru::where('user_id', auth()->id())->first();
+                $waliKelasSaya = WaliKelas::where('guru_id', $guru->id)
+                    ->whereHas('tahunAjaran', fn ($q) => $q->where('is_aktif', true))
+                    ->first();
             }
         }
 
         $siswaList = $query->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')->get();
+        $npsn = auth()->user()->sekolah->npsn;
 
-        return view('pengajuan-perubahan.index', compact('siswaList'));
+        return view('pengajuan-perubahan.index', compact('siswaList', 'waliKelasSaya', 'npsn'));
     }
 
     public function show(Siswa $siswa)
@@ -77,13 +84,19 @@ class PengajuanPerubahanController extends Controller
         return redirect()->route('pengajuan-perubahan.index')->with('success', count($dataUpdate) . ' field berhasil diperbarui & pengajuan ditandai selesai.');
     }
 
-    /** Generate ulang token (kalau perlu, misal token lama dianggap bocor) */
-    public function generateUlangToken(Siswa $siswa)
+    /** Generate ulang token kelas (utk wali kelas yg login) */
+    public function generateUlangToken()
     {
-        $this->pastikanBolehAkses($siswa);
+        abort_if(auth()->user()->isAdmin(), 400, 'Admin gak punya kelas wali sendiri - kelola token lewat menu Manajemen Sekolah.');
 
-        $pengajuan = PengajuanPerubahan::buatAtauAmbilUntuk($siswa);
-        $pengajuan->update(['token' => \Illuminate\Support\Str::random(10)]);
+        $guru = Guru::where('user_id', auth()->id())->first();
+        $waliKelas = WaliKelas::where('guru_id', $guru?->id)
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_aktif', true))
+            ->first();
+
+        abort_unless($waliKelas, 404, 'Anda bukan wali kelas aktif.');
+
+        $waliKelas->update(['token' => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6))]);
 
         return back()->with('success', 'Token baru berhasil dibuat.');
     }

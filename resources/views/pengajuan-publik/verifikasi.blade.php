@@ -18,8 +18,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="card">
     <div style="text-align:center;margin-bottom:22px;">
         <p style="font-size:12px;color:#94a3b8;margin:0 0 4px;">{{ $sekolah->nama }}</p>
-        <p style="font-size:18px;font-weight:700;color:#0f172a;margin:0;">Verifikasi Identitas</p>
-        <p style="font-size:13px;color:#64748b;margin:6px 0 0;">Untuk pengajuan perubahan data <strong>{{ $siswa->nama_lengkap }}</strong></p>
+        <p style="font-size:18px;font-weight:700;color:#0f172a;margin:0;">Pengajuan Perubahan Data</p>
+        <p style="font-size:13px;color:#64748b;margin:6px 0 0;">Masukkan data untuk verifikasi identitas</p>
     </div>
 
     @if($errors->any())
@@ -28,7 +28,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     </div>
     @endif
 
-    <form action="{{ route('pengajuan-publik.verifikasi.proses', [$npsn, $kodeAkses]) }}" method="POST">
+    <form action="{{ route('pengajuan-publik.verifikasi.proses', $npsn) }}" method="POST">
         @csrf
         <div style="margin-bottom:14px;">
             <label class="form-label">No. Induk (NIS atau NISN)</label>
@@ -39,8 +39,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <input type="date" name="tanggal_lahir" class="form-input" required value="{{ old('tanggal_lahir') }}">
         </div>
         <div style="margin-bottom:20px;">
-            <label class="form-label">Token</label>
-            <input type="text" name="token" class="form-input" required placeholder="Diberikan oleh wali kelas" value="{{ old('token') }}">
+            <label class="form-label">Token Kelas</label>
+            <input type="text" name="token" class="form-input" required placeholder="Diberikan oleh wali kelas" value="{{ old('token') }}" style="text-transform:uppercase;">
         </div>
         <button type="submit" class="btn-primary">Lanjutkan</button>
     </form>

@@ -4,13 +4,15 @@ use App\Http\Controllers\PengajuanPerubahanController;
 use App\Http\Controllers\PengajuanPerubahanPublicController;
 use Illuminate\Support\Facades\Route;
 
-// ==== PUBLIK (tanpa login) - diakses siswa/orang tua via NPSN + kode_akses ====
-// URL: sekolah.co.id/{npsn}/siswa/{kodeAkses}/pengajuan
-Route::middleware('web')->prefix('{npsn}/siswa/{kodeAkses}/pengajuan')->name('pengajuan-publik.')->group(function () {
+// ==== PUBLIK (tanpa login) - 1 URL utk seluruh sekolah, siswa diverifikasi
+// via No.Induk + Tgl Lahir + Token (token per KELAS, bukan per siswa) ====
+// URL: sekolah.co.id/{npsn}/pengajuan
+Route::middleware('web')->prefix('{npsn}/pengajuan')->name('pengajuan-publik.')->group(function () {
     Route::get('/', [PengajuanPerubahanPublicController::class, 'verifikasi'])->name('verifikasi');
     Route::post('/', [PengajuanPerubahanPublicController::class, 'prosesVerifikasi'])->name('verifikasi.proses');
     Route::get('/form', [PengajuanPerubahanPublicController::class, 'form'])->name('form');
     Route::post('/form', [PengajuanPerubahanPublicController::class, 'simpan'])->name('simpan');
+    Route::post('/keluar', [PengajuanPerubahanPublicController::class, 'keluar'])->name('keluar');
 });
 
 // ==== WALI KELAS / ADMIN (login) ====
@@ -18,5 +20,5 @@ Route::middleware(['web', 'auth'])->prefix('pengajuan-perubahan')->name('pengaju
     Route::get('/', [PengajuanPerubahanController::class, 'index'])->name('index');
     Route::get('/{siswa}', [PengajuanPerubahanController::class, 'show'])->name('show');
     Route::post('/{siswa}', [PengajuanPerubahanController::class, 'proses'])->name('proses');
-    Route::post('/{siswa}/token-baru', [PengajuanPerubahanController::class, 'generateUlangToken'])->name('token-baru');
+    Route::post('/token-baru', [PengajuanPerubahanController::class, 'generateUlangToken'])->name('token-baru');
 });

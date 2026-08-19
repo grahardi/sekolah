@@ -9,8 +9,28 @@
 @endif
 
 <p style="font-size:13px;color:#64748b;margin:-8px 0 16px;max-width:600px;">
-    Siswa/orang tua bisa mengajukan perubahan data lewat tautan khusus + token. Kamu tinggal review & setujui perubahan yang masuk di sini.
+    Siswa/orang tua bisa mengajukan perubahan data lewat tautan sekolah + token kelas. Kamu tinggal review & setujui perubahan yang masuk di sini.
 </p>
+
+@if($waliKelasSaya)
+<div class="card" style="padding:18px;margin-bottom:20px;background:#eff6ff;border-color:#bfdbfe;">
+    <p style="font-size:12px;font-weight:700;color:#1e40af;margin:0 0 10px;"><i class="ti ti-key"></i> Token Kelas {{ $waliKelasSaya->kelas_lengkap }} - Bagikan ke Siswa/Orang Tua</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:1;min-width:220px;">
+            <label style="font-size:11px;color:#64748b;">Tautan (sama untuk seluruh sekolah)</label>
+            <input type="text" readonly value="{{ url("/{$npsn}/pengajuan") }}" class="form-input" style="font-size:12px;" onclick="this.select()">
+        </div>
+        <div style="min-width:140px;">
+            <label style="font-size:11px;color:#64748b;">Token Kelas Ini</label>
+            <input type="text" readonly value="{{ $waliKelasSaya->token_efektif }}" class="form-input" style="font-family:monospace;font-weight:700;font-size:16px;letter-spacing:2px;" onclick="this.select()">
+        </div>
+        <form action="{{ route('pengajuan-perubahan.token-baru') }}" method="POST" onsubmit="return confirm('Buat token baru? Token lama gak bisa dipakai lagi.')">
+            @csrf
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="ti ti-refresh"></i> Token Baru</button>
+        </form>
+    </div>
+</div>
+@endif
 
 <div class="card" style="padding:0;overflow:hidden;">
     <table style="width:100%;border-collapse:collapse;">
@@ -40,7 +60,7 @@
                     @if($status === 'menunggu_approval')
                     <a href="{{ route('pengajuan-perubahan.show', $s) }}" class="btn btn-primary btn-sm">Review</a>
                     @else
-                    <button type="button" onclick="document.getElementById('modal-token-{{ $s->id }}').style.display='flex'" class="btn btn-secondary btn-sm"><i class="ti ti-link"></i> Tautan</button>
+                    <span style="font-size:12px;color:#cbd5e1;">-</span>
                     @endif
                 </td>
             </tr>
@@ -50,25 +70,5 @@
         </tbody>
     </table>
 </div>
-
-@foreach($siswaList as $s)
-@php $sekolah = auth()->user()->sekolah; $pengajuan = \App\Models\PengajuanPerubahan::buatAtauAmbilUntuk($s); @endphp
-<div id="modal-token-{{ $s->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
-    <div class="card" style="max-width:420px;width:100%;padding:22px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-            <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Tautan Pengajuan - {{ $s->nama_lengkap }}</p>
-            <button type="button" onclick="document.getElementById('modal-token-{{ $s->id }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;">&times;</button>
-        </div>
-        <label class="form-label">Tautan</label>
-        <input type="text" readonly value="{{ url("/{$sekolah->npsn}/siswa/{$s->kode_akses}/pengajuan") }}" class="form-input" style="font-size:11px;margin-bottom:10px;" onclick="this.select()">
-        <label class="form-label">Token (bagikan bareng tautan)</label>
-        <input type="text" readonly value="{{ $pengajuan->token }}" class="form-input" style="font-family:monospace;font-weight:700;margin-bottom:14px;" onclick="this.select()">
-        <form action="{{ route('pengajuan-perubahan.token-baru', $s) }}" method="POST" onsubmit="return confirm('Buat token baru? Token lama gak bisa dipakai lagi.')">
-            @csrf
-            <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-refresh"></i> Buat Token Baru</button>
-        </form>
-    </div>
-</div>
-@endforeach
 
 @endsection

@@ -24,6 +24,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
         <p style="font-size:12px;color:#94a3b8;margin:0 0 4px;">{{ $sekolah->nama }}</p>
         <p style="font-size:18px;font-weight:700;color:#0f172a;margin:0;">Pengajuan Perubahan Data</p>
         <p style="font-size:13px;color:#64748b;margin:6px 0 0;">{{ $siswa->nama_lengkap }} &middot; {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
+        <form action="{{ route('pengajuan-publik.keluar', $npsn) }}" method="POST" style="margin-top:8px;">
+            @csrf
+            <button type="submit" style="border:none;background:none;color:#94a3b8;font-size:11px;text-decoration:underline;cursor:pointer;">Bukan {{ $siswa->nama_lengkap }}? Ganti akun</button>
+        </form>
     </div>
 
     @if(session('success'))
@@ -43,7 +47,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     </div>
     @endif
 
-    <form action="{{ route('pengajuan-publik.simpan', [$npsn, $kodeAkses]) }}" method="POST">
+    <form action="{{ route('pengajuan-publik.simpan', $npsn) }}" method="POST">
         @csrf
 
         @php

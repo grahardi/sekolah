@@ -44,7 +44,7 @@ class PengajuanPerubahan extends Model
     {
         return static::firstOrCreate(
             ['siswa_id' => $siswa->id],
-            ['token' => Str::random(10), 'status' => 'belum_isi']
+            ['status' => 'belum_isi']
         );
     }
 
