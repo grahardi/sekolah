@@ -39,7 +39,7 @@
             <div>
                 <label class="form-label">Agama <span style="color:#ef4444">*</span></label>
                 <select name="agama" class="form-input" required>
-                    @foreach(['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu'] as $ag)
+                    @foreach(['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME','Lainnya'] as $ag)
                         <option value="{{ $ag }}" {{ $fv('agama','Islam') == $ag ? 'selected' : '' }}>{{ $ag }}</option>
                     @endforeach
                 </select>
@@ -159,6 +159,7 @@
                 <label class="form-label">Penghasilan per Bulan</label>
                 <select name="penghasilan_ayah" class="form-input">
                     <option value="">-- Pilih --</option>
+                    @php $penghasilanList = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 10,000,000','Rp. 10,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000']; @endphp
                     @foreach($penghasilanList as $p)<option value="{{ $p }}" {{ $fv('penghasilan_ayah') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
             </div>

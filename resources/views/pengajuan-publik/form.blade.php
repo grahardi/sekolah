@@ -102,7 +102,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <div class="card-isi">
             @php $i = 0; @endphp
             @foreach($g['fields'] as $field => $label)
-            @php $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field}; $i++; @endphp
+            @php
+            $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field};
+            $i++;
+            $opsiAgama = ['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME','Lainnya'];
+            $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 10,000,000','Rp. 10,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000'];
+            @endphp
             <div class="baris {{ $i % 2 === 0 ? 'genap' : '' }}">
                 <div style="flex:1;" id="tampil-{{ $field }}">
                     <p class="form-label" style="margin-bottom:2px;">{{ $label }}</p>
@@ -110,8 +115,19 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                 </div>
                 <div style="flex:1;display:none;" id="edit-{{ $field }}">
                     <label class="form-label">{{ $label }} (baru)</label>
+                    @if($field === 'agama')
+                    <select name="perubahan[{{ $field }}]" class="form-input">
+                        @foreach($opsiAgama as $opt)<option value="{{ $opt }}" {{ $siswa->agama === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
+                    </select>
+                    @elseif(in_array($field, ['penghasilan_ayah', 'penghasilan_ibu']))
+                    <select name="perubahan[{{ $field }}]" class="form-input">
+                        <option value="">-- Pilih --</option>
+                        @foreach($opsiPenghasilan as $opt)<option value="{{ $opt }}" {{ $siswa->{$field} === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
+                    </select>
+                    @else
                     <input type="{{ $field === 'tanggal_lahir' ? 'date' : 'text' }}" name="perubahan[{{ $field }}]" class="form-input"
                         value="{{ $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('Y-m-d') : $siswa->{$field} }}">
+                    @endif
                 </div>
                 <button type="button" class="btn-pena" onclick="document.getElementById('tampil-{{ $field }}').style.display='none';document.getElementById('edit-{{ $field }}').style.display='block';this.style.display='none';">
                     <i class="ti ti-pencil"></i>
