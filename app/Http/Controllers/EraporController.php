@@ -810,6 +810,7 @@ class EraporController extends Controller
                     'name' => $guru->nama,
                     'password' => bcrypt($password),
                     'password_plain' => $password,
+                    'is_password_generated' => true,
                     'sekolah_id' => $sekolahId,
                     'role' => 'guru',
                     'aktif' => true,
