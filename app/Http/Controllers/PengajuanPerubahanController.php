@@ -111,6 +111,31 @@ class PengajuanPerubahanController extends Controller
             ->get(['kelas', 'rombel']);
     }
 
+    /** Admin: lihat token seluruh kelas (bukan cuma kelas sendiri) */
+    public function manajemenToken()
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        $waliKelasList = WaliKelas::with('guru')
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_aktif', true))
+            ->orderBy('kelas')->orderBy('rombel')
+            ->get();
+
+        $npsn = auth()->user()->sekolah->npsn;
+
+        return view('pengajuan-perubahan.manajemen-token', compact('waliKelasList', 'npsn'));
+    }
+
+    /** Admin: generate ulang token utk kelas tertentu (bukan cuma kelas sendiri) */
+    public function generateUlangTokenAdmin(WaliKelas $waliKelas)
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        $waliKelas->update(['token' => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6))]);
+
+        return back()->with('success', "Token baru untuk kelas {$waliKelas->kelas_lengkap} berhasil dibuat.");
+    }
+
     private function pastikanBolehAkses(Siswa $siswa): void
     {
         if (auth()->user()->isAdmin()) return;

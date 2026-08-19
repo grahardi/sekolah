@@ -179,8 +179,12 @@
 
     <nav class="sb-nav">
         <div class="sb-section">Utama</div>
+        <a href="{{ route('user.kartu-login') }}"
+           class="sb-item {{ request()->routeIs('user.kartu-login') ? 'active' : '' }}">
+            <i class="ti ti-id-badge-2"></i><span>Kartu Login Guru</span>
+        </a>
         <a href="{{ route('user.index') }}"
-           class="sb-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('user.index') || request()->routeIs('user.create') || request()->routeIs('user.edit') ? 'active' : '' }}">
             <i class="ti ti-users-group"></i><span>Manajemen User</span>
         </a>
     </nav>

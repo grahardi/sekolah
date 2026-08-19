@@ -203,9 +203,15 @@
         @endif
 
         <a href="{{ route('pengajuan-perubahan.index') }}"
-           class="sb-item {{ request()->routeIs('pengajuan-perubahan.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('pengajuan-perubahan.index') || request()->routeIs('pengajuan-perubahan.show') || request()->routeIs('pengajuan-perubahan.proses') ? 'active' : '' }}">
             <i class="ti ti-clipboard-text"></i><span>Ajuan Perubahan</span>
         </a>
+        @if(auth()->user()->isAdmin())
+        <a href="{{ route('pengajuan-perubahan.manajemen-token') }}"
+           class="sb-item {{ request()->routeIs('pengajuan-perubahan.manajemen-token') ? 'active' : '' }}">
+            <i class="ti ti-key"></i><span>Manajemen Token</span>
+        </a>
+        @endif
 
         <div class="sb-divider"></div>
         <div class="sb-section">Filter Cepat</div>

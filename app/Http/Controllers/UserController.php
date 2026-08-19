@@ -19,6 +19,19 @@ class UserController extends Controller
         return view('user.index', compact('users'));
     }
 
+    /** Kartu login siap cetak - HANYA guru yg password-nya masih default (belum pernah diganti) */
+    public function kartuLogin()
+    {
+        $guruList = User::where('sekolah_id', Auth::user()->sekolah_id)
+            ->where('role', 'guru')
+            ->where('is_password_generated', true)
+            ->whereNotNull('password_plain')
+            ->orderBy('name')
+            ->get();
+
+        return view('user.kartu-login', compact('guruList'));
+    }
+
     public function create()
     {
         return view('user.create');
@@ -117,7 +130,7 @@ class UserController extends Controller
             return back()->withErrors(['current_password' => 'Password lama tidak sesuai.']);
         }
 
-        $user->update(['password' => Hash::make($request->password), 'password_plain' => null]);
+        $user->update(['password' => Hash::make($request->password), 'password_plain' => null, 'is_password_generated' => false]);
 
         return back()->with('success', 'Password berhasil diubah.');
     }

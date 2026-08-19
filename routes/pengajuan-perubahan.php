@@ -15,6 +15,11 @@ Route::middleware('web')->prefix('{npsn}/pengajuan')->name('pengajuan-publik.')-
     Route::post('/keluar', [PengajuanPerubahanPublicController::class, 'keluar'])->name('keluar');
 });
 
+Route::middleware(['web', 'auth', 'admin'])->prefix('pengajuan-perubahan')->group(function () {
+    Route::get('/manajemen-token', [PengajuanPerubahanController::class, 'manajemenToken'])->name('pengajuan-perubahan.manajemen-token');
+    Route::post('/manajemen-token/{waliKelas}/token-baru', [PengajuanPerubahanController::class, 'generateUlangTokenAdmin'])->name('pengajuan-perubahan.manajemen-token.baru');
+});
+
 // ==== WALI KELAS / ADMIN (login) ====
 Route::middleware(['web', 'auth'])->prefix('pengajuan-perubahan')->name('pengajuan-perubahan.')->group(function () {
     Route::get('/', [PengajuanPerubahanController::class, 'index'])->name('index');

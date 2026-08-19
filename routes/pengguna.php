@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 // modul). Hanya admin sekolah yang bisa akses (middleware 'admin').
 Route::middleware(['web', 'auth', 'admin'])->prefix('pengguna')->name('user.')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/kartu-login', [UserController::class, 'kartuLogin'])->name('kartu-login');
     Route::get('/create', [UserController::class, 'create'])->name('create');
     Route::post('/', [UserController::class, 'store'])->name('store');
     Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
