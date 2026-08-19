@@ -146,10 +146,16 @@ class SiswaController extends Controller
         return view('siswa.show', compact('siswa', 'siswaSebelumnya', 'siswaBerikutnya'));
     }
 
-    public function edit(Siswa $siswa) { return view('siswa.edit', compact('siswa')); }
+    public function edit(Siswa $siswa)
+    {
+        $this->pastikanBolehLihat($siswa);
+        return view('siswa.edit', compact('siswa'));
+    }
 
     public function update(Request $request, Siswa $siswa)
     {
+        $this->pastikanBolehLihat($siswa);
+
         $validated = $this->validateSiswa($request, $siswa->id);
         if ($request->hasFile('foto')) {
             if ($siswa->foto) Storage::disk('public')->delete($siswa->foto);

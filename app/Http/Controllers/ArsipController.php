@@ -11,12 +11,28 @@ class ArsipController extends Controller
 {
     public function show(Siswa $siswa)
     {
+        $this->pastikanBolehAkses($siswa);
         $arsip = $siswa->arsipBerkas ?? new ArsipBerkas(['siswa_id' => $siswa->id]);
         return view('siswa.arsip', compact('siswa','arsip'));
     }
 
+    /** Guru cuma boleh akses siswa di kelas yg dia wali-i. Admin selalu boleh. */
+    private function pastikanBolehAkses(Siswa $siswa): void
+    {
+        if (auth()->user()->isAdmin()) return;
+
+        $guru = \App\Models\Guru::where('user_id', auth()->id())->first();
+        $bolehAkses = $guru && \App\Models\WaliKelas::where('guru_id', $guru->id)
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_aktif', true))
+            ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
+            ->exists();
+
+        abort_unless($bolehAkses, 403, 'Anda hanya bisa mengakses data siswa di kelas yang Anda wali-i.');
+    }
+
     public function update(Request $request, Siswa $siswa)
     {
+        $this->pastikanBolehAkses($siswa);
         $request->validate([
             'foto'           => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'kartu_keluarga' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
@@ -47,6 +63,7 @@ class ArsipController extends Controller
 
     public function updateLabelBerkasLain(Request $request, Siswa $siswa)
     {
+        $this->pastikanBolehAkses($siswa);
         $request->validate([
             'index' => 'required|integer|min:0',
             'label' => 'nullable|string|max:150',
@@ -66,6 +83,7 @@ class ArsipController extends Controller
 
     public function pindahkanBerkasLain(Request $request, Siswa $siswa)
     {
+        $this->pastikanBolehAkses($siswa);
         $request->validate([
             'index' => 'required|integer|min:0',
             'field_tujuan' => 'required|in:kartu_keluarga,akta_lahir,ijazah_sd,ijazah,transkrip_nilai,sertifikat_tka',
@@ -86,6 +104,7 @@ class ArsipController extends Controller
 
     public function hapusBerkas(Request $request, Siswa $siswa)
     {
+        $this->pastikanBolehAkses($siswa);
         $request->validate([
             'field' => 'required|in:foto,kartu_keluarga,akta_lahir,ijazah_sd,ijazah,transkrip_nilai,sertifikat_tka'
         ]);

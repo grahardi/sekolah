@@ -155,11 +155,9 @@
                                 <a href="{{ route('siswa.show', $siswa) }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#f1f5f9;color:#374151;text-decoration:none;" title="Detail">
                                     <i class="ti ti-eye" style="font-size:15px;"></i>
                                 </a>
-                                @if(auth()->user()->isAdmin())
                                 <a href="{{ route('siswa.edit', $siswa) }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#eff6ff;color:#1d4ed8;text-decoration:none;" title="Edit">
                                     <i class="ti ti-pencil" style="font-size:15px;"></i>
                                 </a>
-                                @endif
                                 <a href="{{ route('siswa.arsip.show', $siswa) }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#f0fdf4;color:#16a34a;text-decoration:none;" title="Arsip Berkas">
                                     <i class="ti ti-folder" style="font-size:15px;"></i>
                                 </a>

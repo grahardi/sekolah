@@ -136,7 +136,6 @@
     @endforeach
     @endif
 
-@if(auth()->user()->isAdmin())
 <form action="{{ route('siswa.arsip.update', $siswa) }}" method="POST" style="margin-top:20px;">
     @csrf
     <div class="card">
@@ -149,14 +148,6 @@
         <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-device-floppy"></i> Simpan Catatan</button>
     </div>
 </form>
-@elseif($arsip->catatan)
-<div class="card" style="margin-top:20px;">
-    <div class="card-body">
-        <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin:0 0 6px;">Catatan Arsip</p>
-        <p style="font-size:13px;color:#374151;margin:0;">{{ $arsip->catatan }}</p>
-    </div>
-</div>
-@endif
 
 <form action="{{ route('siswa.arsip.hapus', $siswa) }}" method="POST" id="form-hapus-berkas" style="display:none;">
     @csrf

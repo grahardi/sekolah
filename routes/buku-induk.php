@@ -39,11 +39,16 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
         Route::get('/{siswa}/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
         Route::get('/{siswa}/nilai', [NilaiController::class, 'index'])->name('nilai.index');
 
-        // HANYA ADMIN (tambah / edit / hapus / import / export)
+        Route::get('/{siswa}/edit', [SiswaController::class, 'edit'])->name('edit');
+        Route::put('/{siswa}', [SiswaController::class, 'update'])->name('update');
+        Route::post('/{siswa}/arsip', [ArsipController::class, 'update'])->name('arsip.update');
+        Route::post('/{siswa}/arsip/berkas-lain/label', [ArsipController::class, 'updateLabelBerkasLain'])->name('arsip.berkas-lain.label');
+        Route::post('/{siswa}/arsip/berkas-lain/pindah', [ArsipController::class, 'pindahkanBerkasLain'])->name('arsip.berkas-lain.pindah');
+        Route::post('/{siswa}/arsip/hapus', [ArsipController::class, 'hapusBerkas'])->name('arsip.hapus');
+
+        // HANYA ADMIN (hapus / import / export - TIDAK termasuk edit/upload berkas, itu boleh wali kelas)
         Route::middleware('admin')->group(function () {
             Route::post('/', [SiswaController::class, 'store'])->name('store');
-            Route::get('/{siswa}/edit', [SiswaController::class, 'edit'])->name('edit');
-            Route::put('/{siswa}', [SiswaController::class, 'update'])->name('update');
             Route::delete('/{siswa}', [SiswaController::class, 'destroy'])->name('destroy');
 
             Route::get('/export/pilih', [SiswaController::class, 'exportChoice'])->name('export.choice');
@@ -57,11 +62,6 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
             Route::post('/import/berkas', [ArsipController::class, 'importBerkas'])->name('import.berkas.process');
             Route::get('/import/errors/{token}', [SiswaController::class, 'importErrors'])->name('import.errors');
             Route::get('/import/template', [SiswaController::class, 'downloadTemplate'])->name('import.template');
-
-            Route::post('/{siswa}/arsip', [ArsipController::class, 'update'])->name('arsip.update');
-            Route::post('/{siswa}/arsip/berkas-lain/label', [ArsipController::class, 'updateLabelBerkasLain'])->name('arsip.berkas-lain.label');
-            Route::post('/{siswa}/arsip/berkas-lain/pindah', [ArsipController::class, 'pindahkanBerkasLain'])->name('arsip.berkas-lain.pindah');
-            Route::post('/{siswa}/arsip/hapus', [ArsipController::class, 'hapusBerkas'])->name('arsip.hapus');
 
             Route::post('/{siswa}/scan-kk/terapkan', [\App\Http\Controllers\ScanKkController::class, 'terapkan'])->name('scan-kk.terapkan');
             Route::post('/{siswa}/scan-kk/terapkan-massal', [\App\Http\Controllers\ScanKkController::class, 'terapkanMassal'])->name('scan-kk.terapkan-massal');
