@@ -7,15 +7,17 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f8fafc; min-height:100vh; padding:20px; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f1f5f9; min-height:100vh; padding:20px; }
 .wrap { max-width:640px; margin:0 auto; }
-.card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.05); padding:20px; margin-bottom:16px; }
+.card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); margin-bottom:18px; overflow:hidden; border-top:4px solid var(--warna, #94a3b8); }
+.card-judul { padding:14px 18px; display:flex; align-items:center; gap:8px; }
+.card-isi { padding:4px 18px 8px; }
 .form-label { display:block; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:6px; }
-.baris { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
-.baris:last-child { border-bottom:none; }
+.baris { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 10px; border-radius:8px; margin:4px 0; }
+.baris.genap { background:#fafbfc; }
 .form-input { width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; font-size:13px; }
-.btn-pena { border:none; background:#eff6ff; color:#1d4ed8; width:30px; height:30px; border-radius:7px; cursor:pointer; flex-shrink:0; }
-.btn-primary { background:#1E3A5F; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+.btn-pena { border:none; background:var(--warna-terang, #eff6ff); color:var(--warna, #1d4ed8); width:32px; height:32px; border-radius:8px; cursor:pointer; flex-shrink:0; font-size:14px; }
+.btn-primary { background:#1E3A5F; color:#fff; border:none; padding:13px 20px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(30,58,95,.25); }
 </style>
 </head>
 <body>
@@ -53,34 +55,54 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
         @php
         $grup = [
             'Data Pribadi' => [
-                'nama_lengkap' => 'Nama Lengkap', 'nik' => 'NIK', 'tempat_lahir' => 'Tempat Lahir',
-                'tanggal_lahir' => 'Tanggal Lahir', 'agama' => 'Agama', 'no_telepon' => 'No. Telepon', 'email' => 'Email',
+                'warna' => '#2563eb', 'warnaTerang' => '#eff6ff', 'icon' => 'ti-user',
+                'fields' => [
+                    'nama_lengkap' => 'Nama Lengkap', 'nik' => 'NIK', 'tempat_lahir' => 'Tempat Lahir',
+                    'tanggal_lahir' => 'Tanggal Lahir', 'agama' => 'Agama', 'no_telepon' => 'No. Telepon', 'email' => 'Email',
+                ],
             ],
             'Alamat' => [
-                'alamat' => 'Alamat', 'rt' => 'RT', 'rw' => 'RW', 'dusun' => 'Dusun',
-                'kelurahan' => 'Kelurahan', 'kecamatan' => 'Kecamatan', 'kode_pos' => 'Kode Pos',
+                'warna' => '#16a34a', 'warnaTerang' => '#f0fdf4', 'icon' => 'ti-map-pin',
+                'fields' => [
+                    'alamat' => 'Alamat', 'rt' => 'RT', 'rw' => 'RW', 'dusun' => 'Dusun',
+                    'kelurahan' => 'Kelurahan', 'kecamatan' => 'Kecamatan', 'kode_pos' => 'Kode Pos',
+                ],
             ],
             'Data Ayah' => [
-                'nama_ayah' => 'Nama Ayah', 'nik_ayah' => 'NIK Ayah', 'tahun_lahir_ayah' => 'Tahun Lahir',
-                'pendidikan_ayah' => 'Pendidikan', 'pekerjaan_ayah' => 'Pekerjaan', 'penghasilan_ayah' => 'Penghasilan',
+                'warna' => '#0891b2', 'warnaTerang' => '#ecfeff', 'icon' => 'ti-man',
+                'fields' => [
+                    'nama_ayah' => 'Nama Ayah', 'nik_ayah' => 'NIK Ayah', 'tahun_lahir_ayah' => 'Tahun Lahir',
+                    'pendidikan_ayah' => 'Pendidikan', 'pekerjaan_ayah' => 'Pekerjaan', 'penghasilan_ayah' => 'Penghasilan',
+                ],
             ],
             'Data Ibu' => [
-                'nama_ibu' => 'Nama Ibu', 'nik_ibu' => 'NIK Ibu', 'tahun_lahir_ibu' => 'Tahun Lahir',
-                'pendidikan_ibu' => 'Pendidikan', 'pekerjaan_ibu' => 'Pekerjaan', 'penghasilan_ibu' => 'Penghasilan',
+                'warna' => '#db2777', 'warnaTerang' => '#fdf2f8', 'icon' => 'ti-woman',
+                'fields' => [
+                    'nama_ibu' => 'Nama Ibu', 'nik_ibu' => 'NIK Ibu', 'tahun_lahir_ibu' => 'Tahun Lahir',
+                    'pendidikan_ibu' => 'Pendidikan', 'pekerjaan_ibu' => 'Pekerjaan', 'penghasilan_ibu' => 'Penghasilan',
+                ],
             ],
             'Data Wali' => [
-                'nama_wali' => 'Nama Wali', 'pekerjaan_wali' => 'Pekerjaan Wali',
-                'no_telepon_ortu' => 'No. Telepon Orang Tua/Wali', 'alamat_ortu' => 'Alamat Orang Tua/Wali',
+                'warna' => '#ca8a04', 'warnaTerang' => '#fefce8', 'icon' => 'ti-users',
+                'fields' => [
+                    'nama_wali' => 'Nama Wali', 'pekerjaan_wali' => 'Pekerjaan Wali',
+                    'no_telepon_ortu' => 'No. Telepon Orang Tua/Wali', 'alamat_ortu' => 'Alamat Orang Tua/Wali',
+                ],
             ],
         ];
         @endphp
 
-        @foreach($grup as $judulGrup => $fields)
-        <div class="card">
-            <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 8px;">{{ $judulGrup }}</p>
-            @foreach($fields as $field => $label)
-            @php $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field}; @endphp
-            <div class="baris">
+        @foreach($grup as $judulGrup => $g)
+        <div class="card" style="--warna:{{ $g['warna'] }};--warna-terang:{{ $g['warnaTerang'] }};">
+            <div class="card-judul" style="background:{{ $g['warnaTerang'] }};">
+                <i class="ti {{ $g['icon'] }}" style="color:{{ $g['warna'] }};font-size:16px;"></i>
+                <p style="font-size:13px;font-weight:700;color:{{ $g['warna'] }};margin:0;">{{ $judulGrup }}</p>
+            </div>
+            <div class="card-isi">
+            @php $i = 0; @endphp
+            @foreach($g['fields'] as $field => $label)
+            @php $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field}; $i++; @endphp
+            <div class="baris {{ $i % 2 === 0 ? 'genap' : '' }}">
                 <div style="flex:1;" id="tampil-{{ $field }}">
                     <p class="form-label" style="margin-bottom:2px;">{{ $label }}</p>
                     <p style="font-size:14px;color:#0f172a;margin:0;">{{ $nilaiSekarang ?: '-' }}</p>
@@ -91,16 +113,22 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                         value="{{ $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('Y-m-d') : $siswa->{$field} }}">
                 </div>
                 <button type="button" class="btn-pena" onclick="document.getElementById('tampil-{{ $field }}').style.display='none';document.getElementById('edit-{{ $field }}').style.display='block';this.style.display='none';">
-                    <i class="ti ti-pencil" style="font-size:14px;"></i>
+                    <i class="ti ti-pencil"></i>
                 </button>
             </div>
             @endforeach
+            </div>
         </div>
         @endforeach
 
-        <div class="card">
-            <label class="form-label">Catatan (opsional)</label>
-            <textarea name="catatan_siswa" class="form-input" rows="2" placeholder="Jelaskan alasan perubahan kalau perlu...">{{ $pengajuan->catatan_siswa }}</textarea>
+        <div class="card" style="--warna:#64748b;">
+            <div class="card-judul">
+                <i class="ti ti-message-2" style="color:#64748b;font-size:16px;"></i>
+                <p style="font-size:13px;font-weight:700;color:#334155;margin:0;">Catatan</p>
+            </div>
+            <div class="card-isi" style="padding-bottom:16px;">
+                <textarea name="catatan_siswa" class="form-input" rows="2" placeholder="Jelaskan alasan perubahan kalau perlu...">{{ $pengajuan->catatan_siswa }}</textarea>
+            </div>
         </div>
 
         <button type="submit" class="btn-primary" style="width:100%;">Kirim Pengajuan Perubahan</button>
