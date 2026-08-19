@@ -36,7 +36,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
     // Guru cuma boleh akses E-Rapor - sembunyikan menu lain yg bakal 403
-    const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna', 'profil-sekolah', 'data-siswa', 'sarpras'];
+    const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna', 'profil-sekolah', 'sarpras', 'ujian'];
     const menuBerdasarkanRole = user?.role !== 'admin'
         ? MENU.filter((m) => m.key !== 'profil-sekolah' && !(user?.role === 'guru' && HIDDEN_UNTUK_GURU.includes(m.key)))
         : MENU;

@@ -40,7 +40,7 @@
     @php $baris(14, 'Kelurahan',            $siswa->kelurahan) @endphp
     @php $baris(15, 'Kecamatan',            $siswa->kecamatan) @endphp
     @php $baris(16, 'Kode Pos',             $siswa->kode_pos) @endphp
-    @php $baris(17, 'Koordinat (Lat, Long)',($siswa->lintang && $siswa->bujur) ? number_format($siswa->lintang,7) . ', ' . number_format($siswa->bujur,7) : null) @endphp
+    {{-- 17 Koordinat disembunyikan dari cetak (permintaan user) --}}
 </table>
 </div>
 
@@ -58,8 +58,8 @@
 <table class="data">
     @php $baris(21, 'Asal Sekolah SD/MI',  $siswa->asal_sekolah) @endphp
     @php $baris(22, 'No. STTB / Ijazah SD',$siswa->no_sttb_sd) @endphp
-    @php $baris(23, 'No. UN SD',           $siswa->no_un_sd) @endphp
-    @php $baris(24, 'Diterima di Kelas',   $siswa->kelas) @endphp
+    @php $baris(23, 'No. Sertifikat TKA',  $siswa->no_un_sd) @endphp
+    @php $baris(24, 'Diterima di Kelas',   $siswa->diterima_di_kelas ?: $siswa->kelas) @endphp
     @php $baris(25, 'Tanggal Diterima',    $siswa->tanggal_diterima?->locale('id')->translatedFormat('d F Y')) @endphp
     @php $baris(26, 'Tahun Masuk',         $siswa->tahun_masuk) @endphp
     @php $baris(27, 'Status',              ucfirst($siswa->status)) @endphp

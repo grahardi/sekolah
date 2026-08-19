@@ -119,6 +119,7 @@ class DapodikImport
 
                         'kelas' => $kelas,
                         'rombel' => $rombel,
+                        'diterima_di_kelas' => trim("{$kelas} {$rombel}"),
                         'tahun_masuk' => (int) date('Y'),
                         'status' => 'aktif',
 

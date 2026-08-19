@@ -67,7 +67,7 @@ require __DIR__.'/superadmin.php';
 require __DIR__.'/manajemen-sekolah.php';
 require __DIR__.'/sarpras.php';
 
-Route::middleware(['web', 'auth'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
+Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');
     Route::post('/request', [\App\Http\Controllers\ServerUjianController::class, 'ajukanRequest'])->name('request');
     Route::get('/{instance}/auto-login', [\App\Http\Controllers\ServerUjianController::class, 'autoLogin'])->name('auto-login');

@@ -115,6 +115,11 @@
             </div>
             <div><label class="form-label">Rombel</label><input type="text" name="rombel" value="{{ $fv('rombel') }}" class="form-input" placeholder="mis: VII A"></div>
             <div>
+                <label class="form-label">Diterima di Kelas</label>
+                <input type="text" name="diterima_di_kelas" value="{{ $fv('diterima_di_kelas') }}" class="form-input" placeholder="mis: 7 A (kosongkan = ikut kelas saat ini)">
+                <p style="font-size:11px;color:#94a3b8;margin-top:3px;">Isi manual kalau beda dari kelas sekarang (mis. siswa mutasi).</p>
+            </div>
+            <div>
                 <label class="form-label">Tahun Masuk <span style="color:#ef4444">*</span></label>
                 <input type="number" name="tahun_masuk" value="{{ $fv('tahun_masuk', date('Y')) }}" min="2000" max="{{ date('Y') }}" class="form-input" required>
             </div>
@@ -132,7 +137,7 @@
             </div>
             <div><label class="form-label">Sekolah Asal (SD/MI)</label><input type="text" name="asal_sekolah" value="{{ $fv('asal_sekolah') }}" class="form-input"></div>
             <div><label class="form-label">No. STTB / Ijazah SD</label><input type="text" name="no_sttb_sd" value="{{ $fv('no_sttb_sd') }}" class="form-input" style="font-family:monospace;"></div>
-            <div><label class="form-label">No. UN SD</label><input type="text" name="no_un_sd" value="{{ $fv('no_un_sd') }}" class="form-input" style="font-family:monospace;"></div>
+            <div><label class="form-label">No. Sertifikat TKA</label><input type="text" name="no_un_sd" value="{{ $fv('no_un_sd') }}" class="form-input" style="font-family:monospace;"></div>
         </div>
     </div>
 

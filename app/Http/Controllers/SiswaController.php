@@ -42,11 +42,28 @@ class SiswaController extends Controller
     {
         $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
 
-        $siswas = Siswa::filter($filters)
-            ->with('scanKkHasil')
-            ->orderBy('nama_lengkap')
-            ->paginate(15)
-            ->withQueryString();
+        $query = Siswa::filter($filters)->with('scanKkHasil');
+
+        // Guru (bukan admin) cuma boleh lihat siswa di kelas yg dia wali-in
+        $kelasWaliList = collect();
+        if (! auth()->user()->isAdmin()) {
+            $kelasWaliList = $this->kelasRombelWaliGuru();
+
+            if ($kelasWaliList->isEmpty()) {
+                // Bukan wali kelas sama sekali -> gak boleh lihat siswa manapun
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->where(function ($q) use ($kelasWaliList) {
+                    foreach ($kelasWaliList as $kw) {
+                        $q->orWhere(function ($q2) use ($kw) {
+                            $q2->where('kelas', $kw['kelas'])->where('rombel', $kw['rombel']);
+                        });
+                    }
+                });
+            }
+        }
+
+        $siswas = $query->orderBy('nama_lengkap')->paginate(15)->withQueryString();
 
         $kelasRombelList = Siswa::whereNotNull('kelas')
             ->get(['kelas', 'rombel'])
@@ -56,6 +73,28 @@ class SiswaController extends Controller
         $tahunList    = Siswa::select('tahun_masuk')->distinct()->orderByDesc('tahun_masuk')->pluck('tahun_masuk');
 
         return view('siswa.index', compact('siswas','filters','kelasRombelList','tingkatList','tahunList'));
+    }
+
+    /** Daftar kelas-rombel di mana user login (guru) tercatat sbg wali kelas tahun ajaran aktif */
+    private function kelasRombelWaliGuru()
+    {
+        $guru = \App\Models\Guru::where('user_id', auth()->id())->first();
+        if (! $guru) return collect();
+
+        return \App\Models\WaliKelas::where('guru_id', $guru->id)
+            ->whereHas('tahunAjaran', fn ($q) => $q->where('is_aktif', true))
+            ->get(['kelas', 'rombel']);
+    }
+
+    /** Guru cuma boleh lihat siswa di kelas yg dia wali-in. Admin selalu boleh. */
+    private function pastikanBolehLihat(Siswa $siswa): void
+    {
+        if (auth()->user()->isAdmin()) return;
+
+        $bolehLihat = $this->kelasRombelWaliGuru()
+            ->contains(fn ($kw) => $kw->kelas === $siswa->kelas && $kw->rombel === $siswa->rombel);
+
+        abort_unless($bolehLihat, 403, 'Anda hanya bisa melihat data siswa di kelas yang Anda wali-i.');
     }
 
     public function create() { return view('siswa.create'); }
@@ -72,6 +111,8 @@ class SiswaController extends Controller
 
     public function show(Siswa $siswa)
     {
+        $this->pastikanBolehLihat($siswa);
+
         $siswa->load(['nilaiRapors','nilaiP5s','nilaiEkskuls','kehadirans','riwayatKelas']);
 
         // Urutan sama spt daftar siswa: kelas -> rombel -> nama - biar navigasi
@@ -375,6 +416,7 @@ class SiswaController extends Controller
             'nik'              => 'nullable|string|max:20',
             'no_kk'            => 'nullable|string|max:20',
             'kelas'            => 'required|string|max:10',
+            'diterima_di_kelas' => 'nullable|string|max:20',
             'rombel'           => 'nullable|string|max:20',
             'tahun_masuk'      => 'required|digits:4|integer',
             'status'           => 'required|in:aktif,lulus,keluar,pindah',
