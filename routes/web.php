@@ -66,6 +66,7 @@ require __DIR__.'/pengguna.php';
 require __DIR__.'/superadmin.php';
 require __DIR__.'/manajemen-sekolah.php';
 require __DIR__.'/sarpras.php';
+require __DIR__.'/pengajuan-perubahan.php';
 
 Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');

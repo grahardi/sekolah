@@ -64,6 +64,7 @@ class Siswa extends Model
     public function riwayatKelas()  { return $this->hasMany(RiwayatKelas::class)->orderBy('tahun_ajaran'); }
     public function arsipBerkas()   { return $this->hasOne(ArsipBerkas::class); }
     public function scanKkHasil()   { return $this->hasOne(\App\Models\ScanKkHasil::class); }
+    public function pengajuanPerubahan() { return $this->hasOne(\App\Models\PengajuanPerubahan::class); }
     public function prestasis()     { return $this->hasMany(Prestasi::class)->orderByDesc('tanggal_kegiatan'); }
 
     public function getRombelLengkapAttribute(): string

@@ -202,6 +202,11 @@
         </div>
         @endif
 
+        <a href="{{ route('pengajuan-perubahan.index') }}"
+           class="sb-item {{ request()->routeIs('pengajuan-perubahan.*') ? 'active' : '' }}">
+            <i class="ti ti-clipboard-text"></i><span>Ajuan Perubahan</span>
+        </a>
+
         <div class="sb-divider"></div>
         <div class="sb-section">Filter Cepat</div>
         <a href="{{ route('siswa.index', ['status'=>'aktif']) }}"
