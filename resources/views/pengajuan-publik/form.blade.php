@@ -18,6 +18,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .form-input { width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; font-size:13px; }
 .btn-pena { border:none; background:var(--warna-terang, #eff6ff); color:var(--warna, #1d4ed8); width:32px; height:32px; border-radius:8px; cursor:pointer; flex-shrink:0; font-size:14px; }
 .btn-primary { background:#1E3A5F; color:#fff; border:none; padding:13px 20px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(30,58,95,.25); }
+.btn-primary:disabled { background:#cbd5e1; box-shadow:none; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -131,7 +132,16 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" style="width:100%;">Kirim Pengajuan Perubahan</button>
+        <div class="card" style="--warna:#d97706;padding:0;">
+            <div class="card-isi" style="padding:16px 18px;background:#fffbeb;">
+                <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                    <input type="checkbox" id="cb-yakin" style="margin-top:2px;width:16px;height:16px;flex-shrink:0;" onchange="document.getElementById('btn-kirim').disabled = !this.checked;">
+                    <span style="font-size:13px;color:#92400e;"><i class="ti ti-alert-triangle"></i> <strong>Saya yakin</strong> data yang saya isi/ubah di atas sudah benar. Perubahan ini akan diperiksa oleh wali kelas sebelum diterapkan.</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" id="btn-kirim" class="btn-primary" style="width:100%;" disabled>Kirim Pengajuan Perubahan</button>
     </form>
 </div>
 </body>
