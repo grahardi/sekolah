@@ -11,27 +11,27 @@ use Illuminate\Support\Facades\Route;
 // Modul Buku Induk Siswa. Login/logout PAKAI Breeze yang sudah ada di portal
 // (bukan AuthController milik modul ini) supaya satu akun berlaku untuk
 // seluruh sekolah.co.id, bukan sistem login terpisah.
-Route::middleware(['web', 'auth', 'not_guru'])->prefix('buku-induk')->group(function () {
+Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
 
-    Route::get('/', [SiswaController::class, 'dashboard'])->name('buku-induk.dashboard');
+    Route::middleware('not_guru')->get('/', [SiswaController::class, 'dashboard'])->name('buku-induk.dashboard');
 
     Route::prefix('siswa')->name('siswa.')->group(function () {
-        Route::get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
+        Route::middleware('not_guru')->get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
         Route::middleware('admin')->get('/kartu-massal', [SiswaController::class, 'cetakKartuMassal'])->name('kartu.massal');
-        Route::get('/cetak-massal', [SiswaController::class, 'pilihCetakMassal'])->name('cetak-massal.pilih');
-        Route::post('/cetak-massal', [SiswaController::class, 'cetakMassal'])->name('cetak-massal');
+        Route::middleware('not_guru')->get('/cetak-massal', [SiswaController::class, 'pilihCetakMassal'])->name('cetak-massal.pilih');
+        Route::middleware('not_guru')->post('/cetak-massal', [SiswaController::class, 'cetakMassal'])->name('cetak-massal');
 
-        Route::get('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'index'])->name('scan-kk.index');
-        Route::post('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'scanBulk'])->name('scan-kk.bulk');
+        Route::middleware('not_guru')->get('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'index'])->name('scan-kk.index');
+        Route::middleware('not_guru')->post('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'scanBulk'])->name('scan-kk.bulk');
 
-        // Bisa diakses admin & induk (VIEW ONLY)
+        // Bisa diakses admin & guru (guru dibatasi cuma kelas yg dia wali-i, VIEW ONLY - dicek di controller)
         Route::get('/', [SiswaController::class, 'index'])->name('index');
 
         // HARUS di atas /{siswa} - kalau dibawah, "create" ketangkep jadi ID siswa
         Route::middleware('admin')->get('/create', [SiswaController::class, 'create'])->name('create');
 
         Route::get('/{siswa}', [SiswaController::class, 'show'])->name('show');
-        Route::get('/{siswa}/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'show'])->name('scan-kk.show');
+        Route::middleware('not_guru')->get('/{siswa}/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'show'])->name('scan-kk.show');
         Route::get('/{siswa}/buku-induk-pdf', [SiswaController::class, 'cetakBukuInduk'])->name('buku-induk.pdf');
         Route::get('/{siswa}/kartu-pdf', [SiswaController::class, 'cetakKartu'])->name('kartu.pdf');
         Route::get('/{siswa}/kartu/pilih-model', [SiswaController::class, 'pilihModelKartu'])->name('kartu.pilih-model');
