@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; background:#fff; }
+body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; background:#fff; }
 .page { padding:10mm 20mm 10mm 20mm; }
 .halaman-baru { page-break-before: always; }
 .judul-dok { text-align:center; margin-bottom:10px; width:100%; }
@@ -15,7 +15,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:9.5pt; color:#000; backg
 .section-blok { page-break-inside: avoid; }
 .spacer-baris { font-size:8mm; line-height:8mm; color:#fff; }
 table.data { width:100%; border-collapse:collapse; }
-table.data td { padding:2.5px 6px; font-size:9pt; vertical-align:top; line-height:1.4; }
+table.data td { padding:2.5px 6px; font-size:9.5pt; vertical-align:top; line-height:1.4; }
 table.data td.no  { width:22px; text-align:right; padding-right:4px; }
 table.data td.lbl { width:32%; text-align:left; }
 table.data td.ttd { width:6px; text-align:center; }
