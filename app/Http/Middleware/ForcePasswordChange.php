@@ -18,7 +18,7 @@ class ForcePasswordChange
         $user = $request->user();
 
         if ($user && $user->is_password_generated && $user->password_plain) {
-            $rutePengecualian = ['user.change-password', 'logout'];
+            $rutePengecualian = ['user.change-password', 'user.change-password.update', 'logout'];
             if (! in_array($request->route()?->getName(), $rutePengecualian)) {
                 return redirect()->route('user.change-password')
                     ->with('warning', 'Demi keamanan, kamu wajib ganti password bawaan ini terlebih dahulu sebelum melanjutkan.');

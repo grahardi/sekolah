@@ -658,9 +658,17 @@ class EraporController extends Controller
     }
 
     /** Generate akun sekaligus utk SEMUA guru yang belum punya akun */
-    public function generateUserMassal()
+    public function generateUserMassal(Request $request)
     {
-        $gurus = Guru::orderBy('id')->get();
+        $query = Guru::orderBy('id');
+
+        // Kalau ada guru_ids yg dicentang, proses cuma itu. Kalau gak ada
+        // (klik tombol lama/API lain), fallback ke semua yg blm punya akun.
+        if ($request->filled('guru_ids')) {
+            $query->whereIn('id', $request->guru_ids);
+        }
+
+        $gurus = $query->get();
         $hasilBaru = [];
 
         foreach ($gurus as $i => $guru) {
@@ -687,7 +695,7 @@ class EraporController extends Controller
         }
 
         if (empty($hasilBaru)) {
-            return back()->with('success', 'Semua guru sudah punya akun, tidak ada yang baru dibuat.');
+            return back()->with('success', 'Tidak ada guru terpilih yang perlu dibuatkan akun (mungkin sudah punya akun semua, atau belum centang siapa pun).');
         }
 
         session()->flash('akun_massal_baru', $hasilBaru);

@@ -23,11 +23,7 @@
 </div>
 @endif
 
-<form action="{{ route('erapor.guru.generate-user-massal') }}" method="POST" style="margin-bottom:18px;display:inline-block;" onsubmit="return confirm('Generate akun untuk semua guru yang belum punya akun?')">
-    @csrf
-    <button type="submit" class="btn btn-primary"><i class="ti ti-users-plus"></i> Generate Akun untuk Semua Guru Baru</button>
-</form>
-<a href="{{ route('erapor.guru.export-user') }}" class="btn btn-secondary" style="margin-left:8px;"><i class="ti ti-download"></i> Export User</a>
+<a href="{{ route('erapor.guru.export-user') }}" class="btn btn-secondary" style="margin-bottom:18px;"><i class="ti ti-download"></i> Export User</a>
 
 <div class="card" style="padding:16px;margin-bottom:20px;">
     <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Atau Import User (kalau guru sudah punya email sendiri)</p>
@@ -42,25 +38,38 @@
     </div>
 </div>
 
-<div class="card">
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
-            <th style="padding:10px 18px;">Urut</th><th style="padding:10px;">Nama</th><th style="padding:10px;">Status Akun</th><th style="padding:10px;">Email (kalau sudah ada)</th>
-        </tr></thead>
-        <tbody>
-            @forelse($gurus as $g)
-            <tr style="border-bottom:1px solid #f8fafc;">
-                <td style="padding:10px 18px;color:#94a3b8;">{{ $g->urutan }}</td>
-                <td style="padding:10px;font-weight:700;">{{ $g->nama }}</td>
-                <td style="padding:10px;">
-                    @if($g->user_id)<span class="badge badge-aktif">Sudah Ada</span>@else<span class="badge" style="background:#f1f5f9;color:#94a3b8;">Belum Ada</span>@endif
-                </td>
-                <td style="padding:10px;font-family:monospace;color:#64748b;">{{ $g->user?->email ?? '-' }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8;">Belum ada data guru.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
+<form action="{{ route('erapor.guru.generate-user-massal') }}" method="POST" id="form-generate" onsubmit="return confirm('Generate akun untuk guru yang dicentang?')">
+    @csrf
+    <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:12px 18px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+            <label style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="cb-semua" onclick="document.querySelectorAll('.cb-guru').forEach(cb => cb.checked = this.checked)"> Centang semua yang belum ada akun
+            </label>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-users-plus"></i> Generate Akun untuk yang Dicentang</button>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;border-bottom:1px solid #f1f5f9;">
+                <th style="padding:10px 18px;width:36px;"></th><th style="padding:10px;">Nama</th><th style="padding:10px;">Status Akun</th><th style="padding:10px;">Email (kalau sudah ada)</th>
+            </tr></thead>
+            <tbody>
+                @forelse($gurus as $g)
+                <tr style="border-bottom:1px solid #f8fafc;">
+                    <td style="padding:10px 18px;">
+                        @if(! $g->user_id)
+                        <input type="checkbox" name="guru_ids[]" value="{{ $g->id }}" class="cb-guru">
+                        @endif
+                    </td>
+                    <td style="padding:10px;font-weight:700;">{{ $g->nama }}</td>
+                    <td style="padding:10px;">
+                        @if($g->user_id)<span class="badge badge-aktif">Sudah Ada</span>@else<span class="badge" style="background:#f1f5f9;color:#94a3b8;">Belum Ada</span>@endif
+                    </td>
+                    <td style="padding:10px;font-family:monospace;color:#64748b;">{{ $g->user?->email ?? '-' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8;">Belum ada data guru.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</form>
 @endsection
