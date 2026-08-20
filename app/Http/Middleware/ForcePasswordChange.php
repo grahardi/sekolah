@@ -8,6 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ForcePasswordChange
 {
+    // SEMENTARA DIMATIKAN (masih tahap development) - ada laporan bug
+    // soal alur force-ganti-password yg mengganggu. Set balik ke true
+    // kalau sudah stabil & siap dipakai lagi.
+    private const AKTIF = false;
+
     /**
      * Kalau akun ini masih pakai password hasil generate (belum pernah
      * diganti sendiri), paksa ke halaman ganti password dulu sebelum bisa
@@ -15,6 +20,10 @@ class ForcePasswordChange
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! self::AKTIF) {
+            return $next($request);
+        }
+
         $user = $request->user();
 
         if ($user && $user->is_password_generated && $user->password_plain) {
