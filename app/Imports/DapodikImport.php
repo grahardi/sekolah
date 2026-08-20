@@ -77,6 +77,8 @@ class DapodikImport
                 $rombelRaw = $get('AQ'); // "Rombel Saat Ini", contoh: "7 F"
                 [$kelas, $rombel] = $this->splitRombel($rombelRaw);
 
+                $siswaAda = Siswa::withoutGlobalScopes()->where('nisn', $nisn)->exists();
+
                 Siswa::updateOrCreate(
                     ['nisn' => $nisn],
                     array_filter([
@@ -119,7 +121,10 @@ class DapodikImport
 
                         'kelas' => $kelas,
                         'rombel' => $rombel,
-                        'diterima_di_kelas' => trim("{$kelas} {$rombel}"),
+                        // Cuma diisi otomatis kalau siswa BARU (belum ada) - kalau
+                        // sudah ada, biarkan nilai manual admin (mis. siswa mutasi)
+                        // gak ketimpa tiap kali re-import.
+                        'diterima_di_kelas' => $siswaAda ? null : trim("{$kelas} {$rombel}"),
                         'tahun_masuk' => (int) date('Y'),
                         'status' => 'aktif',
 
