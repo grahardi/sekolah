@@ -33,6 +33,8 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
         Route::get('/keterlambatan', [ManajemenSekolahController::class, 'keterlambatanIndex'])->name('keterlambatan.index');
         Route::post('/keterlambatan/{siswa}', [ManajemenSekolahController::class, 'keterlambatanTandai'])->name('keterlambatan.tandai');
         Route::get('/keterlambatan-list', [ManajemenSekolahController::class, 'keterlambatanList'])->name('keterlambatan.list');
+        Route::delete('/keterlambatan/{keterlambatan}', [ManajemenSekolahController::class, 'keterlambatanHapus'])->name('keterlambatan.hapus');
+        Route::post('/keterlambatan-hapus-massal', [ManajemenSekolahController::class, 'keterlambatanHapusMassal'])->name('keterlambatan.hapus-massal');
 
         Route::get('/arsip-surat', [ManajemenSekolahController::class, 'arsipSuratIndex'])->name('arsip-surat.index');
 

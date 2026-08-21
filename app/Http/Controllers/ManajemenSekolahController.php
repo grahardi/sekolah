@@ -186,6 +186,21 @@ class ManajemenSekolahController extends Controller
         return view('manajemen-sekolah.keterlambatan.list', compact('data', 'tanggal'));
     }
 
+    public function keterlambatanHapus(\App\Models\KeterlambatanSiswa $keterlambatan)
+    {
+        $keterlambatan->delete();
+        return back()->with('success', 'Data keterlambatan berhasil dihapus.');
+    }
+
+    public function keterlambatanHapusMassal(Request $request)
+    {
+        $request->validate(['ids' => 'required|array|min:1']);
+
+        $jumlah = \App\Models\KeterlambatanSiswa::whereIn('id', $request->ids)->delete();
+
+        return back()->with('success', "{$jumlah} data keterlambatan berhasil dihapus.");
+    }
+
     // ── Arsip Surat (foto bukti sakit/izin dari Absensi Harian) ──────────
     public function arsipSuratIndex(Request $request)
     {
