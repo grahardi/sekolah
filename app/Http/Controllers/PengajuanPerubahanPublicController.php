@@ -94,7 +94,13 @@ class PengajuanPerubahanPublicController extends Controller
         foreach ($request->input('perubahan', []) as $field => $nilai) {
             if (! in_array($field, PengajuanPerubahan::FIELD_BOLEH_DIAJUKAN)) continue;
             if (trim((string) $nilai) === '') continue;
-            if ((string) $nilai === (string) $siswa->{$field}) continue;
+
+            // tanggal_lahir itu Carbon object - (string) casting-nya bisa
+            // beda format ("Y-m-d H:i:s") drpd input HTML date ("Y-m-d"),
+            // jadi tanggal yg SAMA bisa keliru terdeteksi "beda". Samakan dulu.
+            $nilaiInduk = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('Y-m-d') : (string) $siswa->{$field};
+            if ((string) $nilai === (string) $nilaiInduk) continue;
+
             $dataPerubahan[$field] = $nilai;
         }
 

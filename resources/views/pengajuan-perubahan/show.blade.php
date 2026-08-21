@@ -59,7 +59,7 @@ $labelField = [
                     <td style="padding:9px 12px;"><input type="checkbox" name="fields[]" value="{{ $field }}" class="cb-terapkan" checked></td>
                     <td style="padding:9px 12px;font-size:12px;color:#64748b;">{{ $labelField[$field] ?? $field }}</td>
                     <td style="padding:9px 12px;font-size:13px;color:#0f172a;">{{ $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : ($siswa->{$field} ?: '-') }}</td>
-                    <td style="padding:9px 12px;font-size:13px;font-weight:600;color:#7c3aed;">{{ $nilaiBaru }}</td>
+                    <td style="padding:9px 12px;font-size:13px;font-weight:600;color:#7c3aed;">{{ $field === 'tanggal_lahir' ? \Carbon\Carbon::parse($nilaiBaru)->format('d-m-Y') : $nilaiBaru }}</td>
                 </tr>
                 @endforeach
             </tbody>
