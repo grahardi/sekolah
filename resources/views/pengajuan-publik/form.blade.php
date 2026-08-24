@@ -107,6 +107,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             $i++;
             $opsiAgama = ['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME','Lainnya'];
             $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 10,000,000','Rp. 10,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000'];
+            $opsiPendidikan = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3'];
             @endphp
             <div class="baris {{ $i % 2 === 0 ? 'genap' : '' }}">
                 <div style="flex:1;" id="tampil-{{ $field }}">
@@ -123,6 +124,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                     <select name="perubahan[{{ $field }}]" class="form-input">
                         <option value="">-- Pilih --</option>
                         @foreach($opsiPenghasilan as $opt)<option value="{{ $opt }}" {{ $siswa->{$field} === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
+                    </select>
+                    @elseif(in_array($field, ['pendidikan_ayah', 'pendidikan_ibu']))
+                    <select name="perubahan[{{ $field }}]" class="form-input">
+                        <option value="">-- Pilih --</option>
+                        @foreach($opsiPendidikan as $opt)<option value="{{ $opt }}" {{ $siswa->{$field} === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
                     </select>
                     @else
                     <input type="{{ $field === 'tanggal_lahir' ? 'date' : 'text' }}" name="perubahan[{{ $field }}]" class="form-input"

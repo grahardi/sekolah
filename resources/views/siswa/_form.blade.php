@@ -151,6 +151,7 @@
                 <label class="form-label">Jenjang Pendidikan</label>
                 <select name="pendidikan_ayah" class="form-input">
                     <option value="">-- Pilih --</option>
+                    @php $pendidikanList = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3']; @endphp
                     @foreach($pendidikanList as $p)<option value="{{ $p }}" {{ $fv('pendidikan_ayah') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
             </div>
