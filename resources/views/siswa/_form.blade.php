@@ -1,11 +1,6 @@
 @php
     $s  = $siswa ?? null;
     $fv = fn($field, $default = '') => old($field, $s?->$field ?? $default);
-    $pendidikanList = ['SD/MI','SMP/MTs','SMA/SMK/MA','D1','D2','D3','D4/S1','S2','S3','Tidak Sekolah'];
-    $penghasilanList = [
-        'Di bawah Rp 500.000','Rp 500.000 - Rp 1.000.000','Rp 1.000.000 - Rp 2.000.000',
-        'Rp 2.000.000 - Rp 3.000.000','Rp 3.000.000 - Rp 5.000.000','Di atas Rp 5.000.000','Tidak Berpenghasilan',
-    ];
 @endphp
 
 <div style="display:flex;gap:24px;align-items:flex-start;">
