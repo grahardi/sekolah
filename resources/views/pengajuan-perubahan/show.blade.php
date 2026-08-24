@@ -24,13 +24,29 @@
 @else
 
 @php
-$labelField = [
-    'nama_lengkap' => 'Nama Lengkap', 'nik' => 'NIK', 'tempat_lahir' => 'Tempat Lahir', 'tanggal_lahir' => 'Tanggal Lahir',
-    'agama' => 'Agama', 'no_telepon' => 'No. Telepon', 'email' => 'Email',
-    'alamat' => 'Alamat', 'rt' => 'RT', 'rw' => 'RW', 'dusun' => 'Dusun', 'kelurahan' => 'Kelurahan', 'kecamatan' => 'Kecamatan', 'kode_pos' => 'Kode Pos',
-    'nama_ayah' => 'Nama Ayah', 'nik_ayah' => 'NIK Ayah', 'tahun_lahir_ayah' => 'Tahun Lahir Ayah', 'pendidikan_ayah' => 'Pendidikan Ayah', 'pekerjaan_ayah' => 'Pekerjaan Ayah', 'penghasilan_ayah' => 'Penghasilan Ayah',
-    'nama_ibu' => 'Nama Ibu', 'nik_ibu' => 'NIK Ibu', 'tahun_lahir_ibu' => 'Tahun Lahir Ibu', 'pendidikan_ibu' => 'Pendidikan Ibu', 'pekerjaan_ibu' => 'Pekerjaan Ibu', 'penghasilan_ibu' => 'Penghasilan Ibu',
-    'nama_wali' => 'Nama Wali', 'pekerjaan_wali' => 'Pekerjaan Wali', 'no_telepon_ortu' => 'No. Telepon Ortu/Wali', 'alamat_ortu' => 'Alamat Ortu/Wali',
+$usulan = $pengajuan->data_perubahan ?? [];
+
+$grup = [
+    'Data Pribadi' => [
+        'nama_lengkap' => 'Nama Lengkap', 'nik' => 'NIK', 'tempat_lahir' => 'Tempat Lahir',
+        'tanggal_lahir' => 'Tanggal Lahir', 'agama' => 'Agama', 'no_telepon' => 'No. Telepon', 'email' => 'Email',
+    ],
+    'Alamat' => [
+        'alamat' => 'Alamat', 'rt' => 'RT', 'rw' => 'RW', 'dusun' => 'Dusun',
+        'kelurahan' => 'Kelurahan', 'kecamatan' => 'Kecamatan', 'kode_pos' => 'Kode Pos',
+    ],
+    'Data Ayah' => [
+        'nama_ayah' => 'Nama Ayah', 'nik_ayah' => 'NIK Ayah', 'tahun_lahir_ayah' => 'Tahun Lahir Ayah',
+        'pendidikan_ayah' => 'Pendidikan Ayah', 'pekerjaan_ayah' => 'Pekerjaan Ayah', 'penghasilan_ayah' => 'Penghasilan Ayah',
+    ],
+    'Data Ibu' => [
+        'nama_ibu' => 'Nama Ibu', 'nik_ibu' => 'NIK Ibu', 'tahun_lahir_ibu' => 'Tahun Lahir Ibu',
+        'pendidikan_ibu' => 'Pendidikan Ibu', 'pekerjaan_ibu' => 'Pekerjaan Ibu', 'penghasilan_ibu' => 'Penghasilan Ibu',
+    ],
+    'Data Wali' => [
+        'nama_wali' => 'Nama Wali', 'pekerjaan_wali' => 'Pekerjaan Wali',
+        'no_telepon_ortu' => 'No. Telepon Ortu/Wali', 'alamat_ortu' => 'Alamat Ortu/Wali',
+    ],
 ];
 @endphp
 
@@ -54,13 +70,25 @@ $labelField = [
                 </tr>
             </thead>
             <tbody>
-                @foreach($pengajuan->data_perubahan as $field => $nilaiBaru)
-                <tr style="border-top:1px solid #f1f5f9;">
-                    <td style="padding:9px 12px;"><input type="checkbox" name="fields[]" value="{{ $field }}" class="cb-terapkan" checked></td>
-                    <td style="padding:9px 12px;font-size:12px;color:#64748b;">{{ $labelField[$field] ?? $field }}</td>
-                    <td style="padding:9px 12px;font-size:13px;color:#0f172a;">{{ $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : ($siswa->{$field} ?: '-') }}</td>
-                    <td style="padding:9px 12px;font-size:13px;font-weight:600;color:#7c3aed;">{{ $field === 'tanggal_lahir' ? \Carbon\Carbon::parse($nilaiBaru)->format('d-m-Y') : $nilaiBaru }}</td>
+                @foreach($grup as $judulGrup => $fields)
+                <tr><td colspan="4" style="padding:8px 12px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;background:#fafafa;">{{ $judulGrup }}</td></tr>
+                @foreach($fields as $field => $label)
+                @php
+                $adaUsulan = array_key_exists($field, $usulan);
+                $nilaiInduk = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field};
+                $nilaiUsulan = $adaUsulan ? ($field === 'tanggal_lahir' ? \Carbon\Carbon::parse($usulan[$field])->format('d-m-Y') : $usulan[$field]) : null;
+                @endphp
+                <tr style="border-top:1px solid #f1f5f9;{{ $adaUsulan ? 'background:#faf5ff;' : '' }}">
+                    <td style="padding:9px 12px;">
+                        @if($adaUsulan)
+                        <input type="checkbox" name="fields[]" value="{{ $field }}" class="cb-terapkan" checked>
+                        @endif
+                    </td>
+                    <td style="padding:9px 12px;font-size:12px;color:#64748b;">{{ $label }}</td>
+                    <td style="padding:9px 12px;font-size:13px;color:#0f172a;">{{ $nilaiInduk ?: '-' }}</td>
+                    <td style="padding:9px 12px;font-size:13px;{{ $adaUsulan ? 'font-weight:600;color:#7c3aed;' : 'color:#cbd5e1;' }}">{{ $adaUsulan ? $nilaiUsulan : '-' }}</td>
                 </tr>
+                @endforeach
                 @endforeach
             </tbody>
         </table>
