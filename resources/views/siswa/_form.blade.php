@@ -150,7 +150,14 @@
                     @foreach($pendidikanList as $p)<option value="{{ $p }}" {{ $fv('pendidikan_ayah') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
             </div>
-            <div><label class="form-label">Pekerjaan</label><input type="text" name="pekerjaan_ayah" value="{{ $fv('pekerjaan_ayah') }}" class="form-input"></div>
+            <div>
+                <label class="form-label">Pekerjaan</label>
+                <select name="pekerjaan_ayah" class="form-input">
+                    <option value="">-- Pilih --</option>
+                    @php $pekerjaanList = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya']; @endphp
+                    @foreach($pekerjaanList as $p)<option value="{{ $p }}" {{ $fv('pekerjaan_ayah') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                </select>
+            </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>
                 <select name="penghasilan_ayah" class="form-input">
@@ -175,7 +182,13 @@
                     @foreach($pendidikanList as $p)<option value="{{ $p }}" {{ $fv('pendidikan_ibu') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
             </div>
-            <div><label class="form-label">Pekerjaan</label><input type="text" name="pekerjaan_ibu" value="{{ $fv('pekerjaan_ibu') }}" class="form-input"></div>
+            <div>
+                <label class="form-label">Pekerjaan</label>
+                <select name="pekerjaan_ibu" class="form-input">
+                    <option value="">-- Pilih --</option>
+                    @foreach($pekerjaanList as $p)<option value="{{ $p }}" {{ $fv('pekerjaan_ibu') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                </select>
+            </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>
                 <select name="penghasilan_ibu" class="form-input">
