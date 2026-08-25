@@ -152,11 +152,21 @@
             </div>
             <div>
                 <label class="form-label">Pekerjaan</label>
-                <select name="pekerjaan_ayah" class="form-input">
+                @php
+                $listAyah = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya'];
+                $nilaiAyahSekarang = $fv('pekerjaan_ayah');
+                $ayahCustom = $nilaiAyahSekarang && ! in_array($nilaiAyahSekarang, $listAyah);
+                @endphp
+                <select id="pilih-pekerjaan_ayah" class="form-input" onchange="document.getElementById('hidden-pekerjaan_ayah').value = this.value === 'Lainnya' ? document.getElementById('manual-pekerjaan_ayah').value : this.value; document.getElementById('wrap-manual-pekerjaan_ayah').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @php $pekerjaanList = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya']; @endphp
-                    @foreach($pekerjaanList as $p)<option value="{{ $p }}" {{ $fv('pekerjaan_ayah') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listAyah as $p)<option value="{{ $p }}" {{ ($nilaiAyahSekarang == $p || ($ayahCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="pekerjaan_ayah" id="hidden-pekerjaan_ayah" value="{{ $nilaiAyahSekarang }}">
+                <div id="wrap-manual-pekerjaan_ayah" style="display:{{ $ayahCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-pekerjaan_ayah" class="form-input" placeholder="Tulis pekerjaan lainnya..."
+                        value="{{ $ayahCustom ? $nilaiAyahSekarang : '' }}"
+                        oninput="document.getElementById('hidden-pekerjaan_ayah').value = this.value;">
+                </div>
             </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>
@@ -184,10 +194,21 @@
             </div>
             <div>
                 <label class="form-label">Pekerjaan</label>
-                <select name="pekerjaan_ibu" class="form-input">
+                @php
+                $listIbu = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya'];
+                $nilaiIbuSekarang = $fv('pekerjaan_ibu');
+                $ibuCustom = $nilaiIbuSekarang && ! in_array($nilaiIbuSekarang, $listIbu);
+                @endphp
+                <select id="pilih-pekerjaan_ibu" class="form-input" onchange="document.getElementById('hidden-pekerjaan_ibu').value = this.value === 'Lainnya' ? document.getElementById('manual-pekerjaan_ibu').value : this.value; document.getElementById('wrap-manual-pekerjaan_ibu').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @foreach($pekerjaanList as $p)<option value="{{ $p }}" {{ $fv('pekerjaan_ibu') == $p ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listIbu as $p)<option value="{{ $p }}" {{ ($nilaiIbuSekarang == $p || ($ibuCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="pekerjaan_ibu" id="hidden-pekerjaan_ibu" value="{{ $nilaiIbuSekarang }}">
+                <div id="wrap-manual-pekerjaan_ibu" style="display:{{ $ibuCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-pekerjaan_ibu" class="form-input" placeholder="Tulis pekerjaan lainnya..."
+                        value="{{ $ibuCustom ? $nilaiIbuSekarang : '' }}"
+                        oninput="document.getElementById('hidden-pekerjaan_ibu').value = this.value;">
+                </div>
             </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>

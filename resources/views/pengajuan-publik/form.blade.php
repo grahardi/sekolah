@@ -132,10 +132,17 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                         @foreach($opsiPendidikan as $opt)<option value="{{ $opt }}" {{ $siswa->{$field} === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
                     </select>
                     @elseif(in_array($field, ['pekerjaan_ayah', 'pekerjaan_ibu']))
-                    <select name="perubahan[{{ $field }}]" class="form-input">
+                    @php $customPekerjaan = $siswa->{$field} && ! in_array($siswa->{$field}, $opsiPekerjaan); @endphp
+                    <select id="pilih-{{ $field }}" class="form-input" onchange="document.getElementById('hidden-{{ $field }}').value = this.value === 'Lainnya' ? document.getElementById('manual-{{ $field }}').value : this.value; document.getElementById('wrap-manual-{{ $field }}').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                         <option value="">-- Pilih --</option>
-                        @foreach($opsiPekerjaan as $opt)<option value="{{ $opt }}" {{ $siswa->{$field} === $opt ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
+                        @foreach($opsiPekerjaan as $opt)<option value="{{ $opt }}" {{ ($siswa->{$field} === $opt || ($customPekerjaan && $opt === 'Lainnya')) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
                     </select>
+                    <input type="hidden" name="perubahan[{{ $field }}]" id="hidden-{{ $field }}" value="{{ $siswa->{$field} }}">
+                    <div id="wrap-manual-{{ $field }}" style="display:{{ $customPekerjaan ? 'block' : 'none' }};margin-top:6px;">
+                        <input type="text" id="manual-{{ $field }}" class="form-input" placeholder="Tulis pekerjaan lainnya..."
+                            value="{{ $customPekerjaan ? $siswa->{$field} : '' }}"
+                            oninput="document.getElementById('hidden-{{ $field }}').value = this.value;">
+                    </div>
                     @else
                     <input type="{{ $field === 'tanggal_lahir' ? 'date' : 'text' }}" name="perubahan[{{ $field }}]" class="form-input"
                         value="{{ $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('Y-m-d') : $siswa->{$field} }}">
