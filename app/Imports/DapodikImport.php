@@ -25,9 +25,15 @@ class DapodikImport
     protected array $warnings = [];
     protected int $imported = 0;
     protected int $skipped = 0;
+    protected string $statusSiswa;
 
     private const HEADER_ROW = 5;
     private const DATA_START_ROW = 7;
+
+    public function __construct(string $statusSiswa = 'aktif')
+    {
+        $this->statusSiswa = $statusSiswa;
+    }
 
     public function import(string $filePath): void
     {
@@ -126,7 +132,7 @@ class DapodikImport
                         // gak ketimpa tiap kali re-import.
                         'diterima_di_kelas' => $siswaAda ? null : trim("{$kelas} {$rombel}"),
                         'tahun_masuk' => (int) date('Y'),
-                        'status' => 'aktif',
+                        'status' => $this->statusSiswa,
 
                         'asal_sekolah' => $get('BE') ?: null,
                         'anak_ke' => is_numeric($get('BF')) ? (int) $get('BF') : null,

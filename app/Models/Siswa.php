@@ -18,7 +18,7 @@ class Siswa extends Model
         'alamat','rt','rw','dusun','kelurahan','kecamatan','kode_pos',
         'lintang','bujur',
         'no_telepon','email',
-        'kelas','diterima_di_kelas','rombel','tahun_masuk','status','tanggal_diterima',
+        'kelas','diterima_di_kelas','rombel','tahun_masuk','tahun_lulus','status','tanggal_diterima',
         'no_sttb_sd','asal_sekolah','no_un_sd',
         'anak_ke',
         'golongan_darah','tinggi_badan','berat_badan','riwayat_penyakit',
