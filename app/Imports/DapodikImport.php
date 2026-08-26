@@ -147,8 +147,8 @@ class DapodikImport
 
                         'asal_sekolah' => $get('BE') ?: null,
                         'anak_ke' => is_numeric($get('BF')) ? (int) $get('BF') : null,
-                        'lintang' => is_numeric($get('BG')) ? $get('BG') : null,
-                        'bujur' => is_numeric($get('BH')) ? $get('BH') : null,
+                        'lintang' => $this->parseKoordinat($getRaw('BG')),
+                        'bujur' => $this->parseKoordinat($getRaw('BH')),
                         'no_kk' => $get('BI') ?: null,
                         'berat_badan' => is_numeric($get('BJ')) ? (int) $get('BJ') : null,
                         'tinggi_badan' => is_numeric($get('BK')) ? (int) $get('BK') : null,
@@ -212,6 +212,25 @@ class DapodikImport
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /**
+     * Lintang/Bujur kadang kebaca aneh dari Excel (mis. titik desimal hilang
+     * jadi "-816795" padahal maksudnya "-8.16795") tergantung format sel
+     * sumbernya. Pakai nilai MENTAH (bukan formatted) + validasi rentang
+     * wajar (lintang -90..90, bujur -180..180) - kalau di luar itu, anggap
+     * gagal baca & simpan null drpd bikin error overflow di database.
+     */
+    private function parseKoordinat(mixed $val): ?float
+    {
+        if ($val === null || $val === '') return null;
+        if (! is_numeric($val)) return null;
+
+        $angka = (float) $val;
+
+        if (abs($angka) > 180) return null; // jelas gak masuk akal utk lintang/bujur manapun
+
+        return $angka;
     }
 
     public function getImportedCount(): int
