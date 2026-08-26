@@ -57,10 +57,14 @@ class AlumniController extends Controller
 
     public function importDapodik(Request $request)
     {
-        $request->validate(['file_dapodik' => 'required|mimes:xlsx,xls|max:10240']);
+        $tahunSekarang = (int) date('Y');
+        $request->validate([
+            'file_dapodik' => 'required|mimes:xlsx,xls|max:10240',
+            'tahun_lulus' => 'required|integer|min:' . ($tahunSekarang - 5) . '|max:' . $tahunSekarang,
+        ]);
 
         $filePath = $request->file('file_dapodik')->getRealPath();
-        $import = new DapodikImport('lulus');
+        $import = new DapodikImport('lulus', (int) $request->tahun_lulus);
         $import->import($filePath);
 
         $pesan = "{$import->getImportedCount()} data alumni berhasil diimport";

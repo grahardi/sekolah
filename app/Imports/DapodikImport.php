@@ -26,13 +26,15 @@ class DapodikImport
     protected int $imported = 0;
     protected int $skipped = 0;
     protected string $statusSiswa;
+    protected ?int $tahunLulus;
 
     private const HEADER_ROW_LAMA = 5; // varian lama: 4 baris info sekolah di atas
     private const HEADER_ROW_BARU = 1; // varian baru: header langsung di baris 1
 
-    public function __construct(string $statusSiswa = 'aktif')
+    public function __construct(string $statusSiswa = 'aktif', ?int $tahunLulus = null)
     {
         $this->statusSiswa = $statusSiswa;
+        $this->tahunLulus = $tahunLulus;
     }
 
     public function import(string $filePath): void
@@ -142,7 +144,11 @@ class DapodikImport
                         // sudah ada, biarkan nilai manual admin (mis. siswa mutasi)
                         // gak ketimpa tiap kali re-import.
                         'diterima_di_kelas' => $siswaAda ? null : trim("{$kelas} {$rombel}"),
-                        'tahun_masuk' => (int) date('Y'),
+                        // Kalau ini import ALUMNI (tahunLulus diisi), tahun_masuk
+                        // dihitung mundur 3 tahun (asumsi SMP 3 tahun) - BUKAN
+                        // tahun sekarang, krn data yg diimport itu udah lulus.
+                        'tahun_masuk' => $siswaAda ? null : ($this->tahunLulus ? $this->tahunLulus - 3 : (int) date('Y')),
+                        'tahun_lulus' => $this->tahunLulus,
                         'status' => $this->statusSiswa,
 
                         'asal_sekolah' => $get('BE') ?: null,

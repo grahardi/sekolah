@@ -22,6 +22,15 @@
 
     <form action="{{ route('alumni.import-dapodik.process') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <label class="form-label">Tahun Keluar / Lulus <span style="color:#ef4444">*</span></label>
+        <select name="tahun_lulus" class="form-input" required style="margin-bottom:14px;">
+            <option value="">-- Pilih Tahun --</option>
+            @for($t = date('Y'); $t >= date('Y') - 5; $t--)
+            <option value="{{ $t }}" {{ (int) old('tahun_lulus', date('Y')) === $t ? 'selected' : '' }}>{{ $t }}</option>
+            @endfor
+        </select>
+        <p style="font-size:11px;color:#94a3b8;margin:-10px 0 14px;">Tahun Masuk otomatis dihitung mundur 3 tahun dari ini (asumsi SMP 3 tahun) untuk siswa yang belum pernah tercatat sebelumnya.</p>
+
         <label class="form-label">File Excel Dapodik</label>
         <input type="file" name="file_dapodik" accept=".xlsx,.xls" required class="form-input" style="margin-bottom:16px;">
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ti ti-file-import"></i> Import Sekarang</button>
