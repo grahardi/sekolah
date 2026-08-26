@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.alumni')
 @section('title', 'Import Alumni dari Dapodik')
 @section('page-title', 'Import Alumni dari Dapodik')
 

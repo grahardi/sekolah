@@ -74,4 +74,123 @@ class AlumniController extends Controller
 
         return redirect()->route('alumni.index')->with('success', $pesan . '.');
     }
+
+    /** Proteksi berlapis - pastikan siswa yg diakses BENAR alumni (status=lulus), gak numpang ke data siswa aktif */
+    private function pastikanAlumni(Siswa $siswa): void
+    {
+        abort_unless($siswa->status === 'lulus', 404, 'Data ini bukan alumni.');
+    }
+
+    public function arsip(Siswa $siswa)
+    {
+        $this->pastikanAlumni($siswa);
+        $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
+        return view('alumni.arsip', compact('siswa', 'arsip'));
+    }
+
+    public function arsipUpdate(Request $request, Siswa $siswa)
+    {
+        $this->pastikanAlumni($siswa);
+
+        $request->validate([
+            'catatan' => 'nullable|string|max:1000',
+        ]);
+
+        $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
+
+        foreach (\App\Models\ArsipBerkas::berkasAktif() + \App\Models\ArsipBerkas::berkasLulus() as $field => $meta) {
+            if ($request->hasFile($field)) {
+                if ($arsip->{$field}) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->{$field});
+                }
+                $arsip->{$field} = $request->file($field)->store("arsip/{$siswa->id}", 'public');
+            }
+        }
+
+        if ($request->filled('catatan')) {
+            $arsip->catatan = $request->catatan;
+        }
+
+        $arsip->siswa_id = $siswa->id;
+        $arsip->save();
+
+        return back()->with('success', 'Berkas alumni berhasil disimpan.');
+    }
+
+    public function arsipHapus(Request $request, Siswa $siswa)
+    {
+        $this->pastikanAlumni($siswa);
+
+        $request->validate(['field' => 'required|string']);
+
+        $arsip = $siswa->arsipBerkas;
+        abort_unless($arsip, 404);
+
+        $fieldValid = array_key_exists($request->field, \App\Models\ArsipBerkas::berkasAktif() + \App\Models\ArsipBerkas::berkasLulus());
+        abort_unless($fieldValid, 422, 'Field tidak valid.');
+
+        if ($arsip->{$request->field}) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->{$request->field});
+            $arsip->{$request->field} = null;
+            $arsip->save();
+        }
+
+        return back()->with('success', 'Berkas berhasil dihapus.');
+    }
+
+    public function showImportBerkas()
+    {
+        return view('alumni.import-berkas');
+    }
+
+    public function importBerkas(Request $request)
+    {
+        $jenisBerkasList = [
+            'ijazah' => 'Ijazah SMP', 'sertifikat_tka' => 'Sertifikat TKA', 'transkrip_nilai' => 'Transkrip Nilai',
+        ];
+
+        $request->validate([
+            'jenis' => 'required|in:' . implode(',', array_keys($jenisBerkasList)),
+            'files' => 'required|array|min:1',
+            'files.*' => 'file|max:5120|mimes:jpg,jpeg,png,pdf',
+        ]);
+
+        $jenis = $request->input('jenis');
+        $imported = 0;
+        $errors = [];
+
+        foreach ($request->file('files') as $file) {
+            $originalName = $file->getClientOriginalName();
+            $identifier = trim(pathinfo($originalName, PATHINFO_FILENAME));
+
+            // HANYA cari di siswa dgn status LULUS - gak akan pernah nyentuh siswa aktif
+            $siswa = Siswa::where('status', 'lulus')
+                ->where(fn ($q) => $q->where('nisn', $identifier)->orWhere('nis', $identifier))
+                ->first();
+
+            if (! $siswa) {
+                $errors[] = "File \"{$originalName}\": tidak ada ALUMNI dengan NIS/NISN \"{$identifier}\".";
+                continue;
+            }
+
+            $path = $file->store("arsip/{$siswa->id}", 'public');
+
+            $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
+            if ($arsip->{$jenis}) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->{$jenis});
+            }
+            $arsip->{$jenis} = $path;
+            $arsip->siswa_id = $siswa->id;
+            $arsip->save();
+
+            $imported++;
+        }
+
+        $pesan = "{$imported} berkas {$jenisBerkasList[$jenis]} berhasil diupload.";
+        if (! empty($errors)) {
+            return back()->withErrors($errors)->with('success', $imported > 0 ? $pesan : null);
+        }
+
+        return back()->with('success', $pesan);
+    }
 }

@@ -14,7 +14,7 @@
         @if($hasFile)
             <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary btn-sm"><i class="ti ti-eye"></i> Lihat</a>
             @if(auth()->user()->isAdmin())
-            <a href="{{ route('siswa.arsip.hapus', $siswa) }}"
+            <a href="{{ route($routeHapus ?? 'siswa.arsip.hapus', $siswa) }}"
                onclick="hapusBerkas(event, this, '{{ $field }}', '{{ addslashes($meta['label']) }}')"
                style="display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;background:#fee2e2;color:#991b1b;border-radius:7px;font-size:12px;cursor:pointer;text-decoration:none;">
                 <i class="ti ti-trash"></i>

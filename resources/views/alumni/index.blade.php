@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.alumni')
 @section('title', 'Data Alumni')
 @section('page-title', 'Data Alumni')
 
 @section('header-actions')
     @if(auth()->user()->isAdmin())
-    <a href="{{ route('alumni.import-dapodik.form') }}" class="btn btn-secondary"><i class="ti ti-file-import"></i> Import Dapodik</a>
-    <a href="{{ route('siswa.import.berkas.form') }}" class="btn btn-secondary"><i class="ti ti-folder-plus"></i> Import Berkas</a>
     <a href="{{ route('alumni.create') }}" class="btn btn-primary"><i class="ti ti-user-plus"></i> Tambah Alumni</a>
     @endif
 @endsection
@@ -47,13 +45,13 @@
             @forelse($alumni as $a)
             <tr style="border-top:1px solid #f1f5f9;">
                 <td style="padding:10px 16px;font-size:13px;font-weight:600;color:#0f172a;">
-                    <a href="{{ route('siswa.arsip.show', $a) }}" style="color:inherit;text-decoration:none;">{{ $a->nama_lengkap }}</a>
+                    <a href="{{ route('alumni.arsip.show', $a) }}" style="color:inherit;text-decoration:none;">{{ $a->nama_lengkap }}</a>
                 </td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->nisn }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_masuk ?: '-' }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_lulus ?: '-' }}</td>
                 <td style="padding:10px 16px;text-align:right;">
-                    <a href="{{ route('siswa.arsip.show', $a) }}" class="btn btn-secondary btn-sm"><i class="ti ti-folder"></i> Berkas</a>
+                    <a href="{{ route('alumni.arsip.show', $a) }}" class="btn btn-secondary btn-sm"><i class="ti ti-folder"></i> Berkas</a>
                 </td>
             </tr>
             @empty

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.alumni')
 @section('title', 'Tambah Alumni')
 @section('page-title', 'Tambah Data Alumni Manual')
 
