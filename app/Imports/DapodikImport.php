@@ -27,8 +27,8 @@ class DapodikImport
     protected int $skipped = 0;
     protected string $statusSiswa;
 
-    private const HEADER_ROW = 5;
-    private const DATA_START_ROW = 7;
+    private const HEADER_ROW_LAMA = 5; // varian lama: 4 baris info sekolah di atas
+    private const HEADER_ROW_BARU = 1; // varian baru: header langsung di baris 1
 
     public function __construct(string $statusSiswa = 'aktif')
     {
@@ -51,16 +51,27 @@ class DapodikImport
             return;
         }
 
-        // Validasi ringan: pastikan ini memang format Dapodik, bukan file lain
-        $headerCheck = $sheet->getCell('B5')->getValue();
-        if (trim((string) $headerCheck) !== 'Nama') {
+        // Dapodik punya beberapa varian format export (kadang ada beberapa
+        // baris info sekolah di atas, kadang langsung header di baris 1).
+        // Deteksi otomatis: cari baris mana yg kolom B-nya persis "Nama".
+        $headerRow = null;
+        foreach ([self::HEADER_ROW_BARU, self::HEADER_ROW_LAMA] as $kandidat) {
+            if (trim((string) $sheet->getCell('B' . $kandidat)->getValue()) === 'Nama') {
+                $headerRow = $kandidat;
+                break;
+            }
+        }
+
+        if ($headerRow === null) {
             $this->errors[] = 'Format file tidak dikenali sebagai unduhan Dapodik "Daftar Peserta Didik". Gunakan menu import template biasa kalau file ini bukan dari Dapodik.';
             return;
         }
 
+        $dataStartRow = $headerRow + 2; // 1 baris header utama + 1 baris sub-header (Nama/Tahun Lahir/dst utk Ayah/Ibu/Wali)
+
         $highestRow = $sheet->getHighestDataRow();
 
-        for ($row = self::DATA_START_ROW; $row <= $highestRow; $row++) {
+        for ($row = $dataStartRow; $row <= $highestRow; $row++) {
             $get = fn (string $col) => trim((string) $sheet->getCell($col . $row)->getFormattedValue());
             $getRaw = fn (string $col) => $sheet->getCell($col . $row)->getValue();
 
@@ -71,7 +82,7 @@ class DapodikImport
                 continue; // baris kosong, lewati diam-diam
             }
 
-            $rowNum = $row - self::DATA_START_ROW + 1;
+            $rowNum = $row - $dataStartRow + 1;
 
             if ($nisn === '') {
                 $this->warnings[] = "Baris {$rowNum} ({$nama}): NISN kosong di Dapodik, dilewati.";
