@@ -37,6 +37,7 @@
                         <label class="form-label">Role <span style="color:#ef4444">*</span></label>
                         <select name="role" class="form-input" required>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin Sekolah (akses penuh)</option>
+                            <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>Guru</option>
                             <option value="induk" {{ old('role') == 'induk' ? 'selected' : '' }}>Petugas Induk (Read Only — hanya lihat)</option>
                         </select>
                     </div>

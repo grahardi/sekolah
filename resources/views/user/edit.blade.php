@@ -35,6 +35,7 @@
                         <label class="form-label">Role <span style="color:#ef4444">*</span></label>
                         <select name="role" class="form-input" required {{ $user->id === auth()->id() ? 'disabled' : '' }}>
                             <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin Sekolah (akses penuh)</option>
+                            <option value="guru" {{ old('role', $user->role) == 'guru' ? 'selected' : '' }}>Guru</option>
                             <option value="induk" {{ old('role', $user->role) == 'induk' ? 'selected' : '' }}>Petugas Induk (Read Only)</option>
                         </select>
                         @if($user->id === auth()->id())
