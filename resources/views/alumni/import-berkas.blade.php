@@ -33,8 +33,18 @@
             <option value="transkrip_nilai">Transkrip Nilai</option>
         </select>
 
-        <label class="form-label">Pilih File (bisa banyak sekaligus)</label>
-        <input type="file" name="files[]" multiple accept=".jpg,.jpeg,.png,.pdf" required class="form-input" style="margin-bottom:16px;">
+        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:14px;">
+            <label class="form-label">Opsi A — Upload File ZIP (disarankan kalau file banyak)</label>
+            <input type="file" name="zip_file" accept=".zip" class="form-input">
+            <p style="font-size:11px;color:#94a3b8;margin:6px 0 0;">ZIP berisi banyak file (nama tetap NIS/NISN.pdf), sistem akan extract otomatis. Maks 50MB.</p>
+        </div>
+
+        <p style="text-align:center;font-size:11px;color:#94a3b8;margin:0 0 14px;">— atau —</p>
+
+        <div style="border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:16px;">
+            <label class="form-label">Opsi B — Pilih File Satuan (bisa banyak sekaligus)</label>
+            <input type="file" name="files[]" multiple accept=".jpg,.jpeg,.png,.pdf" class="form-input">
+        </div>
 
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ti ti-upload"></i> Upload Sekarang</button>
     </form>

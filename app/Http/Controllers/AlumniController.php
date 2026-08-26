@@ -180,17 +180,56 @@ class AlumniController extends Controller
 
         $request->validate([
             'jenis' => 'required|in:' . implode(',', array_keys($jenisBerkasList)),
-            'files' => 'required|array|min:1',
+            'zip_file' => 'nullable|file|max:51200|mimes:zip',
+            'files' => 'nullable|array',
             'files.*' => 'file|max:5120|mimes:jpg,jpeg,png,pdf',
         ]);
+
+        if (! $request->hasFile('zip_file') && empty($request->file('files'))) {
+            return back()->with('error', 'Pilih file ZIP atau file satuan dulu.');
+        }
 
         $jenis = $request->input('jenis');
         $imported = 0;
         $errors = [];
+        $folderSementara = null;
 
-        foreach ($request->file('files') as $file) {
-            $originalName = $file->getClientOriginalName();
-            $identifier = trim(pathinfo($originalName, PATHINFO_FILENAME));
+        // Kumpulkan daftar file yg mau diproses - baik dari ZIP maupun upload biasa,
+        // logikanya SAMA persis setelah ini (cocokkan nama file ke NIS/NISN).
+        $daftarFile = []; // [nama_asli => path_fisik_di_disk]
+
+        if ($request->hasFile('zip_file')) {
+            $folderSementara = storage_path('app/temp-extract-' . uniqid());
+            mkdir($folderSementara, 0755, true);
+
+            $zip = new \ZipArchive();
+            if ($zip->open($request->file('zip_file')->getRealPath()) === true) {
+                $zip->extractTo($folderSementara);
+                $zip->close();
+
+                // Ambil semua file hasil extract (rekursif, jaga2 ada subfolder di dalam ZIP)
+                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($folderSementara));
+                foreach ($iterator as $item) {
+                    if ($item->isFile() && ! str_starts_with($item->getFilename(), '.')) {
+                        $ext = strtolower($item->getExtension());
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
+                            $daftarFile[$item->getFilename()] = $item->getPathname();
+                        }
+                    }
+                }
+            } else {
+                return back()->with('error', 'Gagal membuka file ZIP - pastikan file tidak rusak.');
+            }
+        }
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $daftarFile[$file->getClientOriginalName()] = $file->getRealPath();
+            }
+        }
+
+        foreach ($daftarFile as $namaAsli => $pathFisik) {
+            $identifier = trim(pathinfo($namaAsli, PATHINFO_FILENAME));
 
             // HANYA cari di siswa dgn status LULUS - gak akan pernah nyentuh siswa aktif
             $siswa = Siswa::where('status', 'lulus')
@@ -198,21 +237,28 @@ class AlumniController extends Controller
                 ->first();
 
             if (! $siswa) {
-                $errors[] = "File \"{$originalName}\": tidak ada ALUMNI dengan NIS/NISN \"{$identifier}\".";
+                $errors[] = "File \"{$namaAsli}\": tidak ada ALUMNI dengan NIS/NISN \"{$identifier}\".";
                 continue;
             }
 
-            $path = $file->store("arsip/{$siswa->id}", 'public');
+            $ekstensi = pathinfo($namaAsli, PATHINFO_EXTENSION);
+            $pathTujuan = "arsip/{$siswa->id}/{$jenis}." . $ekstensi;
+            \Illuminate\Support\Facades\Storage::disk('public')->put($pathTujuan, file_get_contents($pathFisik));
 
             $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
-            if ($arsip->{$jenis}) {
+            if ($arsip->{$jenis} && $arsip->{$jenis} !== $pathTujuan) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->{$jenis});
             }
-            $arsip->{$jenis} = $path;
+            $arsip->{$jenis} = $pathTujuan;
             $arsip->siswa_id = $siswa->id;
             $arsip->save();
 
             $imported++;
+        }
+
+        // Bersihkan folder sementara hasil extract ZIP
+        if ($folderSementara && is_dir($folderSementara)) {
+            $this->hapusFolder($folderSementara);
         }
 
         $pesan = "{$imported} berkas {$jenisBerkasList[$jenis]} berhasil diupload.";
@@ -221,5 +267,14 @@ class AlumniController extends Controller
         }
 
         return back()->with('success', $pesan);
+    }
+
+    private function hapusFolder(string $folder): void
+    {
+        $items = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($items as $item) {
+            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
+        }
+        rmdir($folder);
     }
 }
