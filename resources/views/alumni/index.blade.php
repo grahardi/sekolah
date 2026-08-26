@@ -38,6 +38,7 @@
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">NISN</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tahun Masuk</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tahun Lulus</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">No. Ijazah</th>
                 <th style="padding:10px 16px;text-align:right;font-size:11px;color:#64748b;">Aksi</th>
             </tr>
         </thead>
@@ -50,12 +51,13 @@
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->nisn }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_masuk ?: '-' }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_lulus ?: '-' }}</td>
+                <td style="padding:10px 16px;font-size:12px;color:#475569;font-family:monospace;">{{ $a->no_ijazah ?: '-' }}</td>
                 <td style="padding:10px 16px;text-align:right;">
                     <a href="{{ route('alumni.arsip.show', $a) }}" class="btn btn-secondary btn-sm"><i class="ti ti-folder"></i> Berkas</a>
                 </td>
             </tr>
             @empty
-            <tr><td colspan="5" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
+            <tr><td colspan="6" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
             @endforelse
         </tbody>
     </table>

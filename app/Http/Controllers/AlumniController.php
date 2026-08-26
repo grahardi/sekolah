@@ -138,6 +138,31 @@ class AlumniController extends Controller
         return back()->with('success', 'Berkas berhasil dihapus.');
     }
 
+    public function showImportNomorIjazah()
+    {
+        return view('alumni.import-nomor-ijazah');
+    }
+
+    public function importNomorIjazah(Request $request)
+    {
+        $request->validate(['file_ijazah' => 'required|mimes:xlsx,xls|max:10240']);
+
+        $filePath = $request->file('file_ijazah')->getRealPath();
+        $import = new \App\Imports\ImportNomorIjazah();
+        $import->import($filePath);
+
+        if (! empty($import->getErrors())) {
+            return back()->withErrors($import->getErrors());
+        }
+
+        $pesan = "{$import->getUpdatedCount()} nomor ijazah berhasil diperbarui";
+        if ($import->getSkippedCount() > 0) {
+            $pesan .= ", {$import->getSkippedCount()} baris dilewati (lihat detail di bawah)";
+        }
+
+        return back()->with('success', $pesan . '.')->with('warnings_ijazah', $import->getWarnings());
+    }
+
     public function showImportBerkas()
     {
         return view('alumni.import-berkas');

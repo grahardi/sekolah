@@ -19,7 +19,7 @@ class Siswa extends Model
         'lintang','bujur',
         'no_telepon','email',
         'kelas','diterima_di_kelas','rombel','tahun_masuk','tahun_lulus','status','tanggal_diterima',
-        'no_sttb_sd','asal_sekolah','no_un_sd',
+        'no_sttb_sd','asal_sekolah','no_un_sd','no_ijazah',
         'anak_ke',
         'golongan_darah','tinggi_badan','berat_badan','riwayat_penyakit',
         'nama_ayah','nik_ayah','tahun_lahir_ayah','pendidikan_ayah','pekerjaan_ayah','penghasilan_ayah',

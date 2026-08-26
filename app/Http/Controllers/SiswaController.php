@@ -430,6 +430,7 @@ class SiswaController extends Controller
             'no_sttb_sd'       => 'nullable|string|max:50',
             'asal_sekolah'     => 'nullable|string|max:100',
             'no_un_sd'         => 'nullable|string|max:50',
+            'no_ijazah'        => 'nullable|string|max:50',
             'anak_ke'          => 'nullable|integer',
             'golongan_darah'   => 'nullable|in:A,B,AB,O,Tidak Tahu',
             'tinggi_badan'     => 'nullable|integer',

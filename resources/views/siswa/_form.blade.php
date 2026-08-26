@@ -133,6 +133,7 @@
             <div><label class="form-label">Sekolah Asal (SD/MI)</label><input type="text" name="asal_sekolah" value="{{ $fv('asal_sekolah') }}" class="form-input"></div>
             <div><label class="form-label">No. STTB / Ijazah SD</label><input type="text" name="no_sttb_sd" value="{{ $fv('no_sttb_sd') }}" class="form-input" style="font-family:monospace;"></div>
             <div><label class="form-label">No. Sertifikat TKA</label><input type="text" name="no_un_sd" value="{{ $fv('no_un_sd') }}" class="form-input" style="font-family:monospace;"></div>
+            <div><label class="form-label">No. Ijazah</label><input type="text" name="no_ijazah" value="{{ $fv('no_ijazah') }}" class="form-input" style="font-family:monospace;" placeholder="Nomor seri ijazah"></div>
         </div>
     </div>
 

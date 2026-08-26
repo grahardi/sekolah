@@ -200,6 +200,10 @@
            class="sb-item {{ request()->routeIs('alumni.import-berkas.*') ? 'active' : '' }}">
             <i class="ti ti-folder-plus"></i><span>Import Berkas Massal</span>
         </a>
+        <a href="{{ route('alumni.import-nomor-ijazah.form') }}"
+           class="sb-item {{ request()->routeIs('alumni.import-nomor-ijazah.*') ? 'active' : '' }}">
+            <i class="ti ti-certificate"></i><span>Import Nomor Ijazah</span>
+        </a>
         @endif
     </nav>
 

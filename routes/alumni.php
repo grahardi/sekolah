@@ -20,6 +20,9 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('alumni')->name('alumni.'
         Route::get('/import-berkas', [AlumniController::class, 'showImportBerkas'])->name('import-berkas.form');
         Route::post('/import-berkas', [AlumniController::class, 'importBerkas'])->name('import-berkas.process');
 
+        Route::get('/import-nomor-ijazah', [AlumniController::class, 'showImportNomorIjazah'])->name('import-nomor-ijazah.form');
+        Route::post('/import-nomor-ijazah', [AlumniController::class, 'importNomorIjazah'])->name('import-nomor-ijazah.process');
+
         Route::post('/{siswa}/arsip', [AlumniController::class, 'arsipUpdate'])->name('arsip.update');
         Route::post('/{siswa}/arsip/hapus', [AlumniController::class, 'arsipHapus'])->name('arsip.hapus');
     });
