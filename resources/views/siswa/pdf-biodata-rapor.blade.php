@@ -16,11 +16,11 @@ table.data td.no  { width:22px; text-align:right; padding-right:4px; }
 table.data td.lbl { width:32%; text-align:left; }
 table.data td.ttd { width:6px; text-align:center; }
 table.data td.val { border-bottom:1px solid #777; }
-.footer-table { width:100%; margin-top:20mm; border-collapse:collapse; }
+.footer-table { width:340px; margin:20mm auto 0; border-collapse:collapse; }
 .footer-table td { vertical-align:bottom; padding:0; }
 .foto-frame { width:80px; height:100px; border:1.5px solid #333; overflow:hidden; }
 .foto-frame img { width:100%; height:100%; object-fit:cover; }
-.ttd-wrap { width:260px; text-align:center; }
+.ttd-wrap { text-align:center; }
 .ttd-nama { font-weight:bold; text-decoration:underline; margin-top:60px; }
 </style>
 </head>
@@ -77,15 +77,15 @@ $baris = function ($no, $label, $val) {
 
 <table class="footer-table">
     <tr>
-        <td style="text-align:left;">
-            <div class="foto-frame">
+        <td style="text-align:center;width:100px;">
+            <div class="foto-frame" style="margin:0 auto;">
                 @if($siswa->foto && file_exists(public_path('storage/' . $siswa->foto)))
                 <img src="{{ public_path('storage/' . $siswa->foto) }}">
                 @endif
             </div>
         </td>
-        <td style="text-align:right;">
-            <div class="ttd-wrap" style="margin-left:auto;">
+        <td style="text-align:center;">
+            <div class="ttd-wrap">
                 <p>{{ $kotaTtd }}, {{ $tanggalCetak->locale('id')->translatedFormat('d F Y') }}</p>
                 <p>Kepala Sekolah</p>
                 <p class="ttd-nama">{{ $sekolah->kepala_sekolah_nama ?: '-' }}</p>
