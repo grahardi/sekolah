@@ -54,6 +54,7 @@ class PengajuanPerubahan extends Model
             'belum_isi' => 'Belum Mengisi',
             'menunggu_approval' => 'Menunggu Approval',
             'sudah_approve' => 'Sudah Approve',
+            'tidak_ada_perubahan' => 'Tidak Ada Perubahan',
             default => $this->status,
         };
     }
@@ -64,6 +65,7 @@ class PengajuanPerubahan extends Model
             'belum_isi' => ['bg' => '#f1f5f9', 'txt' => '#64748b'],
             'menunggu_approval' => ['bg' => '#fef9c3', 'txt' => '#854d0e'],
             'sudah_approve' => ['bg' => '#dcfce7', 'txt' => '#166534'],
+            'tidak_ada_perubahan' => ['bg' => '#e0e7ff', 'txt' => '#3730a3'],
             default => ['bg' => '#f1f5f9', 'txt' => '#64748b'],
         };
     }

@@ -104,11 +104,22 @@ class PengajuanPerubahanPublicController extends Controller
             $dataPerubahan[$field] = $nilai;
         }
 
+        $pengajuan = PengajuanPerubahan::buatAtauAmbilUntuk($siswa);
+
         if (empty($dataPerubahan)) {
-            return back()->with('error', 'Tidak ada perubahan yang diisi.');
+            // Gak ada perubahan sama sekali - tetap dianggap "sudah mengisi"
+            // biar wali kelas tau siswa ini sudah cek datanya, cuma memang
+            // gak ada yg perlu diubah. Gak perlu approval wali kelas lagi.
+            $pengajuan->update([
+                'status' => 'tidak_ada_perubahan',
+                'data_perubahan' => [],
+                'catatan_siswa' => $request->catatan_siswa,
+                'diajukan_at' => now(),
+            ]);
+
+            return redirect()->route('pengajuan-publik.form', $npsn)->with('success', 'Terima kasih! Data kamu sudah dikonfirmasi tidak ada perubahan.');
         }
 
-        $pengajuan = PengajuanPerubahan::buatAtauAmbilUntuk($siswa);
         $pengajuan->update([
             'status' => 'menunggu_approval',
             'data_perubahan' => $dataPerubahan,
