@@ -1,6 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Kenaikan / Kelulusan Massal')
-@section('page-title', 'Kenaikan & Kelulusan Massal')
+@section('title', 'Registrasi Siswa')
+@section('page-title', 'Registrasi Siswa')
+
+@section('header-actions')
+    <a href="{{ route('siswa.create') }}" class="btn btn-secondary"><i class="ti ti-user-plus"></i> Mutasi Masuk / Tambah Siswa</a>
+@endsection
 
 @section('content')
 @if(session('proses_errors') && count(session('proses_errors')) > 0)
@@ -34,7 +38,7 @@
                             <option value="naik">⬆️ Naik Kelas</option>
                             <option value="lulus">🎓 Lulus (Kelas IX)</option>
                             <option value="tinggal">🔁 Tinggal Kelas</option>
-                            <option value="pindah">🚌 Pindah Sekolah</option>
+                            <option value="pindah">🚌 Mutasi Keluar</option>
                             <option value="keluar">❌ Keluar</option>
                         </select>
                     </div>
@@ -42,7 +46,7 @@
                         <label class="form-label">Kelas Tujuan <span style="color:#ef4444">*</span></label>
                         <select name="kelas_tujuan" class="form-input" id="sel-tujuan">
                             <option value="">-- Pilih --</option>
-                            @foreach(['VII','VIII','IX'] as $k)<option value="{{ $k }}">Kelas {{ $k }}</option>@endforeach
+                            @foreach(['7','8','9'] as $k)<option value="{{ $k }}">Kelas {{ $k }}</option>@endforeach
                         </select>
                         <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Angka rombel otomatis menyesuaikan (mis: 7A → 8A)</p>
                     </div>
@@ -121,7 +125,7 @@ function toggleTujuan(val) {
     const sel = document.getElementById('sel-tujuan');
     if (val === 'naik') {
         div.style.display = 'block'; sel.required = true;
-        const map = {'VII':'VIII','VIII':'IX'};
+        const map = {'7':'8','8':'9'};
         const kelas = document.getElementById('sel-kelas').value;
         if (map[kelas]) sel.value = map[kelas];
     } else {
@@ -130,7 +134,7 @@ function toggleTujuan(val) {
 }
 document.getElementById('sel-kelas').addEventListener('change', function() {
     if (document.getElementById('sel-aksi').value === 'naik') {
-        const map = {'VII':'VIII','VIII':'IX'};
+        const map = {'7':'8','8':'9'};
         const tujuan = document.getElementById('sel-tujuan');
         if (map[this.value]) tujuan.value = map[this.value];
     }

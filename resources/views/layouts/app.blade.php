@@ -237,13 +237,13 @@
         <div class="sb-section">Proses Siswa</div>
         <a href="{{ route('kenaikan.index') }}"
            class="sb-item {{ request()->routeIs('kenaikan.*') ? 'active' : '' }}">
-            <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span>
+            <i class="ti ti-arrow-up-circle"></i><span>Registrasi Siswa</span>
         </a>
         @elseif($isDemoReadonly)
         <div class="sb-divider"></div>
         <div class="sb-section">Proses Siswa</div>
         <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
-            <i class="ti ti-arrow-up-circle"></i><span>Naik Kelas / Lulus</span><span class="sb-demo-badge">Demo</span>
+            <i class="ti ti-arrow-up-circle"></i><span>Registrasi Siswa</span><span class="sb-demo-badge">Demo</span>
         </div>
         @endif
 
