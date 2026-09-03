@@ -1,10 +1,18 @@
 @extends('layouts.app')
-@section('title', 'Cetak Massal Buku Induk')
-@section('page-title', 'Cetak Massal - Buku Induk Siswa')
+@section('title', 'Cetak Massal')
+@section('page-title', 'Cetak Massal Siswa')
 
 @section('content')
 <form action="{{ route('siswa.cetak-massal') }}" method="POST" id="form-cetak-massal">
     @csrf
+
+    <div class="card" style="padding:18px;margin-bottom:16px;">
+        <label class="form-label">Jenis Dokumen</label>
+        <select name="jenis_dokumen" class="form-input" style="max-width:280px;" required>
+            <option value="buku-induk">Buku Induk</option>
+            <option value="biodata-rapor">Biodata Rapor</option>
+        </select>
+    </div>
 
     <div class="card" style="padding:18px;margin-bottom:16px;">
         <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">Pilih Cepat</p>

@@ -244,7 +244,13 @@ class SiswaController extends Controller
 
     public function cetakMassal(Request $request)
     {
-        $request->validate(['siswa_ids' => 'required|array|min:1', 'siswa_ids.*' => 'exists:siswas,id']);
+        $request->validate([
+            'siswa_ids' => 'required|array|min:1',
+            'siswa_ids.*' => 'exists:siswas,id',
+            'jenis_dokumen' => 'required|in:buku-induk,biodata-rapor',
+        ]);
+
+        $jenis = $request->jenis_dokumen;
 
         $siswaList = Siswa::whereIn('id', $request->siswa_ids)
             ->with(['nilaiRapors', 'nilaiP5s', 'nilaiEkskuls', 'kehadirans', 'riwayatKelas', 'prestasis'])
@@ -253,16 +259,24 @@ class SiswaController extends Controller
 
         abort_if($siswaList->isEmpty(), 404, 'Tidak ada siswa yang dipilih.');
 
+        $sekolah = auth()->user()->sekolah;
+        $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
+        $tanggalCetak = $sekolah->rapor_tanggal_manual ?? now();
+
         // Generate PDF satu-satu pakai view yg SAMA dgn cetak individual
         // (sudah pasti jalan), lalu di-ZIP - lebih simpel & aman drpd
         // gabungkan semua ke 1 file PDF (function baris() bentrok kalau
         // di-include berulang dlm 1 request yg sama).
         $zip = new \ZipArchive();
-        $zipPath = storage_path('app/temp-buku-induk-' . uniqid() . '.zip');
+        $zipPath = storage_path('app/temp-cetak-massal-' . uniqid() . '.zip');
         $zip->open($zipPath, \ZipArchive::CREATE);
 
         foreach ($siswaList as $siswa) {
-            $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
+            if ($jenis === 'biodata-rapor') {
+                $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd', 'tanggalCetak'));
+            } else {
+                $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
+            }
             $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
             $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
             // Margin diatur via CSS @page di view-nya
@@ -273,7 +287,8 @@ class SiswaController extends Controller
         }
         $zip->close();
 
-        return response()->download($zipPath, 'buku-induk-massal-' . now()->format('Y-m-d') . '.zip')->deleteFileAfterSend(true);
+        $labelJenis = $jenis === 'biodata-rapor' ? 'biodata-rapor' : 'buku-induk';
+        return response()->download($zipPath, "{$labelJenis}-massal-" . now()->format('Y-m-d') . '.zip')->deleteFileAfterSend(true);
     }
 
     /** Pilih model kartu pelajar sebelum cetak */
