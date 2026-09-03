@@ -33,6 +33,8 @@ class Sekolah extends Model
         'rapor_orientasi',
         'rapor_font_size',
         'rapor_tanggal_manual',
+        'uts_tanggal_manual',
+        'biodata_tanggal_manual',
         'rapor_tampilkan_logo',
         'rapor_kota_ttd',
         'rapor_threshold_sangat_baik',
@@ -59,6 +61,8 @@ class Sekolah extends Model
         'rapor_tampilkan_watermark' => 'boolean',
         'rapor_pakai_header_custom' => 'boolean',
         'rapor_tanggal_manual' => 'date',
+        'uts_tanggal_manual' => 'date',
+        'biodata_tanggal_manual' => 'date',
         'gemini_api_key' => 'encrypted',
     ];
 

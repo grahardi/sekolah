@@ -176,7 +176,7 @@
         <div>( ................................. )</div>
     </div>
     <div class="ttd-col">
-        {{ $sekolah->kecamatan ?? '' }}, {{ now()->locale('id')->translatedFormat('d F Y') }}<br>Wali Kelas
+        {{ $sekolah->kecamatan ?? '' }}, {{ $tanggalCetakUts->locale('id')->translatedFormat('d F Y') }}<br>Wali Kelas
         <div class="ttd-space"></div>
         <div class="ttd-nama">{{ $waliKelas->nama ?? '-' }}</div>
         <div>{{ $waliKelas && $waliKelas->nip_nuptk ? 'NIP ' . $waliKelas->nip_nuptk : '' }}</div>

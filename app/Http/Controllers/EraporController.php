@@ -288,6 +288,7 @@ class EraporController extends Controller
             'rapor_orientasi' => 'required|in:portrait,landscape',
             'rapor_font_size' => 'required|in:kecil,normal,besar',
             'rapor_tanggal_manual' => 'nullable|date',
+            'uts_tanggal_manual' => 'nullable|date',
             'rapor_tampilkan_logo' => 'nullable|boolean',
             'rapor_tampilkan_watermark' => 'nullable|boolean',
             'rapor_kota_ttd' => 'nullable|string|max:100',

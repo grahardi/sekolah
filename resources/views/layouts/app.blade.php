@@ -196,6 +196,10 @@
            class="sb-item {{ request()->routeIs('siswa.scan-kk.*') ? 'active' : '' }}">
             <i class="ti ti-scan"></i><span>Scan KK & Akta</span>
         </a>
+        <a href="{{ route('siswa.pengaturan.index') }}"
+           class="sb-item {{ request()->routeIs('siswa.pengaturan.*') ? 'active' : '' }}">
+            <i class="ti ti-settings"></i><span>Pengaturan</span>
+        </a>
         @elseif($isDemoReadonly)
         <div class="sb-item-demo" title="Dinonaktifkan untuk mode demo">
             <i class="ti ti-user-plus"></i><span>Tambah Siswa</span><span class="sb-demo-badge">Demo</span>

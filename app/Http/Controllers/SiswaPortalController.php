@@ -150,6 +150,7 @@ class SiswaPortalController extends Controller
             ->first();
 
         $ukuranKertasUts = strtolower($sekolah->uts_ukuran_kertas ?? 'F4') === 'f4' ? 'folio' : strtolower($sekolah->uts_ukuran_kertas ?? 'F4');
+        $tanggalCetakUts = $sekolah->uts_tanggal_manual ?? now();
 
         $pdf = Pdf::loadView('siswa-portal.cetak-uts', [
             'siswa' => $siswa,
@@ -160,6 +161,7 @@ class SiswaPortalController extends Controller
             'qrPng' => $qrPng,
             'catatanWaliKelas' => $catatanUts,
             'waliKelas' => $waliKelas?->guru,
+            'tanggalCetakUts' => $tanggalCetakUts,
         ])->setPaper($ukuranKertasUts, $sekolah->uts_orientasi ?? 'portrait');
 
         return $pdf->stream('uts-' . str_replace(' ', '-', $siswa->nama_lengkap) . '.pdf')

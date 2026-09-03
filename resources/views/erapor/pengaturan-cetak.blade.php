@@ -79,9 +79,14 @@
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div>
-                <label class="form-label">Tanggal Cetak (opsional)</label>
+                <label class="form-label">Tanggal Cetak Rapor (opsional)</label>
                 <input type="date" name="rapor_tanggal_manual" value="{{ $sekolah->rapor_tanggal_manual?->format('Y-m-d') }}" class="form-input">
-                <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Kosongkan supaya otomatis pakai tanggal hari ini.</p>
+                <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Khusus cetak Rapor. Kosongkan supaya otomatis pakai tanggal hari ini.</p>
+            </div>
+            <div>
+                <label class="form-label">Tanggal Cetak UTS (opsional)</label>
+                <input type="date" name="uts_tanggal_manual" value="{{ $sekolah->uts_tanggal_manual?->format('Y-m-d') }}" class="form-input">
+                <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Khusus cetak UTS/PTS, terpisah dari Rapor. Kosongkan = tanggal hari ini.</p>
             </div>
             <div>
                 <label class="form-label">Kota (baris tanda tangan)</label>

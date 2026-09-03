@@ -213,11 +213,27 @@ class SiswaController extends Controller
             ->header('Pragma', 'no-cache');
     }
 
+    public function pengaturanBukuInduk()
+    {
+        return view('siswa.pengaturan-buku-induk', ['sekolah' => auth()->user()->sekolah]);
+    }
+
+    public function updatePengaturanBukuInduk(Request $request)
+    {
+        $data = $request->validate([
+            'biodata_tanggal_manual' => 'nullable|date',
+        ]);
+
+        auth()->user()->sekolah->update($data);
+
+        return back()->with('success', 'Pengaturan Buku Induk berhasil disimpan.');
+    }
+
     public function cetakBiodataRapor(Siswa $siswa)
     {
         $sekolah = auth()->user()->sekolah;
         $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
-        $tanggalCetak = $sekolah->rapor_tanggal_manual ?? now();
+        $tanggalCetak = $sekolah->biodata_tanggal_manual ?? now();
 
         $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd', 'tanggalCetak'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
@@ -261,7 +277,7 @@ class SiswaController extends Controller
 
         $sekolah = auth()->user()->sekolah;
         $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
-        $tanggalCetak = $sekolah->rapor_tanggal_manual ?? now();
+        $tanggalCetak = $sekolah->biodata_tanggal_manual ?? now();
 
         // Generate PDF satu-satu pakai view yg SAMA dgn cetak individual
         // (sudah pasti jalan), lalu di-ZIP - lebih simpel & aman drpd
