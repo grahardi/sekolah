@@ -217,9 +217,11 @@ class SiswaController extends Controller
     {
         $sekolah = auth()->user()->sekolah;
         $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
+        $tanggalCetak = $sekolah->rapor_tanggal_manual ?? now();
 
-        $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd'));
+        $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd', 'tanggalCetak'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
         $pdf->setPaper('a4', 'portrait');
 
         return $pdf->stream('biodata-rapor-'.$siswa->nisn.'.pdf')

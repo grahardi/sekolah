@@ -4,54 +4,90 @@
 <meta charset="UTF-8">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-@page { margin: 20mm; }
-body { font-family:'DejaVu Sans', sans-serif; font-size:11pt; color:#000; }
-.judul { text-align:center; font-weight:bold; text-transform:uppercase; font-size:13pt; letter-spacing:1px; margin-bottom:20px; }
-table.biodata { width:100%; border-collapse:collapse; }
-table.biodata td { padding:3px 0; vertical-align:top; font-size:11pt; }
-td.no { width:22px; }
-td.label { width:190px; }
-td.titik { width:14px; }
-td.sub-label { padding-left:22px; }
-.ttd-wrap { width:260px; margin-left:auto; margin-top:40px; text-align:center; }
-.ttd-nama { font-weight:bold; text-decoration:underline; margin-top:65px; }
+body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; background:#fff; }
+.page { padding:10mm 20mm 10mm 20mm; }
+.judul-dok { text-align:center; margin-bottom:14px; width:100%; }
+.judul-dok h2 { font-size:12pt; font-weight:bold; text-transform:uppercase; letter-spacing:2px; border:2.5px solid #000; display:inline-block; padding:5px 18px; }
+.sek { background:#000; color:#fff; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
+.section-blok { page-break-inside: avoid; margin-top: 8mm; }
+table.data { width:100%; border-collapse:collapse; }
+table.data td { padding:2.5px 6px; font-size:9.5pt; vertical-align:top; line-height:1.4; }
+table.data td.no  { width:22px; text-align:right; padding-right:4px; }
+table.data td.lbl { width:32%; text-align:left; }
+table.data td.ttd { width:6px; text-align:center; }
+table.data td.val { border-bottom:1px solid #777; }
+.footer-wrap { display:flex; justify-content:space-between; align-items:flex-end; margin-top:20mm; }
+.foto-frame { width:80px; height:100px; border:1.5px solid #333; overflow:hidden; }
+.foto-frame img { width:100%; height:100%; object-fit:cover; }
+.ttd-wrap { width:260px; text-align:center; }
+.ttd-nama { font-weight:bold; text-decoration:underline; margin-top:60px; }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="judul">Identitas Rapor Siswa</div>
-
-<table class="biodata">
-    <tr><td class="no">1.</td><td class="label">Nama Lengkap</td><td class="titik">:</td><td>{{ $siswa->nama_lengkap }}</td></tr>
-    <tr><td class="no">2.</td><td class="label">Nomor Induk / NISN</td><td class="titik">:</td><td>{{ $siswa->nis }} / {{ $siswa->nisn }}</td></tr>
-    <tr><td class="no">3.</td><td class="label">Jenis Kelamin</td><td class="titik">:</td><td>{{ $siswa->jenis_kelamin_lengkap }}</td></tr>
-    <tr><td class="no">4.</td><td class="label">Tempat, Tanggal Lahir</td><td class="titik">:</td><td>{{ $siswa->tempat_lahir }}, {{ $siswa->tanggal_lahir?->locale('id')->translatedFormat('d F Y') }}</td></tr>
-    <tr><td class="no">5.</td><td class="label">Agama</td><td class="titik">:</td><td>{{ $siswa->agama }}</td></tr>
-    <tr><td class="no">6.</td><td class="label">Anak ke &ndash;</td><td class="titik">:</td><td>{{ $siswa->anak_ke ?: '-' }}</td></tr>
-    <tr><td class="no">7.</td><td class="label">Status dalam Keluarga</td><td class="titik">:</td><td>Anak</td></tr>
-    <tr><td class="no">8.</td><td class="label">Alamat Siswa</td><td class="titik">:</td><td>{{ $siswa->alamat }}</td></tr>
-    <tr><td></td><td></td><td></td><td>{{ $siswa->kecamatan }}</td></tr>
-    <tr><td class="no">9.</td><td class="label">Diterima di Sekolah Ini</td><td class="titik">:</td><td>{{ $siswa->tanggal_diterima?->locale('id')->translatedFormat('d F Y') ?: '-' }}</td></tr>
-    <tr><td class="no">10.</td><td class="label">Sekolah Asal</td><td class="titik">:</td><td>{{ $siswa->asal_sekolah ?: '-' }}</td></tr>
-    <tr><td class="no">11.</td><td class="label">Tahun Lulus SD</td><td class="titik">:</td><td>{{ $siswa->tahun_masuk ?: '-' }}</td></tr>
-    <tr><td class="no">12.</td><td class="label">Nama Orang Tua</td><td></td><td></td></tr>
-    <tr><td></td><td class="sub-label">a. Nama Ayah</td><td class="titik">:</td><td>{{ $siswa->nama_ayah ?: '-' }}</td></tr>
-    <tr><td></td><td class="sub-label">b. Nama Ibu</td><td class="titik">:</td><td>{{ $siswa->nama_ibu ?: '-' }}</td></tr>
-    <tr><td class="no">13.</td><td class="label">Alamat Orang Tua</td><td class="titik">:</td><td>{{ $siswa->alamat_ortu ?: $siswa->alamat }}</td></tr>
-    <tr><td class="no">14.</td><td class="label">Pekerjaan Orang Tua</td><td></td><td></td></tr>
-    <tr><td></td><td class="sub-label">a. Pekerjaan Ayah</td><td class="titik">:</td><td>{{ $siswa->pekerjaan_ayah ?: '-' }}</td></tr>
-    <tr><td></td><td class="sub-label">b. Pekerjaan Ibu</td><td class="titik">:</td><td>{{ $siswa->pekerjaan_ibu ?: '-' }}</td></tr>
-    <tr><td class="no">15.</td><td class="label">Nama Wali</td><td class="titik">:</td><td>{{ $siswa->nama_wali ?: '-' }}</td></tr>
-    <tr><td class="no">16.</td><td class="label">Alamat Wali</td><td class="titik">:</td><td>-</td></tr>
-    <tr><td class="no">17.</td><td class="label">Pekerjaan Wali</td><td class="titik">:</td><td>{{ $siswa->pekerjaan_wali ?: '-' }}</td></tr>
-</table>
-
-<div class="ttd-wrap">
-    <p>{{ $kotaTtd }}, {{ now()->locale('id')->translatedFormat('d F Y') }}</p>
-    <p>Kepala Sekolah</p>
-    <p class="ttd-nama">{{ $sekolah->kepala_sekolah_nama ?: '-' }}</p>
-    <p>NIP {{ $sekolah->kepala_sekolah_nip ?: '-' }}</p>
+<div class="judul-dok">
+    <h2>Identitas Rapor Siswa</h2>
 </div>
 
+@php
+$baris = function ($no, $label, $val) {
+    $val = $val ?: '-';
+    echo "<tr><td class='no'>{$no}</td><td class='lbl'>{$label}</td><td class='ttd'>:</td><td class='val'>" . e($val) . "</td></tr>";
+};
+@endphp
+
+<div class="section-blok">
+<div class="sek">DATA DIRI</div>
+<table class="data">
+    @php $baris(1, 'Nama Lengkap', $siswa->nama_lengkap) @endphp
+    @php $baris(2, 'Nomor Induk / NISN', "{$siswa->nis} / {$siswa->nisn}") @endphp
+    @php $baris(3, 'Jenis Kelamin', $siswa->jenis_kelamin_lengkap) @endphp
+    @php $baris(4, 'Tempat, Tanggal Lahir', $siswa->tempat_lahir . ', ' . ($siswa->tanggal_lahir?->locale('id')->translatedFormat('d F Y') ?? '-')) @endphp
+    @php $baris(5, 'Agama', $siswa->agama) @endphp
+    @php $baris(6, 'Anak ke -', $siswa->anak_ke) @endphp
+    @php $baris(7, 'Status dalam Keluarga', 'Anak') @endphp
+    @php $baris(8, 'Alamat Siswa', trim($siswa->alamat . ', ' . $siswa->kecamatan, ', ')) @endphp
+</table>
+</div>
+
+<div class="section-blok">
+<div class="sek">DATA KEPENDIDIKAN</div>
+<table class="data">
+    @php $baris(9, 'Diterima di Sekolah Ini', $siswa->tanggal_diterima?->locale('id')->translatedFormat('d F Y')) @endphp
+    @php $baris(10, 'Diterima di Kelas', $siswa->diterima_di_kelas ?: $siswa->kelas) @endphp
+    @php $baris(11, 'Sekolah Asal', $siswa->asal_sekolah) @endphp
+    @php $baris(12, 'Tahun Lulus SD', $siswa->tahun_masuk) @endphp
+</table>
+</div>
+
+<div class="section-blok">
+<div class="sek">DATA KELUARGA (ORANG TUA - WALI)</div>
+<table class="data">
+    @php $baris(13, 'Nama Ayah', $siswa->nama_ayah) @endphp
+    @php $baris(14, 'Pekerjaan Ayah', $siswa->pekerjaan_ayah) @endphp
+    @php $baris(15, 'Nama Ibu', $siswa->nama_ibu) @endphp
+    @php $baris(16, 'Pekerjaan Ibu', $siswa->pekerjaan_ibu) @endphp
+    @php $baris(17, 'Alamat Orang Tua', $siswa->alamat_ortu ?: $siswa->alamat) @endphp
+    @php $baris(18, 'Nama Wali', $siswa->nama_wali) @endphp
+    @php $baris(19, 'Pekerjaan Wali', $siswa->pekerjaan_wali) @endphp
+</table>
+</div>
+
+<div class="footer-wrap">
+    <div class="foto-frame">
+        @if($siswa->foto && file_exists(public_path('storage/' . $siswa->foto)))
+        <img src="{{ public_path('storage/' . $siswa->foto) }}">
+        @endif
+    </div>
+    <div class="ttd-wrap">
+        <p>{{ $kotaTtd }}, {{ $tanggalCetak->locale('id')->translatedFormat('d F Y') }}</p>
+        <p>Kepala Sekolah</p>
+        <p class="ttd-nama">{{ $sekolah->kepala_sekolah_nama ?: '-' }}</p>
+        <p>NIP {{ $sekolah->kepala_sekolah_nip ?: '-' }}</p>
+    </div>
+</div>
+
+</div>
 </body>
 </html>
