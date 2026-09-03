@@ -14,6 +14,7 @@
     <span class="btn btn-secondary" style="opacity:.4;cursor:not-allowed;"><i class="ti ti-chevron-right"></i></span>
     @endif
     <a href="{{ route('siswa.buku-induk.pdf', $siswa) }}" class="btn btn-secondary"><i class="ti ti-printer"></i> Cetak Buku Induk</a>
+    <a href="{{ route('siswa.biodata-rapor.pdf', $siswa) }}" class="btn btn-secondary"><i class="ti ti-file-text"></i> Cetak Biodata Rapor</a>
     @if(auth()->user()->isAdmin())
     <a href="{{ route('siswa.edit', $siswa) }}" class="btn btn-primary"><i class="ti ti-pencil"></i> Edit</a>
     @endif

@@ -213,6 +213,20 @@ class SiswaController extends Controller
             ->header('Pragma', 'no-cache');
     }
 
+    public function cetakBiodataRapor(Siswa $siswa)
+    {
+        $sekolah = auth()->user()->sekolah;
+        $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
+
+        $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd'));
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->stream('biodata-rapor-'.$siswa->nisn.'.pdf')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
+    }
+
     /** Halaman pilih siswa untuk cetak massal Buku Induk */
     public function pilihCetakMassal()
     {

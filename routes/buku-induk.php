@@ -33,6 +33,7 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
         Route::get('/{siswa}', [SiswaController::class, 'show'])->name('show');
         Route::middleware('not_guru')->get('/{siswa}/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'show'])->name('scan-kk.show');
         Route::get('/{siswa}/buku-induk-pdf', [SiswaController::class, 'cetakBukuInduk'])->name('buku-induk.pdf');
+        Route::get('/{siswa}/biodata-rapor-pdf', [SiswaController::class, 'cetakBiodataRapor'])->name('biodata-rapor.pdf');
         Route::get('/{siswa}/kartu-pdf', [SiswaController::class, 'cetakKartu'])->name('kartu.pdf');
         Route::get('/{siswa}/kartu/pilih-model', [SiswaController::class, 'pilihModelKartu'])->name('kartu.pilih-model');
         Route::get('/{siswa}/arsip', [ArsipController::class, 'show'])->name('arsip.show');
