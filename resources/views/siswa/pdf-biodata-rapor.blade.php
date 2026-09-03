@@ -16,7 +16,7 @@ table.data td.no  { width:22px; text-align:right; padding-right:4px; }
 table.data td.lbl { width:32%; text-align:left; }
 table.data td.ttd { width:6px; text-align:center; }
 table.data td.val { border-bottom:1px solid #777; }
-.footer-table { width:340px; margin:20mm auto 0; border-collapse:collapse; }
+.footer-table { width:340px; margin:20mm 0 0 20mm; border-collapse:collapse; }
 .footer-table td { vertical-align:bottom; padding:0; }
 .foto-frame { width:80px; height:100px; border:1.5px solid #333; overflow:hidden; }
 .foto-frame img { width:100%; height:100%; object-fit:cover; }
