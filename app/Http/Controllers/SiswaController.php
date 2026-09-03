@@ -447,6 +447,14 @@ class SiswaController extends Controller
     // ── Helpers ───────────────────────────────────────────────────────────────
     private function validateSiswa(Request $request, ?int $ignoreId = null): array
     {
+        // Kalau ada yg gak sengaja isi tanggal lengkap di field tahun (mis.
+        // "1985-03-15" bukan cuma "1985"), ekstrak tahunnya dulu drpd bikin
+        // validasi 'integer' gagal keras atau (kalau lolos) bikin DB crash.
+        $request->merge([
+            'tahun_lahir_ayah' => Siswa::ekstrakTahunAman($request->input('tahun_lahir_ayah')),
+            'tahun_lahir_ibu' => Siswa::ekstrakTahunAman($request->input('tahun_lahir_ibu')),
+        ]);
+
         return $request->validate([
             'nisn'             => 'required|string|max:20|unique:siswas,nisn'.($ignoreId ? ",{$ignoreId}" : ''),
             'nis'              => 'nullable|string|max:20',

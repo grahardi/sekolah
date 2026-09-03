@@ -93,6 +93,12 @@ class PengajuanPerubahanPublicController extends Controller
         $dataPerubahan = [];
         foreach ($request->input('perubahan', []) as $field => $nilai) {
             if (! in_array($field, PengajuanPerubahan::FIELD_BOLEH_DIAJUKAN)) continue;
+
+            // Field tahun (bukan tanggal lengkap) - amankan drpd salah isi tanggal penuh
+            if (in_array($field, ['tahun_lahir_ayah', 'tahun_lahir_ibu'])) {
+                $nilai = \App\Models\Siswa::ekstrakTahunAman($nilai);
+            }
+
             if (trim((string) $nilai) === '') continue;
 
             // tanggal_lahir itu Carbon object - (string) casting-nya bisa

@@ -67,6 +67,30 @@ class Siswa extends Model
     public function pengajuanPerubahan() { return $this->hasOne(\App\Models\PengajuanPerubahan::class); }
     public function prestasis()     { return $this->hasMany(Prestasi::class)->orderByDesc('tanggal_kegiatan'); }
 
+    /**
+     * tahun_lahir_ayah/ibu itu kolom TIPE YEAR (cuma terima angka tahun murni,
+     * mis. 1985) - kalau ada yg salah isi tanggal lengkap (mis. "1985-03-15"
+     * atau "15-03-1985"), PostgreSQL nolak & bikin SELURUH baris gagal
+     * tersimpan. Fungsi ini ekstrak angka tahun 4-digit yg wajar (1940-sekarang)
+     * dari input APAPUN bentuknya, drpd nyimpan mentah2 & bikin error.
+     */
+    public static function ekstrakTahunAman(mixed $val): ?int
+    {
+        if ($val === null || $val === '') return null;
+
+        // Kalau sudah bersih cuma 4 digit, langsung pakai
+        if (is_numeric($val) && strlen((string) (int) $val) === 4) {
+            return (int) $val;
+        }
+
+        // Cari pola 4 digit yg masuk akal sbg tahun (19xx atau 20xx) di string apapun
+        if (preg_match('/(19|20)\d{2}/', (string) $val, $m)) {
+            return (int) $m[0];
+        }
+
+        return null; // gak ketemu pola tahun yg masuk akal, drpd maksa simpan yg salah
+    }
+
     public function getRombelLengkapAttribute(): string
     {
         if ($this->rombel) {

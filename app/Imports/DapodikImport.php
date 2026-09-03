@@ -120,7 +120,7 @@ class DapodikImport
 
                         // Data Ayah (Y-AD)
                         'nama_ayah' => $get('Y') ?: null,
-                        'tahun_lahir_ayah' => is_numeric($get('Z')) ? (int) $get('Z') : null,
+                        'tahun_lahir_ayah' => Siswa::ekstrakTahunAman($get('Z')),
                         'pendidikan_ayah' => $get('AA') ?: null,
                         'pekerjaan_ayah' => $get('AB') ?: null,
                         'penghasilan_ayah' => $get('AC') ?: null,
@@ -128,7 +128,7 @@ class DapodikImport
 
                         // Data Ibu (AE-AJ)
                         'nama_ibu' => $get('AE') ?: null,
-                        'tahun_lahir_ibu' => is_numeric($get('AF')) ? (int) $get('AF') : null,
+                        'tahun_lahir_ibu' => Siswa::ekstrakTahunAman($get('AF')),
                         'pendidikan_ibu' => $get('AG') ?: null,
                         'pekerjaan_ibu' => $get('AH') ?: null,
                         'penghasilan_ibu' => $get('AI') ?: null,
