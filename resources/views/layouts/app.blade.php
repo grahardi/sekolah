@@ -227,9 +227,9 @@
            class="sb-item {{ request()->query('status')==='lulus' ? 'active' : '' }}">
             <i class="ti ti-award"></i><span>Siswa Lulus</span>
         </a>
-        <a href="{{ route('siswa.index', ['status'=>'pindah']) }}"
-           class="sb-item {{ request()->query('status')==='pindah' ? 'active' : '' }}">
-            <i class="ti ti-transfer"></i><span>Siswa Pindah</span>
+        <a href="{{ route('siswa.index', ['status'=>'keluar']) }}"
+           class="sb-item {{ request()->query('status')==='keluar' ? 'active' : '' }}">
+            <i class="ti ti-transfer"></i><span>Siswa Keluar</span>
         </a>
 
         @if(auth()->user()->isAdmin())
