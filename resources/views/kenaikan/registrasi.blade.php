@@ -26,6 +26,7 @@
     <table style="width:100%;border-collapse:collapse;">
         <thead style="background:#f8fafc;">
             <tr>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;width:50px;"></th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Nama</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Kelas</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">NISN</th>
@@ -35,6 +36,15 @@
         <tbody>
             @forelse($siswaList as $s)
             <tr style="border-top:1px solid #f1f5f9;">
+                <td style="padding:10px 16px;">
+                    <div style="width:34px;height:34px;border-radius:8px;overflow:hidden;background:#f1f5f9;display:flex;align-items:center;justify-content:center;">
+                        @if($s->foto)
+                        <img src="{{ asset('storage/' . $s->foto) }}" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                        <i class="ti ti-user" style="color:#cbd5e1;font-size:16px;"></i>
+                        @endif
+                    </div>
+                </td>
                 <td style="padding:10px 16px;font-size:13px;font-weight:600;color:#0f172a;">{{ $s->nama_lengkap }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $s->kelas }}{{ $s->rombel ? " - $s->rombel" : '' }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $s->nisn }}</td>
@@ -43,7 +53,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="4" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Tidak ada siswa aktif yang cocok dengan pencarian.</td></tr>
+            <tr><td colspan="5" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Tidak ada siswa aktif yang cocok dengan pencarian.</td></tr>
             @endforelse
         </tbody>
     </table>
