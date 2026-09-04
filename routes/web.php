@@ -68,6 +68,7 @@ require __DIR__.'/manajemen-sekolah.php';
 require __DIR__.'/sarpras.php';
 require __DIR__.'/pengajuan-perubahan.php';
 require __DIR__.'/alumni.php';
+require __DIR__.'/tiket.php';
 
 Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');

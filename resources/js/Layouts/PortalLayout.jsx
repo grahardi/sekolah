@@ -18,6 +18,7 @@ const MENU = [
     { key: 'manajemen', label: 'Manajemen Sekolah', href: '/manajemen-sekolah', icon: GearIcon, disabled: false, external: true },
     { key: 'sarpras', label: 'Sarpras', href: '/sarpras', icon: BookIcon, disabled: false, external: true },
     { key: 'alumni', label: 'Alumni', href: '/alumni', icon: UsersIcon, disabled: false, external: true },
+    { key: 'tiket', label: 'Tiket Dukungan', href: '/tiket', icon: DocIcon, disabled: false, external: true },
     { key: 'modul-ajar', label: 'Modul Ajar', href: '/modul-ajar', icon: DocIcon },
     {
         key: 'lab',
@@ -37,7 +38,7 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
     // Guru cuma boleh akses E-Rapor - sembunyikan menu lain yg bakal 403
-    const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna', 'profil-sekolah', 'sarpras', 'ujian', 'alumni'];
+    const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna', 'profil-sekolah', 'sarpras', 'ujian', 'alumni', 'tiket'];
     const menuBerdasarkanRole = user?.role !== 'admin'
         ? MENU.filter((m) => m.key !== 'profil-sekolah' && !(user?.role === 'guru' && HIDDEN_UNTUK_GURU.includes(m.key)))
         : MENU;

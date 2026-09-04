@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 
 const MENU = [
     { key: 'dashboard', label: 'Dashboard', href: '/admin-portal' },
+    { key: 'tiket', label: 'Tiket Dukungan', href: '/admin-portal/tiket' },
     { key: 'log-aktivitas', label: 'Log Aktivitas', href: '/admin-portal/log-aktivitas' },
     { key: 'exo', label: 'Extraordinary CBT', href: '/admin-portal/exo' },
 ];

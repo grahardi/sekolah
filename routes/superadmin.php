@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Route;
 // bukan cuma satu sekolah seperti Buku Induk. Dibatasi middleware
 // 'super-admin' (cek kolom is_super_admin di tabel users).
 Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name('superadmin.')->group(function () {
+
+    Route::get('/tiket', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'index'])->name('tiket.index');
+    Route::get('/tiket/{tiket}', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'show'])->name('tiket.show');
+    Route::post('/tiket/{tiket}/balas', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'balas'])->name('tiket.balas');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/log-aktivitas', [DashboardController::class, 'logAktivitas'])->name('log-aktivitas');
     Route::get('/sekolah/{sekolah}', [DashboardController::class, 'show'])->name('sekolah.show');
