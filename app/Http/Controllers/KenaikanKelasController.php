@@ -17,6 +17,64 @@ class KenaikanKelasController extends Controller
         return view('kenaikan.index', compact('kelasList', 'tahunAjaran'));
     }
 
+    /** Registrasi Mutasi - cari 1 siswa spesifik, lalu pilih aksi (Tinggal Kelas/Mutasi/dll) */
+    public function registrasiIndex(Request $request)
+    {
+        $search = $request->input('search');
+        $siswaList = collect();
+
+        if ($search) {
+            $siswaList = Siswa::where('status', 'aktif')
+                ->where(fn ($q) => $q->where('nama_lengkap', 'ilike', "%{$search}%")
+                    ->orWhere('nisn', 'ilike', "%{$search}%")
+                    ->orWhere('nis', 'ilike', "%{$search}%"))
+                ->orderBy('nama_lengkap')
+                ->limit(20)
+                ->get();
+        }
+
+        $tahunAjaran = date('Y') . '/' . (date('Y') + 1);
+
+        return view('kenaikan.registrasi', compact('siswaList', 'search', 'tahunAjaran'));
+    }
+
+    public function registrasiProses(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswas,id',
+            'aksi' => 'required|in:tinggal,mutasi,mengundurkan_diri,wafat,hilang,lainnya',
+            'tahun_ajaran' => 'required|string',
+            'keterangan_keluar' => 'nullable|string|max:255',
+        ]);
+
+        $siswa = Siswa::findOrFail($request->siswa_id);
+
+        $hasilMap = [
+            'tinggal'           => ['hasil' => 'Tinggal Kelas',     'status' => 'aktif', 'alasan' => null],
+            'mutasi'            => ['hasil' => 'Mutasi',            'status' => 'keluar', 'alasan' => 'Mutasi'],
+            'mengundurkan_diri' => ['hasil' => 'Mengundurkan Diri', 'status' => 'keluar', 'alasan' => 'Mengundurkan Diri'],
+            'wafat'             => ['hasil' => 'Wafat',             'status' => 'keluar', 'alasan' => 'Wafat'],
+            'hilang'            => ['hasil' => 'Hilang',            'status' => 'keluar', 'alasan' => 'Hilang'],
+            'lainnya'           => ['hasil' => 'Keluar (Lainnya)',  'status' => 'keluar', 'alasan' => 'Lainnya'],
+        ];
+
+        $info = $hasilMap[$request->aksi];
+
+        RiwayatKelas::updateOrCreate(
+            ['siswa_id' => $siswa->id, 'tahun_ajaran' => $request->tahun_ajaran],
+            ['kelas' => $siswa->kelas, 'rombel' => $siswa->rombel, 'hasil' => $info['hasil']]
+        );
+
+        $siswa->update([
+            'status' => $info['status'],
+            'alasan_keluar' => $info['alasan'],
+            'tanggal_keluar' => $info['alasan'] ? now() : null,
+            'keterangan_keluar' => $info['alasan'] ? $request->keterangan_keluar : null,
+        ]);
+
+        return redirect()->route('kenaikan.registrasi')->with('success', "{$siswa->nama_lengkap} berhasil ditandai \"{$info['hasil']}\".");
+    }
+
     public function preview(Request $request)
     {
         $request->validate([

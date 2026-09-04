@@ -101,6 +101,8 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
             Route::get('/', [KenaikanKelasController::class, 'index'])->name('index');
             Route::get('/preview', [KenaikanKelasController::class, 'preview'])->name('preview');
             Route::post('/proses', [KenaikanKelasController::class, 'proses'])->name('proses');
+            Route::get('/registrasi', [KenaikanKelasController::class, 'registrasiIndex'])->name('registrasi');
+            Route::post('/registrasi', [KenaikanKelasController::class, 'registrasiProses'])->name('registrasi.proses');
         });
     });
 });

@@ -3,6 +3,7 @@
 @section('page-title', 'Registrasi Siswa')
 
 @section('header-actions')
+    <a href="{{ route('kenaikan.registrasi') }}" class="btn btn-secondary"><i class="ti ti-transfer"></i> Registrasi Mutasi / Keluar</a>
     <a href="{{ route('siswa.create') }}" class="btn btn-secondary"><i class="ti ti-user-plus"></i> Mutasi Masuk / Tambah Siswa</a>
 @endsection
 
@@ -37,12 +38,6 @@
                             <option value="">-- Pilih Aksi --</option>
                             <option value="naik">⬆️ Naik Kelas</option>
                             <option value="lulus">🎓 Lulus (Kelas IX)</option>
-                            <option value="tinggal">🔁 Tinggal Kelas</option>
-                            <option value="mutasi">🚌 Mutasi</option>
-                            <option value="mengundurkan_diri">✋ Mengundurkan Diri</option>
-                            <option value="wafat">🕊️ Wafat</option>
-                            <option value="hilang">❓ Hilang</option>
-                            <option value="lainnya">⚪ Lainnya</option>
                         </select>
                     </div>
                     <div id="div-tujuan" style="display:none;">
@@ -52,10 +47,6 @@
                             @foreach(['7','8','9'] as $k)<option value="{{ $k }}">Kelas {{ $k }}</option>@endforeach
                         </select>
                         <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Angka rombel otomatis menyesuaikan (mis: 7A → 8A)</p>
-                    </div>
-                    <div id="div-keterangan-keluar" style="display:none;">
-                        <label class="form-label">Keterangan (opsional)</label>
-                        <input type="text" name="keterangan_keluar" value="{{ old('keterangan_keluar') }}" placeholder="mis. Pindah ke SMP Negeri 2 Malang" class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Wali Kelas (opsional)</label>
@@ -130,7 +121,6 @@
 function toggleTujuan(val) {
     const div = document.getElementById('div-tujuan');
     const sel = document.getElementById('sel-tujuan');
-    const divKet = document.getElementById('div-keterangan-keluar');
     if (val === 'naik') {
         div.style.display = 'block'; sel.required = true;
         const map = {'7':'8','8':'9'};
@@ -139,9 +129,6 @@ function toggleTujuan(val) {
     } else {
         div.style.display = 'none'; sel.required = false; sel.value = '';
     }
-
-    const kategoriKeluar = ['mutasi', 'mengundurkan_diri', 'wafat', 'hilang', 'lainnya'];
-    divKet.style.display = kategoriKeluar.includes(val) ? 'block' : 'none';
 }
 document.getElementById('sel-kelas').addEventListener('change', function() {
     if (document.getElementById('sel-aksi').value === 'naik') {
