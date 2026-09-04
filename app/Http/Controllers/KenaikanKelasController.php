@@ -21,7 +21,7 @@ class KenaikanKelasController extends Controller
     {
         $request->validate([
             'kelas'        => 'required|string|max:10',
-            'aksi'         => 'required|in:naik,lulus,tinggal,pindah,keluar',
+            'aksi'         => 'required|in:naik,lulus,tinggal,mutasi,mengundurkan_diri,wafat,hilang,lainnya',
             'tahun_ajaran' => 'required|string|max:10',
             'kelas_tujuan' => 'nullable|string|max:10',
             'wali_kelas'   => 'nullable|string|max:100',
@@ -53,7 +53,7 @@ class KenaikanKelasController extends Controller
         $request->validate([
             'siswa_ids'    => 'required|array|min:1',
             'siswa_ids.*'  => 'exists:siswas,id',
-            'aksi'         => 'required|in:naik,lulus,tinggal,pindah,keluar',
+            'aksi'         => 'required|in:naik,lulus,tinggal,mutasi,mengundurkan_diri,wafat,hilang,lainnya',
             'kelas_asal'   => 'required|string|max:10',
             'tahun_ajaran' => 'required|string|max:10',
             'kelas_tujuan' => 'nullable|string|max:10',
@@ -66,17 +66,22 @@ class KenaikanKelasController extends Controller
         $ta          = $request->tahun_ajaran;
         $kelasTujuan = $request->kelas_tujuan;
         $waliKelas   = $request->wali_kelas;
+        $keterangan  = $request->keterangan_keluar;
 
         $hasilMap = [
-            'naik'    => ['hasil' => 'Naik Kelas',   'status' => 'aktif'],
-            'lulus'   => ['hasil' => 'Lulus',         'status' => 'lulus'],
-            'tinggal' => ['hasil' => 'Tinggal Kelas', 'status' => 'aktif'],
-            'pindah'  => ['hasil' => 'Pindah',        'status' => 'pindah'],
-            'keluar'  => ['hasil' => 'Keluar',        'status' => 'keluar'],
+            'naik'              => ['hasil' => 'Naik Kelas',        'status' => 'aktif', 'alasan' => null],
+            'lulus'             => ['hasil' => 'Lulus',             'status' => 'lulus', 'alasan' => null],
+            'tinggal'           => ['hasil' => 'Tinggal Kelas',     'status' => 'aktif', 'alasan' => null],
+            'mutasi'            => ['hasil' => 'Mutasi',            'status' => 'keluar', 'alasan' => 'Mutasi'],
+            'mengundurkan_diri' => ['hasil' => 'Mengundurkan Diri', 'status' => 'keluar', 'alasan' => 'Mengundurkan Diri'],
+            'wafat'             => ['hasil' => 'Wafat',             'status' => 'keluar', 'alasan' => 'Wafat'],
+            'hilang'            => ['hasil' => 'Hilang',            'status' => 'keluar', 'alasan' => 'Hilang'],
+            'lainnya'           => ['hasil' => 'Keluar (Lainnya)',  'status' => 'keluar', 'alasan' => 'Lainnya'],
         ];
 
         $hasil      = $hasilMap[$aksi]['hasil'];
         $statusBaru = $hasilMap[$aksi]['status'];
+        $alasanBaru = $hasilMap[$aksi]['alasan'];
         $berhasil   = 0;
         $errors     = [];
 
@@ -100,6 +105,9 @@ class KenaikanKelasController extends Controller
                     'status' => $statusBaru,
                     'kelas'  => $kelasBaru,
                     'rombel' => $rombelBaru,
+                    'alasan_keluar' => $alasanBaru,
+                    'tanggal_keluar' => $alasanBaru ? now() : null,
+                    'keterangan_keluar' => $alasanBaru ? $keterangan : null,
                 ]);
 
                 $berhasil++;
@@ -110,11 +118,14 @@ class KenaikanKelasController extends Controller
         }
 
         $msg = match($aksi) {
-            'naik'    => "{$berhasil} siswa berhasil dinaikkan ke kelas {$kelasTujuan}.",
-            'lulus'   => "{$berhasil} siswa berhasil diluluskan.",
-            'tinggal' => "{$berhasil} siswa ditetapkan tinggal kelas.",
-            'pindah'  => "{$berhasil} siswa ditandai pindah sekolah.",
-            'keluar'  => "{$berhasil} siswa ditandai keluar.",
+            'naik'              => "{$berhasil} siswa berhasil dinaikkan ke kelas {$kelasTujuan}.",
+            'lulus'             => "{$berhasil} siswa berhasil diluluskan.",
+            'tinggal'           => "{$berhasil} siswa ditetapkan tinggal kelas.",
+            'mutasi'            => "{$berhasil} siswa ditandai mutasi keluar.",
+            'mengundurkan_diri' => "{$berhasil} siswa ditandai mengundurkan diri.",
+            'wafat'             => "{$berhasil} siswa ditandai wafat.",
+            'hilang'            => "{$berhasil} siswa ditandai hilang.",
+            'lainnya'           => "{$berhasil} siswa ditandai keluar (lainnya).",
         };
 
         if (count($errors) > 0) $msg .= ' ' . count($errors) . ' gagal.';
@@ -142,8 +153,11 @@ class KenaikanKelasController extends Controller
                 return [$kelasAsal, $rombelBaru];
 
             case 'tinggal':
-            case 'pindah':
-            case 'keluar':
+            case 'mutasi':
+            case 'mengundurkan_diri':
+            case 'wafat':
+            case 'hilang':
+            case 'lainnya':
             default:
                 return [$kelasAsal, $rombelAsal];
         }

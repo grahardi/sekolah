@@ -12,8 +12,11 @@
         'naik'    => ['label'=>'Naik Kelas',    'color'=>'#1d4ed8','bg'=>'#eff6ff','icon'=>'ti-arrow-up-circle'],
         'lulus'   => ['label'=>'Lulus',          'color'=>'#16a34a','bg'=>'#f0fdf4','icon'=>'ti-certificate'],
         'tinggal' => ['label'=>'Tinggal Kelas',  'color'=>'#d97706','bg'=>'#fffbeb','icon'=>'ti-refresh'],
-        'pindah'  => ['label'=>'Pindah Sekolah', 'color'=>'#7c3aed','bg'=>'#f5f3ff','icon'=>'ti-transfer'],
-        'keluar'  => ['label'=>'Keluar',         'color'=>'#dc2626','bg'=>'#fef2f2','icon'=>'ti-x'],
+        'mutasi'            => ['label'=>'Mutasi',            'color'=>'#7c3aed','bg'=>'#f5f3ff','icon'=>'ti-transfer'],
+        'mengundurkan_diri' => ['label'=>'Mengundurkan Diri', 'color'=>'#dc2626','bg'=>'#fef2f2','icon'=>'ti-hand-stop'],
+        'wafat'             => ['label'=>'Wafat',             'color'=>'#475569','bg'=>'#f8fafc','icon'=>'ti-flower'],
+        'hilang'            => ['label'=>'Hilang',            'color'=>'#b45309','bg'=>'#fffbeb','icon'=>'ti-help-circle'],
+        'lainnya'           => ['label'=>'Keluar (Lainnya)',  'color'=>'#64748b','bg'=>'#f8fafc','icon'=>'ti-dots'],
     ];
     $info = $aksiInfo[$aksi] ?? $aksiInfo['naik'];
 @endphp
