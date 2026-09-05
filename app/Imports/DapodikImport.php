@@ -121,17 +121,17 @@ class DapodikImport
                         // Data Ayah (Y-AD)
                         'nama_ayah' => $get('Y') ?: null,
                         'tahun_lahir_ayah' => Siswa::ekstrakTahunAman($get('Z')),
-                        'pendidikan_ayah' => $get('AA') ?: null,
+                        'pendidikan_ayah' => $this->normalisasiPendidikan($get('AA')),
                         'pekerjaan_ayah' => $get('AB') ?: null,
-                        'penghasilan_ayah' => $get('AC') ?: null,
+                        'penghasilan_ayah' => $this->normalisasiPenghasilan($get('AC')),
                         'nik_ayah' => $get('AD') ?: null, // asumsi kolom NIK - cek lagi kesesuaiannya
 
                         // Data Ibu (AE-AJ)
                         'nama_ibu' => $get('AE') ?: null,
                         'tahun_lahir_ibu' => Siswa::ekstrakTahunAman($get('AF')),
-                        'pendidikan_ibu' => $get('AG') ?: null,
+                        'pendidikan_ibu' => $this->normalisasiPendidikan($get('AG')),
                         'pekerjaan_ibu' => $get('AH') ?: null,
-                        'penghasilan_ibu' => $get('AI') ?: null,
+                        'penghasilan_ibu' => $this->normalisasiPenghasilan($get('AI')),
                         'nik_ibu' => $get('AJ') ?: null, // asumsi kolom NIK - cek lagi kesesuaiannya
 
                         // Data Wali (AK-AP)
@@ -237,6 +237,55 @@ class DapodikImport
         if (abs($angka) > 180) return null; // jelas gak masuk akal utk lintang/bujur manapun
 
         return $angka;
+    }
+
+    /**
+     * Dapodik nulis jenjang pendidikan agak beda format dari opsi dropdown
+     * kita (mis. "SD sederajat" vs kita "SD / Sederajat") - walau ARTINYA
+     * sama, string gak exact-match jadi dropdown tampil kosong pas admin
+     * edit (padahal datanya ada). Normalisasi ke format kita persis.
+     */
+    private function normalisasiPendidikan(?string $val): ?string
+    {
+        if (! $val) return null;
+        $bersih = strtolower(trim($val));
+
+        $map = [
+            'tidak sekolah' => 'Tidak Sekolah',
+            'putus sd' => 'Putus SD',
+            'sd sederajat' => 'SD / Sederajat', 'sd/sederajat' => 'SD / Sederajat', 'sd' => 'SD / Sederajat',
+            'smp sederajat' => 'SMP / Sederajat', 'smp/sederajat' => 'SMP / Sederajat', 'smp' => 'SMP / Sederajat',
+            'sma sederajat' => 'SMA / Sederajat', 'sma/sederajat' => 'SMA / Sederajat', 'sma' => 'SMA / Sederajat', 'smk' => 'SMA / Sederajat',
+            'd1' => 'D1', 'd2' => 'D2', 'd3' => 'D3',
+            'd4/s1' => 'D4/S1', 'd4' => 'D4/S1', 's1' => 'D4/S1',
+            's2' => 'S2', 's3' => 'S3',
+        ];
+
+        return $map[$bersih] ?? $val; // gak ketemu mapping -> biarkan apa adanya drpd hilang
+    }
+
+    /**
+     * Sama kayak pendidikan - Dapodik pakai titik sbg pemisah ribuan
+     * ("Rp. 500.000") sedangkan opsi dropdown kita pakai koma ("Rp. 500,000").
+     * Normalisasi berdasarkan pola angka, bukan exact string match.
+     */
+    private function normalisasiPenghasilan(?string $val): ?string
+    {
+        if (! $val) return null;
+        $bersih = strtolower(trim($val));
+
+        if (str_contains($bersih, 'tidak berpenghasilan') || str_contains($bersih, 'tidak bekerja')) {
+            return 'Kurang dari Rp. 500,000';
+        }
+        if (preg_match('/kurang dari.*500/', $bersih)) return 'Kurang dari Rp. 500,000';
+        if (preg_match('/500.*999|500.*1\.?000\.?000/', $bersih) && str_contains($bersih, '-')) return 'Rp. 500,000 - Rp. 999,999';
+        if (preg_match('/1\.?000\.?000.*1\.?999|1.*juta.*2.*juta/', $bersih)) return 'Rp. 1,000,000 - Rp. 1,999,999';
+        if (preg_match('/2\.?000\.?000.*4\.?999|2.*juta.*5.*juta/', $bersih)) return 'Rp. 2,000,000 - Rp. 4,999,999';
+        if (preg_match('/5\.?000\.?000.*10\.?000\.?000|5.*juta.*10.*juta/', $bersih)) return 'Rp. 5,000,000 - Rp. 10,000,000';
+        if (preg_match('/10\.?000\.?000.*20\.?000\.?000|10.*juta.*20.*juta/', $bersih)) return 'Rp. 10,000,000 - Rp. 20,000,000';
+        if (preg_match('/lebih dari.*20/', $bersih)) return 'Lebih dari Rp. 20,000,000';
+
+        return $val; // gak ketemu mapping -> biarkan apa adanya drpd hilang
     }
 
     public function getImportedCount(): int
