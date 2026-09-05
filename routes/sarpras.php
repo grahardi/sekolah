@@ -35,4 +35,31 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('sarpras')->name('sarpras
     Route::get('/barang/{asset}/edit', [SarprasAssetController::class, 'edit'])->name('assets.edit');
     Route::put('/barang/{asset}', [SarprasAssetController::class, 'update'])->name('assets.update');
     Route::delete('/barang/{asset}', [SarprasAssetController::class, 'destroy'])->name('assets.destroy');
+
+    // Riwayat Kerusakan
+    Route::get('/riwayat-kerusakan', [\App\Http\Controllers\SarprasRiwayatKerusakanController::class, 'index'])->name('riwayat-kerusakan.index');
+    Route::post('/riwayat-kerusakan', [\App\Http\Controllers\SarprasRiwayatKerusakanController::class, 'store'])->name('riwayat-kerusakan.store');
+    Route::put('/riwayat-kerusakan/{riwayat}', [\App\Http\Controllers\SarprasRiwayatKerusakanController::class, 'update'])->name('riwayat-kerusakan.update');
+    Route::delete('/riwayat-kerusakan/{riwayat}', [\App\Http\Controllers\SarprasRiwayatKerusakanController::class, 'destroy'])->name('riwayat-kerusakan.destroy');
+
+    // Peminjaman
+    Route::get('/peminjaman', [\App\Http\Controllers\SarprasPeminjamanController::class, 'index'])->name('peminjaman.index');
+    Route::post('/peminjaman', [\App\Http\Controllers\SarprasPeminjamanController::class, 'store'])->name('peminjaman.store');
+    Route::post('/peminjaman/{peminjaman}/kembalikan', [\App\Http\Controllers\SarprasPeminjamanController::class, 'kembalikan'])->name('peminjaman.kembalikan');
+    Route::delete('/peminjaman/{peminjaman}', [\App\Http\Controllers\SarprasPeminjamanController::class, 'destroy'])->name('peminjaman.destroy');
+
+    // Import Excel
+    Route::get('/import', [\App\Http\Controllers\SarprasImportController::class, 'showImport'])->name('import.form');
+    Route::get('/import/template', [\App\Http\Controllers\SarprasImportController::class, 'downloadTemplate'])->name('import.template');
+    Route::post('/import', [\App\Http\Controllers\SarprasImportController::class, 'import'])->name('import.process');
+
+    // Scan QR
+    Route::get('/scan', [\App\Http\Controllers\SarprasImportController::class, 'scanForm'])->name('scan.form');
+    Route::post('/scan', [\App\Http\Controllers\SarprasImportController::class, 'scanCari'])->name('scan.cari');
+
+    // Pengaturan
+    Route::middleware('admin')->group(function () {
+        Route::get('/pengaturan', [\App\Http\Controllers\SarprasPengaturanController::class, 'index'])->name('pengaturan.index');
+        Route::put('/pengaturan', [\App\Http\Controllers\SarprasPengaturanController::class, 'update'])->name('pengaturan.update');
+    });
 });

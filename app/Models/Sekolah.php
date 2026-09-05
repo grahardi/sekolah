@@ -35,6 +35,8 @@ class Sekolah extends Model
         'rapor_tanggal_manual',
         'uts_tanggal_manual',
         'biodata_tanggal_manual',
+        'sarpras_prefix_kode',
+        'sarpras_ambang_batas_pinjam_hari',
         'rapor_tampilkan_logo',
         'rapor_kota_ttd',
         'rapor_threshold_sangat_baik',

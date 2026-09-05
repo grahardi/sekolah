@@ -37,6 +37,21 @@ class SarprasAsset extends Model
         return $this->belongsTo(SarprasFundingSource::class, 'funding_source_id');
     }
 
+    public function riwayatKerusakan()
+    {
+        return $this->hasMany(SarprasRiwayatKerusakan::class, 'asset_id')->orderByDesc('tanggal_lapor');
+    }
+
+    public function peminjaman()
+    {
+        return $this->hasMany(SarprasPeminjaman::class, 'asset_id')->orderByDesc('tanggal_pinjam');
+    }
+
+    public function peminjamanAktif()
+    {
+        return $this->hasOne(SarprasPeminjaman::class, 'asset_id')->where('status', 'dipinjam');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         return $query

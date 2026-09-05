@@ -94,7 +94,7 @@ class SarprasAssetController extends Controller
 
     public function show(SarprasAsset $asset)
     {
-        $asset->load(['category', 'location', 'fundingSource']);
+        $asset->load(['category', 'location', 'fundingSource', 'riwayatKerusakan', 'peminjaman']);
         return view('sarpras.assets.show', compact('asset'));
     }
 

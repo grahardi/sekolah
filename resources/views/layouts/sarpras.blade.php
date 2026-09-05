@@ -199,24 +199,31 @@
            class="sb-item {{ request()->routeIs('sarpras.master-data.*') ? 'active' : '' }}">
             <i class="ti ti-map-pin"></i><span>Lokasi & Sumber Dana</span>
         </a>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-tool"></i><span>Riwayat Kerusakan</span><span class="sb-demo-badge">Segera</span>
-        </div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-transfer"></i><span>Peminjaman</span><span class="sb-demo-badge">Segera</span>
-        </div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-qrcode"></i><span>Scan QR Barang</span><span class="sb-demo-badge">Segera</span>
-        </div>
+        <a href="{{ route('sarpras.riwayat-kerusakan.index') }}"
+           class="sb-item {{ request()->routeIs('sarpras.riwayat-kerusakan.*') ? 'active' : '' }}">
+            <i class="ti ti-tool"></i><span>Riwayat Kerusakan</span>
+        </a>
+        <a href="{{ route('sarpras.peminjaman.index') }}"
+           class="sb-item {{ request()->routeIs('sarpras.peminjaman.*') ? 'active' : '' }}">
+            <i class="ti ti-transfer"></i><span>Peminjaman</span>
+        </a>
+        <a href="{{ route('sarpras.scan.form') }}"
+           class="sb-item {{ request()->routeIs('sarpras.scan.*') ? 'active' : '' }}">
+            <i class="ti ti-qrcode"></i><span>Scan QR Barang</span>
+        </a>
 
         <div class="sb-divider"></div>
         <div class="sb-section">Sistem</div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-file-import"></i><span>Import Excel</span><span class="sb-demo-badge">Segera</span>
-        </div>
-        <div class="sb-item-demo" title="Segera hadir">
-            <i class="ti ti-settings"></i><span>Pengaturan</span><span class="sb-demo-badge">Segera</span>
-        </div>
+        <a href="{{ route('sarpras.import.form') }}"
+           class="sb-item {{ request()->routeIs('sarpras.import.*') ? 'active' : '' }}">
+            <i class="ti ti-file-import"></i><span>Import Excel</span>
+        </a>
+        @if(auth()->user()->isAdmin())
+        <a href="{{ route('sarpras.pengaturan.index') }}"
+           class="sb-item {{ request()->routeIs('sarpras.pengaturan.*') ? 'active' : '' }}">
+            <i class="ti ti-settings"></i><span>Pengaturan</span>
+        </a>
+        @endif
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">

@@ -25,6 +25,31 @@
         </div>
     </div>
 
+    <div class="card" style="padding:20px;margin-bottom:16px;text-align:center;">
+        <p style="font-size:12px;font-weight:700;color:#0f172a;margin:0 0 10px;">QR Code Barang (utk Scan)</p>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data={{ urlencode($asset->kode_barang) }}" alt="QR" style="margin:0 auto;">
+        <p style="font-size:11px;color:#94a3b8;margin:8px 0 0;">Cetak & tempel di barang, scan lewat menu "Scan QR Barang"</p>
+    </div>
+
+    @php $peminjamanAktif = $asset->peminjaman->firstWhere('status', 'dipinjam'); @endphp
+    @if($peminjamanAktif)
+    <div class="card" style="padding:16px;margin-bottom:16px;background:#eff6ff;border-color:#bfdbfe;">
+        <p style="font-size:12px;font-weight:700;color:#1e40af;margin:0 0 4px;"><i class="ti ti-transfer"></i> Sedang Dipinjam</p>
+        <p style="font-size:13px;color:#1e3a8a;margin:0;">{{ $peminjamanAktif->peminjam_nama }} - rencana kembali {{ $peminjamanAktif->tanggal_kembali_rencana->format('d/m/Y') }}</p>
+    </div>
+    @endif
+
+    @if($asset->riwayatKerusakan->isNotEmpty())
+    <div class="card" style="padding:16px;margin-bottom:16px;">
+        <p style="font-size:12px;font-weight:700;color:#0f172a;margin:0 0 10px;">Riwayat Kerusakan</p>
+        @foreach($asset->riwayatKerusakan as $rk)
+        <div style="padding:8px 0;border-top:1px solid #f1f5f9;font-size:12px;">
+            <span style="color:#94a3b8;">{{ $rk->tanggal_lapor->format('d/m/Y') }}</span> - {{ $rk->deskripsi_kerusakan }} ({{ $rk->labelStatus() }})
+        </div>
+        @endforeach
+    </div>
+    @endif
+
     <div class="card" style="padding:20px;">
         <div style="display:grid;grid-template-columns:140px 1fr;gap:10px;font-size:13px;">
             <span style="color:#64748b;">Kategori</span><span style="color:#0f172a;">{{ $asset->category?->name ?? '-' }}</span>
