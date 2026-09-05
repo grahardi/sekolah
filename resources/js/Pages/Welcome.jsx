@@ -20,14 +20,14 @@ const FEATURES = [
 ];
 
 const SHOWCASE = [
-    { title: 'Bandul Sederhana', subject: 'Fisika · Getaran', href: '/lab/bandul' },
-    { title: 'Gerak Peluru', subject: 'Fisika · Kinematika', href: '/lab/gerak-peluru' },
-    { title: 'Rangkaian Listrik Seri', subject: 'Fisika · Listrik', href: '/lab/rangkaian-listrik' },
+    { judul: 'Bandul Sederhana', subjudul: 'Fisika · Getaran', link: '/lab/bandul', gambar: null },
+    { judul: 'Gerak Peluru', subjudul: 'Fisika · Kinematika', link: '/lab/gerak-peluru', gambar: null },
+    { judul: 'Rangkaian Listrik Seri', subjudul: 'Fisika · Listrik', link: '/lab/rangkaian-listrik', gambar: null },
 ];
 
 // Placeholder slide showcase - ganti title/desc/background/href sesuai konten
 // asli nanti (foto sekolah, testimoni guru, dokumentasi kegiatan, dll).
-const HERO_SLIDES = [
+const HERO_SLIDES_DEFAULT = [
     {
         type: 'hero',
         tag: 'Portal Sekolah Digital #1 untuk Kurikulum Merdeka',
@@ -65,20 +65,47 @@ const HERO_SLIDES = [
     },
 ];
 
-export default function Welcome({ canLogin = true, canRegister = true }) {
+export default function Welcome({ canLogin = true, canRegister = true, showcaseItems = [], konten = {} }) {
+    const stats = [
+        { value: konten.stat_1_value || '60+', label: konten.stat_1_label || 'Simulasi Interaktif' },
+        { value: konten.stat_2_value || '7', label: konten.stat_2_label || 'Program Sekolah' },
+        { value: konten.stat_3_value || '24/7', label: konten.stat_3_label || 'Akses Belajar' },
+        { value: konten.stat_4_value || '100%', label: konten.stat_4_label || 'Berbasis Web' },
+    ];
+
+    const features = [
+        { title: konten.fitur_1_title || 'Terintegrasi Dapodik', desc: konten.fitur_1_desc || 'Import data siswa langsung dari file Dapodik asli, tanpa perlu ubah format apapun.', icon: LayersIcon },
+        { title: konten.fitur_2_title || 'Siap Cetak', desc: konten.fitur_2_desc || 'Cetak biodata, kartu siswa, dan dokumen lain langsung dari sistem dalam format PDF.', icon: BookIcon },
+        { title: konten.fitur_3_title || 'Simulasi Real-time', desc: konten.fitur_3_desc || 'Parameter sains bisa diubah langsung, hasilnya terlihat seketika di layar.', icon: BeakerIcon },
+        { title: konten.fitur_4_title || 'Akses Kapan Saja', desc: konten.fitur_4_desc || 'Berjalan langsung di browser, tanpa instalasi aplikasi tambahan.', icon: ClockIcon },
+    ];
+
+    // Showcase dari database (upload SuperAdmin) - fallback ke default kalau belum diisi
+    const showcase = showcaseItems.length > 0 ? showcaseItems : SHOWCASE;
+
+    const heroSlides = [
+        {
+            ...HERO_SLIDES_DEFAULT[0],
+            tag: konten.hero_tag || HERO_SLIDES_DEFAULT[0].tag,
+            title: konten.hero_title || HERO_SLIDES_DEFAULT[0].title,
+            desc: konten.hero_desc || HERO_SLIDES_DEFAULT[0].desc,
+        },
+        ...HERO_SLIDES_DEFAULT.slice(1),
+    ];
+
     return (
         <div className="min-h-screen bg-cream text-navy">
             <PublicNavbar canLogin={canLogin} canRegister={canRegister} />
 
             {/* Hero + Slider - jadi satu, slide pertama = headline utama */}
             <section id="home" className="max-w-6xl mx-auto px-6 lg:px-8 pt-6 lg:pt-8">
-                <ShowcaseSlider slides={HERO_SLIDES} />
+                <ShowcaseSlider slides={heroSlides} />
             </section>
 
             {/* Stats bar */}
             <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-6 lg:pt-8">
                 <div className="bg-teal text-cream rounded-2xl py-10 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-                    {STATS.map((s) => (
+                    {stats.map((s) => (
                         <div key={s.label}>
                             <p className="font-display font-700 text-3xl lg:text-4xl text-coral">{s.value}</p>
                             <p className="text-sm text-cream/70 mt-1">{s.label}</p>
@@ -94,7 +121,7 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                     <h2 className="font-display font-700 text-2xl lg:text-3xl mt-2">Dibangun untuk kebutuhan belajar nyata</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {FEATURES.map((f) => (
+                    {features.map((f) => (
                         <div key={f.title} className="rounded-2xl bg-white border border-navy/10 p-5">
                             <div className="h-10 w-10 rounded-lg bg-teal-light text-teal flex items-center justify-center mb-3">
                                 <f.icon className="w-5 h-5" />
@@ -169,16 +196,23 @@ export default function Welcome({ canLogin = true, canRegister = true }) {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                        {SHOWCASE.map((s) => (
+                        {showcase.map((s, i) => (
                             <Link
-                                key={s.title}
-                                href={s.href}
-                                className="rounded-2xl bg-cream border border-navy/10 p-5 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:-translate-y-0.5 transition-all"
+                                key={s.judul ?? i}
+                                href={s.link || '#'}
+                                className="rounded-2xl bg-cream border border-navy/10 overflow-hidden flex flex-col justify-between min-h-[130px] hover:shadow-md hover:-translate-y-0.5 transition-all"
                             >
-                                <span className="text-xs font-mono text-navy/40">{s.subject}</span>
-                                <div className="flex items-end justify-between mt-3">
-                                    <h3 className="font-display font-600 text-navy">{s.title}</h3>
-                                    <span className="text-teal text-sm">&rarr;</span>
+                                {s.gambar && (
+                                    <div className="h-32 bg-navy/5">
+                                        <img src={`/storage/${s.gambar}`} className="w-full h-full object-cover" alt={s.judul} />
+                                    </div>
+                                )}
+                                <div className="p-5">
+                                    <span className="text-xs font-mono text-navy/40">{s.subjudul}</span>
+                                    <div className="flex items-end justify-between mt-3">
+                                        <h3 className="font-display font-600 text-navy">{s.judul}</h3>
+                                        <span className="text-teal text-sm">&rarr;</span>
+                                    </div>
                                 </div>
                             </Link>
                         ))}

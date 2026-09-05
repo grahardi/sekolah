@@ -11,6 +11,14 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::get('/tiket', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'index'])->name('tiket.index');
     Route::get('/tiket/{tiket}', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'show'])->name('tiket.show');
     Route::post('/tiket/{tiket}/balas', [\App\Http\Controllers\SuperAdmin\TiketDukunganController::class, 'balas'])->name('tiket.balas');
+
+    Route::get('/showcase', [\App\Http\Controllers\SuperAdmin\ShowcaseController::class, 'index'])->name('showcase.index');
+    Route::post('/showcase', [\App\Http\Controllers\SuperAdmin\ShowcaseController::class, 'store'])->name('showcase.store');
+    Route::post('/showcase/{showcase}', [\App\Http\Controllers\SuperAdmin\ShowcaseController::class, 'update'])->name('showcase.update');
+    Route::delete('/showcase/{showcase}', [\App\Http\Controllers\SuperAdmin\ShowcaseController::class, 'destroy'])->name('showcase.destroy');
+
+    Route::get('/konten-halaman', [\App\Http\Controllers\SuperAdmin\KontenHalamanController::class, 'index'])->name('konten-halaman.index');
+    Route::put('/konten-halaman', [\App\Http\Controllers\SuperAdmin\KontenHalamanController::class, 'update'])->name('konten-halaman.update');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/log-aktivitas', [DashboardController::class, 'logAktivitas'])->name('log-aktivitas');
     Route::get('/sekolah/{sekolah}', [DashboardController::class, 'show'])->name('sekolah.show');

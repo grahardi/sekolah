@@ -17,6 +17,8 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => true,
         'canRegister' => true,
+        'showcaseItems' => \App\Models\ShowcaseItem::where('aktif', true)->orderBy('urutan')->get(),
+        'konten' => \App\Models\KontenHalaman::ambilSemua('welcome'),
     ]);
 })->name('welcome');
 
