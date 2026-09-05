@@ -20,6 +20,11 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::get('/edit-pages', [\App\Http\Controllers\SuperAdmin\EditPagesController::class, 'index'])->name('edit-pages.index');
     Route::get('/edit-pages/{page}', [\App\Http\Controllers\SuperAdmin\EditPagesController::class, 'edit'])->name('edit-pages.edit');
     Route::put('/edit-pages/{page}', [\App\Http\Controllers\SuperAdmin\EditPagesController::class, 'update'])->name('edit-pages.update');
+
+    Route::get('/modul-ajar', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'index'])->name('modul-ajar.index');
+    Route::post('/modul-ajar', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'store'])->name('modul-ajar.store');
+    Route::post('/modul-ajar/{modul}', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'update'])->name('modul-ajar.update');
+    Route::delete('/modul-ajar/{modul}', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'destroy'])->name('modul-ajar.destroy');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/log-aktivitas', [DashboardController::class, 'logAktivitas'])->name('log-aktivitas');
     Route::get('/sekolah/{sekolah}', [DashboardController::class, 'show'])->name('sekolah.show');

@@ -7,6 +7,7 @@ const MENU = [
     { key: 'log-aktivitas', label: 'Log Aktivitas', href: '/admin-portal/log-aktivitas' },
     { key: 'exo', label: 'Extraordinary CBT', href: '/admin-portal/exo' },
     { key: 'edit-pages', label: 'Edit Pages', href: '/admin-portal/edit-pages' },
+    { key: 'modul-ajar', label: 'Modul Ajar', href: '/admin-portal/modul-ajar' },
     { key: 'showcase', label: 'Showcase Gallery', href: '/admin-portal/showcase' },
 ];
 
