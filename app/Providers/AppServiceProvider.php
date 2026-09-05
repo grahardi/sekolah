@@ -9,6 +9,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +30,17 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         Paginator::defaultView('vendor.pagination.custom');
+
+        // FIX BUG LAMA & FATAL: $isDemoReadonly dipakai di BANYAK Blade view
+        // (@elseif($isDemoReadonly)) tapi SEBELUMNYA gak pernah didefinisikan
+        // di manapun - selalu undefined/null/false, jadi branch itu gak
+        // pernah kepakai. Akun demo (role=admin) otomatis lolos ke branch
+        // admin PENUH tanpa batasan (bisa tambah/edit/hapus/import/export).
+        // Pakai View::composer (bukan View::share+closure, closure selalu
+        // truthy) biar dievaluasi pas render, auth state udah pasti siap.
+        View::composer('*', function ($view) {
+            $view->with('isDemoReadonly', auth()->check() && (auth()->user()->sekolah?->is_demo ?? false));
+        });
 
         // Log Aktivitas: rekam login/logout/registrasi otomatis lewat event
         // bawaan Laravel (dipicu Auth::attempt/logout/Registered di Breeze

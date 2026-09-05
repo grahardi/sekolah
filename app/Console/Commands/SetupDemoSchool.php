@@ -56,7 +56,11 @@ class SetupDemoSchool extends Command
         ]);
 
         $email = 'demo@sekolah.co.id';
-        $password = 'demo12345';
+        // Password acak (bukan lagi hardcode "demo12345" yg gampang ditebak
+        // & sempat disalahgunakan). Demo TERTUTUP total sementara - password
+        // ini gak akan pernah diumumkan ke publik. Buka lagi nanti kalau
+        // demo dipindah ke subdomain/database terpisah.
+        $password = \Illuminate\Support\Str::random(24);
         $user = User::updateOrCreate(
             ['email' => $email],
             [
