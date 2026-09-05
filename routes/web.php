@@ -30,7 +30,12 @@ Route::get('/demo', function () {
 })->name('demo.program');
 
 Route::get('/program/{slug}', function (string $slug) {
-    return Inertia::render('ProgramDetail', ['slug' => $slug]);
+    $dariDb = \App\Models\ProgramPage::where('slug', $slug)->first();
+
+    return Inertia::render('ProgramDetail', [
+        'slug' => $slug,
+        'programDb' => $dariDb,
+    ]);
 })->name('program.detail');
 
 

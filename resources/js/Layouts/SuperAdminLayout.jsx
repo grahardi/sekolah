@@ -6,7 +6,7 @@ const MENU = [
     { key: 'tiket', label: 'Tiket Dukungan', href: '/admin-portal/tiket' },
     { key: 'log-aktivitas', label: 'Log Aktivitas', href: '/admin-portal/log-aktivitas' },
     { key: 'exo', label: 'Extraordinary CBT', href: '/admin-portal/exo' },
-    { key: 'konten-halaman', label: 'Konten Halaman Depan', href: '/admin-portal/konten-halaman' },
+    { key: 'edit-pages', label: 'Edit Pages', href: '/admin-portal/edit-pages' },
     { key: 'showcase', label: 'Showcase Gallery', href: '/admin-portal/showcase' },
 ];
 

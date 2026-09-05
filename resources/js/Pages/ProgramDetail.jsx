@@ -2,10 +2,10 @@ import PublicNavbar from '../Components/PublicNavbar';
 import PublicFooter from '../Components/PublicFooter';
 import { findProgram, PROGRAMS } from '../constants/programs';
 
-export default function ProgramDetail({ slug }) {
-    const program = findProgram(slug);
+export default function ProgramDetail({ slug, programDb = null }) {
+    const staticProgram = findProgram(slug);
 
-    if (!program) {
+    if (!staticProgram && !programDb) {
         return (
             <div className="min-h-screen bg-cream text-navy flex flex-col">
                 <PublicNavbar />
@@ -19,6 +19,18 @@ export default function ProgramDetail({ slug }) {
             </div>
         );
     }
+
+    // Konten dari database (diedit SuperAdmin) diprioritaskan, fallback ke
+    // versi statis kalau field tertentu belum diisi di database.
+    const program = {
+        title: programDb?.title || staticProgram?.title,
+        status: programDb?.status || staticProgram?.status,
+        summary: programDb?.summary || staticProgram?.summary,
+        detail: programDb?.detail || staticProgram?.detail,
+        href: programDb?.href || staticProgram?.href,
+        cta: programDb?.cta || staticProgram?.cta,
+        demoHref: programDb?.demo_href || staticProgram?.demoHref,
+    };
 
     return (
         <div className="min-h-screen bg-cream text-navy flex flex-col">
