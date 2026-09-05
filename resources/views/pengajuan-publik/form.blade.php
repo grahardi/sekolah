@@ -106,7 +106,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field};
             $i++;
             $opsiAgama = ['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME','Lainnya'];
-            $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 10,000,000','Rp. 10,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000'];
+            $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan'];
             $opsiPendidikan = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3'];
             $opsiPekerjaan = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya'];
             @endphp

@@ -275,17 +275,16 @@ class DapodikImport
         $bersih = strtolower(trim($val));
 
         if (str_contains($bersih, 'tidak berpenghasilan') || str_contains($bersih, 'tidak bekerja')) {
-            return 'Kurang dari Rp. 500,000';
+            return 'Tidak Berpenghasilan';
         }
-        if (preg_match('/kurang dari.*500/', $bersih)) return 'Kurang dari Rp. 500,000';
-        if (preg_match('/500.*999|500.*1\.?000\.?000/', $bersih) && str_contains($bersih, '-')) return 'Rp. 500,000 - Rp. 999,999';
+        if (preg_match('/kurang dari.*500|<.*500/', $bersih)) return 'Kurang dari Rp. 500,000';
+        if (preg_match('/500.*999/', $bersih)) return 'Rp. 500,000 - Rp. 999,999';
         if (preg_match('/1\.?000\.?000.*1\.?999|1.*juta.*2.*juta/', $bersih)) return 'Rp. 1,000,000 - Rp. 1,999,999';
         if (preg_match('/2\.?000\.?000.*4\.?999|2.*juta.*5.*juta/', $bersih)) return 'Rp. 2,000,000 - Rp. 4,999,999';
-        if (preg_match('/5\.?000\.?000.*10\.?000\.?000|5.*juta.*10.*juta/', $bersih)) return 'Rp. 5,000,000 - Rp. 10,000,000';
-        if (preg_match('/10\.?000\.?000.*20\.?000\.?000|10.*juta.*20.*juta/', $bersih)) return 'Rp. 10,000,000 - Rp. 20,000,000';
-        if (preg_match('/lebih dari.*20/', $bersih)) return 'Lebih dari Rp. 20,000,000';
+        if (preg_match('/5\.?000\.?000.*20\.?000\.?000|5.*juta.*20.*juta/', $bersih)) return 'Rp. 5,000,000 - Rp. 20,000,000';
+        if (preg_match('/lebih dari.*20|>.*20/', $bersih)) return 'Lebih dari Rp. 20,000,000';
 
-        return $val; // gak ketemu mapping -> biarkan apa adanya drpd hilang
+        return $val; // gak ketemu mapping -> biarkan apa adanya drpd data ilang
     }
 
     public function getImportedCount(): int
