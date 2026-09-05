@@ -145,11 +145,21 @@
             <div><label class="form-label">Tahun Lahir</label><input type="number" name="tahun_lahir_ayah" value="{{ $fv('tahun_lahir_ayah') }}" min="1940" max="{{ date('Y') - 15 }}" class="form-input" placeholder="1980"></div>
             <div>
                 <label class="form-label">Jenjang Pendidikan</label>
-                <select name="pendidikan_ayah" class="form-input">
+                @php
+                $listPendidikanAyah = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3','Lainnya'];
+                $nilaiPendidikanAyah = $fv('pendidikan_ayah');
+                $pendidikanAyahCustom = $nilaiPendidikanAyah && ! in_array(strtolower($nilaiPendidikanAyah), array_map('strtolower', $listPendidikanAyah));
+                @endphp
+                <select id="pilih-pendidikan_ayah" class="form-input" onchange="document.getElementById('hidden-pendidikan_ayah').value = this.value === 'Lainnya' ? document.getElementById('manual-pendidikan_ayah').value : this.value; document.getElementById('wrap-manual-pendidikan_ayah').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @php $pendidikanList = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3']; @endphp
-                    @foreach($pendidikanList as $p)<option value="{{ $p }}" {{ strtolower($fv('pendidikan_ayah')) === strtolower($p) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listPendidikanAyah as $p)<option value="{{ $p }}" {{ (strtolower($nilaiPendidikanAyah) === strtolower($p) || ($pendidikanAyahCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="pendidikan_ayah" id="hidden-pendidikan_ayah" value="{{ $nilaiPendidikanAyah }}">
+                <div id="wrap-manual-pendidikan_ayah" style="display:{{ $pendidikanAyahCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-pendidikan_ayah" class="form-input" placeholder="Tulis pendidikan lainnya (data lama tidak cocok kategori)..."
+                        value="{{ $pendidikanAyahCustom ? $nilaiPendidikanAyah : '' }}"
+                        oninput="document.getElementById('hidden-pendidikan_ayah').value = this.value;">
+                </div>
             </div>
             <div>
                 <label class="form-label">Pekerjaan</label>
@@ -171,11 +181,21 @@
             </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>
-                <select name="penghasilan_ayah" class="form-input">
+                @php
+                $listPenghasilanAyah = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan','Lainnya'];
+                $nilaiPenghasilanAyah = $fv('penghasilan_ayah');
+                $penghasilanAyahCustom = $nilaiPenghasilanAyah && ! in_array(strtolower($nilaiPenghasilanAyah), array_map('strtolower', $listPenghasilanAyah));
+                @endphp
+                <select id="pilih-penghasilan_ayah" class="form-input" onchange="document.getElementById('hidden-penghasilan_ayah').value = this.value === 'Lainnya' ? document.getElementById('manual-penghasilan_ayah').value : this.value; document.getElementById('wrap-manual-penghasilan_ayah').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @php $penghasilanList = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan']; @endphp
-                    @foreach($penghasilanList as $p)<option value="{{ $p }}" {{ strtolower($fv('penghasilan_ayah')) === strtolower($p) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listPenghasilanAyah as $p)<option value="{{ $p }}" {{ (strtolower($nilaiPenghasilanAyah) === strtolower($p) || ($penghasilanAyahCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="penghasilan_ayah" id="hidden-penghasilan_ayah" value="{{ $nilaiPenghasilanAyah }}">
+                <div id="wrap-manual-penghasilan_ayah" style="display:{{ $penghasilanAyahCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-penghasilan_ayah" class="form-input" placeholder="Tulis penghasilan lainnya (data lama tidak cocok kategori)..."
+                        value="{{ $penghasilanAyahCustom ? $nilaiPenghasilanAyah : '' }}"
+                        oninput="document.getElementById('hidden-penghasilan_ayah').value = this.value;">
+                </div>
             </div>
         </div>
     </div>
@@ -188,10 +208,21 @@
             <div><label class="form-label">Tahun Lahir</label><input type="number" name="tahun_lahir_ibu" value="{{ $fv('tahun_lahir_ibu') }}" min="1940" max="{{ date('Y') - 15 }}" class="form-input" placeholder="1982"></div>
             <div>
                 <label class="form-label">Jenjang Pendidikan</label>
-                <select name="pendidikan_ibu" class="form-input">
+                @php
+                $listPendidikanIbu = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3','Lainnya'];
+                $nilaiPendidikanIbu = $fv('pendidikan_ibu');
+                $pendidikanIbuCustom = $nilaiPendidikanIbu && ! in_array(strtolower($nilaiPendidikanIbu), array_map('strtolower', $listPendidikanIbu));
+                @endphp
+                <select id="pilih-pendidikan_ibu" class="form-input" onchange="document.getElementById('hidden-pendidikan_ibu').value = this.value === 'Lainnya' ? document.getElementById('manual-pendidikan_ibu').value : this.value; document.getElementById('wrap-manual-pendidikan_ibu').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @foreach($pendidikanList as $p)<option value="{{ $p }}" {{ strtolower($fv('pendidikan_ibu')) === strtolower($p) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listPendidikanIbu as $p)<option value="{{ $p }}" {{ (strtolower($nilaiPendidikanIbu) === strtolower($p) || ($pendidikanIbuCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="pendidikan_ibu" id="hidden-pendidikan_ibu" value="{{ $nilaiPendidikanIbu }}">
+                <div id="wrap-manual-pendidikan_ibu" style="display:{{ $pendidikanIbuCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-pendidikan_ibu" class="form-input" placeholder="Tulis pendidikan lainnya (data lama tidak cocok kategori)..."
+                        value="{{ $pendidikanIbuCustom ? $nilaiPendidikanIbu : '' }}"
+                        oninput="document.getElementById('hidden-pendidikan_ibu').value = this.value;">
+                </div>
             </div>
             <div>
                 <label class="form-label">Pekerjaan</label>
@@ -213,10 +244,21 @@
             </div>
             <div>
                 <label class="form-label">Penghasilan per Bulan</label>
-                <select name="penghasilan_ibu" class="form-input">
+                @php
+                $listPenghasilanIbu = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan','Lainnya'];
+                $nilaiPenghasilanIbu = $fv('penghasilan_ibu');
+                $penghasilanIbuCustom = $nilaiPenghasilanIbu && ! in_array(strtolower($nilaiPenghasilanIbu), array_map('strtolower', $listPenghasilanIbu));
+                @endphp
+                <select id="pilih-penghasilan_ibu" class="form-input" onchange="document.getElementById('hidden-penghasilan_ibu').value = this.value === 'Lainnya' ? document.getElementById('manual-penghasilan_ibu').value : this.value; document.getElementById('wrap-manual-penghasilan_ibu').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                     <option value="">-- Pilih --</option>
-                    @foreach($penghasilanList as $p)<option value="{{ $p }}" {{ strtolower($fv('penghasilan_ibu')) === strtolower($p) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
+                    @foreach($listPenghasilanIbu as $p)<option value="{{ $p }}" {{ (strtolower($nilaiPenghasilanIbu) === strtolower($p) || ($penghasilanIbuCustom && $p === 'Lainnya')) ? 'selected' : '' }}>{{ $p }}</option>@endforeach
                 </select>
+                <input type="hidden" name="penghasilan_ibu" id="hidden-penghasilan_ibu" value="{{ $nilaiPenghasilanIbu }}">
+                <div id="wrap-manual-penghasilan_ibu" style="display:{{ $penghasilanIbuCustom ? 'block' : 'none' }};margin-top:6px;">
+                    <input type="text" id="manual-penghasilan_ibu" class="form-input" placeholder="Tulis penghasilan lainnya (data lama tidak cocok kategori)..."
+                        value="{{ $penghasilanIbuCustom ? $nilaiPenghasilanIbu : '' }}"
+                        oninput="document.getElementById('hidden-penghasilan_ibu').value = this.value;">
+                </div>
             </div>
         </div>
     </div>

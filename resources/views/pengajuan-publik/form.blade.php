@@ -106,8 +106,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             $nilaiSekarang = $field === 'tanggal_lahir' ? $siswa->tanggal_lahir?->format('d-m-Y') : $siswa->{$field};
             $i++;
             $opsiAgama = ['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME','Lainnya'];
-            $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan'];
-            $opsiPendidikan = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3'];
+            $opsiPenghasilan = ['Kurang dari Rp. 500,000','Rp. 500,000 - Rp. 999,999','Rp. 1,000,000 - Rp. 1,999,999','Rp. 2,000,000 - Rp. 4,999,999','Rp. 5,000,000 - Rp. 20,000,000','Lebih dari Rp. 20,000,000','Tidak Berpenghasilan','Lainnya'];
+            $opsiPendidikan = ['Tidak Sekolah','Putus SD','SD / Sederajat','SMP / Sederajat','SMA / Sederajat','D1','D2','D3','D4/S1','S2','S3','Lainnya'];
             $opsiPekerjaan = ['Tidak Bekerja','Nelayan','Petani','Peternak','PNS/TNI/Polri','Karyawan Swasta','Pedagang Kecil','Pedagang Besar','Wiraswasta','Wirausaha','Buruh','Pensiunan','Tenaga Kerja Indonesia (TKI)','Meninggal Dunia','Lainnya'];
             @endphp
             <div class="baris {{ $i % 2 === 0 ? 'genap' : '' }}">
@@ -121,26 +121,20 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                     <select name="perubahan[{{ $field }}]" class="form-input">
                         @foreach($opsiAgama as $opt)<option value="{{ $opt }}" {{ strtolower((string) $siswa->agama) === strtolower($opt) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
                     </select>
-                    @elseif(in_array($field, ['penghasilan_ayah', 'penghasilan_ibu']))
-                    <select name="perubahan[{{ $field }}]" class="form-input">
-                        <option value="">-- Pilih --</option>
-                        @foreach($opsiPenghasilan as $opt)<option value="{{ $opt }}" {{ strtolower((string) $siswa->{$field}) === strtolower($opt) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
-                    </select>
-                    @elseif(in_array($field, ['pendidikan_ayah', 'pendidikan_ibu']))
-                    <select name="perubahan[{{ $field }}]" class="form-input">
-                        <option value="">-- Pilih --</option>
-                        @foreach($opsiPendidikan as $opt)<option value="{{ $opt }}" {{ strtolower((string) $siswa->{$field}) === strtolower($opt) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
-                    </select>
-                    @elseif(in_array($field, ['pekerjaan_ayah', 'pekerjaan_ibu']))
-                    @php $customPekerjaan = $siswa->{$field} && ! in_array(strtolower($siswa->{$field}), array_map('strtolower', $opsiPekerjaan)); @endphp
+                    @elseif(in_array($field, ['penghasilan_ayah', 'penghasilan_ibu', 'pendidikan_ayah', 'pendidikan_ibu', 'pekerjaan_ayah', 'pekerjaan_ibu']))
+                    @php
+                    $opsiDipakai = str_starts_with($field, 'penghasilan') ? $opsiPenghasilan : (str_starts_with($field, 'pendidikan') ? $opsiPendidikan : $opsiPekerjaan);
+                    $placeholderLain = str_starts_with($field, 'penghasilan') ? 'penghasilan' : (str_starts_with($field, 'pendidikan') ? 'pendidikan' : 'pekerjaan');
+                    $nilaiCustom = $siswa->{$field} && ! in_array(strtolower($siswa->{$field}), array_map('strtolower', $opsiDipakai));
+                    @endphp
                     <select id="pilih-{{ $field }}" class="form-input" onchange="document.getElementById('hidden-{{ $field }}').value = this.value === 'Lainnya' ? document.getElementById('manual-{{ $field }}').value : this.value; document.getElementById('wrap-manual-{{ $field }}').style.display = this.value === 'Lainnya' ? 'block' : 'none';">
                         <option value="">-- Pilih --</option>
-                        @foreach($opsiPekerjaan as $opt)<option value="{{ $opt }}" {{ (strtolower((string) $siswa->{$field}) === strtolower($opt) || ($customPekerjaan && $opt === 'Lainnya')) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
+                        @foreach($opsiDipakai as $opt)<option value="{{ $opt }}" {{ (strtolower((string) $siswa->{$field}) === strtolower($opt) || ($nilaiCustom && $opt === 'Lainnya')) ? 'selected' : '' }}>{{ $opt }}</option>@endforeach
                     </select>
                     <input type="hidden" name="perubahan[{{ $field }}]" id="hidden-{{ $field }}" value="{{ $siswa->{$field} }}">
-                    <div id="wrap-manual-{{ $field }}" style="display:{{ $customPekerjaan ? 'block' : 'none' }};margin-top:6px;">
-                        <input type="text" id="manual-{{ $field }}" class="form-input" placeholder="Tulis pekerjaan lainnya..."
-                            value="{{ $customPekerjaan ? $siswa->{$field} : '' }}"
+                    <div id="wrap-manual-{{ $field }}" style="display:{{ $nilaiCustom ? 'block' : 'none' }};margin-top:6px;">
+                        <input type="text" id="manual-{{ $field }}" class="form-input" placeholder="Tulis {{ $placeholderLain }} lainnya (data lama tidak cocok kategori)..."
+                            value="{{ $nilaiCustom ? $siswa->{$field} : '' }}"
                             oninput="document.getElementById('hidden-{{ $field }}').value = this.value;">
                     </div>
                     @else
