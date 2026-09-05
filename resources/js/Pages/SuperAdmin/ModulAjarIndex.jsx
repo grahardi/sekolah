@@ -1,37 +1,20 @@
-import { useState } from 'react';
-import { useForm, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import SuperAdminLayout from '../../Layouts/SuperAdminLayout';
 
-export default function ModulAjarIndex({ modules, mapelList, filterMapel }) {
-    const [editing, setEditing] = useState(undefined);
+function IconEdit(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>; }
+function IconTrash(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>; }
+function IconPlus(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 5v14M5 12h14" /></svg>; }
+function IconSearch(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>; }
 
-    const { data, setData, post, processing, reset, errors } = useForm({
-        mapel: '', kelas: 7, fase: 'D', title: '', deskripsi: '', file_key: '', drive_id: '', file_docx: null, aktif: true,
-    });
-
+export default function ModulAjarIndex({ modules, mapelList, filterMapel, search }) {
     const gantiFilter = (mapel) => {
-        router.get('/admin-portal/modul-ajar', mapel ? { mapel } : {}, { preserveState: true });
+        router.get('/admin-portal/modul-ajar', { mapel: mapel || undefined, search: search || undefined }, { preserveState: true });
     };
 
-    const bukaForm = (item = null) => {
-        setEditing(item);
-        setData({
-            mapel: item?.mapel ?? '',
-            kelas: item?.kelas ?? 7,
-            fase: item?.fase ?? 'D',
-            title: item?.title ?? '',
-            deskripsi: item?.deskripsi ?? '',
-            file_key: item?.file_key ?? '',
-            drive_id: '',
-            file_docx: null,
-            aktif: item?.aktif ?? true,
-        });
-    };
-
-    const simpan = (e) => {
+    const cari = (e) => {
         e.preventDefault();
-        const url = editing ? `/admin-portal/modul-ajar/${editing.id}` : '/admin-portal/modul-ajar';
-        post(url, { forceFormData: true, onSuccess: () => { setEditing(undefined); reset(); } });
+        const q = e.target.search.value;
+        router.get('/admin-portal/modul-ajar', { mapel: filterMapel || undefined, search: q || undefined }, { preserveState: true });
     };
 
     const hapus = (item) => {
@@ -41,70 +24,25 @@ export default function ModulAjarIndex({ modules, mapelList, filterMapel }) {
 
     return (
         <SuperAdminLayout title="Modul Ajar" breadcrumb={['Modul Ajar']}>
-            <p className="text-navy/60 mb-6 max-w-2xl">
-                Kelola katalog Modul Ajar Kurikulum Merdeka yang tampil di sekolah.co.id/modul-ajar.
-            </p>
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+                <p className="text-navy/60 max-w-xl">
+                    Kelola katalog Modul Ajar Kurikulum Merdeka yang tampil di sekolah.co.id/modul-ajar.
+                </p>
+                <Link href="/admin-portal/modul-ajar/create" className="inline-flex items-center gap-1.5 bg-teal text-white text-sm font-600 px-4 py-2 rounded-lg whitespace-nowrap">
+                    <IconPlus className="w-4 h-4" /> Tambah Modul
+                </Link>
+            </div>
 
-            <div className="flex items-center gap-2 mb-5 flex-wrap">
+            <div className="flex items-center gap-3 mb-5 flex-wrap">
+                <form onSubmit={cari} className="relative">
+                    <IconSearch className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-navy/30" />
+                    <input name="search" defaultValue={search ?? ''} placeholder="Cari judul/deskripsi..." className="pl-9 pr-3 py-2 rounded-lg border border-navy/15 text-sm w-64" />
+                </form>
                 <button onClick={() => gantiFilter(null)} className={`text-sm px-3 py-1.5 rounded-lg ${!filterMapel ? 'bg-navy text-white' : 'bg-navy/5 text-navy/70'}`}>Semua Mapel</button>
                 {mapelList.map((m) => (
                     <button key={m} onClick={() => gantiFilter(m)} className={`text-sm px-3 py-1.5 rounded-lg ${filterMapel === m ? 'bg-navy text-white' : 'bg-navy/5 text-navy/70'}`}>{m}</button>
                 ))}
             </div>
-
-            {editing !== undefined && (
-                <div className="rounded-2xl bg-white border border-navy/10 p-5 mb-6">
-                    <p className="font-600 text-navy mb-4">{editing ? `Edit: ${editing.title}` : 'Tambah Modul Ajar Baru'}</p>
-                    <form onSubmit={simpan} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-xs text-navy/50 block mb-1">Mata Pelajaran</label>
-                            <input value={data.mapel} onChange={(e) => setData('mapel', e.target.value)} className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm" required />
-                        </div>
-                        <div>
-                            <label className="text-xs text-navy/50 block mb-1">Kelas</label>
-                            <select value={data.kelas} onChange={(e) => setData('kelas', e.target.value)} className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm">
-                                <option value={7}>7</option><option value={8}>8</option><option value={9}>9</option>
-                            </select>
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label className="text-xs text-navy/50 block mb-1">Judul (mis. "Bab 1: Bilangan Bulat")</label>
-                            <input value={data.title} onChange={(e) => setData('title', e.target.value)} className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm" required />
-                            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label className="text-xs text-navy/50 block mb-1">Deskripsi</label>
-                            <textarea value={data.deskripsi} onChange={(e) => setData('deskripsi', e.target.value)} rows={2} className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm" />
-                        </div>
-                        {!editing && (
-                            <div>
-                                <label className="text-xs text-navy/50 block mb-1">File Key (unik, mis. "matematika-bab8-baru")</label>
-                                <input value={data.file_key} onChange={(e) => setData('file_key', e.target.value)} className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm" required />
-                                {errors.file_key && <p className="text-red-500 text-xs mt-1">{errors.file_key}</p>}
-                            </div>
-                        )}
-                        <div>
-                            <label className="text-xs text-navy/50 block mb-1">Link Google Drive (fallback, opsional)</label>
-                            <input value={data.drive_id} onChange={(e) => setData('drive_id', e.target.value)} placeholder="ID file Drive" className="w-full rounded-lg border border-navy/15 px-3 py-2 text-sm" />
-                        </div>
-                        <div className="sm:col-span-2">
-                            <label className="text-xs text-navy/50 block mb-1">Upload File DOCX {editing?.exists_locally && '(sudah ada di server - upload utk ganti)'}</label>
-                            <input type="file" accept=".doc,.docx" onChange={(e) => setData('file_docx', e.target.files[0])} className="w-full text-sm" />
-                        </div>
-                        <div className="sm:col-span-2 flex items-center gap-3">
-                            <button type="submit" disabled={processing} className="bg-teal text-white text-sm font-600 px-4 py-2 rounded-lg disabled:opacity-50">
-                                {editing ? 'Simpan Perubahan' : 'Tambah Modul'}
-                            </button>
-                            <button type="button" onClick={() => setEditing(undefined)} className="text-sm text-navy/50">Batal</button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            {editing === undefined && (
-                <button onClick={() => bukaForm(null)} className="bg-navy text-white text-sm font-600 px-4 py-2 rounded-lg mb-6">
-                    + Tambah Modul Ajar Baru
-                </button>
-            )}
 
             <div className="rounded-2xl bg-white border border-navy/10 overflow-hidden">
                 <table className="w-full text-sm">
@@ -114,27 +52,50 @@ export default function ModulAjarIndex({ modules, mapelList, filterMapel }) {
                             <th className="px-4 py-3">Judul</th>
                             <th className="px-4 py-3">Sumber File</th>
                             <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3"></th>
+                            <th className="px-4 py-3 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {modules.map((m) => (
+                        {modules.data.length === 0 && (
+                            <tr><td colSpan={5} className="px-4 py-10 text-center text-navy/40">Tidak ada modul yang cocok.</td></tr>
+                        )}
+                        {modules.data.map((m) => (
                             <tr key={m.id} className="border-t border-navy/5">
                                 <td className="px-4 py-3 text-navy/70">{m.mapel}</td>
-                                <td className="px-4 py-3 font-600 text-navy">{m.title}</td>
+                                <td className="px-4 py-3">
+                                    <Link href={`/admin-portal/modul-ajar/${m.id}/edit`} className="font-600 text-navy hover:text-teal">{m.title}</Link>
+                                </td>
                                 <td className="px-4 py-3 text-xs text-navy/50">{m.sumber}</td>
                                 <td className="px-4 py-3">
                                     <span className={`text-[10px] font-600 px-2 py-0.5 rounded-full ${m.aktif ? 'bg-emerald-100 text-emerald-800' : 'bg-navy/5 text-navy/40'}`}>{m.aktif ? 'Aktif' : 'Nonaktif'}</span>
                                 </td>
                                 <td className="px-4 py-3 text-right whitespace-nowrap">
-                                    <button onClick={() => bukaForm(m)} className="text-teal text-xs font-600 mr-3">Edit</button>
-                                    <button onClick={() => hapus(m)} className="text-red-500 text-xs font-600">Hapus</button>
+                                    <Link href={`/admin-portal/modul-ajar/${m.id}/edit`} className="inline-flex items-center gap-1 text-teal text-xs font-600 mr-2 px-2.5 py-1.5 rounded-lg bg-teal-light/60 hover:bg-teal-light">
+                                        <IconEdit className="w-3.5 h-3.5" /> Edit
+                                    </Link>
+                                    <button onClick={() => hapus(m)} className="inline-flex items-center gap-1 text-red-600 text-xs font-600 px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100">
+                                        <IconTrash className="w-3.5 h-3.5" /> Hapus
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+
+            {modules.links && modules.links.length > 3 && (
+                <div className="flex items-center gap-1 mt-5 flex-wrap">
+                    {modules.links.map((link, i) => (
+                        <button
+                            key={i}
+                            disabled={!link.url}
+                            onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
+                            className={`text-sm px-3 py-1.5 rounded-lg ${link.active ? 'bg-navy text-white' : link.url ? 'bg-navy/5 text-navy/70 hover:bg-navy/10' : 'text-navy/20 cursor-default'}`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ))}
+                </div>
+            )}
         </SuperAdminLayout>
     );
 }

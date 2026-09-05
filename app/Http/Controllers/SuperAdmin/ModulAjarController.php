@@ -13,11 +13,16 @@ class ModulAjarController extends Controller
     public function index(Request $request)
     {
         $mapel = $request->input('mapel');
+        $search = $request->input('search');
 
         $modules = ModulAjar::when($mapel, fn ($q, $v) => $q->where('mapel', $v))
+            ->when($search, fn ($q, $v) => $q->where(fn ($qq) => $qq
+                ->where('title', 'ilike', "%{$v}%")
+                ->orWhere('deskripsi', 'ilike', "%{$v}%")))
             ->orderBy('mapel')->orderBy('urutan')
-            ->get()
-            ->map(fn ($m) => [
+            ->paginate(15)
+            ->withQueryString()
+            ->through(fn ($m) => [
                 'id' => $m->id,
                 'mapel' => $m->mapel,
                 'kelas' => $m->kelas,
@@ -36,6 +41,30 @@ class ModulAjarController extends Controller
             'modules' => $modules,
             'mapelList' => $mapelList,
             'filterMapel' => $mapel,
+            'search' => $search,
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('SuperAdmin/ModulAjarForm', ['modul' => null]);
+    }
+
+    public function edit(ModulAjar $modul)
+    {
+        return Inertia::render('SuperAdmin/ModulAjarForm', [
+            'modul' => [
+                'id' => $modul->id,
+                'mapel' => $modul->mapel,
+                'kelas' => $modul->kelas,
+                'fase' => $modul->fase,
+                'title' => $modul->title,
+                'deskripsi' => $modul->deskripsi,
+                'file_key' => $modul->file_key,
+                'drive_id' => $modul->drive_id,
+                'aktif' => $modul->aktif,
+                'exists_locally' => $modul->exists_locally,
+            ],
         ]);
     }
 
@@ -59,7 +88,7 @@ class ModulAjarController extends Controller
 
         ModulAjar::create($data);
 
-        return back()->with('success', 'Modul ajar berhasil ditambahkan.');
+        return redirect()->route('superadmin.modul-ajar.index')->with('success', 'Modul ajar berhasil ditambahkan.');
     }
 
     public function update(Request $request, ModulAjar $modul)
@@ -82,7 +111,7 @@ class ModulAjarController extends Controller
 
         $modul->update($data);
 
-        return back()->with('success', 'Modul ajar berhasil diperbarui.');
+        return redirect()->route('superadmin.modul-ajar.index')->with('success', 'Modul ajar berhasil diperbarui.');
     }
 
     public function destroy(ModulAjar $modul)

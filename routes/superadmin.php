@@ -22,6 +22,8 @@ Route::middleware(['web', 'auth', 'super-admin'])->prefix('admin-portal')->name(
     Route::put('/edit-pages/{page}', [\App\Http\Controllers\SuperAdmin\EditPagesController::class, 'update'])->name('edit-pages.update');
 
     Route::get('/modul-ajar', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'index'])->name('modul-ajar.index');
+    Route::get('/modul-ajar/create', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'create'])->name('modul-ajar.create');
+    Route::get('/modul-ajar/{modul}/edit', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'edit'])->name('modul-ajar.edit');
     Route::post('/modul-ajar', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'store'])->name('modul-ajar.store');
     Route::post('/modul-ajar/{modul}', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'update'])->name('modul-ajar.update');
     Route::delete('/modul-ajar/{modul}', [\App\Http\Controllers\SuperAdmin\ModulAjarController::class, 'destroy'])->name('modul-ajar.destroy');
