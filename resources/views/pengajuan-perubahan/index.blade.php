@@ -59,6 +59,8 @@
                 <td style="padding:10px 16px;text-align:right;white-space:nowrap;">
                     @if($status === 'menunggu_approval')
                     <a href="{{ route('pengajuan-perubahan.show', $s) }}" class="btn btn-primary btn-sm">Review</a>
+                    @elseif($status === 'sudah_approve')
+                    <a href="{{ route('pengajuan-perubahan.show', $s) }}" class="btn btn-secondary btn-sm" style="background:#e0e7ff;color:#3730a3;border-color:#c7d2fe;">Lihat</a>
                     @else
                     <span style="font-size:12px;color:#cbd5e1;">-</span>
                     @endif

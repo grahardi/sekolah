@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Review Pengajuan - ' . $siswa->nama_lengkap)
-@section('page-title', 'Review Pengajuan Perubahan')
+@section('page-title', $pengajuan->status === 'sudah_approve' ? 'Lihat Pengajuan Perubahan' : 'Review Pengajuan Perubahan')
 
 @section('header-actions')
     <a href="{{ route('pengajuan-perubahan.index') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Kembali</a>
@@ -19,11 +19,12 @@
 <p style="font-size:12px;color:#94a3b8;margin:0 0 16px;">Diajukan {{ $pengajuan->diajukan_at->locale('id')->diffForHumans() }}</p>
 @endif
 
-@if($pengajuan->status !== 'menunggu_approval')
+@if(! in_array($pengajuan->status, ['menunggu_approval', 'sudah_approve']))
 <div style="background:#f1f5f9;color:#64748b;padding:14px 16px;border-radius:8px;font-size:13px;">Tidak ada pengajuan yang menunggu approval untuk siswa ini.</div>
 @else
 
 @php
+$modeLihatSaja = $pengajuan->status === 'sudah_approve';
 $usulan = $pengajuan->data_perubahan ?? [];
 
 $grup = [
@@ -50,6 +51,12 @@ $grup = [
 ];
 @endphp
 
+@if($modeLihatSaja)
+<div style="background:#e0e7ff;color:#3730a3;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">
+    <i class="ti ti-check"></i> Pengajuan ini <strong>sudah disetujui</strong>{{ $pengajuan->diproses_at ? ' ' . $pengajuan->diproses_at->locale('id')->diffForHumans() : '' }}. Ditampilkan sebagai referensi saja (tidak bisa diubah lagi dari sini).
+</div>
+@endif
+
 @if($pengajuan->catatan_siswa)
 <div style="background:#eff6ff;color:#1e40af;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">
     <strong>Catatan dari siswa:</strong> {{ $pengajuan->catatan_siswa }}
@@ -63,10 +70,12 @@ $grup = [
         <table style="width:100%;border-collapse:collapse;">
             <thead style="background:#f8fafc;">
                 <tr>
+                    @unless($modeLihatSaja)
                     <th style="padding:9px 12px;text-align:left;width:36px;"><input type="checkbox" id="cb-semua" onclick="document.querySelectorAll('.cb-terapkan').forEach(cb => cb.checked = this.checked)"></th>
+                    @endunless
                     <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;width:170px;">Field</th>
                     <th style="padding:9px 12px;text-align:left;font-size:11px;color:#94a3b8;">Data Induk (Sekarang)</th>
-                    <th style="padding:9px 12px;text-align:left;font-size:11px;color:#7c3aed;">Usulan Perubahan</th>
+                    <th style="padding:9px 12px;text-align:left;font-size:11px;color:#7c3aed;">{{ $modeLihatSaja ? 'Yang Diajukan' : 'Usulan Perubahan' }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,11 +88,13 @@ $grup = [
                 $nilaiUsulan = $adaUsulan ? ($field === 'tanggal_lahir' ? \Carbon\Carbon::parse($usulan[$field])->format('d-m-Y') : $usulan[$field]) : null;
                 @endphp
                 <tr style="border-top:1px solid #f1f5f9;{{ $adaUsulan ? 'background:#faf5ff;' : '' }}">
+                    @unless($modeLihatSaja)
                     <td style="padding:9px 12px;">
                         @if($adaUsulan)
                         <input type="checkbox" name="fields[]" value="{{ $field }}" class="cb-terapkan" checked>
                         @endif
                     </td>
+                    @endunless
                     <td style="padding:9px 12px;font-size:12px;color:#64748b;">{{ $label }}</td>
                     <td style="padding:9px 12px;font-size:13px;color:#0f172a;">{{ $nilaiInduk ?: '-' }}</td>
                     <td style="padding:9px 12px;font-size:13px;{{ $adaUsulan ? 'font-weight:600;color:#7c3aed;' : 'color:#cbd5e1;' }}">{{ $adaUsulan ? $nilaiUsulan : '-' }}</td>
@@ -92,13 +103,16 @@ $grup = [
                 @endforeach
             </tbody>
         </table>
+        @unless($modeLihatSaja)
         <div style="padding:12px 18px;border-top:1px solid #f1f5f9;">
             <label style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:6px;cursor:pointer;">
                 <input type="checkbox" onclick="document.getElementById('cb-semua').checked = this.checked; document.getElementById('cb-semua').click();"> Centang / lepas semua
             </label>
         </div>
+        @endunless
     </div>
 
+    @unless($modeLihatSaja)
     <div class="card" style="padding:18px;background:#fffbeb;border-color:#fde68a;">
         <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
             <input type="checkbox" name="yakin" value="1" id="cb-yakin" style="margin-top:2px;" onchange="document.getElementById('btn-simpan').disabled = !this.checked;">
@@ -109,6 +123,7 @@ $grup = [
     <div style="display:flex;justify-content:flex-end;margin-top:16px;">
         <button type="submit" id="btn-simpan" class="btn btn-primary" disabled><i class="ti ti-check"></i> Setujui & Simpan Perubahan</button>
     </div>
+    @endunless
 </form>
 @endif
 
