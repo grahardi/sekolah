@@ -98,15 +98,7 @@ class AlumniController extends Controller
 
         $request->validate([
             'catatan' => 'nullable|string|max:1000',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        if ($request->hasFile('foto')) {
-            if ($siswa->foto) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto);
-            }
-            $siswa->update(['foto' => $request->file('foto')->store('siswa/foto', 'public')]);
-        }
 
         $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
 
@@ -115,7 +107,18 @@ class AlumniController extends Controller
                 if ($arsip->{$field}) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->{$field});
                 }
-                $arsip->{$field} = $request->file($field)->store("arsip/{$siswa->id}", 'public');
+                $path = $request->file($field)->store("arsip/{$siswa->id}", 'public');
+                $arsip->{$field} = $path;
+
+                // Field 'foto' di Berkas Masuk ini yg dipakai sbg foto profil
+                // resmi siswa (tampil di list Alumni, kartu, cetak, dll) -
+                // sinkronkan ke siswas.foto biar gak ada 2 sumber foto beda.
+                if ($field === 'foto') {
+                    if ($siswa->foto) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto);
+                    }
+                    $siswa->update(['foto' => $path]);
+                }
             }
         }
 
@@ -253,9 +256,18 @@ class AlumniController extends Controller
             $ekstensi = pathinfo($namaAsli, PATHINFO_EXTENSION);
 
             if ($jenis === 'foto') {
-                $pathTujuan = "siswa/foto/{$siswa->id}." . $ekstensi;
+                $pathTujuan = "arsip/{$siswa->id}/foto." . $ekstensi;
                 \Illuminate\Support\Facades\Storage::disk('public')->put($pathTujuan, file_get_contents($pathFisik));
 
+                $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
+                if ($arsip->foto && $arsip->foto !== $pathTujuan) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($arsip->foto);
+                }
+                $arsip->foto = $pathTujuan;
+                $arsip->siswa_id = $siswa->id;
+                $arsip->save();
+
+                // Sinkronkan ke siswas.foto jg - itu yg dipakai list Alumni/kartu/cetak
                 if ($siswa->foto && $siswa->foto !== $pathTujuan) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto);
                 }

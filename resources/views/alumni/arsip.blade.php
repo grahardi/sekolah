@@ -22,20 +22,6 @@
 <form action="{{ route('alumni.arsip.update', $siswa) }}" method="POST" enctype="multipart/form-data" id="form-arsip">
     @csrf
 
-    <div class="card" style="margin-bottom:20px;padding:16px;">
-        <div style="display:flex;align-items:center;gap:16px;">
-            <div style="width:80px;height:100px;border-radius:8px;overflow:hidden;background:#dbeafe;flex-shrink:0;">
-                <img src="{{ $siswa->foto_url }}" alt="{{ $siswa->nama_lengkap }}" style="width:100%;height:100%;object-fit:cover;"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($siswa->nama_lengkap) }}&background=dbeafe&color=1d4ed8&size=80'">
-            </div>
-            <div style="flex:1;">
-                <label class="form-label">Foto Siswa</label>
-                <input type="file" name="foto" accept=".jpg,.jpeg,.png" class="form-input">
-                <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Upload untuk ganti foto yang sudah ada. Kosongkan kalau tidak ingin diubah.</p>
-            </div>
-        </div>
-    </div>
-
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div class="card">
             <div class="card-header"><span style="font-size:13px;font-weight:700;color:#0f172a;"><i class="ti ti-folder" style="font-size:16px;vertical-align:-3px;margin-right:6px;color:#1d4ed8;"></i> Berkas Masuk</span></div>
