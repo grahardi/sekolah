@@ -19,11 +19,6 @@
 </div>
 @endif
 
-<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;margin-bottom:16px;">
-    <p style="font-size:12px;color:#166534;margin:0;">Bagikan link ini ke alumni supaya mereka bisa isi data sendiri (lanjut sekolah, kerja, dll):</p>
-    <input type="text" readonly value="{{ url('/' . auth()->user()->sekolah->npsn . '/alumni') }}" onclick="this.select()" style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;background:#fff;">
-</div>
-
 <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
     <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Cari nama..." class="form-input" style="max-width:240px;">
     <select name="tahun_masuk" class="form-input" style="max-width:180px;" onchange="this.form.submit()">
@@ -45,7 +40,6 @@
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tahun Masuk</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tahun Lulus</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">No. Ijazah</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">History Alumni</th>
                 <th style="padding:10px 16px;text-align:right;font-size:11px;color:#64748b;">Aksi</th>
             </tr>
         </thead>
@@ -65,19 +59,12 @@
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_masuk ?: '-' }}</td>
                 <td style="padding:10px 16px;font-size:13px;color:#475569;">{{ $a->tahun_lulus ?: '-' }}</td>
                 <td style="padding:10px 16px;font-size:12px;color:#475569;font-family:monospace;">{{ $a->no_ijazah ?: '-' }}</td>
-                <td style="padding:10px 16px;">
-                    @if($a->alumni_diisi_at)
-                    <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;">{{ $a->alumni_label }}</span>
-                    @else
-                    <span style="background:#f1f5f9;color:#94a3b8;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;">Belum Mengisi</span>
-                    @endif
-                </td>
                 <td style="padding:10px 16px;text-align:right;">
                     <a href="{{ route('alumni.arsip.show', $a) }}" class="btn btn-secondary btn-sm"><i class="ti ti-folder"></i> Berkas</a>
                 </td>
             </tr>
             @empty
-            <tr><td colspan="8" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
+            <tr><td colspan="7" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
             @endforelse
         </tbody>
     </table>

@@ -184,6 +184,10 @@
            class="sb-item {{ request()->routeIs('alumni.index') ? 'active' : '' }}">
             <i class="ti ti-layout-dashboard"></i><span>Daftar Alumni</span>
         </a>
+        <a href="{{ route('alumni.history.index') }}"
+           class="sb-item {{ request()->routeIs('alumni.history.*') ? 'active' : '' }}">
+            <i class="ti ti-chart-bar"></i><span>History Alumni</span>
+        </a>
 
         @if(auth()->user()->isAdmin())
         <div class="sb-divider"></div>
