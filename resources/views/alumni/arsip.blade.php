@@ -52,18 +52,19 @@
             <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">Kelas terakhir {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
         </div>
 
-        @forelse($siswa->alumniAjuanUlang as $riwayat)
-        <div style="position:relative;margin-bottom:16px;">
-            <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:{{ $riwayat->status === 'disetujui' ? '#16a34a' : ($riwayat->status === 'ditolak' ? '#dc2626' : '#d97706') }};border:2px solid #fff;box-shadow:0 0 0 2px {{ $riwayat->status === 'disetujui' ? '#16a34a' : ($riwayat->status === 'ditolak' ? '#dc2626' : '#d97706') }};"></div>
-            <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">{{ $riwayat->labelTujuan() }}{{ $riwayat->alumni_jurusan ? " - {$riwayat->alumni_jurusan}" : '' }}</p>
+        @php $riwayatTerakhir = $siswa->alumniAjuanUlang->last(); @endphp
+        @if($riwayatTerakhir)
+        <div style="position:relative;">
+            <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:{{ $riwayatTerakhir->status === 'disetujui' ? '#16a34a' : ($riwayatTerakhir->status === 'ditolak' ? '#dc2626' : '#d97706') }};border:2px solid #fff;box-shadow:0 0 0 2px {{ $riwayatTerakhir->status === 'disetujui' ? '#16a34a' : ($riwayatTerakhir->status === 'ditolak' ? '#dc2626' : '#d97706') }};"></div>
+            <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">{{ $riwayatTerakhir->labelTujuan() }}{{ $riwayatTerakhir->alumni_jurusan ? " - {$riwayatTerakhir->alumni_jurusan}" : '' }}</p>
             <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">
-                Diajukan {{ $riwayat->created_at->locale('id')->diffForHumans() }}
-                @if($riwayat->status === 'menunggu')<span style="color:#d97706;font-weight:600;"> &middot; Menunggu Persetujuan</span>
-                @elseif($riwayat->status === 'ditolak')<span style="color:#dc2626;font-weight:600;"> &middot; Ditolak</span>
+                Diajukan {{ $riwayatTerakhir->created_at->locale('id')->diffForHumans() }}
+                @if($riwayatTerakhir->status === 'menunggu')<span style="color:#d97706;font-weight:600;"> &middot; Menunggu Persetujuan</span>
+                @elseif($riwayatTerakhir->status === 'ditolak')<span style="color:#dc2626;font-weight:600;"> &middot; Ditolak</span>
                 @else<span style="color:#16a34a;font-weight:600;"> &middot; Disetujui</span>@endif
             </p>
         </div>
-        @empty
+        @else
             @if($siswa->alumni_diisi_at)
             <div style="position:relative;">
                 <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:#16a34a;border:2px solid #fff;box-shadow:0 0 0 2px #16a34a;"></div>
@@ -73,7 +74,7 @@
             @else
             <p style="font-size:12px;color:#94a3b8;margin:0;">Alumni belum pernah mengisi data lanjutan.</p>
             @endif
-        @endforelse
+        @endif
     </div>
 </div>
 
