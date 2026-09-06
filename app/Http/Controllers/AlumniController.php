@@ -175,14 +175,14 @@ class AlumniController extends Controller
     public function importBerkas(Request $request)
     {
         $jenisBerkasList = [
-            'ijazah' => 'Ijazah SMP', 'sertifikat_tka' => 'Sertifikat TKA', 'transkrip_nilai' => 'Transkrip Nilai',
+            'foto' => 'Foto Siswa', 'ijazah' => 'Ijazah SMP', 'sertifikat_tka' => 'Sertifikat TKA', 'transkrip_nilai' => 'Transkrip Nilai',
         ];
 
         $request->validate([
             'jenis' => 'required|in:' . implode(',', array_keys($jenisBerkasList)),
             'zip_file' => 'nullable|file|max:51200|mimes:zip',
             'files' => 'nullable|array',
-            'files.*' => 'file|max:5120|mimes:jpg,jpeg,png,pdf',
+            'files.*' => $request->input('jenis') === 'foto' ? 'file|max:5120|mimes:jpg,jpeg,png' : 'file|max:5120|mimes:jpg,jpeg,png,pdf',
         ]);
 
         if (! $request->hasFile('zip_file') && empty($request->file('files'))) {
@@ -212,7 +212,8 @@ class AlumniController extends Controller
                 foreach ($iterator as $item) {
                     if ($item->isFile() && ! str_starts_with($item->getFilename(), '.')) {
                         $ext = strtolower($item->getExtension());
-                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'pdf'])) {
+                        $extValid = $jenis === 'foto' ? ['jpg', 'jpeg', 'png'] : ['jpg', 'jpeg', 'png', 'pdf'];
+                        if (in_array($ext, $extValid)) {
                             $daftarFile[$item->getFilename()] = $item->getPathname();
                         }
                     }
@@ -242,6 +243,20 @@ class AlumniController extends Controller
             }
 
             $ekstensi = pathinfo($namaAsli, PATHINFO_EXTENSION);
+
+            if ($jenis === 'foto') {
+                $pathTujuan = "siswa/foto/{$siswa->id}." . $ekstensi;
+                \Illuminate\Support\Facades\Storage::disk('public')->put($pathTujuan, file_get_contents($pathFisik));
+
+                if ($siswa->foto && $siswa->foto !== $pathTujuan) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto);
+                }
+                $siswa->update(['foto' => $pathTujuan]);
+
+                $imported++;
+                continue;
+            }
+
             $pathTujuan = "arsip/{$siswa->id}/{$jenis}." . $ekstensi;
             \Illuminate\Support\Facades\Storage::disk('public')->put($pathTujuan, file_get_contents($pathFisik));
 

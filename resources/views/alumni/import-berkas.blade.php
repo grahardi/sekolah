@@ -28,6 +28,7 @@
         <label class="form-label">Jenis Berkas</label>
         <select name="jenis" class="form-input" required style="margin-bottom:14px;">
             <option value="">-- Pilih Jenis Berkas --</option>
+            <option value="foto">Foto Siswa</option>
             <option value="ijazah">Ijazah SMP</option>
             <option value="sertifikat_tka">Sertifikat TKA</option>
             <option value="transkrip_nilai">Transkrip Nilai</option>
