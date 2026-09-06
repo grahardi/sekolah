@@ -19,6 +19,25 @@
 </div>
 @endif
 
+<div class="card" style="padding:18px;margin-bottom:20px;">
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="ti ti-id-badge-2" style="color:#1d4ed8;"></i> Data Pokok</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:13px;">
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">NIS</span>{{ $siswa->nis ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">NISN</span>{{ $siswa->nisn ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Jenis Kelamin</span>{{ $siswa->jenis_kelamin_lengkap }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Tempat, Tanggal Lahir</span>{{ $siswa->tempat_lahir }}, {{ $siswa->tanggal_lahir?->format('d-m-Y') ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Agama</span>{{ $siswa->agama ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Kelas Terakhir</span>{{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</div>
+        <div style="grid-column:span 3;"><span style="color:#94a3b8;display:block;font-size:11px;">Alamat</span>{{ $siswa->alamat ?: '-' }}{{ $siswa->kecamatan ? ", {$siswa->kecamatan}" : '' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Nama Ayah</span>{{ $siswa->nama_ayah ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Nama Ibu</span>{{ $siswa->nama_ibu ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">No. Telepon</span>{{ $siswa->no_telepon ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Tahun Masuk</span>{{ $siswa->tahun_masuk ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">Tahun Lulus</span>{{ $siswa->tahun_lulus ?: '-' }}</div>
+        <div><span style="color:#94a3b8;display:block;font-size:11px;">No. Ijazah</span>{{ $siswa->no_ijazah ?: '-' }}</div>
+    </div>
+</div>
+
 <form action="{{ route('alumni.arsip.update', $siswa) }}" method="POST" enctype="multipart/form-data" id="form-arsip">
     @csrf
 
