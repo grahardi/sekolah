@@ -182,6 +182,8 @@ class AlumniController extends Controller
     public function historyIndex(Request $request)
     {
         $tahunLulus = $request->input('tahun_lulus');
+        $kategoriFilter = $request->input('kategori');
+        $statusFilter = $request->input('status_isi');
 
         $baseQuery = Siswa::where('status', 'lulus')
             ->when($tahunLulus, fn ($q, $v) => $q->where('tahun_lulus', $v));
@@ -192,11 +194,11 @@ class AlumniController extends Controller
         $pondokPesantren = (clone $baseQuery)->where('alumni_kategori', 'pondok_pesantren')->count();
         $bekerja = (clone $baseQuery)->where('alumni_kategori', 'bekerja')->count();
         $tidakMelanjutkan = (clone $baseQuery)->where('alumni_kategori', 'tidak_melanjutkan')->count();
+        $lainnya = (clone $baseQuery)->where('alumni_kategori', 'lainnya')->count();
 
         $persenMengisi = $total > 0 ? round($sudahMengisi / $total * 100) : 0;
         $persenLanjut = $total > 0 ? round($lanjutSekolah / $total * 100) : 0;
 
-        // Sekolah favorit - gabung dari yg pilih dari daftar (relasi) & yg isi manual
         $sekolahFavorit = (clone $baseQuery)->where('alumni_kategori', 'lanjut_sekolah')
             ->leftJoin('sekolah_tujuan', 'siswas.alumni_sekolah_tujuan_id', '=', 'sekolah_tujuan.id')
             ->selectRaw("COALESCE(sekolah_tujuan.nama_sekolah, siswas.alumni_sekolah_tujuan_manual) as nama, COUNT(*) as jumlah")
@@ -216,15 +218,22 @@ class AlumniController extends Controller
             ->limit(10)
             ->get();
 
-        $daftarAlumni = $baseQuery->orderByDesc('alumni_diisi_at')->paginate(20)->withQueryString();
+        // Filter & urutkan list alumni sesuai pilihan kategori/status pengisian
+        $listQuery = (clone $baseQuery)
+            ->when($kategoriFilter, fn ($q, $v) => $q->where('alumni_kategori', $v))
+            ->when($statusFilter === 'sudah', fn ($q) => $q->whereNotNull('alumni_diisi_at'))
+            ->when($statusFilter === 'belum', fn ($q) => $q->whereNull('alumni_diisi_at'));
+
+        $daftarAlumni = $listQuery->orderByDesc('alumni_diisi_at')->paginate(20)->withQueryString();
 
         $tahunList = Siswa::where('status', 'lulus')->whereNotNull('tahun_lulus')->select('tahun_lulus')->distinct()->orderByDesc('tahun_lulus')->pluck('tahun_lulus');
 
         $npsn = auth()->user()->sekolah->npsn;
 
         return view('alumni.history.index', compact(
-            'total', 'sudahMengisi', 'lanjutSekolah', 'pondokPesantren', 'bekerja', 'tidakMelanjutkan',
-            'persenMengisi', 'persenLanjut', 'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn'
+            'total', 'sudahMengisi', 'lanjutSekolah', 'pondokPesantren', 'bekerja', 'tidakMelanjutkan', 'lainnya',
+            'persenMengisi', 'persenLanjut', 'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn',
+            'kategoriFilter', 'statusFilter'
         ));
     }
 

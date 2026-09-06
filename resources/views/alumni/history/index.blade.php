@@ -9,13 +9,29 @@
     <input type="text" readonly value="{{ url("/{$npsn}/alumni") }}" onclick="this.select()" style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;background:#fff;">
 </div>
 
-<form method="GET" style="margin-bottom:20px;max-width:240px;">
-    <select name="tahun_lulus" class="form-input" onchange="this.form.submit()">
+<form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <select name="tahun_lulus" class="form-input" style="max-width:200px;" onchange="this.form.submit()">
         <option value="">Semua Angkatan</option>
         @foreach($tahunList as $t)
         <option value="{{ $t }}" {{ (string) $tahunLulus === (string) $t ? 'selected' : '' }}>Angkatan {{ $t }}</option>
         @endforeach
     </select>
+    <select name="kategori" class="form-input" style="max-width:200px;" onchange="this.form.submit()">
+        <option value="">Semua Kategori</option>
+        <option value="lanjut_sekolah" {{ $kategoriFilter === 'lanjut_sekolah' ? 'selected' : '' }}>Lanjut Sekolah</option>
+        <option value="pondok_pesantren" {{ $kategoriFilter === 'pondok_pesantren' ? 'selected' : '' }}>Pondok Pesantren</option>
+        <option value="bekerja" {{ $kategoriFilter === 'bekerja' ? 'selected' : '' }}>Bekerja</option>
+        <option value="tidak_melanjutkan" {{ $kategoriFilter === 'tidak_melanjutkan' ? 'selected' : '' }}>Tidak Melanjutkan</option>
+        <option value="lainnya" {{ $kategoriFilter === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
+    </select>
+    <select name="status_isi" class="form-input" style="max-width:200px;" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        <option value="sudah" {{ $statusFilter === 'sudah' ? 'selected' : '' }}>Sudah Mengisi</option>
+        <option value="belum" {{ $statusFilter === 'belum' ? 'selected' : '' }}>Belum Mengisi</option>
+    </select>
+    @if($tahunLulus || $kategoriFilter || $statusFilter)
+    <a href="{{ route('alumni.history.index') }}" class="btn btn-secondary">Reset Filter</a>
+    @endif
 </form>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:14px;margin-bottom:20px;">
@@ -38,6 +54,10 @@
     <div class="card" style="padding:16px;text-align:center;">
         <p style="font-size:26px;font-weight:800;color:#64748b;margin:0;">{{ $tidakMelanjutkan }}</p>
         <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Tidak Melanjutkan</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+        <p style="font-size:26px;font-weight:800;color:#be185d;margin:0;">{{ $lainnya }}</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Lainnya</p>
     </div>
 </div>
 
