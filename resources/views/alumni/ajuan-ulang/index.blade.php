@@ -21,7 +21,8 @@
             <tr>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Nama Alumni</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Diajukan</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tujuan Baru</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Data Awal</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#7c3aed;">Data Perubahan</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Status</th>
                 <th style="padding:10px 16px;text-align:right;font-size:11px;color:#64748b;">Aksi</th>
             </tr>
@@ -35,7 +36,18 @@
             <tr style="border-top:1px solid #f1f5f9;">
                 <td style="padding:10px 16px;font-size:13px;font-weight:600;color:#0f172a;">{{ $a->siswa->nama_lengkap ?? '-' }}</td>
                 <td style="padding:10px 16px;font-size:12px;color:#94a3b8;">{{ $a->created_at->locale('id')->diffForHumans() }}</td>
-                <td style="padding:10px 16px;font-size:13px;color:#7c3aed;font-weight:600;">{{ $a->labelTujuan() }}{{ $a->alumni_jurusan ? " - {$a->alumni_jurusan}" : '' }}</td>
+                <td style="padding:10px 16px;font-size:13px;color:#475569;">
+                    {{ $a->siswa?->alumni_diisi_at ? $a->siswa->alumni_label : 'Belum Pernah Mengisi' }}
+                    @if($a->siswa?->alumni_kategori === 'lanjut_sekolah' && $a->siswa?->alumni_jurusan)
+                    <br><span style="font-size:11px;color:#94a3b8;">Jurusan: {{ $a->siswa->alumni_jurusan }}</span>
+                    @endif
+                </td>
+                <td style="padding:10px 16px;font-size:13px;color:#7c3aed;font-weight:600;">
+                    {{ $a->labelTujuan() }}
+                    @if($a->alumni_kategori === 'lanjut_sekolah' && $a->alumni_jurusan)
+                    <br><span style="font-size:11px;color:#a78bfa;font-weight:400;">Jurusan: {{ $a->alumni_jurusan }}</span>
+                    @endif
+                </td>
                 <td style="padding:10px 16px;">
                     <span style="background:{{ $warna['bg'] }};color:{{ $warna['txt'] }};font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;">{{ $label }}</span>
                 </td>
@@ -55,7 +67,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="5" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada pengajuan perubahan.</td></tr>
+            <tr><td colspan="6" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada pengajuan perubahan.</td></tr>
             @endforelse
         </tbody>
     </table>
