@@ -184,6 +184,7 @@ class AlumniController extends Controller
         $tahunLulus = $request->input('tahun_lulus');
         $kategoriFilter = $request->input('kategori');
         $statusFilter = $request->input('status_isi');
+        $search = $request->input('search');
 
         $baseQuery = Siswa::where('status', 'lulus')
             ->when($tahunLulus, fn ($q, $v) => $q->where('tahun_lulus', $v));
@@ -222,7 +223,8 @@ class AlumniController extends Controller
         $listQuery = (clone $baseQuery)
             ->when($kategoriFilter, fn ($q, $v) => $q->where('alumni_kategori', $v))
             ->when($statusFilter === 'sudah', fn ($q) => $q->whereNotNull('alumni_diisi_at'))
-            ->when($statusFilter === 'belum', fn ($q) => $q->whereNull('alumni_diisi_at'));
+            ->when($statusFilter === 'belum', fn ($q) => $q->whereNull('alumni_diisi_at'))
+            ->when($search, fn ($q, $v) => $q->where(fn ($qq) => $qq->where('nama_lengkap', 'ilike', "%{$v}%")->orWhere('nisn', 'ilike', "%{$v}%")->orWhere('nis', 'ilike', "%{$v}%")));
 
         $daftarAlumni = $listQuery->orderByDesc('alumni_diisi_at')->paginate(20)->withQueryString();
 
@@ -234,7 +236,7 @@ class AlumniController extends Controller
         return view('alumni.history.index', compact(
             'total', 'sudahMengisi', 'lanjutSekolah', 'pondokPesantren', 'bekerja', 'tidakMelanjutkan', 'lainnya',
             'persenMengisi', 'persenLanjut', 'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn',
-            'kategoriFilter', 'statusFilter', 'sekolahTujuanList'
+            'kategoriFilter', 'statusFilter', 'sekolahTujuanList', 'search'
         ));
     }
 
@@ -276,6 +278,15 @@ class AlumniController extends Controller
         return back()->with('success', $request->aksi === 'setuju' ? 'Pengajuan disetujui & data alumni diperbarui.' : 'Pengajuan ditolak.');
     }
 
+    public function historyEditForm(Siswa $siswa)
+    {
+        abort_unless($siswa->status === 'lulus', 404);
+
+        $sekolahTujuanList = \App\Models\SekolahTujuan::where('aktif', true)->orderBy('urutan')->orderBy('nama_sekolah')->get();
+
+        return view('alumni.history.edit', compact('siswa', 'sekolahTujuanList'));
+    }
+
     public function historyEdit(Request $request, Siswa $siswa)
     {
         $data = $request->validate([
@@ -313,7 +324,7 @@ class AlumniController extends Controller
             ['status' => 'disetujui', 'diproses_oleh_user_id' => auth()->id(), 'diproses_at' => now()]
         ));
 
-        return back()->with('success', "Data alumni {$siswa->nama_lengkap} berhasil diperbarui.");
+        return redirect()->route('alumni.history.edit.form', $siswa)->with('success', "Data alumni {$siswa->nama_lengkap} berhasil diperbarui.");
     }
 
     public function sekolahTujuanIndex()

@@ -10,6 +10,7 @@
 </div>
 
 <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama/NISN..." class="form-input" style="max-width:200px;">
     <select name="tahun_lulus" class="form-input" style="max-width:200px;" onchange="this.form.submit()">
         <option value="">Semua Angkatan</option>
         @foreach($tahunList as $t)
@@ -29,9 +30,10 @@
         <option value="sudah" {{ $statusFilter === 'sudah' ? 'selected' : '' }}>Sudah Mengisi</option>
         <option value="belum" {{ $statusFilter === 'belum' ? 'selected' : '' }}>Belum Mengisi</option>
     </select>
-    @if($tahunLulus || $kategoriFilter || $statusFilter)
+    @if($tahunLulus || $kategoriFilter || $statusFilter || $search)
     <a href="{{ route('alumni.history.index') }}" class="btn btn-secondary">Reset Filter</a>
     @endif
+    <button type="submit" class="btn btn-primary"><i class="ti ti-search"></i> Cari</button>
 </form>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:14px;margin-bottom:20px;">
@@ -111,7 +113,7 @@
                 </td>
                 <td style="padding:10px 16px;font-size:12px;color:#94a3b8;">{{ $a->alumni_diisi_at?->locale('id')->diffForHumans() ?? '-' }}</td>
                 <td style="padding:10px 16px;text-align:right;">
-                    <button type="button" onclick="document.getElementById('modal-edit-{{ $a->id }}').style.display='flex'" class="btn btn-secondary btn-sm">Edit</button>
+                    <a href="{{ route('alumni.history.edit.form', $a) }}" class="btn btn-secondary btn-sm">Edit</a>
                 </td>
             </tr>
             @empty
@@ -121,59 +123,5 @@
     </table>
 </div>
 <div style="margin-top:16px;">{{ $daftarAlumni->links() }}</div>
-
-@foreach($daftarAlumni as $a)
-<div id="modal-edit-{{ $a->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
-    <div class="card" style="max-width:440px;width:100%;padding:22px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-            <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Edit Riwayat - {{ $a->nama_lengkap }}</p>
-            <button type="button" onclick="document.getElementById('modal-edit-{{ $a->id }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;">&times;</button>
-        </div>
-        <form action="{{ route('alumni.history.edit', $a) }}" method="POST">
-            @csrf @method('PUT')
-
-            <label class="form-label">Kategori</label>
-            <select name="alumni_kategori" id="kategori-{{ $a->id }}" class="form-input" required style="margin-bottom:12px;"
-                onchange="
-                    document.getElementById('wrap-sekolah-{{ $a->id }}').style.display = this.value === 'lanjut_sekolah' ? 'block' : 'none';
-                    document.getElementById('wrap-pondok-{{ $a->id }}').style.display = this.value === 'pondok_pesantren' ? 'block' : 'none';
-                    document.getElementById('wrap-keterangan-{{ $a->id }}').style.display = ['bekerja','tidak_melanjutkan','lainnya'].includes(this.value) ? 'block' : 'none';
-                ">
-                <option value="lanjut_sekolah" {{ $a->alumni_kategori === 'lanjut_sekolah' ? 'selected' : '' }}>Lanjut Sekolah</option>
-                <option value="pondok_pesantren" {{ $a->alumni_kategori === 'pondok_pesantren' ? 'selected' : '' }}>Pondok Pesantren</option>
-                <option value="bekerja" {{ $a->alumni_kategori === 'bekerja' ? 'selected' : '' }}>Bekerja</option>
-                <option value="tidak_melanjutkan" {{ $a->alumni_kategori === 'tidak_melanjutkan' ? 'selected' : '' }}>Tidak Melanjutkan</option>
-                <option value="lainnya" {{ $a->alumni_kategori === 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-            </select>
-
-            <div id="wrap-sekolah-{{ $a->id }}" style="display:{{ $a->alumni_kategori === 'lanjut_sekolah' ? 'block' : 'none' }};">
-                <label class="form-label">Sekolah Tujuan</label>
-                <select name="alumni_sekolah_tujuan_id" class="form-input" style="margin-bottom:8px;">
-                    <option value="">-- Tidak ada di daftar --</option>
-                    @foreach($sekolahTujuanList as $st)
-                    <option value="{{ $st->id }}" {{ (int) $a->alumni_sekolah_tujuan_id === $st->id ? 'selected' : '' }}>{{ $st->nama_sekolah }}</option>
-                    @endforeach
-                </select>
-                <label class="form-label">Atau Nama Sekolah Manual</label>
-                <input type="text" name="alumni_sekolah_tujuan_manual" value="{{ $a->alumni_sekolah_tujuan_manual }}" class="form-input" style="margin-bottom:8px;">
-                <label class="form-label">Jurusan</label>
-                <input type="text" name="alumni_jurusan" value="{{ $a->alumni_jurusan }}" class="form-input" style="margin-bottom:12px;">
-            </div>
-
-            <div id="wrap-pondok-{{ $a->id }}" style="display:{{ $a->alumni_kategori === 'pondok_pesantren' ? 'block' : 'none' }};">
-                <label class="form-label">Nama Pondok Pesantren</label>
-                <input type="text" name="alumni_pondok_manual" value="{{ $a->alumni_kategori === 'pondok_pesantren' ? $a->alumni_sekolah_tujuan_manual : '' }}" class="form-input" style="margin-bottom:12px;">
-            </div>
-
-            <div id="wrap-keterangan-{{ $a->id }}" style="display:{{ in_array($a->alumni_kategori, ['bekerja','tidak_melanjutkan','lainnya']) ? 'block' : 'none' }};">
-                <label class="form-label">Keterangan</label>
-                <input type="text" name="alumni_keterangan" value="{{ $a->alumni_keterangan }}" class="form-input" style="margin-bottom:12px;">
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Simpan Perubahan</button>
-        </form>
-    </div>
-</div>
-@endforeach
 
 @endsection
