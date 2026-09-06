@@ -188,6 +188,10 @@
            class="sb-item {{ request()->routeIs('alumni.history.*') ? 'active' : '' }}">
             <i class="ti ti-chart-bar"></i><span>History Alumni</span>
         </a>
+        <a href="{{ route('alumni.ajuan-ulang.index') }}"
+           class="sb-item {{ request()->routeIs('alumni.ajuan-ulang.*') ? 'active' : '' }}">
+            <i class="ti ti-refresh"></i><span>Ajuan Ulang</span>
+        </a>
 
         @if(auth()->user()->isAdmin())
         <div class="sb-divider"></div>

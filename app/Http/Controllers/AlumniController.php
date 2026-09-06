@@ -227,6 +227,43 @@ class AlumniController extends Controller
         ));
     }
 
+    public function ajuanUlangIndex()
+    {
+        $daftar = \App\Models\AlumniAjuanUlang::with('siswa', 'sekolahTujuan')
+            ->orderByRaw("CASE WHEN status = 'menunggu' THEN 0 ELSE 1 END")
+            ->orderByDesc('created_at')
+            ->paginate(20);
+
+        return view('alumni.ajuan-ulang.index', compact('daftar'));
+    }
+
+    public function ajuanUlangProses(Request $request, \App\Models\AlumniAjuanUlang $ajuan)
+    {
+        $request->validate(['aksi' => 'required|in:setuju,tolak']);
+
+        if ($ajuan->status !== 'menunggu') {
+            return back()->with('error', 'Pengajuan ini sudah diproses sebelumnya.');
+        }
+
+        if ($request->aksi === 'setuju') {
+            $ajuan->siswa->update([
+                'alumni_kategori' => $ajuan->alumni_kategori,
+                'alumni_sekolah_tujuan_id' => $ajuan->alumni_sekolah_tujuan_id,
+                'alumni_sekolah_tujuan_manual' => $ajuan->alumni_sekolah_tujuan_manual,
+                'alumni_jurusan' => $ajuan->alumni_jurusan,
+                'alumni_diisi_at' => now(),
+            ]);
+        }
+
+        $ajuan->update([
+            'status' => $request->aksi === 'setuju' ? 'disetujui' : 'ditolak',
+            'diproses_oleh_user_id' => auth()->id(),
+            'diproses_at' => now(),
+        ]);
+
+        return back()->with('success', $request->aksi === 'setuju' ? 'Pengajuan disetujui & data alumni diperbarui.' : 'Pengajuan ditolak.');
+    }
+
     public function sekolahTujuanIndex()
     {
         $daftar = \App\Models\SekolahTujuan::orderBy('urutan')->orderBy('nama_sekolah')->get();

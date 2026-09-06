@@ -29,6 +29,9 @@ Route::middleware(['web', 'auth', 'not_guru'])->prefix('alumni')->name('alumni.'
         Route::put('/sekolah-tujuan/{sekolahTujuan}', [AlumniController::class, 'sekolahTujuanUpdate'])->name('sekolah-tujuan.update');
         Route::delete('/sekolah-tujuan/{sekolahTujuan}', [AlumniController::class, 'sekolahTujuanDestroy'])->name('sekolah-tujuan.destroy');
 
+        Route::get('/ajuan-ulang', [AlumniController::class, 'ajuanUlangIndex'])->name('ajuan-ulang.index');
+        Route::post('/ajuan-ulang/{ajuan}/proses', [AlumniController::class, 'ajuanUlangProses'])->name('ajuan-ulang.proses');
+
         Route::post('/{siswa}/arsip', [AlumniController::class, 'arsipUpdate'])->name('arsip.update');
         Route::post('/{siswa}/arsip/hapus', [AlumniController::class, 'arsipHapus'])->name('arsip.hapus');
     });

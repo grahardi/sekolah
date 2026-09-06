@@ -29,7 +29,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 <div class="wrap">
     <div style="text-align:center;margin-bottom:20px;">
         <p style="font-size:12px;color:#94a3b8;margin:0 0 4px;">{{ $sekolah->nama }}</p>
-        <p style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 12px;">Data Alumni</p>
+        <p style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 12px;">Ajukan Perubahan Data Alumni</p>
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
             <img src="{{ $siswa->foto_url }}" alt="{{ $siswa->nama_lengkap }}" style="width:54px;height:54px;border-radius:12px;object-fit:cover;background:#dcfce7;"
                  onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($siswa->nama_lengkap) }}&background=dcfce7&color=166534&size=54'">
@@ -49,7 +49,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     @endif
 
 
-    <form action="{{ route('alumni-publik.simpan', $npsn) }}" method="POST" id="form-alumni">
+    <form action="{{ route('alumni-publik.ajuan-ulang.simpan', $npsn) }}" method="POST" id="form-alumni">
         @csrf
 
         <div class="card">
@@ -93,7 +93,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <input type="text" id="input-pondok-manual" class="form-input" placeholder="Tulis nama pondok pesantren...">
         </div>
 
-        <button type="submit" class="btn-primary" id="btn-simpan" disabled>Simpan Data</button>
+        <button type="submit" class="btn-primary" id="btn-simpan" disabled>Kirim Pengajuan</button>
     </form>
 </div>
 
