@@ -43,6 +43,7 @@
                     <span style="background:{{ $st->aktif ? '#dcfce7' : '#f1f5f9' }};color:{{ $st->aktif ? '#166534' : '#94a3b8' }};font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;">{{ $st->aktif ? 'Aktif' : 'Nonaktif' }}</span>
                 </td>
                 <td style="padding:10px 16px;text-align:right;white-space:nowrap;">
+                    <button type="button" onclick="document.getElementById('modal-edit-{{ $st->id }}').style.display='flex'" class="btn btn-secondary btn-sm">Edit</button>
                     <form action="{{ route('alumni.sekolah-tujuan.update', $st) }}" method="POST" style="display:inline;">
                         @csrf @method('PUT')
                         <input type="hidden" name="nama_sekolah" value="{{ $st->nama_sekolah }}">
@@ -62,5 +63,25 @@
         </tbody>
     </table>
 </div>
+
+@foreach($daftar as $st)
+<div id="modal-edit-{{ $st->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:420px;width:100%;padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Edit Sekolah Tujuan</p>
+            <button type="button" onclick="document.getElementById('modal-edit-{{ $st->id }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;">&times;</button>
+        </div>
+        <form action="{{ route('alumni.sekolah-tujuan.update', $st) }}" method="POST">
+            @csrf @method('PUT')
+            <label class="form-label">Nama Sekolah</label>
+            <input type="text" name="nama_sekolah" value="{{ $st->nama_sekolah }}" class="form-input" required style="margin-bottom:12px;">
+            <label class="form-label">Jenjang</label>
+            <input type="text" name="jenjang" value="{{ $st->jenjang }}" class="form-input" placeholder="SMA/SMK" style="margin-bottom:16px;">
+            <input type="hidden" name="aktif" value="{{ $st->aktif ? 1 : 0 }}">
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Simpan Perubahan</button>
+        </form>
+    </div>
+</div>
+@endforeach
 
 @endsection
