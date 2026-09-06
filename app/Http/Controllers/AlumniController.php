@@ -251,6 +251,7 @@ class AlumniController extends Controller
                 'alumni_sekolah_tujuan_id' => $ajuan->alumni_sekolah_tujuan_id,
                 'alumni_sekolah_tujuan_manual' => $ajuan->alumni_sekolah_tujuan_manual,
                 'alumni_jurusan' => $ajuan->alumni_jurusan,
+                'alumni_keterangan' => $ajuan->alumni_keterangan,
                 'alumni_diisi_at' => now(),
             ]);
         }

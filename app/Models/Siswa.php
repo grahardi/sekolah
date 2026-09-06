@@ -19,7 +19,7 @@ class Siswa extends Model
         'lintang','bujur',
         'no_telepon','email',
         'kelas','diterima_di_kelas','rombel','tahun_masuk','tahun_lulus','status','alasan_keluar','tanggal_keluar','keterangan_keluar','tanggal_diterima',
-        'alumni_kategori','alumni_sekolah_tujuan_id','alumni_sekolah_tujuan_manual','alumni_jurusan','alumni_diisi_at',
+        'alumni_kategori','alumni_sekolah_tujuan_id','alumni_sekolah_tujuan_manual','alumni_jurusan','alumni_keterangan','alumni_diisi_at',
         'no_sttb_sd','asal_sekolah','no_un_sd','no_ijazah',
         'anak_ke',
         'golongan_darah','tinggi_badan','berat_badan','riwayat_penyakit',
@@ -76,8 +76,9 @@ class Siswa extends Model
         return match ($this->alumni_kategori) {
             'lanjut_sekolah' => $this->alumniSekolahTujuan?->nama_sekolah ?? $this->alumni_sekolah_tujuan_manual ?? 'Lanjut Sekolah',
             'pondok_pesantren' => $this->alumni_sekolah_tujuan_manual ? "Pondok Pesantren - {$this->alumni_sekolah_tujuan_manual}" : 'Pondok Pesantren',
-            'bekerja' => 'Bekerja',
-            'tidak_melanjutkan' => 'Tidak Melanjutkan',
+            'bekerja' => $this->alumni_keterangan ? "Bekerja - {$this->alumni_keterangan}" : 'Bekerja',
+            'tidak_melanjutkan' => $this->alumni_keterangan ? "Tidak Melanjutkan - {$this->alumni_keterangan}" : 'Tidak Melanjutkan',
+            'lainnya' => $this->alumni_keterangan ?: 'Lainnya',
             default => 'Sudah Mengisi',
         };
     }

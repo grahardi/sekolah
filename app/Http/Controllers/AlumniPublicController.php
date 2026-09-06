@@ -87,10 +87,11 @@ class AlumniPublicController extends Controller
         abort_if($siswa->alumni_diisi_at, 403, 'Data sudah pernah diisi. Gunakan fitur Ajukan Perubahan.');
 
         $data = $request->validate([
-            'alumni_kategori' => 'required|in:lanjut_sekolah,pondok_pesantren,tidak_melanjutkan,bekerja',
+            'alumni_kategori' => 'required|in:lanjut_sekolah,pondok_pesantren,tidak_melanjutkan,bekerja,lainnya',
             'alumni_sekolah_tujuan_id' => 'nullable|exists:sekolah_tujuan,id',
             'alumni_sekolah_tujuan_manual' => 'nullable|string|max:150',
             'alumni_jurusan' => 'nullable|string|max:100',
+            'alumni_keterangan' => 'nullable|string|max:255',
         ]);
 
         $siswa->update([
@@ -98,6 +99,7 @@ class AlumniPublicController extends Controller
             'alumni_sekolah_tujuan_id' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_sekolah_tujuan_id'] ?? null) : null,
             'alumni_sekolah_tujuan_manual' => in_array($data['alumni_kategori'], ['lanjut_sekolah', 'pondok_pesantren']) ? ($data['alumni_sekolah_tujuan_manual'] ?? null) : null,
             'alumni_jurusan' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_jurusan'] ?? null) : null,
+            'alumni_keterangan' => in_array($data['alumni_kategori'], ['bekerja', 'tidak_melanjutkan', 'lainnya']) ? ($data['alumni_keterangan'] ?? null) : null,
             'alumni_diisi_at' => now(),
         ]);
 
@@ -124,10 +126,11 @@ class AlumniPublicController extends Controller
         abort_unless($siswa, 403, 'Silahkan verifikasi identitas dulu.');
 
         $data = $request->validate([
-            'alumni_kategori' => 'required|in:lanjut_sekolah,pondok_pesantren,tidak_melanjutkan,bekerja',
+            'alumni_kategori' => 'required|in:lanjut_sekolah,pondok_pesantren,tidak_melanjutkan,bekerja,lainnya',
             'alumni_sekolah_tujuan_id' => 'nullable|exists:sekolah_tujuan,id',
             'alumni_sekolah_tujuan_manual' => 'nullable|string|max:150',
             'alumni_jurusan' => 'nullable|string|max:100',
+            'alumni_keterangan' => 'nullable|string|max:255',
         ]);
 
         // Kalau masih ada ajuan lama yg belum diproses, timpa aja (drpd numpuk)
@@ -139,6 +142,7 @@ class AlumniPublicController extends Controller
             'alumni_sekolah_tujuan_id' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_sekolah_tujuan_id'] ?? null) : null,
             'alumni_sekolah_tujuan_manual' => in_array($data['alumni_kategori'], ['lanjut_sekolah', 'pondok_pesantren']) ? ($data['alumni_sekolah_tujuan_manual'] ?? null) : null,
             'alumni_jurusan' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_jurusan'] ?? null) : null,
+            'alumni_keterangan' => in_array($data['alumni_kategori'], ['bekerja', 'tidak_melanjutkan', 'lainnya']) ? ($data['alumni_keterangan'] ?? null) : null,
             'status' => 'menunggu',
         ]);
 

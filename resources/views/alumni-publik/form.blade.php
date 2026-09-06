@@ -20,6 +20,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .opsi-btn[data-kategori="pondok_pesantren"] { background:#f5f3ff; color:#7c3aed; }
 .opsi-btn[data-kategori="bekerja"] { background:#fffbeb; color:#d97706; }
 .opsi-btn[data-kategori="tidak_melanjutkan"] { background:#f8fafc; color:#64748b; }
+.opsi-btn[data-kategori="lainnya"] { background:#fdf2f8; color:#be185d; grid-column:span 2; }
 .opsi-btn.aktif { border-color:currentColor; box-shadow:0 2px 8px rgba(0,0,0,.08); }
 .btn-primary { background:#16a34a; color:#fff; border:none; padding:13px 20px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; width:100%; }
 .btn-primary:disabled { background:#cbd5e1; cursor:not-allowed; }
@@ -48,7 +49,6 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     <div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;text-align:center;"><i class="ti ti-check"></i> {{ session('success') }}</div>
     @endif
 
-
     <form action="{{ route('alumni-publik.simpan', $npsn) }}" method="POST" id="form-alumni">
         @csrf
 
@@ -66,6 +66,9 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                 </div>
                 <div class="opsi-btn" data-kategori="tidak_melanjutkan" onclick="pilihKategori('tidak_melanjutkan')">
                     <i class="ti ti-home"></i><p>Tidak Melanjutkan</p>
+                </div>
+                <div class="opsi-btn" data-kategori="lainnya" onclick="pilihKategori('lainnya')">
+                    <i class="ti ti-dots"></i><p>Lainnya</p>
                 </div>
             </div>
             <input type="hidden" name="alumni_kategori" id="input-kategori" required>
@@ -93,6 +96,21 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
             <input type="text" id="input-pondok-manual" class="form-input" placeholder="Tulis nama pondok pesantren...">
         </div>
 
+        <div class="card" id="wrap-bekerja" style="display:none;">
+            <label class="form-label">Kerja Apa / Di Mana?</label>
+            <input type="text" id="input-bekerja" class="form-input" placeholder="mis. Karyawan Toko Berkah Jaya, Turen">
+        </div>
+
+        <div class="card" id="wrap-tidak-lanjut" style="display:none;">
+            <label class="form-label">Alasan (opsional)</label>
+            <input type="text" id="input-tidak-lanjut" class="form-input" placeholder="mis. Bantu usaha orang tua dulu">
+        </div>
+
+        <div class="card" id="wrap-lainnya" style="display:none;">
+            <label class="form-label">Ceritakan kegiatanmu sekarang</label>
+            <input type="text" id="input-lainnya" class="form-input" placeholder="Tulis kegiatanmu sekarang...">
+        </div>
+
         <button type="submit" class="btn-primary" id="btn-simpan" disabled>Simpan Data</button>
     </form>
 </div>
@@ -106,13 +124,21 @@ function pilihKategori(kategori) {
 
     document.getElementById('wrap-sekolah').style.display = kategori === 'lanjut_sekolah' ? 'block' : 'none';
     document.getElementById('wrap-pondok').style.display = kategori === 'pondok_pesantren' ? 'block' : 'none';
+    document.getElementById('wrap-bekerja').style.display = kategori === 'bekerja' ? 'block' : 'none';
+    document.getElementById('wrap-tidak-lanjut').style.display = kategori === 'tidak_melanjutkan' ? 'block' : 'none';
+    document.getElementById('wrap-lainnya').style.display = kategori === 'lainnya' ? 'block' : 'none';
 }
 
 document.getElementById('form-alumni').addEventListener('submit', function (e) {
     const kategori = document.getElementById('input-kategori').value;
+
     const hiddenManual = document.createElement('input');
     hiddenManual.type = 'hidden';
     hiddenManual.name = 'alumni_sekolah_tujuan_manual';
+
+    const hiddenKeterangan = document.createElement('input');
+    hiddenKeterangan.type = 'hidden';
+    hiddenKeterangan.name = 'alumni_keterangan';
 
     if (kategori === 'lanjut_sekolah') {
         const select = document.getElementById('select-sekolah');
@@ -122,9 +148,16 @@ document.getElementById('form-alumni').addEventListener('submit', function (e) {
         }
     } else if (kategori === 'pondok_pesantren') {
         hiddenManual.value = document.getElementById('input-pondok-manual').value;
+    } else if (kategori === 'bekerja') {
+        hiddenKeterangan.value = document.getElementById('input-bekerja').value;
+    } else if (kategori === 'tidak_melanjutkan') {
+        hiddenKeterangan.value = document.getElementById('input-tidak-lanjut').value;
+    } else if (kategori === 'lainnya') {
+        hiddenKeterangan.value = document.getElementById('input-lainnya').value;
     }
 
     if (hiddenManual.value) this.appendChild(hiddenManual);
+    if (hiddenKeterangan.value) this.appendChild(hiddenKeterangan);
 });
 </script>
 </body>
