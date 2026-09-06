@@ -19,6 +19,7 @@ class Siswa extends Model
         'lintang','bujur',
         'no_telepon','email',
         'kelas','diterima_di_kelas','rombel','tahun_masuk','tahun_lulus','status','alasan_keluar','tanggal_keluar','keterangan_keluar','tanggal_diterima',
+        'alumni_kategori','alumni_sekolah_tujuan_id','alumni_sekolah_tujuan_manual','alumni_jurusan','alumni_diisi_at',
         'no_sttb_sd','asal_sekolah','no_un_sd','no_ijazah',
         'anak_ke',
         'golongan_darah','tinggi_badan','berat_badan','riwayat_penyakit',
@@ -33,6 +34,7 @@ class Siswa extends Model
         'tanggal_diterima' => 'date',
         'lintang'          => 'decimal:7',
         'bujur'            => 'decimal:7',
+        'alumni_diisi_at'  => 'datetime',
     ];
 
     /**
@@ -65,6 +67,20 @@ class Siswa extends Model
     public function arsipBerkas()   { return $this->hasOne(ArsipBerkas::class); }
     public function scanKkHasil()   { return $this->hasOne(\App\Models\ScanKkHasil::class); }
     public function pengajuanPerubahan() { return $this->hasOne(\App\Models\PengajuanPerubahan::class); }
+    public function alumniSekolahTujuan() { return $this->belongsTo(\App\Models\SekolahTujuan::class, 'alumni_sekolah_tujuan_id'); }
+
+    public function getAlumniLabelAttribute(): string
+    {
+        if (! $this->alumni_kategori) return 'Belum Mengisi';
+
+        return match ($this->alumni_kategori) {
+            'lanjut_sekolah' => $this->alumniSekolahTujuan?->nama_sekolah ?? $this->alumni_sekolah_tujuan_manual ?? 'Lanjut Sekolah',
+            'pondok_pesantren' => $this->alumni_sekolah_tujuan_manual ? "Pondok Pesantren - {$this->alumni_sekolah_tujuan_manual}" : 'Pondok Pesantren',
+            'bekerja' => 'Bekerja',
+            'tidak_melanjutkan' => 'Tidak Melanjutkan',
+            default => 'Sudah Mengisi',
+        };
+    }
     public function prestasis()     { return $this->hasMany(Prestasi::class)->orderByDesc('tanggal_kegiatan'); }
 
     /**

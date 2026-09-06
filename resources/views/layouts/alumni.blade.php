@@ -204,6 +204,10 @@
            class="sb-item {{ request()->routeIs('alumni.import-nomor-ijazah.*') ? 'active' : '' }}">
             <i class="ti ti-certificate"></i><span>Import Nomor Ijazah</span>
         </a>
+        <a href="{{ route('alumni.sekolah-tujuan.index') }}"
+           class="sb-item {{ request()->routeIs('alumni.sekolah-tujuan.*') ? 'active' : '' }}">
+            <i class="ti ti-building"></i><span>Sekolah Tujuan</span>
+        </a>
         @endif
     </nav>
 

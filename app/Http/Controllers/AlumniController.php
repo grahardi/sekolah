@@ -178,6 +178,49 @@ class AlumniController extends Controller
         return back()->with('success', $pesan . '.')->with('warnings_ijazah', $import->getWarnings());
     }
 
+    public function sekolahTujuanIndex()
+    {
+        $daftar = \App\Models\SekolahTujuan::orderBy('urutan')->orderBy('nama_sekolah')->get();
+
+        return view('alumni.sekolah-tujuan.index', compact('daftar'));
+    }
+
+    public function sekolahTujuanStore(Request $request)
+    {
+        $data = $request->validate([
+            'nama_sekolah' => 'required|string|max:150',
+            'jenjang' => 'nullable|string|max:20',
+        ]);
+
+        $data['sekolah_id'] = auth()->user()->sekolah_id;
+
+        \App\Models\SekolahTujuan::create($data);
+
+        return back()->with('success', 'Sekolah tujuan berhasil ditambahkan.');
+    }
+
+    public function sekolahTujuanUpdate(Request $request, \App\Models\SekolahTujuan $sekolahTujuan)
+    {
+        $data = $request->validate([
+            'nama_sekolah' => 'required|string|max:150',
+            'jenjang' => 'nullable|string|max:20',
+            'aktif' => 'nullable|boolean',
+        ]);
+
+        $data['aktif'] = $request->boolean('aktif');
+
+        $sekolahTujuan->update($data);
+
+        return back()->with('success', 'Sekolah tujuan berhasil diperbarui.');
+    }
+
+    public function sekolahTujuanDestroy(\App\Models\SekolahTujuan $sekolahTujuan)
+    {
+        $sekolahTujuan->delete();
+
+        return back()->with('success', 'Sekolah tujuan berhasil dihapus.');
+    }
+
     public function showImportBerkas()
     {
         return view('alumni.import-berkas');
