@@ -198,7 +198,14 @@ class AlumniController extends Controller
         $lainnya = (clone $baseQuery)->where('alumni_kategori', 'lainnya')->count();
 
         $persenMengisi = $total > 0 ? round($sudahMengisi / $total * 100) : 0;
-        $persenLanjut = $total > 0 ? round($lanjutSekolah / $total * 100) : 0;
+        // Persentase kategori (lanjut/bekerja/dll) dihitung dari yg SUDAH
+        // MENGISI, bukan dari total alumni - lebih valid krn yg belum isi
+        // gak seharusnya ikut "menurunkan" persentase kategori tertentu.
+        $persenLanjut = $sudahMengisi > 0 ? round($lanjutSekolah / $sudahMengisi * 100) : 0;
+        $persenPondok = $sudahMengisi > 0 ? round($pondokPesantren / $sudahMengisi * 100) : 0;
+        $persenBekerja = $sudahMengisi > 0 ? round($bekerja / $sudahMengisi * 100) : 0;
+        $persenTidakMelanjutkan = $sudahMengisi > 0 ? round($tidakMelanjutkan / $sudahMengisi * 100) : 0;
+        $persenLainnya = $sudahMengisi > 0 ? round($lainnya / $sudahMengisi * 100) : 0;
 
         $sekolahFavorit = (clone $baseQuery)->where('alumni_kategori', 'lanjut_sekolah')
             ->leftJoin('sekolah_tujuan', 'siswas.alumni_sekolah_tujuan_id', '=', 'sekolah_tujuan.id')
@@ -235,7 +242,8 @@ class AlumniController extends Controller
 
         return view('alumni.history.index', compact(
             'total', 'sudahMengisi', 'lanjutSekolah', 'pondokPesantren', 'bekerja', 'tidakMelanjutkan', 'lainnya',
-            'persenMengisi', 'persenLanjut', 'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn',
+            'persenMengisi', 'persenLanjut', 'persenPondok', 'persenBekerja', 'persenTidakMelanjutkan', 'persenLainnya',
+            'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn',
             'kategoriFilter', 'statusFilter', 'sekolahTujuanList', 'search'
         ));
     }

@@ -46,22 +46,24 @@
         <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Lanjut Sekolah ({{ $lanjutSekolah }})</p>
     </div>
     <div class="card" style="padding:16px;text-align:center;">
-        <p style="font-size:26px;font-weight:800;color:#7c3aed;margin:0;">{{ $pondokPesantren }}</p>
-        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Pondok Pesantren</p>
+        <p style="font-size:26px;font-weight:800;color:#7c3aed;margin:0;">{{ $persenPondok }}%</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Pondok Pesantren ({{ $pondokPesantren }})</p>
     </div>
     <div class="card" style="padding:16px;text-align:center;">
-        <p style="font-size:26px;font-weight:800;color:#d97706;margin:0;">{{ $bekerja }}</p>
-        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Bekerja</p>
+        <p style="font-size:26px;font-weight:800;color:#d97706;margin:0;">{{ $persenBekerja }}%</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Bekerja ({{ $bekerja }})</p>
     </div>
     <div class="card" style="padding:16px;text-align:center;">
-        <p style="font-size:26px;font-weight:800;color:#64748b;margin:0;">{{ $tidakMelanjutkan }}</p>
-        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Tidak Melanjutkan</p>
+        <p style="font-size:26px;font-weight:800;color:#64748b;margin:0;">{{ $persenTidakMelanjutkan }}%</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Tidak Melanjutkan ({{ $tidakMelanjutkan }})</p>
     </div>
     <div class="card" style="padding:16px;text-align:center;">
-        <p style="font-size:26px;font-weight:800;color:#be185d;margin:0;">{{ $lainnya }}</p>
-        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Lainnya</p>
+        <p style="font-size:26px;font-weight:800;color:#be185d;margin:0;">{{ $persenLainnya }}%</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Lainnya ({{ $lainnya }})</p>
     </div>
 </div>
+
+<p style="font-size:11px;color:#94a3b8;margin:-14px 0 20px;">*Persentase kategori dihitung dari yang sudah mengisi ({{ $sudahMengisi }} alumni), bukan dari total keseluruhan.</p>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
     <div class="card" style="padding:16px;">
