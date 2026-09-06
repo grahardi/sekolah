@@ -462,7 +462,7 @@ class SiswaController extends Controller
             'jenis_kelamin'    => 'required|in:L,P',
             'tempat_lahir'     => 'required|string|max:60',
             'tanggal_lahir'    => 'required|date',
-            'agama'            => 'required|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'agama'            => 'required|in:Islam,Kristen,Katholik,Hindu,Budha,Khonghucu,Kepercayaan kpd Tuhan YME,Lainnya',
             'alamat'           => 'required|string',
             'rt'               => 'nullable|string|max:5',
             'rw'               => 'nullable|string|max:5',
