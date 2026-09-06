@@ -52,8 +52,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
     <form action="{{ route('alumni-publik.simpan', $npsn) }}" method="POST" id="form-alumni">
         @csrf
 
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Riwayat Setelah Lulus SMP</p>
         <div class="card">
-            <p class="form-label">Sekarang kamu...</p>
             <div class="opsi-kategori">
                 <div class="opsi-btn" data-kategori="lanjut_sekolah" onclick="pilihKategori('lanjut_sekolah')">
                     <i class="ti ti-school"></i><p>Lanjut Sekolah</p>
@@ -72,6 +72,13 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
                 </div>
             </div>
             <input type="hidden" name="alumni_kategori" id="input-kategori" required>
+        </div>
+
+        <p style="font-size:13px;font-weight:700;color:#cbd5e1;margin:0 0 4px;">Riwayat Setelah Lulus SMA</p>
+        <div class="card" style="opacity:.55;cursor:not-allowed;">
+            <button type="button" disabled style="width:100%;background:none;border:2px dashed #e2e8f0;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:#94a3b8;font-size:13px;font-weight:600;">
+                <i class="ti ti-plus" style="font-size:18px;"></i> Segera Hadir
+            </button>
         </div>
 
         <div class="card" id="wrap-sekolah" style="display:none;">
