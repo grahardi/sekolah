@@ -34,6 +34,7 @@
     <table style="width:100%;border-collapse:collapse;">
         <thead style="background:#f8fafc;">
             <tr>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;width:50px;"></th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Nama</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">NISN</th>
                 <th style="padding:10px 16px;text-align:left;font-size:11px;color:#64748b;">Tahun Masuk</th>
@@ -45,6 +46,12 @@
         <tbody>
             @forelse($alumni as $a)
             <tr style="border-top:1px solid #f1f5f9;">
+                <td style="padding:10px 16px;">
+                    <div style="width:34px;height:34px;border-radius:8px;overflow:hidden;background:#dbeafe;flex-shrink:0;">
+                        <img src="{{ $a->foto_url }}" alt="{{ $a->nama_lengkap }}" style="width:100%;height:100%;object-fit:cover;"
+                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($a->nama_lengkap) }}&background=dbeafe&color=1d4ed8&size=34'">
+                    </div>
+                </td>
                 <td style="padding:10px 16px;font-size:13px;font-weight:600;color:#0f172a;">
                     <a href="{{ route('alumni.arsip.show', $a) }}" style="color:inherit;text-decoration:none;">{{ $a->nama_lengkap }}</a>
                 </td>
@@ -57,7 +64,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="6" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
+            <tr><td colspan="7" style="padding:30px;text-align:center;color:#94a3b8;font-size:13px;">Belum ada data alumni.</td></tr>
             @endforelse
         </tbody>
     </table>

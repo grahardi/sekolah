@@ -98,7 +98,15 @@ class AlumniController extends Controller
 
         $request->validate([
             'catatan' => 'nullable|string|max:1000',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if ($request->hasFile('foto')) {
+            if ($siswa->foto) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto);
+            }
+            $siswa->update(['foto' => $request->file('foto')->store('siswa/foto', 'public')]);
+        }
 
         $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
 
