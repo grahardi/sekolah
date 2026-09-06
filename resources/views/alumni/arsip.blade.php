@@ -39,7 +39,10 @@
 </div>
 
 <div class="card" style="padding:18px;margin-bottom:20px;">
-    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="ti ti-timeline" style="color:#16a34a;"></i> Riwayat Alumni</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;"><i class="ti ti-timeline" style="color:#16a34a;"></i> Riwayat Alumni</p>
+        <a href="{{ route('alumni.history.index') }}" style="font-size:11px;color:#16a34a;text-decoration:none;">Edit di History Alumni &rarr;</a>
+    </div>
     <div style="position:relative;padding-left:20px;">
         <div style="position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:#e2e8f0;"></div>
 

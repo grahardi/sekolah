@@ -229,11 +229,12 @@ class AlumniController extends Controller
         $tahunList = Siswa::where('status', 'lulus')->whereNotNull('tahun_lulus')->select('tahun_lulus')->distinct()->orderByDesc('tahun_lulus')->pluck('tahun_lulus');
 
         $npsn = auth()->user()->sekolah->npsn;
+        $sekolahTujuanList = \App\Models\SekolahTujuan::where('aktif', true)->orderBy('urutan')->orderBy('nama_sekolah')->get();
 
         return view('alumni.history.index', compact(
             'total', 'sudahMengisi', 'lanjutSekolah', 'pondokPesantren', 'bekerja', 'tidakMelanjutkan', 'lainnya',
             'persenMengisi', 'persenLanjut', 'sekolahFavorit', 'jurusanFavorit', 'daftarAlumni', 'tahunList', 'tahunLulus', 'npsn',
-            'kategoriFilter', 'statusFilter'
+            'kategoriFilter', 'statusFilter', 'sekolahTujuanList'
         ));
     }
 
@@ -273,6 +274,46 @@ class AlumniController extends Controller
         ]);
 
         return back()->with('success', $request->aksi === 'setuju' ? 'Pengajuan disetujui & data alumni diperbarui.' : 'Pengajuan ditolak.');
+    }
+
+    public function historyEdit(Request $request, Siswa $siswa)
+    {
+        $data = $request->validate([
+            'alumni_kategori' => 'required|in:lanjut_sekolah,pondok_pesantren,tidak_melanjutkan,bekerja,lainnya',
+            'alumni_sekolah_tujuan_id' => 'nullable|exists:sekolah_tujuan,id',
+            'alumni_sekolah_tujuan_manual' => 'nullable|string|max:150',
+            'alumni_pondok_manual' => 'nullable|string|max:150',
+            'alumni_jurusan' => 'nullable|string|max:100',
+            'alumni_keterangan' => 'nullable|string|max:255',
+        ]);
+
+        // Field manual sekolah vs pondok DIPISAH namanya di form (hindari
+        // tabrakan submit krn keduanya ada di DOM meski satu disembunyikan),
+        // gabungkan lagi sesuai kategori yg dipilih.
+        $manualTujuan = $data['alumni_kategori'] === 'pondok_pesantren'
+            ? ($data['alumni_pondok_manual'] ?? null)
+            : ($data['alumni_sekolah_tujuan_manual'] ?? null);
+
+        $update = [
+            'alumni_kategori' => $data['alumni_kategori'],
+            'alumni_sekolah_tujuan_id' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_sekolah_tujuan_id'] ?? null) : null,
+            'alumni_sekolah_tujuan_manual' => in_array($data['alumni_kategori'], ['lanjut_sekolah', 'pondok_pesantren']) ? $manualTujuan : null,
+            'alumni_jurusan' => $data['alumni_kategori'] === 'lanjut_sekolah' ? ($data['alumni_jurusan'] ?? null) : null,
+            'alumni_keterangan' => in_array($data['alumni_kategori'], ['bekerja', 'tidak_melanjutkan', 'lainnya']) ? ($data['alumni_keterangan'] ?? null) : null,
+            'alumni_diisi_at' => now(),
+        ];
+
+        $siswa->update($update);
+
+        // Catat jg sbg riwayat (auto disetujui, admin yg edit langsung gak
+        // perlu approval diri sendiri) - biar Riwayat Alumni tetap konsisten
+        \App\Models\AlumniAjuanUlang::create(array_merge(
+            ['siswa_id' => $siswa->id],
+            array_diff_key($update, ['alumni_diisi_at' => null]),
+            ['status' => 'disetujui', 'diproses_oleh_user_id' => auth()->id(), 'diproses_at' => now()]
+        ));
+
+        return back()->with('success', "Data alumni {$siswa->nama_lengkap} berhasil diperbarui.");
     }
 
     public function sekolahTujuanIndex()
