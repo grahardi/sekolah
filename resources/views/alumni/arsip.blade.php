@@ -38,6 +38,42 @@
     </div>
 </div>
 
+<div class="card" style="padding:18px;margin-bottom:20px;">
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="ti ti-timeline" style="color:#16a34a;"></i> Riwayat Alumni</p>
+    <div style="position:relative;padding-left:20px;">
+        <div style="position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:#e2e8f0;"></div>
+
+        <div style="position:relative;margin-bottom:16px;">
+            <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:#16a34a;border:2px solid #fff;box-shadow:0 0 0 2px #16a34a;"></div>
+            <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">{{ $siswa->nama_lengkap }} &mdash; Status Lulus{{ $siswa->tahun_lulus ? ", Tahun {$siswa->tahun_lulus}" : '' }}</p>
+            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">Kelas terakhir {{ $siswa->kelas }}{{ $siswa->rombel ? " - $siswa->rombel" : '' }}</p>
+        </div>
+
+        @forelse($siswa->alumniAjuanUlang as $riwayat)
+        <div style="position:relative;margin-bottom:16px;">
+            <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:{{ $riwayat->status === 'disetujui' ? '#16a34a' : ($riwayat->status === 'ditolak' ? '#dc2626' : '#d97706') }};border:2px solid #fff;box-shadow:0 0 0 2px {{ $riwayat->status === 'disetujui' ? '#16a34a' : ($riwayat->status === 'ditolak' ? '#dc2626' : '#d97706') }};"></div>
+            <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">{{ $riwayat->labelTujuan() }}{{ $riwayat->alumni_jurusan ? " - {$riwayat->alumni_jurusan}" : '' }}</p>
+            <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">
+                Diajukan {{ $riwayat->created_at->locale('id')->diffForHumans() }}
+                @if($riwayat->status === 'menunggu')<span style="color:#d97706;font-weight:600;"> &middot; Menunggu Persetujuan</span>
+                @elseif($riwayat->status === 'ditolak')<span style="color:#dc2626;font-weight:600;"> &middot; Ditolak</span>
+                @else<span style="color:#16a34a;font-weight:600;"> &middot; Disetujui</span>@endif
+            </p>
+        </div>
+        @empty
+            @if($siswa->alumni_diisi_at)
+            <div style="position:relative;">
+                <div style="position:absolute;left:-20px;top:2px;width:12px;height:12px;border-radius:50%;background:#16a34a;border:2px solid #fff;box-shadow:0 0 0 2px #16a34a;"></div>
+                <p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">{{ $siswa->alumni_label }}</p>
+                <p style="font-size:11px;color:#94a3b8;margin:2px 0 0;">Diisi {{ $siswa->alumni_diisi_at->locale('id')->diffForHumans() }}</p>
+            </div>
+            @else
+            <p style="font-size:12px;color:#94a3b8;margin:0;">Alumni belum pernah mengisi data lanjutan.</p>
+            @endif
+        @endforelse
+    </div>
+</div>
+
 <form action="{{ route('alumni.arsip.update', $siswa) }}" method="POST" enctype="multipart/form-data" id="form-arsip">
     @csrf
 

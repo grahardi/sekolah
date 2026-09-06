@@ -89,6 +89,7 @@ class AlumniController extends Controller
     {
         $this->pastikanAlumni($siswa);
         $arsip = $siswa->arsipBerkas ?? new \App\Models\ArsipBerkas(['siswa_id' => $siswa->id]);
+        $siswa->load('alumniAjuanUlang.sekolahTujuan');
         return view('alumni.arsip', compact('siswa', 'arsip'));
     }
 

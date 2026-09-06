@@ -68,6 +68,7 @@ class Siswa extends Model
     public function scanKkHasil()   { return $this->hasOne(\App\Models\ScanKkHasil::class); }
     public function pengajuanPerubahan() { return $this->hasOne(\App\Models\PengajuanPerubahan::class); }
     public function alumniSekolahTujuan() { return $this->belongsTo(\App\Models\SekolahTujuan::class, 'alumni_sekolah_tujuan_id'); }
+    public function alumniAjuanUlang() { return $this->hasMany(\App\Models\AlumniAjuanUlang::class)->orderBy('created_at'); }
 
     public function getAlumniLabelAttribute(): string
     {

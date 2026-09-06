@@ -103,6 +103,20 @@ class AlumniPublicController extends Controller
             'alumni_diisi_at' => now(),
         ]);
 
+        // Catat jg sbg riwayat permanen (status langsung disetujui, gak perlu
+        // approval) - biar Riwayat Alumni di halaman admin konsisten nunjukkin
+        // SEMUA pengisian dari awal, bukan cuma perubahan-perubahan berikutnya.
+        \App\Models\AlumniAjuanUlang::create([
+            'siswa_id' => $siswa->id,
+            'alumni_kategori' => $data['alumni_kategori'],
+            'alumni_sekolah_tujuan_id' => $siswa->alumni_sekolah_tujuan_id,
+            'alumni_sekolah_tujuan_manual' => $siswa->alumni_sekolah_tujuan_manual,
+            'alumni_jurusan' => $siswa->alumni_jurusan,
+            'alumni_keterangan' => $siswa->alumni_keterangan,
+            'status' => 'disetujui',
+            'diproses_at' => now(),
+        ]);
+
         return redirect()->route('alumni-publik.form', $npsn)->with('success', 'Terima kasih! Data kamu berhasil disimpan.');
     }
 
