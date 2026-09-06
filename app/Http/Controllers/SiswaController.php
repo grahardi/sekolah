@@ -42,6 +42,13 @@ class SiswaController extends Controller
     {
         $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
 
+        // Default cuma tampilkan siswa AKTIF - alumni (status=lulus) & siswa
+        // keluar udah punya menu/filter sendiri (Buku Alumni, filter "Siswa
+        // Keluar"), jangan sampai tercampur di list utama Data Siswa.
+        if (! $request->has('status')) {
+            $filters['status'] = 'aktif';
+        }
+
         $query = Siswa::filter($filters)->with('scanKkHasil');
 
         // Guru (bukan admin) cuma boleh lihat siswa di kelas yg dia wali-in
