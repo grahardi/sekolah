@@ -37,6 +37,9 @@ class Sekolah extends Model
         'biodata_tanggal_manual',
         'sarpras_prefix_kode',
         'sarpras_ambang_batas_pinjam_hari',
+        'watermark_aktif',
+        'watermark_teks',
+        'watermark_transparansi',
         'rapor_tampilkan_logo',
         'rapor_kota_ttd',
         'rapor_threshold_sangat_baik',
@@ -59,6 +62,7 @@ class Sekolah extends Model
 
     protected $casts = [
         'is_demo' => 'boolean',
+        'watermark_aktif' => 'boolean',
         'rapor_tampilkan_logo' => 'boolean',
         'rapor_tampilkan_watermark' => 'boolean',
         'rapor_pakai_header_custom' => 'boolean',

@@ -6,6 +6,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; background:#fff; }
 .page { padding:10mm 20mm 10mm 20mm; }
+.watermark { position:fixed; top:45%; left:0; width:100%; text-align:center; transform:rotate(-35deg); z-index:-1; font-size:60pt; font-weight:bold; color:#000; white-space:nowrap; }
 .judul-dok { text-align:center; margin-bottom:14px; width:100%; }
 .judul-dok h2 { font-size:12pt; font-weight:bold; text-transform:uppercase; letter-spacing:2px; border:2.5px solid #000; display:inline-block; padding:5px 18px; }
 .sek { background:#000; color:#fff; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
@@ -24,6 +25,9 @@ table.data td.val { border-bottom:1px solid #777; }
 </style>
 </head>
 <body>
+@if(($sekolah->watermark_aktif ?? false) && $sekolah->watermark_teks)
+<div class="watermark" style="opacity:{{ ($sekolah->watermark_transparansi ?? 10) / 100 }};">{{ $sekolah->watermark_teks }}</div>
+@endif
 <div class="page">
 
 <div class="judul-dok">

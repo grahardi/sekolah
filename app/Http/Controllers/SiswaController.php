@@ -207,8 +207,9 @@ class SiswaController extends Controller
     public function cetakBukuInduk(Siswa $siswa)
     {
         $siswa->load(['nilaiRapors','nilaiP5s','nilaiEkskuls','kehadirans','riwayatKelas','prestasis']);
+        $sekolah = auth()->user()->sekolah;
 
-        $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
+        $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa', 'sekolah'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
         $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
         // Margin sekarang diatur via CSS @page di view-nya (lebih reliable
@@ -229,7 +230,12 @@ class SiswaController extends Controller
     {
         $data = $request->validate([
             'biodata_tanggal_manual' => 'nullable|date',
+            'watermark_aktif' => 'nullable|boolean',
+            'watermark_teks' => 'nullable|string|max:100',
+            'watermark_transparansi' => 'nullable|integer|min:1|max:100',
         ]);
+
+        $data['watermark_aktif'] = $request->boolean('watermark_aktif');
 
         auth()->user()->sekolah->update($data);
 
@@ -298,7 +304,7 @@ class SiswaController extends Controller
             if ($jenis === 'biodata-rapor') {
                 $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd', 'tanggalCetak'));
             } else {
-                $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa'));
+                $pdf = Pdf::loadView('siswa.pdf-buku-induk', compact('siswa', 'sekolah'));
             }
             $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
             $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
