@@ -18,8 +18,7 @@ table.data td.ttd { width:6px; text-align:center; }
 table.data td.val { border-bottom:1px solid #777; }
 .footer-table { width:100%; margin-top:20mm; border-collapse:collapse; }
 .footer-table td { vertical-align:bottom; padding:0; }
-.foto-frame { width:120px; height:150px; border:1.5px solid #333; overflow:hidden; }
-.foto-frame img { width:100%; height:100%; object-fit:cover; }
+.foto-frame { width:120px; height:150px; border:1.5px solid #333; overflow:hidden; background-position:center; background-repeat:no-repeat; background-size:cover; }
 .ttd-wrap { text-align:center; }
 .ttd-nama { font-weight:bold; text-decoration:underline; margin-top:60px; }
 </style>
@@ -78,10 +77,7 @@ $baris = function ($no, $label, $val) {
 <table class="footer-table">
     <tr>
         <td style="text-align:center;width:50%;">
-            <div class="foto-frame" style="margin:0 auto;">
-                @if($siswa->foto && file_exists(public_path('storage/' . $siswa->foto)))
-                <img src="{{ public_path('storage/' . $siswa->foto) }}">
-                @endif
+            <div class="foto-frame" style="margin:0 auto;{{ ($siswa->foto && file_exists(public_path('storage/' . $siswa->foto))) ? 'background-image:url(\'' . public_path('storage/' . $siswa->foto) . '\');' : '' }}">
             </div>
         </td>
         <td style="text-align:center;width:50%;">
