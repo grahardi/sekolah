@@ -18,7 +18,7 @@ table.data td.ttd { width:6px; text-align:center; }
 table.data td.val { border-bottom:1px solid #777; }
 .footer-table { width:100%; margin-top:20mm; border-collapse:collapse; }
 .footer-table td { vertical-align:bottom; padding:0; }
-.foto-frame { width:120px; height:150px; border:1.5px solid #333; overflow:hidden; background-position:center; background-repeat:no-repeat; background-size:cover; }
+.foto-frame { width:120px; height:150px; border:1.5px solid #333; overflow:hidden; background-position:center top; background-repeat:no-repeat; background-size:cover; }
 .ttd-wrap { text-align:center; }
 .ttd-nama { font-weight:bold; text-decoration:underline; margin-top:60px; }
 </style>
