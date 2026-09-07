@@ -26,8 +26,7 @@ table.nilai td { padding:3px 6px; border:1px solid #aaa; text-align:center; }
 table.nilai td.mapel { text-align:left; }
 table.nilai tr.alt td { background:#f5f5f5; }
 .foto-section { margin-top:14px; text-align:center; }
-.foto-frame { width:90px; height:115px; border:2px solid #333; display:inline-block; overflow:hidden; vertical-align:top; }
-.foto-frame img { width:100%; height:100%; object-fit:cover; object-position:top center; }
+.foto-frame { width:90px; height:115px; border:2px solid #333; display:inline-block; overflow:hidden; vertical-align:top; background-position:center top; background-repeat:no-repeat; background-size:cover; }
 </style>
 </head>
 <body>

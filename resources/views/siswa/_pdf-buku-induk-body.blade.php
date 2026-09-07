@@ -105,12 +105,10 @@
 </div>
 
 <div class="foto-section">
-    <div class="foto-frame">
-        @if($siswa->foto && file_exists(public_path('storage/' . $siswa->foto)))
-            <img src="{{ public_path('storage/' . $siswa->foto) }}">
-        @else
+    <div class="foto-frame" style="{{ ($siswa->foto && file_exists(public_path('storage/' . $siswa->foto))) ? 'background-image:url(\'' . public_path('storage/' . $siswa->foto) . '\');' : '' }}">
+        @if(! ($siswa->foto && file_exists(public_path('storage/' . $siswa->foto))))
             <div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;">
-                <p style="font-size:7pt;color:#aaa;text-align:center;padding:6px;">Foto<br>Siswa<br>3×4</p>
+                <p style="font-size:7pt;color:#aaa;text-align:center;padding:6px;">Foto<br>Siswa<br>3&times;4</p>
             </div>
         @endif
     </div>
