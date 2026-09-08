@@ -71,7 +71,6 @@ class UserController extends Controller
             'name'  => 'required|string|max:100',
             'email' => ['required', 'email', 'max:100', Rule::unique('users', 'email')->ignore($user->id)],
             'role'  => 'required|in:admin,guru,induk',
-            'custom_role_id' => 'nullable|exists:custom_roles,id',
             'aktif' => 'nullable|boolean',
         ]);
 
@@ -84,7 +83,6 @@ class UserController extends Controller
             'name'  => $data['name'],
             'email' => $data['email'],
             'role'  => $data['role'],
-            'custom_role_id' => $data['custom_role_id'] ?? null,
             'aktif' => $request->boolean('aktif'),
         ]);
 

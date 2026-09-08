@@ -153,12 +153,6 @@
     @stack('styles')
 </head>
 <body style="background:#F5F9FF;">
-@if(session('impersonating_admin_id'))
-<div style="background:#fef3c7;color:#92400e;padding:8px 16px;text-align:center;font-size:12px;font-weight:600;position:sticky;top:0;z-index:100;">
-    <i class="ti ti-user-check"></i> Sedang login sebagai <strong>{{ auth()->user()->name }}</strong>
-    <a href="{{ route('erapor.kembali-admin') }}" style="background:#92400e;color:#fff;padding:3px 10px;border-radius:6px;font-size:11px;text-decoration:none;margin-left:8px;">Kembali ke Admin</a>
-</div>
-@endif
 @php
     // Akun read-only (role 'induk') di sekolah demo tetap melihat menu
     // import/export/pengaturan, tapi dalam kondisi non-aktif dgn keterangan -

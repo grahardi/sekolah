@@ -43,16 +43,6 @@
                             <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Anda tidak bisa mengubah role akun sendiri.</p>
                         @endif
                     </div>
-                    <div>
-                        <label class="form-label">Role Custom (opsional)</label>
-                        <select name="custom_role_id" class="form-input">
-                            <option value="">-- Tidak Ada --</option>
-                            @foreach(\App\Models\CustomRole::orderBy('nama')->get() as $cr)
-                            <option value="{{ $cr->id }}" {{ (int) old('custom_role_id', $user->custom_role_id) === $cr->id ? 'selected' : '' }}>{{ $cr->nama }}</option>
-                            @endforeach
-                        </select>
-                        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Kalau diisi, akses ke modul2 tertentu ditentukan dari role custom ini (lihat menu Manajemen Role).</p>
-                    </div>
                     <div style="display:flex;align-items:center;gap:8px;">
                         <input type="checkbox" name="aktif" id="aktif" value="1"
                                {{ old('aktif', $user->aktif) ? 'checked' : '' }}

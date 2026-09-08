@@ -72,14 +72,6 @@
                     </td>
                     <td style="padding:12px 16px;">
                         <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                            @if($user->id !== auth()->id())
-                            <form action="{{ route('user.login-as', $user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Login sebagai {{ addslashes($user->name) }}?')">
-                                @csrf
-                                <button type="submit" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#f0fdf4;color:#16a34a;border:none;cursor:pointer;" title="Login Sebagai">
-                                    <i class="ti ti-user-check" style="font-size:15px;"></i>
-                                </button>
-                            </form>
-                            @endif
                             <a href="{{ route('user.edit', $user) }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#eff6ff;color:#1d4ed8;text-decoration:none;" title="Edit">
                                 <i class="ti ti-pencil" style="font-size:15px;"></i>
                             </a>

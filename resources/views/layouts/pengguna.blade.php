@@ -187,10 +187,6 @@
            class="sb-item {{ request()->routeIs('user.index') || request()->routeIs('user.create') || request()->routeIs('user.edit') ? 'active' : '' }}">
             <i class="ti ti-users-group"></i><span>Manajemen User</span>
         </a>
-        <a href="{{ route('role.index') }}"
-           class="sb-item {{ request()->routeIs('role.*') ? 'active' : '' }}">
-            <i class="ti ti-shield-lock"></i><span>Manajemen Role</span>
-        </a>
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">
