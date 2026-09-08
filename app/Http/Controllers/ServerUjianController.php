@@ -87,6 +87,58 @@ class ServerUjianController extends Controller
         return back()->with($hasil['ok'] ? 'success' : 'error', $hasil['pesan']);
     }
 
+    public function exportDataSiswa(ExoInstance $instance)
+    {
+        abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);
+        abort_unless($instance->db_host, 422, 'Kredensial database instance belum diisi.');
+
+        $conn = $instance->dbConnection();
+
+        $peserta = $conn->table('pesertas')
+            ->leftJoin('group_members', 'pesertas.id', '=', 'group_members.student_id')
+            ->leftJoin('groups', 'group_members.group_id', '=', 'groups.id')
+            ->select('pesertas.no_ujian', 'pesertas.nama', 'pesertas.password', 'groups.name as group_name')
+            ->orderBy('groups.name')
+            ->orderBy('pesertas.nama')
+            ->get();
+
+        if ($peserta->isEmpty()) {
+            return back()->with('error', 'Belum ada data siswa tersinkron di Server Ujian ini. Sinkron dulu sebelum export.');
+        }
+
+        // Agama diambil dari data induk KITA (bukan reverse-map dari agama_id
+        // di sisi Extraordinary) - lebih akurat & gak perlu peta balik ID->nama.
+        $agamaMap = \App\Models\Siswa::withoutGlobalScopes()
+            ->where('sekolah_id', $instance->sekolah_id)
+            ->where('status', 'aktif')
+            ->get()
+            ->reduce(function ($map, $s) {
+                if ($s->nisn) $map[$s->nisn] = $s->agama;
+                if ($s->nis) $map[$s->nis] = $s->agama;
+                return $map;
+            }, []);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray(['No. Ujian (Username)', 'Nama', 'Password', 'Grup / Kelas', 'Agama']);
+
+        $baris = 2;
+        foreach ($peserta as $p) {
+            $sheet->fromArray([$p->no_ujian, $p->nama, $p->password, $p->group_name ?: '-', $agamaMap[$p->no_ujian] ?? '-'], null, "A{$baris}");
+            $baris++;
+        }
+
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $namaFile = 'data-login-siswa-' . \Illuminate\Support\Str::slug($instance->nama_instance ?? 'server-ujian') . '.xlsx';
+        $path = storage_path("app/{$namaFile}");
+        (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save($path);
+
+        return response()->download($path)->deleteFileAfterSend(true);
+    }
+
     public function updateLicenseKey(Request $request, ExoInstance $instance)
     {
         abort_unless($instance->sekolah_id === auth()->user()->sekolah_id, 403);

@@ -84,6 +84,7 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('serve
     Route::get('/{instance}/auto-login', [\App\Http\Controllers\ServerUjianController::class, 'autoLogin'])->name('auto-login');
     Route::post('/{instance}/run', [\App\Http\Controllers\ServerUjianController::class, 'run'])->name('run');
     Route::post('/{instance}/sinkron-siswa', [\App\Http\Controllers\ServerUjianController::class, 'sinkronSiswa'])->name('sinkron-siswa');
+    Route::get('/{instance}/export-data-siswa', [\App\Http\Controllers\ServerUjianController::class, 'exportDataSiswa'])->name('export-data-siswa');
     Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
     Route::post('/{instance}/license-key', [\App\Http\Controllers\ServerUjianController::class, 'updateLicenseKey'])->name('license-key');
 });

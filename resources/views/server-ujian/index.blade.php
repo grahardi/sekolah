@@ -77,6 +77,9 @@
                     <i class="ti ti-refresh"></i> Sinkron Data Siswa
                 </button>
             </form>
+            <a href="{{ route('server-ujian.export-data-siswa', $instance) }}" class="btn btn-secondary" style="margin-top:8px;display:inline-flex;">
+                <i class="ti ti-file-export"></i> Export Data Login Siswa (Excel)
+            </a>
             @else
             <form action="{{ route('server-ujian.run', $instance) }}" method="POST">
                 @csrf
