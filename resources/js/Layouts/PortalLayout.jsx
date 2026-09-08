@@ -35,15 +35,50 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
     const { url, props } = usePage();
     const user = props?.auth?.user;
     const isImpersonating = props?.impersonating;
+    const customPerms = props?.customRolePermissions; // null kalau admin atau user gak punya custom role
     const [openMenu, setOpenMenu] = useState('lab');
     const [mobileOpen, setMobileOpen] = useState(false);
+
     // Guru cuma boleh akses E-Rapor - sembunyikan menu lain yg bakal 403
+    // (dipakai kalau user GAK punya custom_role - custom_role menang kalau ada)
     const HIDDEN_UNTUK_GURU = ['induk', 'kepegawaian', 'pengguna', 'profil-sekolah', 'sarpras', 'ujian', 'alumni', 'tiket'];
-    const menuBerdasarkanRole = user?.role !== 'admin'
-        ? MENU.filter((m) => m.key !== 'profil-sekolah' && !(user?.role === 'guru' && HIDDEN_UNTUK_GURU.includes(m.key)))
-        : MENU;
+
+    // Pemetaan key menu (frontend) -> key modul di Manajemen Role (backend).
+    // Menu yg GAK ada di daftar ini (dashboard, bk, modul-ajar, lab, tiket,
+    // pengguna) gak diatur custom role - ikut aturan role dasar biasa aja.
+    const MODUL_KEY_MAP = {
+        'data-siswa': 'data-siswa', 'induk': 'data-siswa',
+        'alumni': 'alumni', 'erapor': 'erapor', 'sarpras': 'sarpras',
+        'kepegawaian': 'kepegawaian', 'manajemen': 'manajemen-sekolah', 'ujian': 'ujian',
+    };
+
+    const menuBerdasarkanRole = user?.role === 'admin'
+        ? MENU
+        : MENU.filter((m) => {
+            if (m.key === 'profil-sekolah') return false;
+
+            const modulKey = MODUL_KEY_MAP[m.key];
+            if (modulKey && customPerms) {
+                // Ada custom role - akses modul ini SEPENUHNYA ditentukan
+                // dari centang "Boleh Akses" di Manajemen Role, gak peduli
+                // role dasarnya guru/induk apa.
+                return customPerms[modulKey]?.boleh_akses ?? false;
+            }
+            // Gak ada custom role (atau menu ini gak diatur custom role) -
+            // pakai aturan lama: guru cuma boleh E-Rapor & yg gak masuk daftar hidden.
+            return !(user?.role === 'guru' && HIDDEN_UNTUK_GURU.includes(m.key));
+        });
+
     const menuTanpaUjianDemo = user?.is_demo_sekolah ? menuBerdasarkanRole.filter((m) => m.key !== 'ujian') : menuBerdasarkanRole;
     const menuItems = user?.is_super_admin ? [...menuTanpaUjianDemo, SUPERADMIN_ITEM] : menuTanpaUjianDemo;
+
+    // Dipakai modul lain (mis. tombol Tambah/Edit/Hapus) buat sembunyikan
+    // aksi tulis kalau modul ini di-set READ ONLY di Manajemen Role.
+    const modulReadOnly = (modulKey) => {
+        if (user?.role === 'admin') return false;
+        if (!customPerms) return false; // gak diatur custom role, ikut aturan modul masing2 (middleware backend)
+        return customPerms[modulKey]?.read_only ?? true;
+    };
 
     const isActive = (href) => url === href || url.startsWith(href + '/');
 
