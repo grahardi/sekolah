@@ -15,4 +15,14 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('pengguna')->name('user.')->
     Route::put('/{user}', [UserController::class, 'update'])->name('update');
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
+    Route::post('/{user}/login-as', [\App\Http\Controllers\LoginAsController::class, 'login'])->name('login-as');
+});
+
+Route::middleware(['web', 'auth', 'admin'])->prefix('pengguna/role')->name('role.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\RoleController::class, 'index'])->name('index');
+    Route::get('/create', [\App\Http\Controllers\RoleController::class, 'create'])->name('create');
+    Route::post('/', [\App\Http\Controllers\RoleController::class, 'store'])->name('store');
+    Route::get('/{role}/edit', [\App\Http\Controllers\RoleController::class, 'edit'])->name('edit');
+    Route::put('/{role}', [\App\Http\Controllers\RoleController::class, 'update'])->name('update');
+    Route::delete('/{role}', [\App\Http\Controllers\RoleController::class, 'destroy'])->name('destroy');
 });

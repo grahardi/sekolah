@@ -23,6 +23,7 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
 
         Route::middleware('admin')->get('/pengaturan-buku-induk', [SiswaController::class, 'pengaturanBukuInduk'])->name('pengaturan.index');
         Route::middleware('admin')->put('/pengaturan-buku-induk', [SiswaController::class, 'updatePengaturanBukuInduk'])->name('pengaturan.update');
+        Route::middleware('admin')->post('/pengaturan-buku-induk/hapus-watermark', [SiswaController::class, 'hapusWatermarkGambar'])->name('pengaturan.hapus-watermark');
 
         Route::middleware('not_guru')->get('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'index'])->name('scan-kk.index');
         Route::middleware('not_guru')->post('/scan-kk', [\App\Http\Controllers\ScanKkController::class, 'scanBulk'])->name('scan-kk.bulk');

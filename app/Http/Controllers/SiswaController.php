@@ -230,16 +230,54 @@ class SiswaController extends Controller
     {
         $data = $request->validate([
             'biodata_tanggal_manual' => 'nullable|date',
-            'watermark_aktif' => 'nullable|boolean',
-            'watermark_teks' => 'nullable|string|max:100',
-            'watermark_transparansi' => 'nullable|integer|min:1|max:100',
+            'watermark_induk_aktif' => 'nullable|boolean',
+            'watermark_induk_teks' => 'nullable|string|max:100',
+            'watermark_induk_transparansi' => 'nullable|integer|min:1|max:100',
+            'watermark_induk_gambar_file' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'watermark_biodata_aktif' => 'nullable|boolean',
+            'watermark_biodata_teks' => 'nullable|string|max:100',
+            'watermark_biodata_transparansi' => 'nullable|integer|min:1|max:100',
+            'watermark_biodata_gambar_file' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data['watermark_aktif'] = $request->boolean('watermark_aktif');
+        $sekolah = auth()->user()->sekolah;
 
-        auth()->user()->sekolah->update($data);
+        $data['watermark_induk_aktif'] = $request->boolean('watermark_induk_aktif');
+        $data['watermark_biodata_aktif'] = $request->boolean('watermark_biodata_aktif');
+
+        if ($request->hasFile('watermark_induk_gambar_file')) {
+            if ($sekolah->watermark_induk_gambar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($sekolah->watermark_induk_gambar);
+            }
+            $data['watermark_induk_gambar'] = $request->file('watermark_induk_gambar_file')->store('watermark', 'public');
+        }
+
+        if ($request->hasFile('watermark_biodata_gambar_file')) {
+            if ($sekolah->watermark_biodata_gambar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($sekolah->watermark_biodata_gambar);
+            }
+            $data['watermark_biodata_gambar'] = $request->file('watermark_biodata_gambar_file')->store('watermark', 'public');
+        }
+
+        unset($data['watermark_induk_gambar_file'], $data['watermark_biodata_gambar_file']);
+
+        $sekolah->update($data);
 
         return back()->with('success', 'Pengaturan Buku Induk berhasil disimpan.');
+    }
+
+    public function hapusWatermarkGambar(Request $request)
+    {
+        $request->validate(['jenis' => 'required|in:induk,biodata']);
+        $sekolah = auth()->user()->sekolah;
+        $field = "watermark_{$request->jenis}_gambar";
+
+        if ($sekolah->{$field}) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($sekolah->{$field});
+            $sekolah->update([$field => null]);
+        }
+
+        return back()->with('success', 'Gambar watermark berhasil dihapus.');
     }
 
     public function cetakBiodataRapor(Siswa $siswa)
