@@ -78,6 +78,11 @@ require __DIR__.'/alumni.php';
 require __DIR__.'/tiket.php';
 require __DIR__.'/alumni-publik.php';
 
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/profil-saya', [\App\Http\Controllers\ProfilSayaController::class, 'edit'])->name('profil-saya.edit');
+    Route::put('/profil-saya', [\App\Http\Controllers\ProfilSayaController::class, 'update'])->name('profil-saya.update');
+});
+
 Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('server-ujian.')->group(function () {
     Route::get('/', [\App\Http\Controllers\ServerUjianController::class, 'index'])->name('index');
     Route::post('/request', [\App\Http\Controllers\ServerUjianController::class, 'ajukanRequest'])->name('request');

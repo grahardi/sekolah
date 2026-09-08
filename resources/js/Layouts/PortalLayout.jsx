@@ -116,6 +116,13 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                         </div>
                     </div>
                     <a
+                        href="/profil-saya"
+                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
+                    >
+                        <UserIcon className="w-4 h-4 shrink-0" />
+                        Profil Saya
+                    </a>
+                    <a
                         href="/buku-induk/ganti-password"
                         className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
                     >
@@ -165,6 +172,13 @@ export default function PortalLayout({ children, title, breadcrumb = [] }) {
                                     <p className="text-xs text-cream/60 truncate">{user?.role ?? 'Pengunjung'}</p>
                                 </div>
                             </div>
+                            <a
+                                href="/profil-saya"
+                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
+                            >
+                                <UserIcon className="w-4 h-4 shrink-0" />
+                                Profil Saya
+                            </a>
                             <a
                                 href="/buku-induk/ganti-password"
                                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-cream/85 hover:bg-white/10"
@@ -313,4 +327,5 @@ function ShieldIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="cur
 function ChevronIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 18l6-6-6-6" /></svg>; }
 function MenuIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6" {...p}><path d="M4 6h16M4 12h16M4 18h16" /></svg>; }
 function KeyIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="8" cy="15" r="4" /><path d="M10.5 12.5L20 3M17 6l3 3M14 9l2 2" /></svg>; }
+function UserIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="7" r="4" /><path d="M5 21v-1a7 7 0 0114 0v1" /></svg>; }
 function LogoutIcon(p) { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>; }
