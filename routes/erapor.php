@@ -7,7 +7,7 @@ use App\Http\Controllers\RaporController;
 use App\Http\Controllers\TujuanPembelajaranController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'modul:erapor'])->prefix('erapor')->name('erapor.')->group(function () {
+Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(function () {
     Route::get('/', [EraporController::class, 'index'])->name('index');
 
     // ── Khusus Admin sekolah (master data & penugasan) ──────────────────

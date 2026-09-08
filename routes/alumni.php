@@ -3,7 +3,7 @@
 use App\Http\Controllers\AlumniController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth', 'not_guru', 'modul:alumni'])->prefix('alumni')->name('alumni.')->group(function () {
+Route::middleware(['web', 'auth', 'not_guru'])->prefix('alumni')->name('alumni.')->group(function () {
     Route::get('/', [AlumniController::class, 'index'])->name('index');
     Route::get('/history', [AlumniController::class, 'historyIndex'])->name('history.index');
     Route::get('/history/{siswa}/edit', [AlumniController::class, 'historyEditForm'])->name('history.edit.form');
