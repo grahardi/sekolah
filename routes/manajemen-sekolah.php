@@ -10,7 +10,7 @@ Route::middleware(['web'])->prefix('manajemen-sekolah')->name('manajemen-sekolah
     Route::post('/login', [ManajemenSekolahController::class, 'login'])->name('login.submit');
     Route::post('/logout', [ManajemenSekolahController::class, 'logout'])->name('logout');
 
-    Route::middleware(['web', 'auth'])->group(function () {
+    Route::middleware(['web', 'auth', 'modul:manajemen-sekolah'])->group(function () {
         Route::get('/', [ManajemenSekolahController::class, 'dashboard'])->name('dashboard');
         Route::get('/menu-piket', [ManajemenSekolahController::class, 'menuPiket'])->name('menu-piket');
         Route::get('/data-siswa', [ManajemenSekolahController::class, 'dataSiswa'])->name('data-siswa');

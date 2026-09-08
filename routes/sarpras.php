@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 // Modul Sarpras (Sarana & Prasarana / Inventaris). Sama pola dgn modul lain:
 // login pakai Breeze yg sudah ada, multi-sekolah otomatis lewat global scope
 // BelongsToSekolah di semua model Sarpras*.
-Route::middleware(['web', 'auth', 'not_guru'])->prefix('sarpras')->name('sarpras.')->group(function () {
+Route::middleware(['web', 'auth', 'not_guru', 'modul:sarpras'])->prefix('sarpras')->name('sarpras.')->group(function () {
 
     Route::get('/', function () { return redirect()->route('sarpras.assets.index'); })->name('index');
 

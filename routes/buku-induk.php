@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 // Modul Buku Induk Siswa. Login/logout PAKAI Breeze yang sudah ada di portal
 // (bukan AuthController milik modul ini) supaya satu akun berlaku untuk
 // seluruh sekolah.co.id, bukan sistem login terpisah.
-Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
+Route::middleware(['web', 'auth', 'modul:data-siswa'])->prefix('buku-induk')->group(function () {
 
     Route::middleware('not_guru')->get('/', [SiswaController::class, 'dashboard'])->name('buku-induk.dashboard');
 
@@ -111,7 +111,7 @@ Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
 // Ganti Password Sendiri (semua role yang sudah login, TERMASUK guru) -
 // sengaja TIDAK ikut middleware 'not_guru' di atas, krn guru juga wajib bisa
 // akses ini utk alur paksa-ganti-password pertama kali login.
-Route::middleware(['web', 'auth'])->prefix('buku-induk')->group(function () {
+Route::middleware(['web', 'auth', 'modul:data-siswa'])->prefix('buku-induk')->group(function () {
     Route::get('/ganti-password', [UserController::class, 'showChangePassword'])->name('user.change-password');
     Route::post('/ganti-password', [UserController::class, 'changePassword'])->name('user.change-password.update');
 });
