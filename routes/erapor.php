@@ -121,6 +121,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::get('/rapor/template-absensi', [RaporController::class, 'downloadTemplateAbsensi'])->name('rapor.template-absensi');
         Route::post('/rapor/import-absensi', [RaporController::class, 'importAbsensi'])->name('rapor.import-absensi');
         Route::get('/rapor/cetak-kelas', [RaporController::class, 'cetakKelas'])->name('rapor.cetak-kelas');
+        Route::get('/rapor/cetak-massal-zip', [RaporController::class, 'cetakMassalZip'])->name('rapor.cetak-massal-zip');
+        Route::get('/siswa-uts/cetak-massal-zip', [\App\Http\Controllers\SiswaPortalController::class, 'cetakUtsMassalZip'])->name('siswa.cetak-uts-massal-zip');
         Route::post('/rapor/finalisasi-semua', [RaporController::class, 'finalisasiSemua'])->name('rapor.finalisasi-semua');
         Route::post('/rapor/batalkan-finalisasi-semua', [RaporController::class, 'batalkanFinalisasiSemua'])->name('rapor.batalkan-finalisasi-semua');
         Route::get('/rapor/{rapor}/edit', [RaporController::class, 'edit'])->name('rapor.edit');

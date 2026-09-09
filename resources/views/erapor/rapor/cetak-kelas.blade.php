@@ -33,6 +33,15 @@
     </div>
 </div>
 
+<div class="card" style="padding:18px;margin-bottom:20px;background:#f0fdf4;border-color:#bbf7d0;">
+    <p style="font-weight:700;color:#166534;margin:0 0 4px;"><i class="ti ti-file-zip"></i> Cetak Massal (ZIP)</p>
+    <p style="font-size:12px;color:#166534;margin:0 0 12px;">Download semua PDF sekelas sekaligus dalam 1 file ZIP - sama seperti cetak massal Buku Induk.</p>
+    <div style="display:flex;gap:8px;">
+        <a href="{{ route('erapor.rapor.cetak-massal-zip', ['kelas' => $kelas, 'rombel' => $rombel, 'semester' => $semester]) }}" class="btn btn-primary btn-sm"><i class="ti ti-download"></i> Download Semua Rapor (ZIP)</a>
+        <a href="{{ route('erapor.siswa.cetak-uts-massal-zip', ['kelas' => $kelas, 'rombel' => $rombel]) }}" class="btn btn-sm" style="background:#0891b2;color:#fff;"><i class="ti ti-download"></i> Download Semua UTS/PTS (ZIP)</a>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header"><p style="font-size:13px;font-weight:700;color:#0f172a;margin:0;">Daftar Siswa</p></div>
     <table style="width:100%;border-collapse:collapse;font-size:13px;">

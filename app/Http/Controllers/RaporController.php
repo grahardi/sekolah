@@ -278,6 +278,62 @@ class RaporController extends Controller
         return back()->with('success', 'Finalisasi seluruh rapor di kelas ini dibatalkan (kembali Draft).');
     }
 
+    /** Cetak massal - download ZIP semua PDF rapor 1 kelas sekaligus (pola sama spt Buku Induk) */
+    public function cetakMassalZip(Request $request)
+    {
+        ini_set('memory_limit', '512M');
+
+        $waliKelas = EraporController::waliKelasSayaAtauNull();
+        abort_unless($waliKelas || auth()->user()->isAdmin(), 403);
+
+        $tahunAjaran = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAjaran, 422, 'Belum ada tahun ajaran aktif.');
+
+        $kelas = $waliKelas?->kelas ?? $request->input('kelas');
+        $rombel = $waliKelas?->rombel ?? $request->input('rombel');
+        $semester = (int) ($request->input('semester', $tahunAjaran->semester === 'Genap' ? 2 : 1));
+
+        $raporList = Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $semester)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->with(['siswa', 'detailAkademik.mataPelajaran', 'detailEkskul'])
+            ->get()
+            ->sortBy(fn ($r) => $r->siswa->nama_lengkap ?? '');
+
+        abort_if($raporList->isEmpty(), 404, 'Belum ada rapor yang di-generate untuk kelas ini.');
+
+        $sekolah = auth()->user()->sekolah;
+        $waliKelasGuru = \App\Models\WaliKelas::with('guru')
+            ->where('tahun_ajaran_id', $tahunAjaran->id)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->first();
+
+        $kotaTtd = $sekolah->rapor_kota_ttd ?: $sekolah->kecamatan;
+        $ukuranKertas = strtolower($sekolah->rapor_ukuran_kertas) === 'f4' ? 'folio' : strtolower($sekolah->rapor_ukuran_kertas);
+
+        $zip = new \ZipArchive();
+        $zipPath = storage_path('app/temp-cetak-rapor-massal-' . uniqid() . '.zip');
+        $zip->open($zipPath, \ZipArchive::CREATE);
+
+        foreach ($raporList as $rapor) {
+            $tanggalCetak = $sekolah->rapor_tanggal_manual ?? $rapor->tanggal_rapor ?? now();
+
+            $pdf = Pdf::loadView('erapor.rapor.pdf', [
+                'rapor' => $rapor,
+                'sekolah' => $sekolah,
+                'waliKelas' => $waliKelasGuru?->guru,
+                'tanggalCetak' => $tanggalCetak,
+                'kotaTtd' => $kotaTtd,
+            ])->setPaper($ukuranKertas, $sekolah->rapor_orientasi);
+
+            $namaFile = \Illuminate\Support\Str::slug($rapor->siswa->nama_lengkap ?? 'siswa') . '-' . ($rapor->siswa->nisn ?? $rapor->siswa_id) . '.pdf';
+            $zip->addFromString($namaFile, $pdf->output());
+        }
+        $zip->close();
+
+        $labelKelas = str_replace(' ', '-', "{$kelas}" . ($rombel ? "-{$rombel}" : ''));
+        return response()->download($zipPath, "rapor-massal-{$labelKelas}-" . now()->format('Y-m-d') . '.zip')->deleteFileAfterSend(true);
+    }
+
     public function cetak(Rapor $rapor)
     {
         ini_set('memory_limit', '512M');

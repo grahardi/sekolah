@@ -170,4 +170,80 @@ class SiswaPortalController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
     }
+
+    /** Cetak massal - download ZIP semua PDF PTS/UTS 1 kelas sekaligus */
+    public function cetakUtsMassalZip(Request $request)
+    {
+        ini_set('memory_limit', '512M');
+
+        $request->validate(['kelas' => 'required|string']);
+        $kelas = $request->input('kelas');
+        $rombel = $request->input('rombel');
+
+        $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderBy('nama_lengkap')->get();
+
+        abort_if($siswaList->isEmpty(), 404, 'Tidak ada siswa aktif di kelas ini.');
+
+        $sekolah = $siswaList->first()->sekolah;
+        $tahunAktif = TahunAjaran::where('is_aktif', true)->first();
+        abort_unless($tahunAktif, 422, 'Belum ada tahun ajaran aktif.');
+        $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
+
+        $waliKelas = \App\Models\WaliKelas::with('guru')
+            ->where('tahun_ajaran_id', $tahunAktif->id)
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->first();
+
+        $ukuranKertasUts = strtolower($sekolah->uts_ukuran_kertas ?? 'F4') === 'f4' ? 'folio' : strtolower($sekolah->uts_ukuran_kertas ?? 'F4');
+        $tanggalCetakUts = $sekolah->uts_tanggal_manual ?? now();
+
+        $zip = new \ZipArchive();
+        $zipPath = storage_path('app/temp-cetak-uts-massal-' . uniqid() . '.zip');
+        $zip->open($zipPath, \ZipArchive::CREATE);
+
+        foreach ($siswaList as $siswa) {
+            $mapelIds = \App\Models\GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)
+                ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
+                ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')
+                ->filter(fn ($m) => ! $m->is_non_formal && $m->cocokUntukAgama($siswa->agama))
+                ->sortBy('urutan')->values();
+
+            $rows = $mapelIds->map(function ($mapel) use ($siswa, $tahunAktif, $semester) {
+                $perTp = RaporCalculator::nilaiPerTp($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
+                $sts = RaporCalculator::nilaiSts($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);
+                return ['mapel' => $mapel, 'per_tp' => array_column($perTp, 'nilai'), 'sts' => $sts];
+            });
+
+            $qrUrl = url("/siswa/{$siswa->nisn}/qr/{$siswa->getOrCreateKodeAkses()}");
+            $qrPng = null;
+            if (class_exists(QrCode::class)) {
+                $qrCode = new QrCode($qrUrl);
+                $writer = new PngWriter();
+                $result = $writer->write($qrCode);
+                $qrPng = 'data:image/png;base64,' . base64_encode($result->getString());
+            }
+
+            $catatanUts = Rapor::where('siswa_id', $siswa->id)->where('tahun_ajaran_id', $tahunAktif->id)->where('semester', $semester)->value('catatan_uts');
+
+            $pdf = Pdf::loadView('siswa-portal.cetak-uts', [
+                'siswa' => $siswa,
+                'sekolah' => $sekolah,
+                'tahunAktif' => $tahunAktif,
+                'semester' => $semester,
+                'rows' => $rows,
+                'qrPng' => $qrPng,
+                'catatanWaliKelas' => $catatanUts,
+                'waliKelas' => $waliKelas?->guru,
+                'tanggalCetakUts' => $tanggalCetakUts,
+            ])->setPaper($ukuranKertasUts, $sekolah->uts_orientasi ?? 'portrait');
+
+            $namaFile = \Illuminate\Support\Str::slug($siswa->nama_lengkap) . '-' . $siswa->nisn . '.pdf';
+            $zip->addFromString($namaFile, $pdf->output());
+        }
+        $zip->close();
+
+        $labelKelas = str_replace(' ', '-', "{$kelas}" . ($rombel ? "-{$rombel}" : ''));
+        return response()->download($zipPath, "uts-massal-{$labelKelas}-" . now()->format('Y-m-d') . '.zip')->deleteFileAfterSend(true);
+    }
 }
