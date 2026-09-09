@@ -383,7 +383,7 @@ class PenilaianController extends Controller
 
         $penilaianList = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
             ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-            ->orderBy('jenis_penilaian')->orderBy('id')->get();
+            ->orderBy('jenis_penilaian')->orderBy('id')->with('tujuanPembelajarans')->get();
 
         $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
             ->orderBy('nis')->orderBy('nama_lengkap')->get();
@@ -391,10 +391,31 @@ class PenilaianController extends Controller
         $nilaiMap = PenilaianDetailNilai::whereIn('penilaian_id', $penilaianList->pluck('id'))
             ->get()->groupBy('penilaian_id')->map(fn ($g) => $g->pluck('nilai', 'siswa_id'));
 
-        $rows = $siswaList->map(function ($s) use ($penilaianList, $nilaiMap) {
+        // Nama kolom: Sumatif TP pakai KODE TP (lebih singkat drpd nama_penilaian
+        // yg sering diisi deskripsi panjang) - PTS/UAS tetap pakai nama_penilaian
+        // krn emang gak terikat TP. Kode TP TERSCOPE per guru+mapel di database
+        // (bukan unik global), jadi kalau kebetulan >1 penilaian di batch export
+        // INI SENDIRI berakhir dgn kode kolom yg sama (mis. kode_tp kosong atau
+        // kebetulan sama), tambahkan penanda angka biar gak saling tertimpa.
+        $headerTerpakai = [];
+        $kolomPenilaian = $penilaianList->mapWithKeys(function ($p) use (&$headerTerpakai) {
+            $tp = $p->subjenis_penilaian === 'Sumatif TP' ? $p->tujuanPembelajarans->first() : null;
+            $header = ($tp && $tp->kode_tp) ? $tp->kode_tp : $p->nama_penilaian;
+
+            if (isset($headerTerpakai[$header])) {
+                $headerTerpakai[$header]++;
+                $header = "{$header} ({$headerTerpakai[$header]})";
+            } else {
+                $headerTerpakai[$header] = 1;
+            }
+
+            return [$p->id => $header];
+        });
+
+        $rows = $siswaList->map(function ($s) use ($penilaianList, $nilaiMap, $kolomPenilaian) {
             $row = ['no_induk' => $s->nis, 'nama' => $s->nama_lengkap];
             foreach ($penilaianList as $p) {
-                $row[$p->nama_penilaian] = $nilaiMap->get($p->id)?->get($s->id) ?? '';
+                $row[$kolomPenilaian[$p->id]] = $nilaiMap->get($p->id)?->get($s->id) ?? '';
             }
             return $row;
         });
@@ -414,10 +435,28 @@ class PenilaianController extends Controller
         // FastExcel otomatis snake_case-kan header kolom pas import (mis. "SAS
         // Genap" jadi "sas_genap") - siapkan 2 peta lookup (asli & slug) biar
         // tetap ketemu apapun format yang dihasilkan library saat baca file.
+        // Header kolom HARUS dibangun dgn LOGIC SAMA PERSIS spt download
+        // (kode_tp utk Sumatif TP, nama_penilaian utk PTS/UAS) biar cocok.
         $penilaianAsli = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
-            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)->get();
-        $penilaianSlug = $penilaianAsli->keyBy(fn ($p) => \Illuminate\Support\Str::slug($p->nama_penilaian, '_'));
-        $penilaianRaw = $penilaianAsli->keyBy('nama_penilaian');
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)->with('tujuanPembelajarans')->get();
+
+        $headerTerpakai = [];
+        $penilaianByHeader = collect();
+        foreach ($penilaianAsli as $p) {
+            $tp = $p->subjenis_penilaian === 'Sumatif TP' ? $p->tujuanPembelajarans->first() : null;
+            $header = ($tp && $tp->kode_tp) ? $tp->kode_tp : $p->nama_penilaian;
+
+            if (isset($headerTerpakai[$header])) {
+                $headerTerpakai[$header]++;
+                $header = "{$header} ({$headerTerpakai[$header]})";
+            } else {
+                $headerTerpakai[$header] = 1;
+            }
+
+            $penilaianByHeader[$header] = $p;
+        }
+        $penilaianSlug = $penilaianByHeader->keyBy(fn ($p, $key) => \Illuminate\Support\Str::slug($key, '_'));
+        $penilaianRaw = $penilaianByHeader;
 
         $diperbarui = 0;
         $kolomTakDikenali = collect();
