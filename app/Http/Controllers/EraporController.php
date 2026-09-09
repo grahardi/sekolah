@@ -174,7 +174,12 @@ class EraporController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:100',
             'kelompok' => 'nullable|string|max:50',
+            'is_agama' => 'nullable|boolean',
+            'agama_untuk' => 'nullable|array',
         ]);
+        $data['is_agama'] = $request->boolean('is_agama');
+        $data['agama_untuk'] = $data['is_agama'] ? ($data['agama_untuk'] ?? []) : null;
+
         MataPelajaran::create($data);
         return back()->with('success', 'Mata pelajaran ditambahkan.');
     }
@@ -184,9 +189,35 @@ class EraporController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:100',
             'kelompok' => 'nullable|string|max:50',
+            'is_agama' => 'nullable|boolean',
+            'agama_untuk' => 'nullable|array',
         ]);
+        $data['is_agama'] = $request->boolean('is_agama');
+        $data['agama_untuk'] = $data['is_agama'] ? ($data['agama_untuk'] ?? []) : null;
+
         $mataPelajaran->update($data);
         return back()->with('success', "Mata pelajaran berhasil diubah jadi \"{$mataPelajaran->nama}\".");
+    }
+
+    public function urutanMataPelajaranIndex()
+    {
+        $mapels = MataPelajaran::where('sekolah_id', auth()->user()->sekolah_id)
+            ->orderBy('urutan')->orderBy('nama')->get();
+
+        return view('erapor.urutan-mapel', ['mapels' => $mapels]);
+    }
+
+    public function urutanMataPelajaranSimpan(Request $request)
+    {
+        $request->validate(['urutan' => 'required|array']);
+
+        foreach ($request->urutan as $index => $mapelId) {
+            MataPelajaran::where('id', $mapelId)
+                ->where('sekolah_id', auth()->user()->sekolah_id)
+                ->update(['urutan' => $index]);
+        }
+
+        return response()->json(['status' => 'ok']);
     }
 
     public function destroyMataPelajaran(MataPelajaran $mataPelajaran)

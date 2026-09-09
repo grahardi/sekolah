@@ -19,11 +19,25 @@
     <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama mata pelajaran..." class="form-input" onchange="this.form.submit()">
 </form>
 
-<form id="form-tambah" action="{{ route('erapor.mata-pelajaran.store') }}" method="POST" class="card" style="padding:16px;margin-bottom:20px;display:none;grid-template-columns:2fr 1fr auto;gap:10px;align-items:end;">
+<form id="form-tambah" action="{{ route('erapor.mata-pelajaran.store') }}" method="POST" class="card" style="padding:16px;margin-bottom:20px;display:none;">
     @csrf
-    <div><label class="form-label">Nama Mata Pelajaran</label><input name="nama" class="form-input" placeholder="mis. Matematika" required></div>
-    <div><label class="form-label">Kelompok (opsional)</label><input name="kelompok" class="form-input" placeholder="Umum / Muatan Lokal"></div>
-    <div><button class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ti ti-plus"></i> Tambah</button></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px;">
+        <div><label class="form-label">Nama Mata Pelajaran</label><input name="nama" class="form-input" placeholder="mis. Matematika" required></div>
+        <div><label class="form-label">Kelompok (opsional)</label><input name="kelompok" class="form-input" placeholder="Umum / Muatan Lokal"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;margin-bottom:10px;cursor:pointer;">
+        <input type="checkbox" name="is_agama" value="1" onchange="document.getElementById('wrap-agama-tambah').style.display=this.checked?'block':'none'">
+        Ini Mapel Agama (cuma tampil ke siswa dgn agama yg dipilih)
+    </label>
+    <div id="wrap-agama-tambah" style="display:none;margin-bottom:14px;padding:12px;background:#f8fafc;border-radius:8px;">
+        <p class="form-label" style="margin-bottom:8px;">Berlaku untuk Agama (bisa pilih lebih dari satu, mis. kalau 1 guru rangkap ajar 2 agama)</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            @foreach(['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME'] as $ag)
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#475569;"><input type="checkbox" name="agama_untuk[]" value="{{ $ag }}"> {{ $ag }}</label>
+            @endforeach
+        </div>
+    </div>
+    <button class="btn btn-primary"><i class="ti ti-plus"></i> Tambah</button>
 </form>
 
 @php
@@ -36,7 +50,7 @@
     <div class="card" style="overflow:hidden;padding:0;">
         <div style="background:{{ $warna }};padding:16px 18px;color:#fff;">
             <p style="font-size:15px;font-weight:800;margin:0 0 2px;">{{ $m->nama }}</p>
-            <p style="font-size:11px;opacity:.85;margin:0;">{{ $m->kelompok ?? 'Umum' }}</p>
+            <p style="font-size:11px;opacity:.85;margin:0;">{{ $m->kelompok ?? 'Umum' }}{{ $m->is_agama ? ' · Agama: ' . implode(', ', $m->agama_untuk ?? []) : '' }}</p>
         </div>
         <div style="padding:16px 18px;">
             <div style="display:flex;gap:24px;margin-bottom:12px;">
@@ -92,7 +106,21 @@
             <label class="form-label">Nama Mata Pelajaran</label>
             <input type="text" name="nama" value="{{ $m->nama }}" class="form-input" required style="margin-bottom:12px;">
             <label class="form-label">Kelompok</label>
-            <input type="text" name="kelompok" value="{{ $m->kelompok }}" class="form-input" placeholder="Umum / Muatan Lokal" style="margin-bottom:16px;">
+            <input type="text" name="kelompok" value="{{ $m->kelompok }}" class="form-input" placeholder="Umum / Muatan Lokal" style="margin-bottom:12px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;margin-bottom:10px;cursor:pointer;">
+                <input type="checkbox" name="is_agama" value="1" {{ $m->is_agama ? 'checked' : '' }} onchange="document.getElementById('wrap-agama-edit-{{ $m->id }}').style.display=this.checked?'block':'none'">
+                Ini Mapel Agama
+            </label>
+            <div id="wrap-agama-edit-{{ $m->id }}" style="display:{{ $m->is_agama ? 'block' : 'none' }};margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:8px;">
+                <p class="form-label" style="margin-bottom:8px;">Berlaku untuk Agama</p>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                    @foreach(['Islam','Kristen','Katholik','Hindu','Budha','Khonghucu','Kepercayaan kpd Tuhan YME'] as $ag)
+                    <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#475569;">
+                        <input type="checkbox" name="agama_untuk[]" value="{{ $ag }}" {{ in_array($ag, $m->agama_untuk ?? []) ? 'checked' : '' }}> {{ $ag }}
+                    </label>
+                    @endforeach
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Simpan Perubahan</button>
         </form>
     </div>

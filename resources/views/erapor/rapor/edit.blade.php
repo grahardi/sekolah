@@ -18,7 +18,7 @@
                 <th style="padding:8px;">Mapel</th><th style="padding:8px;width:90px;">Nilai Sistem</th><th style="padding:8px;width:110px;">Nilai Katrol</th><th style="padding:8px;">Capaian Kompetensi</th>
             </tr></thead>
             <tbody>
-                @forelse($rapor->detailAkademik as $d)
+                @forelse($rapor->detailAkademik->sortBy(fn ($d) => $d->mataPelajaran->urutan ?? 0) as $d)
                 <tr style="border-bottom:1px solid #f8fafc;">
                     <td style="padding:8px;font-weight:600;">{{ $d->mataPelajaran->nama }}</td>
                     <td style="padding:8px;font-weight:700;">{{ $d->nilai_akhir ?? '-' }}</td>

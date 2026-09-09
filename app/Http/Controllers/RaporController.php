@@ -91,7 +91,26 @@ class RaporController extends Controller
             ->where('kelas', $kelas)->where('rombel', $rombel)
             ->pluck('mata_pelajaran_id')->unique();
 
-        foreach ($mapelIds as $mapelId) {
+        $semuaMapel = MataPelajaran::whereIn('id', $mapelIds)->get()->keyBy('id');
+
+        // Kalau kelas ini punya >1 varian mapel Agama (mis. Agama Islam &
+        // Agama Kristen diajarkan bareng di kelas yg sama krn siswanya beda
+        // agama), CUMA yg cocok sama agama siswa ybs yg dibuatkan detail
+        // nilainya - siswa gak akan lihat mapel agama org lain.
+        $mapelIdsDipakai = $mapelIds->filter(function ($id) use ($semuaMapel, $siswa) {
+            $m = $semuaMapel->get($id);
+            return $m ? $m->cocokUntukAgama($siswa->agama) : true;
+        });
+
+        // Bersihkan detail lama yg gak relevan lagi (mis. agama siswa pernah
+        // salah input terus dibetulkan, atau mapel agama ybs baru ditandai
+        // is_agama setelah rapor sempat kegenerate).
+        RaporDetailAkademik::where('rapor_id', $rapor->id)
+            ->whereNotIn('mata_pelajaran_id', $mapelIdsDipakai)
+            ->whereIn('mata_pelajaran_id', $mapelIds) // cuma hapus yg emang mapel kelas ini, jgn ganggu yg lain
+            ->delete();
+
+        foreach ($mapelIdsDipakai as $mapelId) {
             $hasil = RaporCalculator::hitung($siswa->id, $kelas, $rombel, $mapelId, $tahunAjaran->id, $semester);
 
             RaporDetailAkademik::updateOrCreate(

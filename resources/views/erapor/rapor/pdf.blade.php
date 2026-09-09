@@ -132,7 +132,7 @@
         <tr><th style="width:26px;">No.</th><th style="width:140px;">Mata Pelajaran</th><th style="width:50px;">Nilai Akhir</th><th>Capaian Kompetensi</th></tr>
     </thead>
     <tbody>
-        @forelse($rapor->detailAkademik as $i => $d)
+        @forelse($rapor->detailAkademik->sortBy(fn ($d) => $d->mataPelajaran->urutan ?? 0) as $i => $d)
         <tr>
             <td class="center">{{ $i + 1 }}</td>
             <td>{{ $d->mataPelajaran->nama }}</td>

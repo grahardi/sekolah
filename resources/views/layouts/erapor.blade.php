@@ -193,8 +193,12 @@
             <i class="ti ti-calendar-event"></i><span>Tahun Ajaran</span>
         </a>
         <a href="{{ route('erapor.mata-pelajaran') }}"
-           class="sb-item {{ request()->routeIs('erapor.mata-pelajaran*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('erapor.mata-pelajaran') ? 'active' : '' }}">
             <i class="ti ti-book-2"></i><span>Mata Pelajaran</span>
+        </a>
+        <a href="{{ route('erapor.mata-pelajaran.urutan') }}"
+           class="sb-item {{ request()->routeIs('erapor.mata-pelajaran.urutan*') ? 'active' : '' }}">
+            <i class="ti ti-arrows-sort"></i><span>Urutan Mapel</span>
         </a>
         <a href="{{ route('erapor.pengaturan-cetak') }}"
            class="sb-item {{ request()->routeIs('erapor.pengaturan-cetak') ? 'active' : '' }}">
