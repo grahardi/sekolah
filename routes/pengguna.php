@@ -16,4 +16,5 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('pengguna')->name('user.')->
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     Route::post('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
     Route::post('/{user}/login-as', [\App\Http\Controllers\LoginAsController::class, 'login'])->name('login-as');
+    Route::post('/{user}/hubungkan-pegawai', [UserController::class, 'hubungkanPegawai'])->name('hubungkan-pegawai');
 });

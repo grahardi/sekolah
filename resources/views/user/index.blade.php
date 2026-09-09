@@ -8,6 +8,41 @@
 
 @section('content')
 
+@if($guruBelumTerhubung->isNotEmpty())
+<div class="card" style="padding:16px 18px;margin-bottom:16px;background:#fffbeb;border-color:#fde68a;">
+    <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 10px;"><i class="ti ti-link-off"></i> {{ $guruBelumTerhubung->count() }} akun guru belum terhubung ke data Kepegawaian</p>
+    @foreach($guruBelumTerhubung as $u)
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid #fde68a;">
+        <span style="font-size:13px;color:#78350f;">{{ $u->name }} <span style="color:#a16207;">({{ $u->email }})</span></span>
+        <button type="button" onclick="document.getElementById('modal-hubungkan-{{ $u->id }}').style.display='flex'" class="btn btn-secondary btn-sm">Hubungkan ke Pegawai</button>
+    </div>
+    @endforeach
+    <p style="font-size:11px;color:#a16207;margin:10px 0 0;">Kalau tidak ketemu pegawainya di daftar pilihan, pastikan sudah ditambahkan dulu lewat menu Kepegawaian.</p>
+</div>
+
+@foreach($guruBelumTerhubung as $u)
+<div id="modal-hubungkan-{{ $u->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:420px;width:100%;padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Hubungkan {{ $u->name }}</p>
+            <button type="button" onclick="document.getElementById('modal-hubungkan-{{ $u->id }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;">&times;</button>
+        </div>
+        <form action="{{ route('user.hubungkan-pegawai', $u) }}" method="POST">
+            @csrf
+            <label class="form-label">Pilih Data Pegawai</label>
+            <select name="pegawai_id" class="form-input" required style="margin-bottom:16px;">
+                <option value="">-- Pilih --</option>
+                @foreach($pegawaiTersedia as $p)
+                <option value="{{ $p->id }}">{{ $p->nama_lengkap }}{{ $p->nip_nuptk ? " ({$p->nip_nuptk})" : '' }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Hubungkan</button>
+        </form>
+    </div>
+</div>
+@endforeach
+@endif
+
 <div class="card">
     <div class="card-header">
         <span style="font-size:13px;font-weight:700;color:#0f172a;">Daftar User</span>

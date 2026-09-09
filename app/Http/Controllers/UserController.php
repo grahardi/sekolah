@@ -16,7 +16,53 @@ class UserController extends Controller
     {
         $users = User::where('sekolah_id', Auth::user()->sekolah_id)
             ->orderBy('role')->orderBy('name')->paginate(15);
-        return view('user.index', compact('users'));
+
+        // Guru yg akunnya BELUM terhubung ke Pegawai (Kepegawaian) - baik
+        // krn blm py record Guru sama sekali, atau py Guru tapi pegawai_id
+        // null (dulunya "Guru Bantu"/manual). Ditampilkan biar admin bisa
+        // hubungkan drpd data pokoknya dobel-dobel gak sinkron.
+        $guruBelumTerhubung = User::where('sekolah_id', Auth::user()->sekolah_id)
+            ->where('role', 'guru')
+            ->whereDoesntHave('guru', fn ($q) => $q->whereNotNull('pegawai_id'))
+            ->get();
+
+        $pegawaiTersedia = \App\Models\Pegawai::where('sekolah_id', Auth::user()->sekolah_id)
+            ->whereDoesntHave('guru', fn ($q) => $q->whereNotNull('user_id'))
+            ->orderBy('nama_lengkap')
+            ->get();
+
+        return view('user.index', compact('users', 'guruBelumTerhubung', 'pegawaiTersedia'));
+    }
+
+    public function hubungkanPegawai(Request $request, User $user)
+    {
+        $request->validate(['pegawai_id' => 'required|exists:pegawais,id']);
+
+        $pegawai = \App\Models\Pegawai::findOrFail($request->pegawai_id);
+
+        $guru = \App\Models\Guru::where('user_id', $user->id)->first();
+
+        if ($guru) {
+            // Akun ini udah py Guru (mis. dulu "Guru Bantu") - hubungkan ke Pegawai
+            $guru->update([
+                'pegawai_id' => $pegawai->id,
+                'nama' => $pegawai->nama_lengkap,
+                'nip_nuptk' => $pegawai->nip_nuptk,
+            ]);
+        } else {
+            \App\Models\Guru::create([
+                'sekolah_id' => $user->sekolah_id,
+                'user_id' => $user->id,
+                'pegawai_id' => $pegawai->id,
+                'nama' => $pegawai->nama_lengkap,
+                'nip_nuptk' => $pegawai->nip_nuptk,
+            ]);
+        }
+
+        // Sinkronkan jg nama login-nya biar konsisten
+        $user->update(['name' => $pegawai->nama_lengkap]);
+
+        return back()->with('success', "Akun {$user->name} berhasil dihubungkan ke data Pegawai {$pegawai->nama_lengkap}.");
     }
 
     /** Kartu login siap cetak - HANYA guru yg password-nya masih default (belum pernah diganti) */

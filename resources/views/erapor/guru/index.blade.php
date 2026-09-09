@@ -3,9 +3,9 @@
 @section('page-title', 'Guru')
 
 @section('header-actions')
-    <button type="button" onclick="document.getElementById('modal-tambah-guru').style.display='flex'" class="btn btn-primary">
-        <i class="ti ti-square-plus"></i> Tambah Guru Bantu
-    </button>
+    <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">
+        <i class="ti ti-arrow-right"></i> Tambah Guru Lewat Kepegawaian
+    </a>
 @endsection
 
 @section('content')
@@ -38,21 +38,8 @@
     <button type="submit" class="btn btn-primary" style="padding:10px 16px;"><i class="ti ti-search"></i></button>
 </form>
 
-<div id="modal-tambah-guru" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;align-items:center;justify-content:center;padding:20px;">
-    <div class="card" style="max-width:460px;width:100%;padding:24px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-            <p style="font-size:15px;font-weight:800;color:#0f172a;margin:0;">Tambah Guru Bantu</p>
-            <button type="button" onclick="document.getElementById('modal-tambah-guru').style.display='none'" style="background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;">&times;</button>
-        </div>
-        <p style="font-size:12px;color:#64748b;margin:0 0 16px;">Untuk guru yang tidak terdaftar di Kepegawaian (mis. guru bantu/tamu).</p>
-        <form action="{{ route('erapor.guru.store-bantu') }}" method="POST">
-            @csrf
-            <div style="margin-bottom:12px;"><label class="form-label">Nama Lengkap</label><input name="nama" class="form-input" required></div>
-            <div style="margin-bottom:12px;"><label class="form-label">NIP/NUPTK (opsional)</label><input name="nip_nuptk" class="form-input"></div>
-            <div style="margin-bottom:16px;"><label class="form-label">Keterangan</label><input name="keterangan" class="form-input" placeholder="Guru Bantu"></div>
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;"><i class="ti ti-plus"></i> Tambah</button>
-        </form>
-    </div>
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:12.5px;color:#1e40af;">
+    <i class="ti ti-info-circle"></i> Semua guru sekarang harus ditambahkan lewat menu <strong>Kepegawaian</strong> dulu, biar data pokoknya (nama/NIP/dll) tersambung terus dan gak perlu diinput dua kali. Guru bantu/tamu lama yang sudah pernah ditambahkan langsung di sini tetap tersimpan seperti biasa.
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:20px;">

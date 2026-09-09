@@ -564,15 +564,11 @@ class EraporController extends Controller
 
     public function storeGuruBantu(Request $request)
     {
-        $data = $request->validate([
-            'nama' => 'required|string|max:150',
-            'nip_nuptk' => 'nullable|string|max:30',
-            'keterangan' => 'nullable|string|max:100',
-        ]);
-        $data['keterangan'] = $data['keterangan'] ?: 'Guru Bantu';
-
-        Guru::create($data);
-        return back()->with('success', 'Guru bantu ditambahkan.');
+        // Dinonaktifkan - semua guru sekarang wajib lewat Kepegawaian dulu
+        // (Guru::syncFromPegawai) biar data pokoknya nyambung satu sumber,
+        // gak dobel input/akun. Sengaja gak dihapus method-nya (drpd error
+        // 404 di route lama), cuma diblokir isinya.
+        return back()->with('error', 'Tambah guru manual sudah dinonaktifkan. Tambahkan lewat menu Kepegawaian dulu.');
     }
 
     public function destroyGuruBantu(Guru $guru)

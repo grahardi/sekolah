@@ -39,6 +39,11 @@ class User extends Authenticatable
     }
 
     // ── Role helpers (dipakai modul Buku Induk) ─────────────────────────────
+    public function guru()
+    {
+        return $this->hasOne(\App\Models\Guru::class, 'user_id');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

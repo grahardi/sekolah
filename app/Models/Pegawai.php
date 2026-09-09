@@ -34,6 +34,7 @@ class Pegawai extends Model
     public function keluarga() { return $this->hasMany(KeluargaPegawai::class); }
     public function cuti() { return $this->hasMany(CutiPegawai::class); }
     public function mutasi() { return $this->hasMany(MutasiPegawai::class); }
+    public function guru() { return $this->hasOne(\App\Models\Guru::class, 'pegawai_id'); }
 
     /** Status yang tergolong ASN - field golongan/pangkat/TMT hanya relevan untuk ini */
     public const STATUS_ASN = ['PNS', 'PPPK'];
