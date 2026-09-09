@@ -1226,4 +1226,83 @@ class EraporController extends Controller
             'kelasBolong' => $kelasBolong,
         ]);
     }
+
+    // ── Gabungkan Guru Duplikat ─────────────────────────────────────────────
+
+    /** Halaman deteksi otomatis - kelompokkan Guru by nama (dinormalisasi), tampilkan yg py >1 record */
+    public function guruDuplikatIndex()
+    {
+        $sekolahId = auth()->user()->sekolah_id;
+        $normalisasi = fn (string $n) => trim(preg_replace('/\s+/', ' ', strtolower($n)));
+
+        $semua = Guru::where('sekolah_id', $sekolahId)->orderBy('nama')->get();
+        $grup = $semua->groupBy(fn ($g) => $normalisasi($g->nama))
+            ->filter(fn ($items) => $items->count() > 1)
+            ->map(function ($items) {
+                return $items->map(function ($g) {
+                    $g->jumlah_pengajar = GuruPengajar::where('guru_id', $g->id)->count();
+                    $g->jumlah_ekskul = GuruEkstrakurikuler::where('guru_id', $g->id)->count();
+                    $g->jumlah_kokurikuler = GuruKokurikuler::where('guru_id', $g->id)->count();
+                    $g->jumlah_wali_kelas = WaliKelas::where('guru_id', $g->id)->count();
+                    return $g;
+                });
+            });
+
+        return view('erapor.guru.duplikat', ['grup' => $grup]);
+    }
+
+    /**
+     * Gabungkan 2+ record Guru duplikat jadi SATU (dipilih admin sbg "utama").
+     * Semua tugas mengajar/ekskul/kokurikuler/wali-kelas dari record LAIN
+     * dipindah ke record utama, lalu record lainnya dihapus. Kalau ada
+     * kombinasi yg SAMA persis di keduanya (mis. kelas+mapel+tahun ajaran yg
+     * sama), yg dari record duplikat dibuang aja (drpd duplikat data).
+     */
+    public function guruDuplikatGabung(Request $request)
+    {
+        $request->validate([
+            'guru_utama_id' => 'required|exists:gurus,id',
+            'guru_duplikat_ids' => 'required|array|min:1',
+            'guru_duplikat_ids.*' => 'exists:gurus,id',
+        ]);
+
+        $utama = Guru::findOrFail($request->guru_utama_id);
+        $dipindah = 0;
+        $dibuang = 0;
+
+        // Kolom kunci per model buat cek "udah ada versi yg sama di guru
+        // utama" - SENGAJA gak pakai semua kolom (mis. pegawai_id bisa beda
+        // walau baris-nya sebenarnya sama persis scr bisnis logic).
+        $kolomKunci = [
+            GuruPengajar::class => ['tahun_ajaran_id', 'mata_pelajaran_id', 'kelas', 'rombel'],
+            GuruEkstrakurikuler::class => ['tahun_ajaran_id', 'nama_ekstrakurikuler'],
+            GuruKokurikuler::class => ['tahun_ajaran_id', 'kelas', 'rombel', 'tema_p5'],
+            WaliKelas::class => ['tahun_ajaran_id', 'kelas', 'rombel'],
+        ];
+
+        foreach ($request->guru_duplikat_ids as $duplikatId) {
+            if ($duplikatId == $utama->id) continue;
+            $duplikat = Guru::find($duplikatId);
+            if (! $duplikat) continue;
+
+            foreach ($kolomKunci as $model => $kolom) {
+                foreach ($model::where('guru_id', $duplikatId)->get() as $row) {
+                    $kondisiCek = collect($kolom)->mapWithKeys(fn ($k) => [$k => $row->{$k}])->toArray();
+                    $sudahAda = $model::where('guru_id', $utama->id)->where($kondisiCek)->exists();
+
+                    if ($sudahAda) {
+                        $row->delete();
+                        $dibuang++;
+                    } else {
+                        $row->update(['guru_id' => $utama->id]);
+                        $dipindah++;
+                    }
+                }
+            }
+
+            $duplikat->delete();
+        }
+
+        return back()->with('success', "Berhasil digabungkan ke {$utama->nama}. {$dipindah} data dipindah, {$dibuang} data duplikat dibuang.");
+    }
 }

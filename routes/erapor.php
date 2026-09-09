@@ -60,6 +60,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
 
         // Generate User massal
         Route::get('/guru/generate-user', [EraporController::class, 'generateUserIndex'])->name('guru.generate-user');
+        Route::get('/guru/duplikat', [EraporController::class, 'guruDuplikatIndex'])->name('guru.duplikat');
+        Route::post('/guru/duplikat/gabung', [EraporController::class, 'guruDuplikatGabung'])->name('guru.duplikat-gabung');
         Route::post('/guru/generate-user-massal', [EraporController::class, 'generateUserMassal'])->name('guru.generate-user-massal');
         Route::get('/guru/template-user', [EraporController::class, 'downloadTemplateUser'])->name('guru.template-user');
         Route::post('/guru/import-user', [EraporController::class, 'importUser'])->name('guru.import-user');
