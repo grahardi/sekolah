@@ -124,7 +124,9 @@ class SiswaPortalController extends Controller
 
         $mapelIds = \App\Models\GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)
             ->where('kelas', $siswa->kelas)->where('rombel', $siswa->rombel)
-            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->sortBy('nama')->values();
+            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')
+            ->filter(fn ($m) => $m->cocokUntukAgama($siswa->agama))
+            ->sortBy('urutan')->values();
 
         $rows = $mapelIds->map(function ($mapel) use ($siswa, $tahunAktif, $semester) {
             $perTp = RaporCalculator::nilaiPerTp($siswa->id, $siswa->kelas, $siswa->rombel, $mapel->id, $tahunAktif->id, $semester);

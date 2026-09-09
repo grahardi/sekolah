@@ -426,10 +426,16 @@ class EraporController extends Controller
         abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
 
         $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
-        $mapelIds = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)->where('kelas', $kelas)->where('rombel', $rombel)->pluck('mata_pelajaran_id')->unique();
-        $totalMapel = $mapelIds->count();
+        $semuaMapel = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)->where('kelas', $kelas)->where('rombel', $rombel)
+            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->filter();
 
-        $progres = $siswaList->map(function ($s) use ($totalMapel) {
+        $progres = $siswaList->map(function ($s) use ($semuaMapel) {
+            // Total mapel DIHITUNG PER SISWA - kalau ada >1 varian mapel Agama,
+            // cuma yg cocok agama siswa ini yg dihitung (konsisten sama filter
+            // di RaporController::generateSatuSiswa()), biar persentase-nya
+            // gak "stuck" di bawah 100% gara2 ngitung mapel agama org lain.
+            $totalMapel = $semuaMapel->filter(fn ($m) => $m->cocokUntukAgama($s->agama))->count();
+
             $sudahAda = \App\Models\RaporDetailAkademik::whereHas('rapor', fn ($q) => $q->where('siswa_id', $s->id))
                 ->whereNotNull('nilai_akhir')->count();
             return [
