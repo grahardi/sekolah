@@ -37,6 +37,10 @@
             @endforeach
         </div>
     </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" name="is_non_formal" value="1">
+        Mapel Non-Formal (mis. BK - tidak masuk penilaian/rapor apapun)
+    </label>
     <button class="btn btn-primary"><i class="ti ti-plus"></i> Tambah</button>
 </form>
 
@@ -50,7 +54,7 @@
     <div class="card" style="overflow:hidden;padding:0;">
         <div style="background:{{ $warna }};padding:16px 18px;color:#fff;">
             <p style="font-size:15px;font-weight:800;margin:0 0 2px;">{{ $m->nama }}</p>
-            <p style="font-size:11px;opacity:.85;margin:0;">{{ $m->kelompok ?? 'Umum' }}{{ $m->is_agama ? ' · Agama: ' . implode(', ', $m->agama_untuk ?? []) : '' }}</p>
+            <p style="font-size:11px;opacity:.85;margin:0;">{{ $m->kelompok ?? 'Umum' }}{{ $m->is_agama ? ' · Agama: ' . implode(', ', $m->agama_untuk ?? []) : '' }}{{ $m->is_non_formal ? ' · Non-Formal' : '' }}</p>
         </div>
         <div style="padding:16px 18px;">
             <div style="display:flex;gap:24px;margin-bottom:12px;">
@@ -121,6 +125,10 @@
                     @endforeach
                 </div>
             </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;margin-bottom:16px;cursor:pointer;">
+                <input type="checkbox" name="is_non_formal" value="1" {{ $m->is_non_formal ? 'checked' : '' }}>
+                Mapel Non-Formal (tidak masuk penilaian/rapor apapun)
+            </label>
             <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Simpan Perubahan</button>
         </form>
     </div>

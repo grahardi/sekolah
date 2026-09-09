@@ -96,10 +96,13 @@ class RaporController extends Controller
         // Kalau kelas ini punya >1 varian mapel Agama (mis. Agama Islam &
         // Agama Kristen diajarkan bareng di kelas yg sama krn siswanya beda
         // agama), CUMA yg cocok sama agama siswa ybs yg dibuatkan detail
-        // nilainya - siswa gak akan lihat mapel agama org lain.
+        // nilainya - siswa gak akan lihat mapel agama org lain. Mapel
+        // Non-Formal (mis. BK) TIDAK MASUK rapor sama sekali.
         $mapelIdsDipakai = $mapelIds->filter(function ($id) use ($semuaMapel, $siswa) {
             $m = $semuaMapel->get($id);
-            return $m ? $m->cocokUntukAgama($siswa->agama) : true;
+            if (! $m) return true;
+            if ($m->is_non_formal) return false;
+            return $m->cocokUntukAgama($siswa->agama);
         });
 
         // Bersihkan detail lama yg gak relevan lagi (mis. agama siswa pernah

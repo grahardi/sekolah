@@ -10,8 +10,8 @@ class MataPelajaran extends Model
     use BelongsToSekolah;
 
     protected $table = 'mata_pelajarans';
-    protected $fillable = ['sekolah_id', 'nama', 'kelompok', 'is_agama', 'agama_untuk', 'urutan'];
-    protected $casts = ['is_agama' => 'boolean', 'agama_untuk' => 'array'];
+    protected $fillable = ['sekolah_id', 'nama', 'kelompok', 'is_agama', 'agama_untuk', 'urutan', 'is_non_formal'];
+    protected $casts = ['is_agama' => 'boolean', 'agama_untuk' => 'array', 'is_non_formal' => 'boolean'];
 
     /** Mapel ini berlaku buat siswa dgn agama tsb? Non-agama selalu true (gak difilter) */
     public function cocokUntukAgama(?string $agamaSiswa): bool

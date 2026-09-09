@@ -176,9 +176,11 @@ class EraporController extends Controller
             'kelompok' => 'nullable|string|max:50',
             'is_agama' => 'nullable|boolean',
             'agama_untuk' => 'nullable|array',
+            'is_non_formal' => 'nullable|boolean',
         ]);
         $data['is_agama'] = $request->boolean('is_agama');
         $data['agama_untuk'] = $data['is_agama'] ? ($data['agama_untuk'] ?? []) : null;
+        $data['is_non_formal'] = $request->boolean('is_non_formal');
 
         MataPelajaran::create($data);
         return back()->with('success', 'Mata pelajaran ditambahkan.');
@@ -191,9 +193,11 @@ class EraporController extends Controller
             'kelompok' => 'nullable|string|max:50',
             'is_agama' => 'nullable|boolean',
             'agama_untuk' => 'nullable|array',
+            'is_non_formal' => 'nullable|boolean',
         ]);
         $data['is_agama'] = $request->boolean('is_agama');
         $data['agama_untuk'] = $data['is_agama'] ? ($data['agama_untuk'] ?? []) : null;
+        $data['is_non_formal'] = $request->boolean('is_non_formal');
 
         $mataPelajaran->update($data);
         return back()->with('success', "Mata pelajaran berhasil diubah jadi \"{$mataPelajaran->nama}\".");
@@ -427,7 +431,7 @@ class EraporController extends Controller
 
         $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
         $semuaMapel = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)->where('kelas', $kelas)->where('rombel', $rombel)
-            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->filter();
+            ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->filter(fn ($m) => $m && ! $m->is_non_formal);
 
         $progres = $siswaList->map(function ($s) use ($semuaMapel) {
             // Total mapel DIHITUNG PER SISWA - kalau ada >1 varian mapel Agama,

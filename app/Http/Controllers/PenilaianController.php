@@ -493,7 +493,9 @@ class PenilaianController extends Controller
         // gak wajib terikat TP tertentu, beda dari Sumatif TP.
         $penugasanList = GuruPengajar::where('sekolah_id', $sekolahId)
             ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
-            ->get();
+            ->with('mataPelajaran')
+            ->get()
+            ->filter(fn ($p) => $p->mataPelajaran && ! $p->mataPelajaran->is_non_formal);
 
         $dibuat = 0;
         $sudahAda = 0;
