@@ -960,44 +960,23 @@ class EraporController extends Controller
         'BK' => 'Bimbingan Konseling',
     ];
 
-    public function importTugasMengajar(Request $request)
+    /** Parse file Excel jadi baris-baris mentah (kelas, rombel, singkatan mapel, nama guru dari Excel) */
+    private function parseBarisTugasMengajar(string $path): array
     {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls|max:5120',
-            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
-        ]);
-
-        $sekolahId = auth()->user()->sekolah_id;
-        $tahunAjaranId = $request->tahun_ajaran_id;
-
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file')->getRealPath());
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
         $sheet = $spreadsheet->getActiveSheet();
         $highestRow = $sheet->getHighestDataRow();
 
-        // Guru sekolah ini, disiapkan utk pencocokan by nama (trim + lowercase,
-        // spasi ganda dirapatkan) - biar toleran beda spasi/kapitalisasi tapi
-        // TETAP TEGAS, gak asal tebak kalau beda jauh.
-        $normalisasiNama = fn (string $n) => trim(preg_replace('/\s+/', ' ', strtolower($n)));
-        $guruByNama = Guru::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($g) => $normalisasiNama($g->nama));
-
-        $mapelByNama = MataPelajaran::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($m) => $normalisasiNama($m->nama));
-        $mapelBySingkatan = MataPelajaran::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($m) => strtoupper(trim($m->nama)));
-
         $kelasRomawiKeAngka = ['VII' => '7', 'VIII' => '8', 'IX' => '9', 'X' => '10', 'XI' => '11', 'XII' => '12'];
-
         $kelasSekarang = null;
         $rombelSekarang = null;
-        $dibuat = 0;
-        $sudahAda = 0;
-        $mapelBaru = [];
-        $guruTidakKetemu = [];
+        $baris = [];
 
         for ($row = 1; $row <= $highestRow; $row++) {
             $a = trim((string) $sheet->getCell('A' . $row)->getValue());
             $b = trim((string) $sheet->getCell('B' . $row)->getValue());
             $c = trim((string) $sheet->getCell('C' . $row)->getValue());
 
-            // Baris header kelas, mis. "KELAS VII-A"
             if (str_starts_with(strtoupper($a), 'KELAS')) {
                 $label = trim(str_ireplace('KELAS', '', $a));
                 if (preg_match('/^([IVX]+)-?(\w*)$/i', $label, $m)) {
@@ -1008,38 +987,169 @@ class EraporController extends Controller
                 continue;
             }
 
-            // Baris data: No(int), Mapel(singkatan), Guru(nama)
             if (! is_numeric($a) || $b === '' || $c === '' || ! $kelasSekarang) {
                 continue;
             }
 
-            $singkatan = strtoupper($b);
-            $mapel = $mapelBySingkatan[$singkatan] ?? $mapelByNama[$normalisasiNama($b)] ?? null;
+            $baris[] = [
+                'row' => $row,
+                'kelas' => $kelasSekarang,
+                'rombel' => $rombelSekarang,
+                'mapel_singkatan' => $b,
+                'guru_nama_excel' => $c,
+            ];
+        }
 
-            if (! $mapel) {
-                $namaBaru = self::MAPPING_SINGKATAN_MAPEL[$singkatan] ?? $b;
-                $mapel = MataPelajaran::firstOrCreate(
+        return $baris;
+    }
+
+    /** Cari guru paling mirip di database (persen kecocokan pakai similar_text) */
+    private function guruPalingMirip(string $namaExcel, \Illuminate\Support\Collection $semuaGuru): array
+    {
+        $normalisasi = fn (string $n) => trim(preg_replace('/\s+/', ' ', strtolower($n)));
+        $target = $normalisasi($namaExcel);
+
+        $terbaik = null;
+        $persenTerbaik = 0;
+
+        foreach ($semuaGuru as $g) {
+            similar_text($target, $normalisasi($g->nama), $persen);
+            if ($persen > $persenTerbaik) {
+                $persenTerbaik = $persen;
+                $terbaik = $g;
+            }
+        }
+
+        return ['guru' => $terbaik, 'persen' => round($persenTerbaik)];
+    }
+
+    /** Cocokkan mapel by singkatan/nama, TANPA membuatnya (dipakai preview) */
+    private function cariMapelSajaUntukPreview(string $singkatan, \Illuminate\Support\Collection $semuaMapel): ?MataPelajaran
+    {
+        $singkatan = strtoupper($singkatan);
+        $normalisasi = fn (string $n) => trim(preg_replace('/\s+/', ' ', strtolower($n)));
+
+        foreach ($semuaMapel as $m) {
+            if (strtoupper(trim($m->nama)) === $singkatan || $normalisasi($m->nama) === $normalisasi($singkatan)) {
+                return $m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Langkah 1: upload file, tampilkan preview kecocokan. Baris dgn
+     * kecocokan nama guru 100% ditampilkan tanpa centang (otomatis
+     * diproses). Baris dgn kecocokan sebagian (mis. ~50%, ambang batas
+     * 40%) ditampilkan DENGAN CENTANG - admin pilih sendiri mau dipakai
+     * atau tidak. Di bawah ambang batas dianggap gak ketemu sama sekali.
+     */
+    public function previewImportTugasMengajar(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls|max:5120',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+
+        // Simpan file sementara - dipakai lagi pas konfirmasi tanpa upload ulang
+        $pathTersimpan = $request->file('file')->store('temp-import-tugas-mengajar', 'local');
+
+        $baris = $this->parseBarisTugasMengajar(storage_path('app/' . $pathTersimpan));
+        $semuaGuru = Guru::where('sekolah_id', $sekolahId)->get();
+        $semuaMapel = MataPelajaran::where('sekolah_id', $sekolahId)->get();
+
+        $ambangBatas = 40; // di bawah ini dianggap gak ketemu
+
+        $hasil = [];
+        foreach ($baris as $b) {
+            $cocokMapel = $this->cariMapelSajaUntukPreview($b['mapel_singkatan'], $semuaMapel);
+            $mapelBaruNama = $cocokMapel ? null : (self::MAPPING_SINGKATAN_MAPEL[strtoupper($b['mapel_singkatan'])] ?? $b['mapel_singkatan']);
+
+            $cocokGuru = $this->guruPalingMirip($b['guru_nama_excel'], $semuaGuru);
+
+            $hasil[] = [
+                'row' => $b['row'],
+                'kelas' => $b['kelas'],
+                'rombel' => $b['rombel'],
+                'mapel_singkatan' => $b['mapel_singkatan'],
+                'mapel_nama' => $cocokMapel?->nama ?? $mapelBaruNama,
+                'mapel_baru' => ! $cocokMapel,
+                'guru_nama_excel' => $b['guru_nama_excel'],
+                'guru_id_cocok' => $cocokGuru['guru']?->id,
+                'guru_nama_cocok' => $cocokGuru['guru']?->nama,
+                'persen' => $cocokGuru['persen'],
+                'status' => $cocokGuru['persen'] >= 100 ? 'pasti' : ($cocokGuru['persen'] >= $ambangBatas ? 'perlu_konfirmasi' : 'tidak_ketemu'),
+            ];
+        }
+
+        return view('erapor.import-tugas-mengajar-preview', [
+            'hasil' => $hasil,
+            'pathTersimpan' => $pathTersimpan,
+            'tahunAjaranId' => $request->tahun_ajaran_id,
+        ]);
+    }
+
+    /** Langkah 2: proses hanya baris 'pasti' (100%) + baris 'perlu_konfirmasi' yg dicentang admin */
+    public function importTugasMengajar(Request $request)
+    {
+        $request->validate([
+            'path_tersimpan' => 'required|string',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+        $tahunAjaranId = $request->tahun_ajaran_id;
+        $pathTersimpan = $request->path_tersimpan;
+        $fullPath = storage_path('app/' . $pathTersimpan);
+
+        abort_unless(file_exists($fullPath), 404, 'File sementara sudah tidak ada, upload ulang dari awal.');
+
+        $baris = $this->parseBarisTugasMengajar($fullPath);
+        $semuaGuru = Guru::where('sekolah_id', $sekolahId)->get();
+        $semuaMapel = MataPelajaran::where('sekolah_id', $sekolahId)->get();
+        $barisDikonfirmasi = collect($request->input('konfirmasi', []))->map(fn ($v) => (int) $v)->toArray();
+
+        $dibuat = 0;
+        $sudahAda = 0;
+        $mapelBaru = [];
+        $guruTidakKetemu = [];
+        $ambangBatas = 40;
+
+        foreach ($baris as $b) {
+            $cocokMapel = $this->cariMapelSajaUntukPreview($b['mapel_singkatan'], $semuaMapel);
+            if (! $cocokMapel) {
+                $namaBaru = self::MAPPING_SINGKATAN_MAPEL[strtoupper($b['mapel_singkatan'])] ?? $b['mapel_singkatan'];
+                $cocokMapel = MataPelajaran::firstOrCreate(
                     ['sekolah_id' => $sekolahId, 'nama' => $namaBaru],
                     ['kelompok' => 'Umum']
                 );
-                $mapelByNama[$normalisasiNama($mapel->nama)] = $mapel;
-                $mapelBySingkatan[$singkatan] = $mapel;
+                $semuaMapel->push($cocokMapel);
                 if (! in_array($namaBaru, $mapelBaru)) $mapelBaru[] = $namaBaru;
             }
 
-            $guru = $guruByNama[$normalisasiNama($c)] ?? null;
-            if (! $guru) {
-                $guruTidakKetemu[$c] = ($guruTidakKetemu[$c] ?? 0) + 1;
+            $cocokGuru = $this->guruPalingMirip($b['guru_nama_excel'], $semuaGuru);
+            $status = $cocokGuru['persen'] >= 100 ? 'pasti' : ($cocokGuru['persen'] >= $ambangBatas ? 'perlu_konfirmasi' : 'tidak_ketemu');
+
+            $dipakai = $status === 'pasti' || ($status === 'perlu_konfirmasi' && in_array($b['row'], $barisDikonfirmasi));
+
+            if (! $dipakai || ! $cocokGuru['guru']) {
+                if ($status !== 'pasti') {
+                    $guruTidakKetemu[$b['guru_nama_excel']] = ($guruTidakKetemu[$b['guru_nama_excel']] ?? 0) + 1;
+                }
                 continue;
             }
+
+            $guru = $cocokGuru['guru'];
 
             $existing = GuruPengajar::where([
                 'sekolah_id' => $sekolahId,
                 'tahun_ajaran_id' => $tahunAjaranId,
                 'guru_id' => $guru->id,
-                'mata_pelajaran_id' => $mapel->id,
-                'kelas' => $kelasSekarang,
-                'rombel' => $rombelSekarang,
+                'mata_pelajaran_id' => $cocokMapel->id,
+                'kelas' => $b['kelas'],
+                'rombel' => $b['rombel'],
             ])->exists();
 
             if ($existing) {
@@ -1052,12 +1162,14 @@ class EraporController extends Controller
                 'tahun_ajaran_id' => $tahunAjaranId,
                 'guru_id' => $guru->id,
                 'pegawai_id' => $guru->pegawai_id,
-                'mata_pelajaran_id' => $mapel->id,
-                'kelas' => $kelasSekarang,
-                'rombel' => $rombelSekarang,
+                'mata_pelajaran_id' => $cocokMapel->id,
+                'kelas' => $b['kelas'],
+                'rombel' => $b['rombel'],
             ]);
             $dibuat++;
         }
+
+        \Illuminate\Support\Facades\Storage::disk('local')->delete($pathTersimpan);
 
         return view('erapor.import-tugas-mengajar-hasil', [
             'dibuat' => $dibuat,

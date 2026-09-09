@@ -10,7 +10,7 @@
         Mapel dicocokkan otomatis (dibuat baru kalau belum ada), guru dicocokkan berdasarkan nama - kalau ada nama yang tidak ketemu, akan dilaporkan di akhir (tidak menghentikan proses).
     </p>
 
-    <form action="{{ route('erapor.tugas-mengajar.import') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('erapor.tugas-mengajar.preview') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <label class="form-label">Tahun Ajaran</label>
         <select name="tahun_ajaran_id" class="form-input" required style="margin-bottom:14px;">
@@ -23,7 +23,7 @@
         <label class="form-label">File Excel</label>
         <input type="file" name="file" accept=".xlsx,.xls" required class="form-input" style="margin-bottom:16px;">
 
-        <button type="submit" class="btn btn-primary"><i class="ti ti-file-import"></i> Import Sekarang</button>
+        <button type="submit" class="btn btn-primary"><i class="ti ti-eye"></i> Lihat Preview Kecocokan</button>
     </form>
 </div>
 
