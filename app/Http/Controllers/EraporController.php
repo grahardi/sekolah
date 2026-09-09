@@ -928,4 +928,142 @@ class EraporController extends Controller
 
         return response()->json(['status' => 'added']);
     }
+
+    // ── Import Tugas Mengajar dari Excel (mis. jadwal_rapor.xlsx) ──────────
+
+    public function showImportTugasMengajar()
+    {
+        return view('erapor.import-tugas-mengajar', [
+            'tahunAjaranList' => TahunAjaran::orderByDesc('id')->get(),
+        ]);
+    }
+
+    /**
+     * Mapping singkatan mapel umum -> nama lengkap standar Kurikulum Merdeka.
+     * Kalau singkatan gak ada di daftar ini, dibuat mapel BARU pakai nama
+     * apa adanya (singkatan) drpd nebak salah - admin bisa rename manual
+     * nanti lewat menu Mata Pelajaran kalau perlu.
+     */
+    private const MAPPING_SINGKATAN_MAPEL = [
+        'PAI' => 'Pendidikan Agama dan Budi Pekerti',
+        'BIN' => 'Bahasa Indonesia',
+        'BIG' => 'Bahasa Inggris',
+        'MAT' => 'Matematika',
+        'IPA' => 'Ilmu Pengetahuan Alam (IPA)',
+        'IPS' => 'Ilmu Pengetahuan Sosial (IPS)',
+        'PJO' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan',
+        'TIK' => 'Informatika',
+        'SB' => 'Seni Budaya',
+        'PP' => 'Prakarya',
+        'PKY' => 'Pendidikan Pancasila',
+        'BD' => 'Bahasa Daerah',
+        'BK' => 'Bimbingan Konseling',
+    ];
+
+    public function importTugasMengajar(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls|max:5120',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+        $tahunAjaranId = $request->tahun_ajaran_id;
+
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file')->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $highestRow = $sheet->getHighestDataRow();
+
+        // Guru sekolah ini, disiapkan utk pencocokan by nama (trim + lowercase,
+        // spasi ganda dirapatkan) - biar toleran beda spasi/kapitalisasi tapi
+        // TETAP TEGAS, gak asal tebak kalau beda jauh.
+        $normalisasiNama = fn (string $n) => trim(preg_replace('/\s+/', ' ', strtolower($n)));
+        $guruByNama = Guru::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($g) => $normalisasiNama($g->nama));
+
+        $mapelByNama = MataPelajaran::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($m) => $normalisasiNama($m->nama));
+        $mapelBySingkatan = MataPelajaran::where('sekolah_id', $sekolahId)->get()->keyBy(fn ($m) => strtoupper(trim($m->nama)));
+
+        $kelasRomawiKeAngka = ['VII' => '7', 'VIII' => '8', 'IX' => '9', 'X' => '10', 'XI' => '11', 'XII' => '12'];
+
+        $kelasSekarang = null;
+        $rombelSekarang = null;
+        $dibuat = 0;
+        $sudahAda = 0;
+        $mapelBaru = [];
+        $guruTidakKetemu = [];
+
+        for ($row = 1; $row <= $highestRow; $row++) {
+            $a = trim((string) $sheet->getCell('A' . $row)->getValue());
+            $b = trim((string) $sheet->getCell('B' . $row)->getValue());
+            $c = trim((string) $sheet->getCell('C' . $row)->getValue());
+
+            // Baris header kelas, mis. "KELAS VII-A"
+            if (str_starts_with(strtoupper($a), 'KELAS')) {
+                $label = trim(str_ireplace('KELAS', '', $a));
+                if (preg_match('/^([IVX]+)-?(\w*)$/i', $label, $m)) {
+                    $romawi = strtoupper($m[1]);
+                    $kelasSekarang = $kelasRomawiKeAngka[$romawi] ?? $romawi;
+                    $rombelSekarang = $m[2] ?: null;
+                }
+                continue;
+            }
+
+            // Baris data: No(int), Mapel(singkatan), Guru(nama)
+            if (! is_numeric($a) || $b === '' || $c === '' || ! $kelasSekarang) {
+                continue;
+            }
+
+            $singkatan = strtoupper($b);
+            $mapel = $mapelBySingkatan[$singkatan] ?? $mapelByNama[$normalisasiNama($b)] ?? null;
+
+            if (! $mapel) {
+                $namaBaru = self::MAPPING_SINGKATAN_MAPEL[$singkatan] ?? $b;
+                $mapel = MataPelajaran::firstOrCreate(
+                    ['sekolah_id' => $sekolahId, 'nama' => $namaBaru],
+                    ['kelompok' => 'Umum']
+                );
+                $mapelByNama[$normalisasiNama($mapel->nama)] = $mapel;
+                $mapelBySingkatan[$singkatan] = $mapel;
+                if (! in_array($namaBaru, $mapelBaru)) $mapelBaru[] = $namaBaru;
+            }
+
+            $guru = $guruByNama[$normalisasiNama($c)] ?? null;
+            if (! $guru) {
+                $guruTidakKetemu[$c] = ($guruTidakKetemu[$c] ?? 0) + 1;
+                continue;
+            }
+
+            $existing = GuruPengajar::where([
+                'sekolah_id' => $sekolahId,
+                'tahun_ajaran_id' => $tahunAjaranId,
+                'guru_id' => $guru->id,
+                'mata_pelajaran_id' => $mapel->id,
+                'kelas' => $kelasSekarang,
+                'rombel' => $rombelSekarang,
+            ])->exists();
+
+            if ($existing) {
+                $sudahAda++;
+                continue;
+            }
+
+            GuruPengajar::create([
+                'sekolah_id' => $sekolahId,
+                'tahun_ajaran_id' => $tahunAjaranId,
+                'guru_id' => $guru->id,
+                'pegawai_id' => $guru->pegawai_id,
+                'mata_pelajaran_id' => $mapel->id,
+                'kelas' => $kelasSekarang,
+                'rombel' => $rombelSekarang,
+            ]);
+            $dibuat++;
+        }
+
+        return view('erapor.import-tugas-mengajar-hasil', [
+            'dibuat' => $dibuat,
+            'sudahAda' => $sudahAda,
+            'mapelBaru' => $mapelBaru,
+            'guruTidakKetemu' => $guruTidakKetemu,
+        ]);
+    }
 }

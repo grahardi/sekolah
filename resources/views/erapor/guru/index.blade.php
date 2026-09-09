@@ -3,6 +3,9 @@
 @section('page-title', 'Guru')
 
 @section('header-actions')
+    <a href="{{ route('erapor.tugas-mengajar.import-form') }}" class="btn btn-secondary">
+        <i class="ti ti-file-import"></i> Import Tugas Mengajar
+    </a>
     <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">
         <i class="ti ti-arrow-right"></i> Tambah Guru Lewat Kepegawaian
     </a>

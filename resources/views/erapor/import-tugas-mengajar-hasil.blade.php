@@ -1,0 +1,54 @@
+@extends('layouts.erapor')
+@section('title', 'Hasil Import Tugas Mengajar')
+@section('page-title', 'Hasil Import Tugas Mengajar')
+
+@section('content')
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:14px;margin-bottom:20px;">
+    <div class="card" style="padding:16px;text-align:center;background:#f0fdf4;border-color:#bbf7d0;">
+        <p style="font-size:26px;font-weight:800;color:#16a34a;margin:0;">{{ $dibuat }}</p>
+        <p style="font-size:11px;color:#166534;margin:4px 0 0;">Tugas Mengajar Baru Ditambahkan</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;background:#f8fafc;">
+        <p style="font-size:26px;font-weight:800;color:#64748b;margin:0;">{{ $sudahAda }}</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Sudah Ada Sebelumnya (dilewati)</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;background:#eff6ff;border-color:#bfdbfe;">
+        <p style="font-size:26px;font-weight:800;color:#1d4ed8;margin:0;">{{ count($mapelBaru) }}</p>
+        <p style="font-size:11px;color:#1e40af;margin:4px 0 0;">Mapel Baru Dibuat</p>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;background:{{ count($guruTidakKetemu) ? '#fef2f2' : '#f8fafc' }};border-color:{{ count($guruTidakKetemu) ? '#fecaca' : '#e9ecef' }};">
+        <p style="font-size:26px;font-weight:800;color:{{ count($guruTidakKetemu) ? '#dc2626' : '#64748b' }};margin:0;">{{ count($guruTidakKetemu) }}</p>
+        <p style="font-size:11px;color:{{ count($guruTidakKetemu) ? '#991b1b' : '#64748b' }};margin:4px 0 0;">Nama Guru Tidak Ketemu</p>
+    </div>
+</div>
+
+@if(count($mapelBaru) > 0)
+<div class="card" style="padding:16px;margin-bottom:16px;">
+    <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 10px;">Mapel Baru yang Dibuat</p>
+    <p style="font-size:12px;color:#94a3b8;margin:0 0 10px;">Namanya diambil dari singkatan yang belum dikenali sistem - cek & ganti nama lengkapnya lewat menu Mata Pelajaran kalau perlu.</p>
+    @foreach($mapelBaru as $m)
+    <span style="display:inline-block;background:#eff6ff;color:#1e40af;font-size:12px;padding:4px 10px;border-radius:20px;margin:2px;">{{ $m }}</span>
+    @endforeach
+</div>
+@endif
+
+@if(count($guruTidakKetemu) > 0)
+<div class="card" style="padding:16px;margin-bottom:16px;background:#fef2f2;border-color:#fecaca;">
+    <p style="font-size:13px;font-weight:700;color:#991b1b;margin:0 0 10px;"><i class="ti ti-alert-triangle"></i> Nama Guru Tidak Ketemu di Sistem</p>
+    <p style="font-size:12px;color:#7f1d1d;margin:0 0 10px;">Baris dengan nama ini DILEWATI (tidak dibuat tugas mengajarnya). Cek ejaan namanya di Excel, atau pastikan guru ybs sudah terdaftar (lewat Kepegawaian atau menu Guru), lalu import ulang.</p>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead><tr style="background:#fee2e2;"><th style="padding:6px 10px;text-align:left;font-size:11px;color:#991b1b;">Nama di Excel</th><th style="padding:6px 10px;text-align:left;font-size:11px;color:#991b1b;">Jumlah Baris Dilewati</th></tr></thead>
+        <tbody>
+            @foreach($guruTidakKetemu as $nama => $jumlah)
+            <tr style="border-top:1px solid #fecaca;"><td style="padding:6px 10px;font-size:13px;color:#7f1d1d;">{{ $nama }}</td><td style="padding:6px 10px;font-size:13px;color:#7f1d1d;">{{ $jumlah }}</td></tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
+
+<a href="{{ route('erapor.tugas-mengajar.import-form') }}" class="btn btn-secondary"><i class="ti ti-arrow-left"></i> Import File Lain</a>
+<a href="{{ route('erapor.penugasan') }}" class="btn btn-primary"><i class="ti ti-list-check"></i> Lihat Daftar Tugas Mengajar</a>
+
+@endsection

@@ -42,6 +42,8 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
 
         Route::post('/guru-pengajar', [EraporController::class, 'storeGuruPengajar'])->name('guru-pengajar.store');
         Route::delete('/guru-pengajar/{guruPengajar}', [EraporController::class, 'destroyGuruPengajar'])->name('guru-pengajar.destroy');
+        Route::get('/tugas-mengajar/import', [EraporController::class, 'showImportTugasMengajar'])->name('tugas-mengajar.import-form');
+        Route::post('/tugas-mengajar/import', [EraporController::class, 'importTugasMengajar'])->name('tugas-mengajar.import');
 
         Route::post('/guru-ekstrakurikuler', [EraporController::class, 'storeGuruEkstrakurikuler'])->name('guru-ekstrakurikuler.store');
         Route::delete('/guru-ekstrakurikuler/{guruEkstrakurikuler}', [EraporController::class, 'destroyGuruEkstrakurikuler'])->name('guru-ekstrakurikuler.destroy');
