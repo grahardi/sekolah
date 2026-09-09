@@ -50,8 +50,9 @@
         <label class="form-label">Nama Penilaian</label>
         <input type="text" name="nama_penilaian" class="form-input" required placeholder="mis. PTS Ganjil 2026/2027" style="margin-bottom:14px;">
 
-        <label class="form-label">Bobot Penilaian (%)</label>
-        <input type="number" name="bobot_penilaian" class="form-input" required min="1" max="100" value="30" style="margin-bottom:14px;">
+        <label class="form-label">Bobot Penilaian</label>
+        <input type="number" name="bobot_penilaian" class="form-input" required min="1" max="5" value="2" style="margin-bottom:6px;">
+        <p style="font-size:11px;color:#94a3b8;margin:0 0 14px;">Pengali di rata-rata rapor (bukan persen) - biasanya penilaian harian pakai bobot 1, PTS/PAS pakai bobot 2.</p>
 
         <label class="form-label">Tanggal Penilaian (opsional)</label>
         <input type="date" name="tanggal_penilaian" class="form-input" style="margin-bottom:18px;">

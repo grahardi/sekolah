@@ -481,7 +481,7 @@ class PenilaianController extends Controller
             'semester' => 'required|integer|in:1,2',
             'subjenis_penilaian' => 'required|in:Sumatif Tengah Semester,Sumatif Akhir Semester',
             'nama_penilaian' => 'required|string|max:150',
-            'bobot_penilaian' => 'required|integer|min:1|max:100',
+            'bobot_penilaian' => 'required|integer|min:1|max:5',
             'tanggal_penilaian' => 'nullable|date',
         ]);
 
