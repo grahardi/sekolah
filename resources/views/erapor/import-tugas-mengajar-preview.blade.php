@@ -25,12 +25,23 @@ $jumlahTidak = collect($hasil)->where('status', 'tidak_ketemu')->count();
     </div>
 </div>
 
-<form action="{{ route('erapor.tugas-mengajar.import') }}" method="POST">
+<form action="{{ route('erapor.tugas-mengajar.import') }}" method="POST" id="form-konfirmasi">
     @csrf
     <input type="hidden" name="path_tersimpan" value="{{ $pathTersimpan }}">
     <input type="hidden" name="tahun_ajaran_id" value="{{ $tahunAjaranId }}">
 
+    @if($jumlahPerlu > 0)
+    <div style="margin-bottom:12px;">
+        <button type="button" onclick="document.querySelectorAll('input[name=\'konfirmasi[]\']').forEach(cb => cb.checked = true)" class="btn btn-secondary btn-sm">Centang Semua</button>
+        <button type="button" onclick="document.querySelectorAll('input[name=\'konfirmasi[]\']').forEach(cb => cb.checked = false)" class="btn btn-secondary btn-sm">Lepas Semua</button>
+    </div>
+    @endif
+
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:20px;">
+        <div style="padding:10px 16px;background:#f8fafc;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="centang-semua" onclick="document.querySelectorAll('input[name=\'konfirmasi[]\']').forEach(cb => cb.checked = this.checked)">
+            <label for="centang-semua" style="font-size:12px;font-weight:600;color:#374151;cursor:pointer;">Centang Semua (baris kuning / perlu konfirmasi)</label>
+        </div>
         <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead style="background:#f8fafc;">
                 <tr>

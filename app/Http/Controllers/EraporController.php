@@ -1104,9 +1104,10 @@ class EraporController extends Controller
         $sekolahId = auth()->user()->sekolah_id;
         $tahunAjaranId = $request->tahun_ajaran_id;
         $pathTersimpan = $request->path_tersimpan;
-        $fullPath = \Illuminate\Support\Facades\Storage::disk('local')->path($pathTersimpan);
 
         abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($pathTersimpan), 404, 'File sementara sudah tidak ada (mungkin kelamaan / kepakai server lain). Upload ulang dari awal.');
+
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('local')->path($pathTersimpan);
 
         $baris = $this->parseBarisTugasMengajar($fullPath);
         $semuaGuru = Guru::where('sekolah_id', $sekolahId)->get();
@@ -1114,10 +1115,25 @@ class EraporController extends Controller
         $barisDikonfirmasi = collect($request->input('konfirmasi', []))->map(fn ($v) => (int) $v)->toArray();
 
         $dibuat = 0;
-        $sudahAda = 0;
         $mapelBaru = [];
         $guruTidakKetemu = [];
         $ambangBatas = 40;
+
+        // Detail duplikat: kombinasi kelas+mapel+guru yg SUDAH ADA di DB sebelumnya
+        $sudahAdaDetail = [];
+
+        // Deteksi "double pengajar": kombinasi kelas+mapel yg di FILE INI SENDIRI
+        // ternyata diisi lebih dari satu guru berbeda (data sumbernya sendiri
+        // gak konsisten) - beda dari "sudah ada di DB", ini soal file Excel-nya.
+        $kelasMapelKeGuru = [];
+        $doublePengajar = [];
+
+        // Tracking semua kombinasi kelas+rombel dan mapel yg MUNCUL di file,
+        // dipakai nanti buat cari kelas yg "bolong" (blm py pengajar utk mapel
+        // tertentu krn baris-nya dilewati/gak ketemu gurunya).
+        $semuaKelasRombel = [];
+        $semuaMapelId = [];
+        $berhasilTerisi = [];
 
         foreach ($baris as $b) {
             $cocokMapel = $this->cariMapelSajaUntukPreview($b['mapel_singkatan'], $semuaMapel);
@@ -1130,6 +1146,11 @@ class EraporController extends Controller
                 $semuaMapel->push($cocokMapel);
                 if (! in_array($namaBaru, $mapelBaru)) $mapelBaru[] = $namaBaru;
             }
+
+            $kunciKelas = "{$b['kelas']}|{$b['rombel']}";
+            $kunciKelasMapel = "{$kunciKelas}|{$cocokMapel->id}";
+            $semuaKelasRombel[$kunciKelas] = ['kelas' => $b['kelas'], 'rombel' => $b['rombel']];
+            $semuaMapelId[$cocokMapel->id] = $cocokMapel->nama;
 
             $cocokGuru = $this->guruPalingMirip($b['guru_nama_excel'], $semuaGuru);
             $status = $cocokGuru['persen'] >= 100 ? 'pasti' : ($cocokGuru['persen'] >= $ambangBatas ? 'perlu_konfirmasi' : 'tidak_ketemu');
@@ -1145,6 +1166,14 @@ class EraporController extends Controller
 
             $guru = $cocokGuru['guru'];
 
+            $kelasMapelKeGuru[$kunciKelasMapel][$guru->nama] = true;
+            if (count($kelasMapelKeGuru[$kunciKelasMapel]) > 1) {
+                $doublePengajar[$kunciKelasMapel] = [
+                    'kelas' => $b['kelas'], 'rombel' => $b['rombel'], 'mapel' => $cocokMapel->nama,
+                    'guru' => array_keys($kelasMapelKeGuru[$kunciKelasMapel]),
+                ];
+            }
+
             $existing = GuruPengajar::where([
                 'sekolah_id' => $sekolahId,
                 'tahun_ajaran_id' => $tahunAjaranId,
@@ -1154,8 +1183,10 @@ class EraporController extends Controller
                 'rombel' => $b['rombel'],
             ])->exists();
 
+            $berhasilTerisi[$kunciKelasMapel] = true;
+
             if ($existing) {
-                $sudahAda++;
+                $sudahAdaDetail[] = "{$b['kelas']}" . ($b['rombel'] ? "-{$b['rombel']}" : '') . " · {$cocokMapel->nama} · {$guru->nama}";
                 continue;
             }
 
@@ -1171,13 +1202,28 @@ class EraporController extends Controller
             $dibuat++;
         }
 
+        $kelasBolong = [];
+        foreach ($semuaKelasRombel as $kunciKelas => $infoKelas) {
+            foreach ($semuaMapelId as $mapelId => $namaMapel) {
+                $kunciCek = "{$kunciKelas}|{$mapelId}";
+                if (! isset($berhasilTerisi[$kunciCek])) {
+                    $kelasBolong[] = [
+                        'kelas' => $infoKelas['kelas'], 'rombel' => $infoKelas['rombel'], 'mapel' => $namaMapel,
+                    ];
+                }
+            }
+        }
+
         \Illuminate\Support\Facades\Storage::disk('local')->delete($pathTersimpan);
 
         return view('erapor.import-tugas-mengajar-hasil', [
             'dibuat' => $dibuat,
-            'sudahAda' => $sudahAda,
+            'sudahAda' => count($sudahAdaDetail),
+            'sudahAdaDetail' => $sudahAdaDetail,
             'mapelBaru' => $mapelBaru,
             'guruTidakKetemu' => $guruTidakKetemu,
+            'doublePengajar' => array_values($doublePengajar),
+            'kelasBolong' => $kelasBolong,
         ]);
     }
 }
