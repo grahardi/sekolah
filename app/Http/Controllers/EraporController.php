@@ -179,6 +179,16 @@ class EraporController extends Controller
         return back()->with('success', 'Mata pelajaran ditambahkan.');
     }
 
+    public function updateMataPelajaran(Request $request, MataPelajaran $mataPelajaran)
+    {
+        $data = $request->validate([
+            'nama' => 'required|string|max:100',
+            'kelompok' => 'nullable|string|max:50',
+        ]);
+        $mataPelajaran->update($data);
+        return back()->with('success', "Mata pelajaran berhasil diubah jadi \"{$mataPelajaran->nama}\".");
+    }
+
     public function destroyMataPelajaran(MataPelajaran $mataPelajaran)
     {
         $mataPelajaran->delete();

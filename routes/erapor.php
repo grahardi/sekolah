@@ -21,6 +21,7 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
 
         Route::get('/mata-pelajaran', [EraporController::class, 'mataPelajaran'])->name('mata-pelajaran');
         Route::post('/mata-pelajaran', [EraporController::class, 'storeMataPelajaran'])->name('mata-pelajaran.store');
+        Route::put('/mata-pelajaran/{mataPelajaran}', [EraporController::class, 'updateMataPelajaran'])->name('mata-pelajaran.update');
         Route::delete('/mata-pelajaran/{mataPelajaran}', [EraporController::class, 'destroyMataPelajaran'])->name('mata-pelajaran.destroy');
 
         Route::get('/pengaturan-cetak', [EraporController::class, 'pengaturanCetak'])->name('pengaturan-cetak');

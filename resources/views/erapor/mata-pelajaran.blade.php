@@ -67,6 +67,7 @@
                 <i class="ti ti-target-arrow"></i> Kelola Tujuan Pembelajaran
             </a>
             <div style="display:flex;gap:6px;">
+                <button type="button" onclick="document.getElementById('modal-edit-{{ $m->id }}').style.display='flex'" class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;"><i class="ti ti-pencil"></i> Edit</button>
                 <form action="{{ route('erapor.mata-pelajaran.destroy', $m) }}" method="POST" style="flex:1;" onsubmit="return confirm('Hapus mata pelajaran ini?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;"><i class="ti ti-trash"></i> Hapus</button>
@@ -78,4 +79,23 @@
     <p style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px;">Belum ada mata pelajaran.</p>
     @endforelse
 </div>
+
+@foreach($mapels as $m)
+<div id="modal-edit-{{ $m->id }}" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;align-items:center;justify-content:center;padding:20px;">
+    <div class="card" style="max-width:400px;width:100%;padding:22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <p style="font-size:15px;font-weight:700;color:#0f172a;margin:0;">Edit Mata Pelajaran</p>
+            <button type="button" onclick="document.getElementById('modal-edit-{{ $m->id }}').style.display='none'" style="border:none;background:none;font-size:20px;color:#94a3b8;cursor:pointer;">&times;</button>
+        </div>
+        <form action="{{ route('erapor.mata-pelajaran.update', $m) }}" method="POST">
+            @csrf @method('PUT')
+            <label class="form-label">Nama Mata Pelajaran</label>
+            <input type="text" name="nama" value="{{ $m->nama }}" class="form-input" required style="margin-bottom:12px;">
+            <label class="form-label">Kelompok</label>
+            <input type="text" name="kelompok" value="{{ $m->kelompok }}" class="form-input" placeholder="Umum / Muatan Lokal" style="margin-bottom:16px;">
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Simpan Perubahan</button>
+        </form>
+    </div>
+</div>
+@endforeach
 @endsection
