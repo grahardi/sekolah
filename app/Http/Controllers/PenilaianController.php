@@ -383,7 +383,12 @@ class PenilaianController extends Controller
 
         $penilaianList = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
             ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-            ->orderBy('jenis_penilaian')->orderBy('id')->with('tujuanPembelajarans')->get();
+            ->orderByRaw("CASE subjenis_penilaian
+                WHEN 'Sumatif TP' THEN 1
+                WHEN 'Sumatif Tengah Semester' THEN 2
+                WHEN 'Sumatif Akhir Semester' THEN 3
+                ELSE 4 END")
+            ->orderBy('id')->with('tujuanPembelajarans')->get();
 
         $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
             ->orderBy('nis')->orderBy('nama_lengkap')->get();
@@ -438,7 +443,13 @@ class PenilaianController extends Controller
         // Header kolom HARUS dibangun dgn LOGIC SAMA PERSIS spt download
         // (kode_tp utk Sumatif TP, nama_penilaian utk PTS/UAS) biar cocok.
         $penilaianAsli = Penilaian::where('mata_pelajaran_id', $request->mata_pelajaran_id)
-            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)->with('tujuanPembelajarans')->get();
+            ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
+            ->orderByRaw("CASE subjenis_penilaian
+                WHEN 'Sumatif TP' THEN 1
+                WHEN 'Sumatif Tengah Semester' THEN 2
+                WHEN 'Sumatif Akhir Semester' THEN 3
+                ELSE 4 END")
+            ->orderBy('id')->with('tujuanPembelajarans')->get();
 
         $headerTerpakai = [];
         $penilaianByHeader = collect();
