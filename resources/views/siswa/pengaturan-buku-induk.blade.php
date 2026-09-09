@@ -34,11 +34,7 @@
         @if($sekolah->watermark_induk_gambar)
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
             <img src="{{ \Illuminate\Support\Facades\Storage::url($sekolah->watermark_induk_gambar) }}" style="width:50px;height:50px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;">
-            <form action="{{ route('siswa.pengaturan.hapus-watermark') }}" method="POST" onsubmit="return confirm('Hapus gambar watermark ini?')">
-                @csrf
-                <input type="hidden" name="jenis" value="induk">
-                <button type="submit" class="btn btn-secondary btn-sm" style="color:#dc2626;">Hapus Gambar</button>
-            </form>
+            <button type="button" onclick="hapusWatermark('induk')" class="btn btn-secondary btn-sm" style="color:#dc2626;">Hapus Gambar</button>
         </div>
         @endif
         <input type="file" name="watermark_induk_gambar_file" accept=".jpg,.jpeg,.png" class="form-input" style="margin-bottom:14px;">
@@ -63,11 +59,7 @@
         @if($sekolah->watermark_biodata_gambar)
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
             <img src="{{ \Illuminate\Support\Facades\Storage::url($sekolah->watermark_biodata_gambar) }}" style="width:50px;height:50px;object-fit:contain;border:1px solid #e2e8f0;border-radius:6px;">
-            <form action="{{ route('siswa.pengaturan.hapus-watermark') }}" method="POST" onsubmit="return confirm('Hapus gambar watermark ini?')">
-                @csrf
-                <input type="hidden" name="jenis" value="biodata">
-                <button type="submit" class="btn btn-secondary btn-sm" style="color:#dc2626;">Hapus Gambar</button>
-            </form>
+            <button type="button" onclick="hapusWatermark('biodata')" class="btn btn-secondary btn-sm" style="color:#dc2626;">Hapus Gambar</button>
         </div>
         @endif
         <input type="file" name="watermark_biodata_gambar_file" accept=".jpg,.jpeg,.png" class="form-input" style="margin-bottom:14px;">
@@ -80,5 +72,17 @@
         <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Simpan Pengaturan</button>
     </div>
 </form>
+
+<form id="form-hapus-watermark" action="{{ route('siswa.pengaturan.hapus-watermark') }}" method="POST" style="display:none;">
+    @csrf
+    <input type="hidden" name="jenis" id="input-jenis-hapus">
+</form>
+<script>
+function hapusWatermark(jenis) {
+    if (!confirm('Hapus gambar watermark ini?')) return;
+    document.getElementById('input-jenis-hapus').value = jenis;
+    document.getElementById('form-hapus-watermark').submit();
+}
+</script>
 
 @endsection

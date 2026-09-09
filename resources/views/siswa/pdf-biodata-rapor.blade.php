@@ -25,8 +25,14 @@ table.data td.val { border-bottom:1px solid #777; }
 </style>
 </head>
 <body>
-@if(($sekolah->watermark_aktif ?? false) && $sekolah->watermark_teks)
-<div class="watermark" style="opacity:{{ ($sekolah->watermark_transparansi ?? 10) / 100 }};">{{ $sekolah->watermark_teks }}</div>
+@if(($sekolah->watermark_biodata_aktif ?? false) && ($sekolah->watermark_biodata_teks || $sekolah->watermark_biodata_gambar))
+    @if($sekolah->watermark_biodata_gambar && \Illuminate\Support\Facades\Storage::disk('public')->exists($sekolah->watermark_biodata_gambar))
+    <div style="position:fixed; top:35%; left:25%; width:50%; z-index:-1; opacity:{{ ($sekolah->watermark_biodata_transparansi ?? 10) / 100 }};">
+        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->path($sekolah->watermark_biodata_gambar) }}" style="width:100%;">
+    </div>
+    @else
+    <div class="watermark" style="opacity:{{ ($sekolah->watermark_biodata_transparansi ?? 10) / 100 }};">{{ $sekolah->watermark_biodata_teks }}</div>
+    @endif
 @endif
 <div class="page">
 
