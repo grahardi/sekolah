@@ -1056,7 +1056,9 @@ class EraporController extends Controller
         // Simpan file sementara - dipakai lagi pas konfirmasi tanpa upload ulang
         $pathTersimpan = $request->file('file')->store('temp-import-tugas-mengajar', 'local');
 
-        $baris = $this->parseBarisTugasMengajar(storage_path('app/' . $pathTersimpan));
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($pathTersimpan), 500, 'Gagal menyimpan file sementara di server (cek permission folder storage/app). Coba lagi atau hubungi admin sistem.');
+
+        $baris = $this->parseBarisTugasMengajar(\Illuminate\Support\Facades\Storage::disk('local')->path($pathTersimpan));
         $semuaGuru = Guru::where('sekolah_id', $sekolahId)->get();
         $semuaMapel = MataPelajaran::where('sekolah_id', $sekolahId)->get();
 
@@ -1102,9 +1104,9 @@ class EraporController extends Controller
         $sekolahId = auth()->user()->sekolah_id;
         $tahunAjaranId = $request->tahun_ajaran_id;
         $pathTersimpan = $request->path_tersimpan;
-        $fullPath = storage_path('app/' . $pathTersimpan);
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('local')->path($pathTersimpan);
 
-        abort_unless(file_exists($fullPath), 404, 'File sementara sudah tidak ada, upload ulang dari awal.');
+        abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($pathTersimpan), 404, 'File sementara sudah tidak ada (mungkin kelamaan / kepakai server lain). Upload ulang dari awal.');
 
         $baris = $this->parseBarisTugasMengajar($fullPath);
         $semuaGuru = Guru::where('sekolah_id', $sekolahId)->get();
