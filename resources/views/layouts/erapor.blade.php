@@ -234,9 +234,15 @@
             <i class="ti ti-target-arrow"></i><span>Tujuan Pembelajaran</span>
         </a>
         <a href="{{ route('erapor.penilaian.index') }}"
-           class="sb-item {{ request()->routeIs('erapor.penilaian.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('erapor.penilaian.*') && ! request()->routeIs('erapor.penilaian.massal*') ? 'active' : '' }}">
             <i class="ti ti-report"></i><span>Input Nilai</span>
         </a>
+        @if(auth()->user()->isAdmin())
+        <a href="{{ route('erapor.penilaian.massal-form') }}"
+           class="sb-item {{ request()->routeIs('erapor.penilaian.massal*') ? 'active' : '' }}">
+            <i class="ti ti-stack-2"></i><span>Penilaian Massal</span>
+        </a>
+        @endif
 
         @if(auth()->user()->isAdmin() || $waliKelasSaya)
         <div class="sb-divider"></div>

@@ -464,4 +464,187 @@ class PenilaianController extends Controller
             ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
             ->unique()->sort()->values();
     }
+
+    // ── Penilaian Massal (PTS/PAS - auto-create utk semua kelas+mapel yg ada pengajarnya, TANPA perlu TP) ──
+
+    public function massalForm()
+    {
+        return view('erapor.penilaian.massal', [
+            'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+        ]);
+    }
+
+    public function massalStore(Request $request)
+    {
+        $data = $request->validate([
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+            'semester' => 'required|integer|in:1,2',
+            'subjenis_penilaian' => 'required|in:Sumatif Tengah Semester,Sumatif Akhir Semester',
+            'nama_penilaian' => 'required|string|max:150',
+            'bobot_penilaian' => 'required|integer|min:1|max:100',
+            'tanggal_penilaian' => 'nullable|date',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+
+        // Semua kombinasi guru+mapel+kelas+rombel yg PUNYA PENGAJAR di tahun
+        // ajaran ini - dianggap "kelas & mapel aktif", dibuatkan Penilaian
+        // otomatis satu-satu. TANPA TP (tp_ids dikosongkan) - PTS/PAS emang
+        // gak wajib terikat TP tertentu, beda dari Sumatif TP.
+        $penugasanList = GuruPengajar::where('sekolah_id', $sekolahId)
+            ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
+            ->get();
+
+        $dibuat = 0;
+        $sudahAda = 0;
+
+        foreach ($penugasanList as $p) {
+            $existing = Penilaian::where('guru_id', $p->guru_id)
+                ->where('mata_pelajaran_id', $p->mata_pelajaran_id)
+                ->where('kelas', $p->kelas)->where('rombel', $p->rombel)
+                ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
+                ->where('semester', $data['semester'])
+                ->where('subjenis_penilaian', $data['subjenis_penilaian'])
+                ->exists();
+
+            if ($existing) {
+                $sudahAda++;
+                continue;
+            }
+
+            Penilaian::create([
+                'sekolah_id' => $sekolahId,
+                'tahun_ajaran_id' => $data['tahun_ajaran_id'],
+                'guru_id' => $p->guru_id,
+                'mata_pelajaran_id' => $p->mata_pelajaran_id,
+                'kelas' => $p->kelas,
+                'rombel' => $p->rombel,
+                'nama_penilaian' => $data['nama_penilaian'],
+                'jenis_penilaian' => 'Sumatif',
+                'subjenis_penilaian' => $data['subjenis_penilaian'],
+                'bobot_penilaian' => $data['bobot_penilaian'],
+                'semester' => $data['semester'],
+                'tanggal_penilaian' => $data['tanggal_penilaian'] ?? null,
+            ]);
+            $dibuat++;
+        }
+
+        return redirect()->route('erapor.penilaian.massal-upload-form', [
+            'tahun_ajaran_id' => $data['tahun_ajaran_id'],
+            'semester' => $data['semester'],
+            'subjenis_penilaian' => $data['subjenis_penilaian'],
+        ])->with('success', "{$dibuat} penilaian baru dibuat (mencakup semua kelas & mapel yang ada pengajarnya). {$sudahAda} sudah ada sebelumnya, dilewati.");
+    }
+
+    /** Form pilih batch (jenis+tahun ajaran+semester) sebelum upload nilai gabungan */
+    public function massalUploadForm(Request $request)
+    {
+        return view('erapor.penilaian.massal-upload', [
+            'tahunAjarans' => TahunAjaran::orderByDesc('nama')->get(),
+            'prefill' => $request->only(['tahun_ajaran_id', 'semester', 'subjenis_penilaian']),
+        ]);
+    }
+
+    /** Template gabungan: No Induk, Nama, Kelas, Mapel, Nilai - utk SEMUA kelas+mapel dlm 1 batch PTS/PAS */
+    public function massalDownloadTemplate(Request $request)
+    {
+        $data = $request->validate([
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+            'semester' => 'required|integer|in:1,2',
+            'subjenis_penilaian' => 'required|in:Sumatif Tengah Semester,Sumatif Akhir Semester',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+        $penilaianList = Penilaian::with('mataPelajaran')
+            ->where('sekolah_id', $sekolahId)
+            ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
+            ->where('semester', $data['semester'])
+            ->where('subjenis_penilaian', $data['subjenis_penilaian'])
+            ->get();
+
+        $rows = collect();
+        foreach ($penilaianList as $pen) {
+            $siswaList = Siswa::where('status', 'aktif')->where('kelas', $pen->kelas)->where('rombel', $pen->rombel)->orderBy('nis')->get();
+            $nilaiExisting = PenilaianDetailNilai::where('penilaian_id', $pen->id)->pluck('nilai', 'siswa_id');
+
+            foreach ($siswaList as $s) {
+                $rows->push([
+                    'no_induk' => $s->nis,
+                    'nama' => $s->nama_lengkap,
+                    'kelas' => $pen->kelas_lengkap,
+                    'mapel' => $pen->mataPelajaran->nama,
+                    'nilai' => $nilaiExisting[$s->id] ?? '',
+                ]);
+            }
+        }
+
+        return (new \Rap2hpoutre\FastExcel\FastExcel($rows))->download('template-nilai-massal-' . str_replace(' ', '-', $data['subjenis_penilaian']) . '.xlsx');
+    }
+
+    /** Import gabungan: cocokkan tiap baris ke Penilaian yg tepat via No Induk (-> kelas siswa) + Mapel */
+    public function massalImportNilai(Request $request)
+    {
+        $data = $request->validate([
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
+            'semester' => 'required|integer|in:1,2',
+            'subjenis_penilaian' => 'required|in:Sumatif Tengah Semester,Sumatif Akhir Semester',
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $sekolahId = auth()->user()->sekolah_id;
+
+        // Cache Penilaian by "mapel_id|kelas|rombel" biar gak query berkali2
+        $penilaianMap = Penilaian::where('sekolah_id', $sekolahId)
+            ->where('tahun_ajaran_id', $data['tahun_ajaran_id'])
+            ->where('semester', $data['semester'])
+            ->where('subjenis_penilaian', $data['subjenis_penilaian'])
+            ->get()
+            ->keyBy(fn ($p) => "{$p->mata_pelajaran_id}|{$p->kelas}|{$p->rombel}");
+
+        $mapelByNama = MataPelajaran::where('sekolah_id', $sekolahId)->get()
+            ->keyBy(fn ($m) => strtolower(trim($m->nama)));
+
+        $diperbarui = 0;
+        $tidakKetemuSiswa = [];
+        $tidakKetemuPenilaian = [];
+
+        (new \Rap2hpoutre\FastExcel\FastExcel)->import($request->file('file')->getRealPath(), function (array $row) use (&$diperbarui, &$tidakKetemuSiswa, &$tidakKetemuPenilaian, $penilaianMap, $mapelByNama) {
+            $noInduk = trim($row['no_induk'] ?? '');
+            $namaMapel = trim($row['mapel'] ?? '');
+            $nilai = $row['nilai'] ?? null;
+
+            if ($noInduk === '' || $namaMapel === '' || $nilai === null || $nilai === '') return;
+
+            $siswa = Siswa::where('nis', $noInduk)->orWhere('nisn', $noInduk)->first();
+            if (! $siswa) {
+                $tidakKetemuSiswa[$noInduk] = ($tidakKetemuSiswa[$noInduk] ?? 0) + 1;
+                return;
+            }
+
+            $mapel = $mapelByNama[strtolower(trim($namaMapel))] ?? null;
+            if (! $mapel) {
+                $tidakKetemuPenilaian["{$namaMapel} (mapel tidak dikenal)"] = ($tidakKetemuPenilaian["{$namaMapel} (mapel tidak dikenal)"] ?? 0) + 1;
+                return;
+            }
+
+            $kunci = "{$mapel->id}|{$siswa->kelas}|{$siswa->rombel}";
+            $penilaian = $penilaianMap->get($kunci);
+
+            if (! $penilaian) {
+                $label = "{$namaMapel} - Kelas {$siswa->kelas}" . ($siswa->rombel ? "-{$siswa->rombel}" : '');
+                $tidakKetemuPenilaian[$label] = ($tidakKetemuPenilaian[$label] ?? 0) + 1;
+                return;
+            }
+
+            PenilaianDetailNilai::updateOrCreate(
+                ['penilaian_id' => $penilaian->id, 'siswa_id' => $siswa->id],
+                ['nilai' => (int) $nilai]
+            );
+            $diperbarui++;
+        });
+
+        return back()->with('success', "{$diperbarui} nilai berhasil diimport.")
+            ->with('tidakKetemuSiswa', $tidakKetemuSiswa)
+            ->with('tidakKetemuPenilaian', $tidakKetemuPenilaian);
+    }
 }

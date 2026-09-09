@@ -107,6 +107,12 @@ Route::middleware(['web', 'auth'])->prefix('erapor')->name('erapor.')->group(fun
         Route::post('/penilaian/{penilaian}/nilai', [PenilaianController::class, 'saveNilai'])->name('penilaian.save-nilai');
         Route::delete('/penilaian/{penilaian}', [PenilaianController::class, 'destroy'])->name('penilaian.destroy');
 
+        Route::get('/penilaian-massal', [PenilaianController::class, 'massalForm'])->name('penilaian.massal-form');
+        Route::post('/penilaian-massal', [PenilaianController::class, 'massalStore'])->name('penilaian.massal-store');
+        Route::get('/penilaian-massal/upload', [PenilaianController::class, 'massalUploadForm'])->name('penilaian.massal-upload-form');
+        Route::get('/penilaian-massal/template', [PenilaianController::class, 'massalDownloadTemplate'])->name('penilaian.massal-template');
+        Route::post('/penilaian-massal/import', [PenilaianController::class, 'massalImportNilai'])->name('penilaian.massal-import');
+
         // Cetak Rapor
         Route::get('/rapor', [RaporController::class, 'index'])->name('rapor.index');
         Route::post('/rapor/generate', [RaporController::class, 'generateKelas'])->name('rapor.generate');
