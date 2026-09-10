@@ -12,7 +12,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; backgr
 .judul-dok h2 { font-size:12pt; font-weight:bold; text-transform:uppercase; letter-spacing:2px; border:2.5px solid #000; display:inline-block; padding:5px 18px; }
 .judul-dok p  { font-size:11pt; margin-top:5px; }
 .no-induk     { text-align:left; font-size:10pt; margin-bottom:10px; }
-.sek { background:{{ $sekolah->box_fill_induk ?? '#000' }}; color:{{ $sekolah->box_font_induk ?? '#fff' }}; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
+.sek { background:{{ $sekolah->box_fill_induk ?? '#000' }}; color:{{ $sekolah->box_font_induk ?? '#fff' }}; font-weight:bold; font-size:{{ $sekolah->box_font_size_induk ?? 9 }}pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
 .section-blok { page-break-inside: avoid; }
 .spacer-baris { font-size:8mm; line-height:8mm; color:#fff; }
 table.data { width:100%; border-collapse:collapse; }

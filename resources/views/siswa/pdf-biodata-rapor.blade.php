@@ -9,7 +9,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; backgr
 .watermark { position:fixed; top:45%; left:0; width:100%; text-align:center; transform:rotate(-35deg); z-index:-1; font-size:60pt; font-weight:bold; color:#000; white-space:nowrap; }
 .judul-dok { text-align:center; margin-bottom:14px; width:100%; }
 .judul-dok h2 { font-size:12pt; font-weight:bold; text-transform:uppercase; letter-spacing:2px; border:2.5px solid #000; display:inline-block; padding:5px 18px; }
-.sek { background:{{ $sekolah->box_fill_biodata ?? '#000' }}; color:{{ $sekolah->box_font_biodata ?? '#fff' }}; font-weight:bold; font-size:9pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
+.sek { background:{{ $sekolah->box_fill_biodata ?? '#000' }}; color:{{ $sekolah->box_font_biodata ?? '#fff' }}; font-weight:bold; font-size:{{ $sekolah->box_font_size_biodata ?? 9 }}pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
 .section-blok { page-break-inside: avoid; margin-top: 8mm; }
 table.data { width:100%; border-collapse:collapse; }
 table.data td { padding:2.5px 6px; font-size:9.5pt; vertical-align:top; line-height:1.4; }

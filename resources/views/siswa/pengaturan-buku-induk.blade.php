@@ -53,6 +53,10 @@
                 <label class="form-label">Warna Tulisan (Font)</label>
                 <input type="color" name="box_font_induk" value="{{ $sekolah->box_font_induk ?? '#ffffff' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
             </div>
+            <div>
+                <label class="form-label">Ukuran Font (pt)</label>
+                <input type="number" name="box_font_size_induk" value="{{ $sekolah->box_font_size_induk ?? 9 }}" min="5" max="20" class="form-input" style="width:70px;">
+            </div>
         </div>
     </div>
 
@@ -90,6 +94,10 @@
             <div>
                 <label class="form-label">Warna Tulisan (Font)</label>
                 <input type="color" name="box_font_biodata" value="{{ $sekolah->box_font_biodata ?? '#ffffff' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
+            </div>
+            <div>
+                <label class="form-label">Ukuran Font (pt)</label>
+                <input type="number" name="box_font_size_biodata" value="{{ $sekolah->box_font_size_biodata ?? 9 }}" min="5" max="20" class="form-input" style="width:70px;">
             </div>
         </div>
     </div>
