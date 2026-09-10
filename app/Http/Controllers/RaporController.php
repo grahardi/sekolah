@@ -35,7 +35,7 @@ class RaporController extends Controller
             [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
             $siswaList = Siswa::where('status', 'aktif')
                 ->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-                ->orderBy('nama_lengkap')->get();
+                ->orderBy('nis')->orderBy('nama_lengkap')->get();
 
             $raporMap = Rapor::where('tahun_ajaran_id', $tahunAjaran->id)
                 ->where('semester', $semester)
@@ -236,7 +236,7 @@ class RaporController extends Controller
         $semester = (int) ($request->input('semester', $tahunAjaran->semester === 'Genap' ? 2 : 1));
 
         $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)
-            ->orderBy('nama_lengkap')->get();
+            ->orderBy('nis')->orderBy('nama_lengkap')->get();
 
         $raporMap = Rapor::where('tahun_ajaran_id', $tahunAjaran->id)->where('semester', $semester)
             ->whereIn('siswa_id', $siswaList->pluck('id'))->get()->keyBy('siswa_id');

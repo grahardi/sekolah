@@ -160,7 +160,7 @@ class KokurikulerController extends Controller
         if ($kegiatanId && $kelasRombel) {
             [$kelas, $rombel] = array_pad(explode('|', $kelasRombel), 2, null);
             $daftarDimensi = KokurikulerTargetDimensi::where('kegiatan_id', $kegiatanId)->get();
-            $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)->orderBy('nama_lengkap')->get();
+            $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)->orderBy('nis')->orderBy('nama_lengkap')->get();
 
             $asesmens = KokurikulerAsesmen::whereIn('target_dimensi_id', $daftarDimensi->pluck('id'))
                 ->whereIn('siswa_id', $siswaList->pluck('id'))->get();

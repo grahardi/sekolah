@@ -429,7 +429,7 @@ class EraporController extends Controller
         $rombel = $waliKelas->rombel ?? null;
         abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
 
-        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nis')->orderBy('nama_lengkap')->get();
         $semuaMapel = GuruPengajar::where('tahun_ajaran_id', $tahunAktif->id)->where('kelas', $kelas)->where('rombel', $rombel)
             ->with('mataPelajaran')->get()->pluck('mataPelajaran')->unique('id')->filter(fn ($m) => $m && ! $m->is_non_formal);
 
@@ -467,7 +467,7 @@ class EraporController extends Controller
         abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
 
         $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
-        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nis')->orderBy('nama_lengkap')->get();
 
         foreach ($siswaList as $siswa) {
             $siswa->rapor = \App\Models\Rapor::with('detailEkskul')->firstOrCreate(
@@ -517,7 +517,7 @@ class EraporController extends Controller
         abort_unless($kelas, 404, 'Kamu belum ditugaskan sebagai wali kelas manapun.');
 
         $semester = $tahunAktif->semester === 'Genap' ? 2 : 1;
-        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nama_lengkap')->get();
+        $siswaList = \App\Models\Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel)->orderBy('nis')->orderBy('nama_lengkap')->get();
 
         foreach ($siswaList as $siswa) {
             $siswa->rapor = \App\Models\Rapor::firstOrCreate(

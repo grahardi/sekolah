@@ -181,7 +181,7 @@ class SiswaPortalController extends Controller
         $rombel = $request->input('rombel');
 
         $siswaList = Siswa::where('status', 'aktif')->where('kelas', $kelas)->where('rombel', $rombel ?: null)
-            ->orderBy('nama_lengkap')->get();
+            ->orderBy('nis')->orderBy('nama_lengkap')->get();
 
         abort_if($siswaList->isEmpty(), 404, 'Tidak ada siswa aktif di kelas ini.');
 

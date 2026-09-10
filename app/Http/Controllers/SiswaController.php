@@ -70,7 +70,7 @@ class SiswaController extends Controller
             }
         }
 
-        $siswas = $query->orderBy('nama_lengkap')->paginate(15)->withQueryString();
+        $siswas = $query->orderBy('nis')->orderBy('nama_lengkap')->paginate(15)->withQueryString();
 
         $kelasRombelList = Siswa::whereNotNull('kelas')
             ->get(['kelas', 'rombel'])
@@ -198,7 +198,7 @@ class SiswaController extends Controller
         ini_set('memory_limit', '512M');
 
         $filters = $request->only(['search','kelas_rombel','status','tingkat','tahun_masuk']);
-        $siswas  = Siswa::filter($filters)->orderBy('nama_lengkap')->get();
+        $siswas  = Siswa::filter($filters)->orderBy('nis')->orderBy('nama_lengkap')->get();
         return Pdf::loadView('siswa.pdf-list', compact('siswas'))
             ->setPaper('a4','landscape')
             ->download('daftar-siswa-'.now()->format('Ymd').'.pdf');
@@ -299,7 +299,7 @@ class SiswaController extends Controller
     /** Halaman pilih siswa untuk cetak massal Buku Induk */
     public function pilihCetakMassal()
     {
-        $siswaList = Siswa::where('status', 'aktif')->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')->get(['id', 'nama_lengkap', 'kelas', 'rombel', 'nis', 'nisn']);
+        $siswaList = Siswa::where('status', 'aktif')->orderBy('kelas')->orderBy('rombel')->orderBy('nis')->orderBy('nama_lengkap')->get(['id', 'nama_lengkap', 'kelas', 'rombel', 'nis', 'nisn']);
 
         $kelasRombelList = $siswaList->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
             ->unique()->sort()->values();
