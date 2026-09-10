@@ -215,7 +215,8 @@ class SiswaController extends Controller
         // Margin sekarang diatur via CSS @page di view-nya (lebih reliable
         // konsisten di semua halaman drpd set_option margin_top yg sempat
         // dicoba tapi ternyata gak selalu kepakai di halaman ke-2 dst).
-        $pdf->setPaper('a4', 'portrait');
+        $ukuranInduk = strtolower($sekolah->induk_ukuran_kertas ?? 'A4') === 'f4' ? 'folio' : strtolower($sekolah->induk_ukuran_kertas ?? 'A4');
+        $pdf->setPaper($ukuranInduk, 'portrait');
         return $pdf->stream('buku-induk-'.$siswa->nisn.'.pdf')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
@@ -238,6 +239,7 @@ class SiswaController extends Controller
             'box_font_induk' => 'nullable|string|max:10',
             'box_font_size_induk' => 'nullable|integer|min:5|max:20',
             'desc_font_size_induk' => 'nullable|numeric|min:5|max:20',
+            'induk_ukuran_kertas' => 'nullable|in:A4,F4',
             'watermark_biodata_aktif' => 'nullable|boolean',
             'watermark_biodata_teks' => 'nullable|string|max:100',
             'watermark_biodata_transparansi' => 'nullable|integer|min:1|max:100',
@@ -246,6 +248,7 @@ class SiswaController extends Controller
             'box_font_biodata' => 'nullable|string|max:10',
             'box_font_size_biodata' => 'nullable|integer|min:5|max:20',
             'desc_font_size_biodata' => 'nullable|numeric|min:5|max:20',
+            'biodata_ukuran_kertas' => 'nullable|in:A4,F4',
         ]);
 
         $sekolah = auth()->user()->sekolah;
@@ -297,7 +300,8 @@ class SiswaController extends Controller
         $pdf = Pdf::loadView('siswa.pdf-biodata-rapor', compact('siswa', 'sekolah', 'kotaTtd', 'tanggalCetak'));
         $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
         $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
-        $pdf->setPaper('a4', 'portrait');
+        $ukuranBiodata = strtolower($sekolah->biodata_ukuran_kertas ?? 'F4') === 'f4' ? 'folio' : strtolower($sekolah->biodata_ukuran_kertas ?? 'F4');
+        $pdf->setPaper($ukuranBiodata, 'portrait');
 
         return $pdf->stream('biodata-rapor-'.$siswa->nisn.'.pdf')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -355,7 +359,12 @@ class SiswaController extends Controller
             $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
             $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
             // Margin diatur via CSS @page di view-nya
-            $pdf->setPaper('a4', 'portrait');
+            if ($jenis === 'biodata-rapor') {
+                $ukuran = strtolower($sekolah->biodata_ukuran_kertas ?? 'F4') === 'f4' ? 'folio' : strtolower($sekolah->biodata_ukuran_kertas ?? 'F4');
+            } else {
+                $ukuran = strtolower($sekolah->induk_ukuran_kertas ?? 'A4') === 'f4' ? 'folio' : strtolower($sekolah->induk_ukuran_kertas ?? 'A4');
+            }
+            $pdf->setPaper($ukuran, 'portrait');
 
             $namaFile = \Illuminate\Support\Str::slug($siswa->nama_lengkap) . '-' . $siswa->nisn . '.pdf';
             $zip->addFromString($namaFile, $pdf->output());

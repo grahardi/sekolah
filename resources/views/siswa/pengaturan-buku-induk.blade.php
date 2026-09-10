@@ -61,7 +61,13 @@
 
         <p style="font-size:13px;font-weight:700;color:#0f172a;margin:16px 0 4px;">Ukuran Font Deskripsi (Isi Data)</p>
         <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Ukuran huruf untuk teks isian data (mis. nama, alamat, dll), bukan judul seksi.</p>
-        <input type="number" name="desc_font_size_induk" value="{{ $sekolah->desc_font_size_induk ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;">
+        <input type="number" name="desc_font_size_induk" value="{{ $sekolah->desc_font_size_induk ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;margin-bottom:16px;">
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Ukuran Kertas</p>
+        <select name="induk_ukuran_kertas" class="form-input" style="width:120px;">
+            <option value="A4" {{ ($sekolah->induk_ukuran_kertas ?? 'A4') === 'A4' ? 'selected' : '' }}>A4</option>
+            <option value="F4" {{ ($sekolah->induk_ukuran_kertas ?? 'A4') === 'F4' ? 'selected' : '' }}>F4</option>
+        </select>
     </div>
 
     <div class="card" style="padding:20px;max-width:500px;margin-top:16px;">
@@ -107,7 +113,13 @@
 
         <p style="font-size:13px;font-weight:700;color:#0f172a;margin:16px 0 4px;">Ukuran Font Deskripsi (Isi Data)</p>
         <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Ukuran huruf untuk teks isian data (mis. nama, alamat, dll), bukan judul seksi.</p>
-        <input type="number" name="desc_font_size_biodata" value="{{ $sekolah->desc_font_size_biodata ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;">
+        <input type="number" name="desc_font_size_biodata" value="{{ $sekolah->desc_font_size_biodata ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;margin-bottom:16px;">
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Ukuran Kertas</p>
+        <select name="biodata_ukuran_kertas" class="form-input" style="width:120px;">
+            <option value="A4" {{ ($sekolah->biodata_ukuran_kertas ?? 'F4') === 'A4' ? 'selected' : '' }}>A4</option>
+            <option value="F4" {{ ($sekolah->biodata_ukuran_kertas ?? 'F4') === 'F4' ? 'selected' : '' }}>F4</option>
+        </select>
     </div>
 
     <div style="margin-top:16px;max-width:500px;">
