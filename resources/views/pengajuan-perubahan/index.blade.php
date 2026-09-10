@@ -32,6 +32,30 @@
 </div>
 @endif
 
+<form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;">
+    <div style="min-width:180px;">
+        <label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Filter Kelas</label>
+        <select name="kelas_rombel" class="form-input" onchange="this.form.submit()">
+            <option value="">Semua Kelas</option>
+            @foreach($kelasRombelList as $kr)
+            @php [$k, $r] = array_pad(explode('|', $kr), 2, null); @endphp
+            <option value="{{ $kr }}" {{ request('kelas_rombel') === $kr ? 'selected' : '' }}>{{ $k }}{{ $r ? " - $r" : '' }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div style="min-width:140px;">
+        <label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Tampilkan per Halaman</label>
+        <select name="per_page" class="form-input" onchange="this.form.submit()">
+            @foreach([20, 30, 50, 100] as $n)
+            <option value="{{ $n }}" {{ $perPage === $n ? 'selected' : '' }}>{{ $n }}</option>
+            @endforeach
+        </select>
+    </div>
+    @if(request('kelas_rombel'))
+    <a href="{{ route('pengajuan-perubahan.index') }}" class="btn btn-secondary btn-sm">Reset Filter</a>
+    @endif
+</form>
+
 <div class="card" style="padding:0;overflow:hidden;">
     <table style="width:100%;border-collapse:collapse;">
         <thead style="background:#f8fafc;">
@@ -72,5 +96,6 @@
         </tbody>
     </table>
 </div>
+<div style="margin-top:16px;">{{ $siswaList->links() }}</div>
 
 @endsection

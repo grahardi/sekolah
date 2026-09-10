@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class PengajuanPerubahanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = Siswa::where('status', 'aktif')->with('pengajuanPerubahan');
 
@@ -33,10 +33,25 @@ class PengajuanPerubahanController extends Controller
             }
         }
 
-        $siswaList = $query->orderBy('kelas')->orderBy('rombel')->orderBy('nama_lengkap')->get();
+        if ($request->filled('kelas_rombel')) {
+            [$kelasFilter, $rombelFilter] = array_pad(explode('|', $request->kelas_rombel), 2, null);
+            $query->where('kelas', $kelasFilter)->where('rombel', $rombelFilter ?: null);
+        }
+
+        $perPage = (int) $request->input('per_page', 20);
+        if (! in_array($perPage, [20, 30, 50, 100])) $perPage = 20;
+
+        $siswaList = $query->orderBy('kelas')->orderBy('rombel')->orderBy('nis')->orderBy('nama_lengkap')
+            ->paginate($perPage)->withQueryString();
+
+        $kelasRombelList = Siswa::where('status', 'aktif')->whereNotNull('kelas')
+            ->get(['kelas', 'rombel'])
+            ->map(fn ($s) => $s->rombel ? "{$s->kelas}|{$s->rombel}" : "{$s->kelas}|")
+            ->unique()->sort()->values();
+
         $npsn = auth()->user()->sekolah->npsn;
 
-        return view('pengajuan-perubahan.index', compact('siswaList', 'waliKelasSaya', 'npsn'));
+        return view('pengajuan-perubahan.index', compact('siswaList', 'waliKelasSaya', 'npsn', 'kelasRombelList', 'perPage'));
     }
 
     public function show(Siswa $siswa)
