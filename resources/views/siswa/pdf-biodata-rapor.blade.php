@@ -91,7 +91,7 @@ $baris = function ($no, $label, $val) {
             </div>
         </td>
         <td style="text-align:left;width:50%;">
-            <div class="ttd-wrap" style="margin-left:-2cm;text-align:left;">
+            <div class="ttd-wrap" style="margin-left:-1cm;text-align:left;">
                 <p>{{ $kotaTtd }}, {{ $tanggalCetak->locale('id')->translatedFormat('d F Y') }}</p>
                 <p>Kepala Sekolah</p>
                 <p class="ttd-nama">{{ $sekolah->kepala_sekolah_nama ?: '-' }}</p>
