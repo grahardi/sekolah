@@ -38,6 +38,22 @@ class PengajuanPerubahanController extends Controller
             $query->where('kelas', $kelasFilter)->where('rombel', $rombelFilter ?: null);
         }
 
+        // Statistik ngikutin filter kelas yg aktif (kalau ada) - dihitung dari
+        // clone query SEBELUM pagination, biar akurat sesuai apa yg lagi
+        // ditampilkan, bukan dari SEMUA siswa selalu.
+        $semuaUntukStat = (clone $query)->with('pengajuanPerubahan')->get();
+        $stats = [
+            'total' => $semuaUntukStat->count(),
+            'belum_isi' => $semuaUntukStat->filter(fn ($s) => ($s->pengajuanPerubahan?->status ?? 'belum_isi') === 'belum_isi')->count(),
+            'menunggu_approval' => $semuaUntukStat->filter(fn ($s) => $s->pengajuanPerubahan?->status === 'menunggu_approval')->count(),
+            'sudah_approve' => $semuaUntukStat->filter(fn ($s) => $s->pengajuanPerubahan?->status === 'sudah_approve')->count(),
+            'tidak_ada_perubahan' => $semuaUntukStat->filter(fn ($s) => $s->pengajuanPerubahan?->status === 'tidak_ada_perubahan')->count(),
+        ];
+        // "Sudah Mengisi" gabungan - siapa saja yg SUDAH pernah submit form,
+        // apapun hasilnya (disetujui, masih nunggu, atau memang gak ada yg
+        // diubah) - beda dari "Belum Mengisi" yg blm disentuh sama sekali.
+        $stats['sudah_mengisi'] = $stats['menunggu_approval'] + $stats['sudah_approve'] + $stats['tidak_ada_perubahan'];
+
         $perPage = (int) $request->input('per_page', 20);
         if (! in_array($perPage, [20, 30, 50, 100])) $perPage = 20;
 
@@ -51,7 +67,7 @@ class PengajuanPerubahanController extends Controller
 
         $npsn = auth()->user()->sekolah->npsn;
 
-        return view('pengajuan-perubahan.index', compact('siswaList', 'waliKelasSaya', 'npsn', 'kelasRombelList', 'perPage'));
+        return view('pengajuan-perubahan.index', compact('siswaList', 'waliKelasSaya', 'npsn', 'kelasRombelList', 'perPage', 'stats'));
     }
 
     public function show(Siswa $siswa)

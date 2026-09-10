@@ -32,6 +32,26 @@
 </div>
 @endif
 
+<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px;margin-bottom:20px;">
+    <div class="card" style="padding:14px;text-align:center;background:#f1f5f9;">
+        <p style="font-size:22px;font-weight:800;color:#64748b;margin:0;">{{ $stats['belum_isi'] }}</p>
+        <p style="font-size:11px;color:#64748b;margin:4px 0 0;">Belum Mengisi</p>
+    </div>
+    <div class="card" style="padding:14px;text-align:center;background:#fef9c3;">
+        <p style="font-size:22px;font-weight:800;color:#854d0e;margin:0;">{{ $stats['menunggu_approval'] }}</p>
+        <p style="font-size:11px;color:#854d0e;margin:4px 0 0;">Menunggu Approval</p>
+    </div>
+    <div class="card" style="padding:14px;text-align:center;background:#dcfce7;">
+        <p style="font-size:22px;font-weight:800;color:#166534;margin:0;">{{ $stats['sudah_mengisi'] }}</p>
+        <p style="font-size:11px;color:#166534;margin:4px 0 0;">Sudah Mengisi (Total)</p>
+    </div>
+    <div class="card" style="padding:14px;text-align:center;background:#e0e7ff;">
+        <p style="font-size:22px;font-weight:800;color:#3730a3;margin:0;">{{ $stats['tidak_ada_perubahan'] }}</p>
+        <p style="font-size:11px;color:#3730a3;margin:4px 0 0;">Tidak Ada Perubahan</p>
+    </div>
+</div>
+<p style="font-size:11px;color:#94a3b8;margin:-14px 0 20px;">*"Sudah Mengisi (Total)" mencakup yang sudah disetujui, masih menunggu, maupun yang menyatakan tidak ada perubahan - lawan dari "Belum Mengisi" yang belum disentuh sama sekali. {{ request('kelas_rombel') ? 'Statistik ini mengikuti filter kelas yang aktif.' : '' }}</p>
+
 <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;">
     <div style="min-width:180px;">
         <label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Filter Kelas</label>
