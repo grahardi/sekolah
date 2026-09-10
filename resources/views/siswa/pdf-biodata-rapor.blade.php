@@ -90,8 +90,8 @@ $baris = function ($no, $label, $val) {
             <div class="foto-frame" style="margin:0 auto;{{ ($siswa->foto && file_exists(public_path('storage/' . $siswa->foto))) ? 'background-image:url(\'' . public_path('storage/' . $siswa->foto) . '\');' : '' }}">
             </div>
         </td>
-        <td style="text-align:center;width:50%;">
-            <div class="ttd-wrap" style="margin:0 auto;">
+        <td style="text-align:left;width:50%;">
+            <div class="ttd-wrap" style="margin-left:-2cm;text-align:left;">
                 <p>{{ $kotaTtd }}, {{ $tanggalCetak->locale('id')->translatedFormat('d F Y') }}</p>
                 <p>Kepala Sekolah</p>
                 <p class="ttd-nama">{{ $sekolah->kepala_sekolah_nama ?: '-' }}</p>
