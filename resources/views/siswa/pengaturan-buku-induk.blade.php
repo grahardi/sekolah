@@ -40,7 +40,20 @@
         <input type="file" name="watermark_induk_gambar_file" accept=".jpg,.jpeg,.png" class="form-input" style="margin-bottom:14px;">
 
         <label class="form-label">Transparansi (1 = paling samar, 100 = paling pekat)</label>
-        <input type="number" name="watermark_induk_transparansi" value="{{ $sekolah->watermark_induk_transparansi ?? 10 }}" min="1" max="100" class="form-input">
+        <input type="number" name="watermark_induk_transparansi" value="{{ $sekolah->watermark_induk_transparansi ?? 10 }}" min="1" max="100" class="form-input" style="margin-bottom:16px;">
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Warna Kotak Judul Seksi</p>
+        <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Warna latar & teks kotak judul seperti "DATA DIRI", "DATA KEPENDIDIKAN", dll di cetak Buku Induk.</p>
+        <div style="display:flex;gap:16px;">
+            <div>
+                <label class="form-label">Warna Latar (Fill)</label>
+                <input type="color" name="box_fill_induk" value="{{ $sekolah->box_fill_induk ?? '#000000' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
+            </div>
+            <div>
+                <label class="form-label">Warna Tulisan (Font)</label>
+                <input type="color" name="box_font_induk" value="{{ $sekolah->box_font_induk ?? '#ffffff' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
+            </div>
+        </div>
     </div>
 
     <div class="card" style="padding:20px;max-width:500px;margin-top:16px;">
@@ -65,7 +78,20 @@
         <input type="file" name="watermark_biodata_gambar_file" accept=".jpg,.jpeg,.png" class="form-input" style="margin-bottom:14px;">
 
         <label class="form-label">Transparansi (1 = paling samar, 100 = paling pekat)</label>
-        <input type="number" name="watermark_biodata_transparansi" value="{{ $sekolah->watermark_biodata_transparansi ?? 10 }}" min="1" max="100" class="form-input">
+        <input type="number" name="watermark_biodata_transparansi" value="{{ $sekolah->watermark_biodata_transparansi ?? 10 }}" min="1" max="100" class="form-input" style="margin-bottom:16px;">
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">Warna Kotak Judul Seksi</p>
+        <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Warna latar & teks kotak judul seperti "DATA DIRI", "DATA KEPENDIDIKAN", dll di cetak Biodata Rapor.</p>
+        <div style="display:flex;gap:16px;">
+            <div>
+                <label class="form-label">Warna Latar (Fill)</label>
+                <input type="color" name="box_fill_biodata" value="{{ $sekolah->box_fill_biodata ?? '#000000' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
+            </div>
+            <div>
+                <label class="form-label">Warna Tulisan (Font)</label>
+                <input type="color" name="box_font_biodata" value="{{ $sekolah->box_font_biodata ?? '#ffffff' }}" style="width:60px;height:36px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;">
+            </div>
+        </div>
     </div>
 
     <div style="margin-top:16px;max-width:500px;">
