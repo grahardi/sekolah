@@ -12,7 +12,7 @@ body { font-family:'DejaVu Sans', sans-serif; font-size:10pt; color:#000; backgr
 .sek { background:{{ $sekolah->box_fill_biodata ?? '#000' }}; color:{{ $sekolah->box_font_biodata ?? '#fff' }}; font-weight:bold; font-size:{{ $sekolah->box_font_size_biodata ?? 9 }}pt; padding:3px 8px; margin:10px 0 0; letter-spacing:.5px; }
 .section-blok { page-break-inside: avoid; margin-top: 8mm; }
 table.data { width:100%; border-collapse:collapse; }
-table.data td { padding:2.5px 6px; font-size:9.5pt; vertical-align:top; line-height:1.4; }
+table.data td { padding:2.5px 6px; font-size:{{ $sekolah->desc_font_size_biodata ?? 9.5 }}pt; vertical-align:top; line-height:1.4; }
 table.data td.no  { width:22px; text-align:right; padding-right:4px; }
 table.data td.lbl { width:32%; text-align:left; }
 table.data td.ttd { width:6px; text-align:center; }

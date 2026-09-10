@@ -237,6 +237,7 @@ class SiswaController extends Controller
             'box_fill_induk' => 'nullable|string|max:10',
             'box_font_induk' => 'nullable|string|max:10',
             'box_font_size_induk' => 'nullable|integer|min:5|max:20',
+            'desc_font_size_induk' => 'nullable|numeric|min:5|max:20',
             'watermark_biodata_aktif' => 'nullable|boolean',
             'watermark_biodata_teks' => 'nullable|string|max:100',
             'watermark_biodata_transparansi' => 'nullable|integer|min:1|max:100',
@@ -244,6 +245,7 @@ class SiswaController extends Controller
             'box_fill_biodata' => 'nullable|string|max:10',
             'box_font_biodata' => 'nullable|string|max:10',
             'box_font_size_biodata' => 'nullable|integer|min:5|max:20',
+            'desc_font_size_biodata' => 'nullable|numeric|min:5|max:20',
         ]);
 
         $sekolah = auth()->user()->sekolah;

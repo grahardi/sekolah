@@ -58,6 +58,10 @@
                 <input type="number" name="box_font_size_induk" value="{{ $sekolah->box_font_size_induk ?? 9 }}" min="5" max="20" class="form-input" style="width:70px;">
             </div>
         </div>
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:16px 0 4px;">Ukuran Font Deskripsi (Isi Data)</p>
+        <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Ukuran huruf untuk teks isian data (mis. nama, alamat, dll), bukan judul seksi.</p>
+        <input type="number" name="desc_font_size_induk" value="{{ $sekolah->desc_font_size_induk ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;">
     </div>
 
     <div class="card" style="padding:20px;max-width:500px;margin-top:16px;">
@@ -100,6 +104,10 @@
                 <input type="number" name="box_font_size_biodata" value="{{ $sekolah->box_font_size_biodata ?? 9 }}" min="5" max="20" class="form-input" style="width:70px;">
             </div>
         </div>
+
+        <p style="font-size:13px;font-weight:700;color:#0f172a;margin:16px 0 4px;">Ukuran Font Deskripsi (Isi Data)</p>
+        <p style="font-size:12px;color:#64748b;margin:0 0 12px;">Ukuran huruf untuk teks isian data (mis. nama, alamat, dll), bukan judul seksi.</p>
+        <input type="number" name="desc_font_size_biodata" value="{{ $sekolah->desc_font_size_biodata ?? 9.5 }}" min="5" max="20" step="0.5" class="form-input" style="width:70px;">
     </div>
 
     <div style="margin-top:16px;max-width:500px;">
