@@ -92,6 +92,10 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('serve
     Route::get('/{instance}/export-data-siswa', [\App\Http\Controllers\ServerUjianController::class, 'exportDataSiswa'])->name('export-data-siswa');
     Route::post('/{instance}/stop', [\App\Http\Controllers\ServerUjianController::class, 'stop'])->name('stop');
     Route::post('/{instance}/license-key', [\App\Http\Controllers\ServerUjianController::class, 'updateLicenseKey'])->name('license-key');
+    Route::get('/panel-pengawas', [\App\Http\Controllers\ServerUjianController::class, 'panelPengawas'])->name('panel-pengawas');
+    Route::post('/panel-pengawas/aktifkan', [\App\Http\Controllers\ServerUjianController::class, 'panelPengawasAktifkan'])->name('panel-pengawas.aktifkan');
+    Route::get('/monitoring-ruangan', [\App\Http\Controllers\ServerUjianController::class, 'monitoringRuangan'])->name('monitoring-ruangan');
+    Route::post('/monitoring-ruangan/lapor-error', [\App\Http\Controllers\ServerUjianController::class, 'monitoringLaporError'])->name('monitoring-ruangan.lapor-error');
 });
 
 // Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin

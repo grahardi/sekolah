@@ -182,4 +182,164 @@ class ServerUjianController extends Controller
             'localStorageKey' => '5m7VQI69HS2PrcToRMYt',
         ]);
     }
+
+    /**
+     * Panel Pengawas Ujian & Monitoring Ruangan - DIINTEGRASIKAN LANGSUNG ke
+     * Laravel (pakai layout Server Ujian sendiri, bukan lagi file panel.php/
+     * pr.php/index.php berdiri sendiri dgn kredensial hardcode). Baca lewat
+     * ExoInstance::dbConnection() - koneksi dinamis TERENKRIPSI per sekolah,
+     * jadi tetap aman & terisolasi per instance walau kodenya digabung.
+     */
+    private function instanceSaya(): ExoInstance
+    {
+        $instance = ExoInstance::where('sekolah_id', auth()->user()->sekolah_id)->first();
+        abort_unless($instance, 404, 'Server Ujian belum diaktifkan utk sekolah ini.');
+        return $instance;
+    }
+
+    public function panelPengawas(Request $request)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+        $view = $request->get('view', 'active');
+
+        $tokenAktif = $db->table('tokens')->where('status', 1)->orderByDesc('created_at')->first();
+        $isExpired = false;
+        $createdAtWIB = $expiredAtWIB = null;
+        if ($tokenAktif) {
+            $nowUTC = new \DateTime('now', new \DateTimeZone('UTC'));
+            $expiryUTC = new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC'));
+            $isExpired = $nowUTC > $expiryUTC;
+            $createdAtWIB = (new \DateTime($tokenAktif->created_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
+            $expiredAtWIB = (new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
+        }
+
+        $pesertas = $riwayat = $topBlocked = collect();
+        $totalData = 0;
+        $totalPages = 1;
+        $page = max(1, (int) $request->get('page', 1));
+
+        if ($view === 'history') {
+            $limit = 15;
+            $offset = ($page - 1) * $limit;
+            $totalData = $db->table('logblokir')->count();
+            $totalPages = (int) ceil($totalData / $limit);
+
+            $riwayat = collect($db->select(
+                "SELECT l.nama, l.alasan_blokir, l.jam_terblokir, l.jam_diaktifkan,
+                        (SELECT COUNT(*) FROM logblokir l2 WHERE l2.nama = l.nama) as total_blokir
+                 FROM logblokir l ORDER BY l.jam_diaktifkan DESC LIMIT ? OFFSET ?",
+                [$limit, $offset]
+            ));
+        } elseif ($view === 'top_blocked') {
+            $topBlocked = collect($db->select(
+                "SELECT nama, COUNT(*) as total_pelanggaran, MAX(jam_diaktifkan) as terakhir_aktif
+                 FROM logblokir GROUP BY nama ORDER BY total_pelanggaran DESC, terakhir_aktif DESC LIMIT 20"
+            ));
+        } else {
+            $pesertas = collect($db->select(
+                "SELECT p.nama, p.block_reason, p.blocked_at,
+                        (SELECT COUNT(*) FROM logblokir l WHERE l.nama = p.nama) as total_blokir
+                 FROM pesertas p WHERE p.status = 0 ORDER BY p.nama ASC"
+            ));
+        }
+
+        return view('server-ujian.panel-pengawas', compact(
+            'view', 'tokenAktif', 'isExpired', 'createdAtWIB', 'expiredAtWIB',
+            'pesertas', 'riwayat', 'topBlocked', 'totalData', 'totalPages', 'page', 'instance'
+        ));
+    }
+
+    public function panelPengawasAktifkan(Request $request)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+        $nama = $request->input('nama');
+
+        $peserta = $db->table('pesertas')->where('nama', $nama)->first();
+        if ($peserta) {
+            $db->table('logblokir')->insert([
+                'nama' => $peserta->nama,
+                'alasan_blokir' => $peserta->block_reason,
+                'jam_terblokir' => $peserta->blocked_at,
+                'jam_diaktifkan' => now(),
+            ]);
+            $db->table('pesertas')->where('nama', $nama)->update([
+                'status' => 1, 'block_reason' => null, 'blocked_at' => null,
+            ]);
+        }
+
+        return back()->with('success', "Peserta \"{$nama}\" berhasil diaktifkan.");
+    }
+
+    public function monitoringRuangan(Request $request)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $filterRuang = (int) $request->get('ruang', 1);
+        $filterJadwal = $request->get('jadwal_id');
+
+        $allJadwalAktif = collect($db->select("SELECT id, alias FROM jadwals WHERE status_ujian = 1"));
+        if (! $filterJadwal && $allJadwalAktif->isNotEmpty()) {
+            $filterJadwal = $allJadwalAktif->first()->id;
+        }
+
+        $mapTipeRuang = [1=>'kanan',2=>'kanan',3=>'kanan',4=>'kanan',5=>'kanan',6=>'kiri',7=>'kiri',8=>'kanan',9=>'kanan',10=>'kanan',11=>'kanan',12=>'kanan',13=>'kiri',14=>'kiri',15=>'kiri',16=>'kiri',17=>'kiri',18=>'kiri',19=>'kiri',20=>'kiri'];
+        $tipeRuangan = $mapTipeRuang[$filterRuang] ?? 'kanan';
+
+        $mejaData = [];
+        for ($i = 1; $i <= 16; $i++) $mejaData[$i] = ['A' => null, 'B' => null];
+        $stats = ['mengerjakan' => 0, 'selesai' => 0, 'belum_login' => 0, 'error' => 0, 'total' => 0];
+
+        $listData = $filterJadwal ? collect($db->select(
+            "SELECT k.nama, k.no_ujian, k.kelas, k.foto, k.baris as no_meja, k.posisi, k.laporan,
+                    su.status_ujian as status_kerja, su.sisa_waktu
+             FROM kartuujian k
+             LEFT JOIN pesertas p ON k.no_ujian = p.no_ujian
+             LEFT JOIN siswa_ujians su ON p.id = su.peserta_id AND su.jadwal_id = ?
+             WHERE k.ruang = ? ORDER BY k.baris ASC, k.posisi ASC",
+            [$filterJadwal, $filterRuang]
+        )) : collect();
+
+        foreach ($listData as $d) {
+            $m = (int) $d->no_meja;
+            $p = strtoupper($d->posisi ?? 'A');
+            if ($m >= 1 && $m <= 16) {
+                $mejaData[$m][$p] = $d;
+                $stats['total']++;
+                if ($d->laporan == 1) {
+                    $stats['error']++;
+                } else {
+                    $sk = $d->status_kerja;
+                    if ($sk === null) $stats['belum_login']++;
+                    elseif ($sk >= 2) $stats['selesai']++;
+                    elseif ($sk == 1) $stats['mengerjakan']++;
+                    else $stats['belum_login']++;
+                }
+            }
+        }
+
+        $matriks = [];
+        for ($r = 0; $r < 4; $r++) {
+            $temp = range(($r * 4) + 1, ($r + 1) * 4);
+            if ($tipeRuangan == 'kanan') {
+                $matriks[] = ($r % 2 == 0) ? array_reverse($temp) : $temp;
+            } else {
+                $matriks[] = ($r % 2 == 0) ? $temp : array_reverse($temp);
+            }
+        }
+
+        return view('server-ujian.monitoring', compact(
+            'filterRuang', 'filterJadwal', 'allJadwalAktif', 'tipeRuangan', 'mejaData', 'stats', 'matriks', 'instance'
+        ));
+    }
+
+    public function monitoringLaporError(Request $request)
+    {
+        $instance = $this->instanceSaya();
+        $instance->dbConnection()->table('kartuujian')->where('no_ujian', $request->input('no_ujian_lapor'))->update(['laporan' => 1]);
+
+        return redirect()->back();
+    }
 }

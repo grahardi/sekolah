@@ -180,8 +180,16 @@
     <nav class="sb-nav">
         <div class="sb-section">Utama</div>
         <a href="{{ route('server-ujian.index') }}"
-           class="sb-item {{ request()->routeIs('server-ujian.*') ? 'active' : '' }}">
+           class="sb-item {{ request()->routeIs('server-ujian.index') ? 'active' : '' }}">
             <i class="ti ti-server"></i><span>Server Ujian</span>
+        </a>
+        <a href="{{ route('server-ujian.panel-pengawas') }}"
+           class="sb-item {{ request()->routeIs('server-ujian.panel-pengawas') ? 'active' : '' }}">
+            <i class="ti ti-eye"></i><span>Panel Pengawas</span>
+        </a>
+        <a href="{{ route('server-ujian.monitoring-ruangan') }}"
+           class="sb-item {{ request()->routeIs('server-ujian.monitoring-ruangan') ? 'active' : '' }}">
+            <i class="ti ti-layout-grid"></i><span>Monitoring Ruangan</span>
         </a>
     </nav>
 
