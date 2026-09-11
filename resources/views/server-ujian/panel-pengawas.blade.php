@@ -7,6 +7,9 @@
 @if(session('success'))
 <div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;">{{ session('success') }}</div>
 @endif
+@if($errorSkema)
+<div style="background:#fffbeb;color:#92400e;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;"><i class="ti ti-alert-triangle"></i> {{ $errorSkema }}</div>
+@endif
 
 <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
     <a href="{{ route('server-ujian.panel-pengawas', ['view' => 'active']) }}" class="btn {{ $view === 'active' ? 'btn-primary' : 'btn-secondary' }} btn-sm">Daftar Terblokir</a>

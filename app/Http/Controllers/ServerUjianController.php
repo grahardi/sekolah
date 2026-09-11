@@ -203,50 +203,66 @@ class ServerUjianController extends Controller
         $db = $instance->dbConnection();
         $view = $request->get('view', 'active');
 
-        $tokenAktif = $db->table('tokens')->where('status', 1)->orderByDesc('created_at')->first();
-        $isExpired = false;
-        $createdAtWIB = $expiredAtWIB = null;
-        if ($tokenAktif) {
-            $nowUTC = new \DateTime('now', new \DateTimeZone('UTC'));
-            $expiryUTC = new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC'));
-            $isExpired = $nowUTC > $expiryUTC;
-            $createdAtWIB = (new \DateTime($tokenAktif->created_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
-            $expiredAtWIB = (new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
-        }
-
+        $tokenAktif = $isExpired = $createdAtWIB = $expiredAtWIB = null;
         $pesertas = $riwayat = $topBlocked = collect();
         $totalData = 0;
         $totalPages = 1;
         $page = max(1, (int) $request->get('page', 1));
+        $errorSkema = null;
 
-        if ($view === 'history') {
-            $limit = 15;
-            $offset = ($page - 1) * $limit;
-            $totalData = $db->table('logblokir')->count();
-            $totalPages = (int) ceil($totalData / $limit);
+        try {
+            $tokenAktif = $db->table('tokens')->where('status', 1)->orderByDesc('created_at')->first();
+            $isExpired = false;
+            if ($tokenAktif) {
+                $nowUTC = new \DateTime('now', new \DateTimeZone('UTC'));
+                $expiryUTC = new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC'));
+                $isExpired = $nowUTC > $expiryUTC;
+                $createdAtWIB = (new \DateTime($tokenAktif->created_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
+                $expiredAtWIB = (new \DateTime($tokenAktif->expired_at, new \DateTimeZone('UTC')))->setTimezone(new \DateTimeZone('Asia/Jakarta'));
+            }
 
-            $riwayat = collect($db->select(
-                "SELECT l.nama, l.alasan_blokir, l.jam_terblokir, l.jam_diaktifkan,
-                        (SELECT COUNT(*) FROM logblokir l2 WHERE l2.nama = l.nama) as total_blokir
-                 FROM logblokir l ORDER BY l.jam_diaktifkan DESC LIMIT ? OFFSET ?",
-                [$limit, $offset]
-            ));
-        } elseif ($view === 'top_blocked') {
-            $topBlocked = collect($db->select(
-                "SELECT nama, COUNT(*) as total_pelanggaran, MAX(jam_diaktifkan) as terakhir_aktif
-                 FROM logblokir GROUP BY nama ORDER BY total_pelanggaran DESC, terakhir_aktif DESC LIMIT 20"
-            ));
-        } else {
-            $pesertas = collect($db->select(
-                "SELECT p.nama, p.block_reason, p.blocked_at,
-                        (SELECT COUNT(*) FROM logblokir l WHERE l.nama = p.nama) as total_blokir
-                 FROM pesertas p WHERE p.status = 0 ORDER BY p.nama ASC"
-            ));
+            if ($view === 'history') {
+                $limit = 15;
+                $offset = ($page - 1) * $limit;
+                $totalData = $db->table('logblokir')->count();
+                $totalPages = (int) ceil($totalData / $limit);
+
+                $riwayat = collect($db->select(
+                    "SELECT l.nama, l.alasan_blokir, l.jam_terblokir, l.jam_diaktifkan,
+                            (SELECT COUNT(*) FROM logblokir l2 WHERE l2.nama = l.nama) as total_blokir
+                     FROM logblokir l ORDER BY l.jam_diaktifkan DESC LIMIT ? OFFSET ?",
+                    [$limit, $offset]
+                ));
+            } elseif ($view === 'top_blocked') {
+                $topBlocked = collect($db->select(
+                    "SELECT nama, COUNT(*) as total_pelanggaran, MAX(jam_diaktifkan) as terakhir_aktif
+                     FROM logblokir GROUP BY nama ORDER BY total_pelanggaran DESC, terakhir_aktif DESC LIMIT 20"
+                ));
+            } else {
+                // Coba dgn subquery logblokir dulu (versi skema lengkap) - kalau
+                // tabelnya gak ada di instance ini (beda versi/instance demo),
+                // fallback ke query TANPA logblokir drpd nge-crash total.
+                try {
+                    $pesertas = collect($db->select(
+                        "SELECT p.nama, p.block_reason, p.blocked_at,
+                                (SELECT COUNT(*) FROM logblokir l WHERE l.nama = p.nama) as total_blokir
+                         FROM pesertas p WHERE p.status = 0 ORDER BY p.nama ASC"
+                    ));
+                } catch (\Illuminate\Database\QueryException $e) {
+                    $pesertas = collect($db->select(
+                        "SELECT p.nama, p.block_reason, p.blocked_at, 0 as total_blokir
+                         FROM pesertas p WHERE p.status = 0 ORDER BY p.nama ASC"
+                    ));
+                    $errorSkema = 'Tabel riwayat blokir (logblokir) belum ada di instance ini - riwayat & ranking blokir belum bisa ditampilkan, tapi daftar terblokir saat ini tetap tampil.';
+                }
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorSkema = 'Gagal membaca data dari database instance ujian ini. Kemungkinan skema tabel belum lengkap atau instance belum pernah dipakai. Detail: ' . $e->getMessage();
         }
 
         return view('server-ujian.panel-pengawas', compact(
             'view', 'tokenAktif', 'isExpired', 'createdAtWIB', 'expiredAtWIB',
-            'pesertas', 'riwayat', 'topBlocked', 'totalData', 'totalPages', 'page', 'instance'
+            'pesertas', 'riwayat', 'topBlocked', 'totalData', 'totalPages', 'page', 'instance', 'errorSkema'
         ));
     }
 
@@ -258,12 +274,17 @@ class ServerUjianController extends Controller
 
         $peserta = $db->table('pesertas')->where('nama', $nama)->first();
         if ($peserta) {
-            $db->table('logblokir')->insert([
-                'nama' => $peserta->nama,
-                'alasan_blokir' => $peserta->block_reason,
-                'jam_terblokir' => $peserta->blocked_at,
-                'jam_diaktifkan' => now(),
-            ]);
+            try {
+                $db->table('logblokir')->insert([
+                    'nama' => $peserta->nama,
+                    'alasan_blokir' => $peserta->block_reason,
+                    'jam_terblokir' => $peserta->blocked_at,
+                    'jam_diaktifkan' => now(),
+                ]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Tabel logblokir blm ada di instance ini - riwayat gak
+                // tercatat, tapi tetap lanjut aktifkan pesertanya drpd stuck.
+            }
             $db->table('pesertas')->where('nama', $nama)->update([
                 'status' => 1, 'block_reason' => null, 'blocked_at' => null,
             ]);
