@@ -61,12 +61,19 @@ class ExoSyncService
 
             // Siapkan folder foto kalau opsi foto diaktifkan - pola path dari
             // data asli yg sudah dikonfirmasi: {STORAGE_PATH}/exo-output-photo/{no_ujian}.jpg
+            // DUA folder tujuan: 'exo-output-photo' (dipakai wormhole/monitoring
+            // web) dan 'exo-photo-student' (dipakai internal Extraordinary,
+            // mis. verifikasi wajah pas login) - foto yg sama dicopy ke keduanya.
             $folderFoto = null;
+            $folderFotoStudent = null;
             if ($sertakanFoto) {
                 $storagePath = rtrim($exoInstance->bacaEnv('STORAGE_PATH') ?: '', '/');
                 if ($storagePath) {
                     $folderFoto = $storagePath . '/exo-output-photo';
                     if (! is_dir($folderFoto)) @mkdir($folderFoto, 0775, true);
+
+                    $folderFotoStudent = $storagePath . '/exo-photo-student';
+                    if (! is_dir($folderFotoStudent)) @mkdir($folderFotoStudent, 0775, true);
                 }
             }
 
@@ -132,6 +139,8 @@ class ExoSyncService
                         $fotoPath = $siswa->foto ?: ($siswa->arsipBerkas->foto ?? null);
                         if ($sertakanFoto && $folderFoto && $fotoPath) {
                             $tujuanPath = "{$folderFoto}/{$noUjian}.jpg";
+                            $tujuanPathStudent = $folderFotoStudent ? "{$folderFotoStudent}/{$noUjian}.jpg" : null;
+
                             if (! file_exists($tujuanPath)) {
                                 $sumberPath = storage_path('app/public/' . $fotoPath);
                                 if (file_exists($sumberPath) && @copy($sumberPath, $tujuanPath)) {
@@ -141,6 +150,17 @@ class ExoSyncService
                             } elseif (! $avaValue) {
                                 // File udah ada di folder tapi kolom ava blm keisi (mis. dari luar sistem kita) - kaitkan aja
                                 $avaValue = "exo-output-photo/{$noUjian}.jpg";
+                            }
+
+                            // Copy jg ke folder kedua (exo-photo-student) - SAMA
+                            // aturan "jangan timpa file yg sudah ada" spy gak
+                            // ngerusak foto yg mgkin udah diupload manual di sisi
+                            // Extraordinary sblmnya.
+                            if ($tujuanPathStudent && ! file_exists($tujuanPathStudent)) {
+                                $sumberPath = storage_path('app/public/' . $fotoPath);
+                                if (file_exists($sumberPath)) {
+                                    @copy($sumberPath, $tujuanPathStudent);
+                                }
                             }
                         }
 
