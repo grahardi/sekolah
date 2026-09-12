@@ -77,7 +77,7 @@ class ExoSyncService
                 }
             }
 
-            $dibuatGrup = 0; $dibuatSiswa = 0; $diupdateSiswa = 0; $dilewati = 0; $fotoTersinkron = 0;
+            $dibuatGrup = 0; $dibuatSiswa = 0; $diupdateSiswa = 0; $dilewati = 0; $fotoTersinkron = 0; $fotoSudahAda = 0;
 
             foreach ($siswaList->groupBy('kelas') as $kelas => $siswaSatuAngkatan) {
                 $namaGrupInduk = "Kelas {$kelas}";
@@ -150,6 +150,9 @@ class ExoSyncService
                             } elseif (! $avaValue) {
                                 // File udah ada di folder tapi kolom ava blm keisi (mis. dari luar sistem kita) - kaitkan aja
                                 $avaValue = "exo-output-photo/{$noUjian}.jpg";
+                                $fotoSudahAda++;
+                            } else {
+                                $fotoSudahAda++;
                             }
 
                             // Copy jg ke folder kedua (exo-photo-student) - SAMA
@@ -204,7 +207,7 @@ class ExoSyncService
             }
 
             $awalan = $mode === 'reset' ? 'Reset & sinkron selesai' : 'Sinkron selesai';
-            $pesanFoto = $sertakanFoto ? ", {$fotoTersinkron} foto tersambung" : '';
+            $pesanFoto = $sertakanFoto ? ", {$fotoTersinkron} foto baru dicopy" . ($fotoSudahAda ? " ({$fotoSudahAda} sudah ada sebelumnya)" : '') : '';
             return [
                 'ok' => true,
                 'pesan' => "{$awalan}: {$dibuatGrup} grup/subgrup dibuat, {$dibuatSiswa} siswa baru, {$diupdateSiswa} siswa diperbarui{$pesanFoto}" . ($dilewati ? ", {$dilewati} dilewati (NIS/NISN kosong)" : '') . '.',
