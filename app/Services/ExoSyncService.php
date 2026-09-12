@@ -59,11 +59,15 @@ class ExoSyncService
             // Jurusan "Umum" - pakai ID tetap yg sudah ada dari hasil provisioning
             $jurusanId = self::JURUSAN_UMUM_ID;
 
-            // Siapkan folder foto kalau opsi foto diaktifkan - pola path dari
-            // data asli yg sudah dikonfirmasi: {STORAGE_PATH}/exo-output-photo/{no_ujian}.jpg
-            // DUA folder tujuan: 'exo-output-photo' (dipakai wormhole/monitoring
-            // web) dan 'exo-photo-student' (dipakai internal Extraordinary,
-            // mis. verifikasi wajah pas login) - foto yg sama dicopy ke keduanya.
+            // Siapkan folder foto kalau opsi foto diaktifkan - DUA folder tujuan
+            // dgn SUMBER PATH BEDA:
+            // 1. 'exo-output-photo' - dari STORAGE_PATH di .env instance, yg
+            //    TERKONFIRMASI diarahkan ke public/storage Laravel kita sendiri
+            //    (dipakai wormhole/web monitoring, sengaja begitu biar web-servable)
+            // 2. 'exo-photo-student' - dari $instance->path LANGSUNG (folder fisik
+            //    instance itu sendiri, mis. /home/aginza/sekolah/instance1),
+            //    BUKAN dari STORAGE_PATH - dipakai internal Extraordinary
+            //    (mis. verifikasi wajah), beda lokasi fisik dgn yg di atas.
             $folderFoto = null;
             $folderFotoStudent = null;
             if ($sertakanFoto) {
@@ -71,8 +75,11 @@ class ExoSyncService
                 if ($storagePath) {
                     $folderFoto = $storagePath . '/exo-output-photo';
                     if (! is_dir($folderFoto)) @mkdir($folderFoto, 0775, true);
+                }
 
-                    $folderFotoStudent = $storagePath . '/exo-photo-student';
+                $instancePath = rtrim($exoInstance->path ?: '', '/');
+                if ($instancePath) {
+                    $folderFotoStudent = $instancePath . '/storage/exo-photo-student';
                     if (! is_dir($folderFotoStudent)) @mkdir($folderFotoStudent, 0775, true);
                 }
             }
