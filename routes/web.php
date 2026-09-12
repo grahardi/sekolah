@@ -96,6 +96,15 @@ Route::middleware(['web', 'auth', 'admin'])->prefix('server-ujian')->name('serve
     Route::post('/panel-pengawas/aktifkan', [\App\Http\Controllers\ServerUjianController::class, 'panelPengawasAktifkan'])->name('panel-pengawas.aktifkan');
     Route::get('/monitoring-ruangan', [\App\Http\Controllers\ServerUjianController::class, 'monitoringRuangan'])->name('monitoring-ruangan');
     Route::post('/monitoring-ruangan/lapor-error', [\App\Http\Controllers\ServerUjianController::class, 'monitoringLaporError'])->name('monitoring-ruangan.lapor-error');
+
+    Route::get('/peserta', [\App\Http\Controllers\ServerUjianController::class, 'pesertaIndex'])->name('peserta.index');
+    Route::get('/peserta/{peserta}/edit', [\App\Http\Controllers\ServerUjianController::class, 'pesertaEdit'])->name('peserta.edit');
+    Route::put('/peserta/{peserta}', [\App\Http\Controllers\ServerUjianController::class, 'pesertaUpdate'])->name('peserta.update');
+    Route::delete('/peserta/{peserta}', [\App\Http\Controllers\ServerUjianController::class, 'pesertaDestroy'])->name('peserta.destroy');
+
+    Route::get('/group', [\App\Http\Controllers\ServerUjianController::class, 'groupIndex'])->name('group.index');
+    Route::put('/group/{group}', [\App\Http\Controllers\ServerUjianController::class, 'groupUpdate'])->name('group.update');
+    Route::delete('/group/{group}', [\App\Http\Controllers\ServerUjianController::class, 'groupDestroy'])->name('group.destroy');
 });
 
 // Portal Siswa - login pakai NISN + tanggal lahir, TANPA akun admin

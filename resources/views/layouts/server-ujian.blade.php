@@ -191,6 +191,10 @@
            class="sb-item {{ request()->routeIs('server-ujian.monitoring-ruangan') ? 'active' : '' }}">
             <i class="ti ti-layout-grid"></i><span>Monitoring Ruangan</span>
         </a>
+        <a href="{{ route('server-ujian.peserta.index') }}"
+           class="sb-item {{ request()->routeIs('server-ujian.peserta.*') || request()->routeIs('server-ujian.group.*') ? 'active' : '' }}">
+            <i class="ti ti-users"></i><span>Peserta Ujian</span>
+        </a>
     </nav>
 
     <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);">

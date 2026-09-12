@@ -319,4 +319,194 @@ class ServerUjianController extends Controller
 
         return back()->with('success', 'Peserta ditandai mengalami kendala.');
     }
+
+    // ── CRUD Peserta & Grup Ujian - bisa filter/sort by kelas(grup) & agama ──
+
+    public function pesertaIndex(Request $request)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $filterGroup = $request->get('group_id');
+        $filterAgama = $request->get('agama_id');
+        $search = trim((string) $request->get('search'));
+        $sort = $request->get('sort', 'kelas'); // kelas | agama | nama
+
+        $where = ['1=1'];
+        $bindings = [];
+        if ($filterGroup) { $where[] = 'g.id = ?'; $bindings[] = $filterGroup; }
+        if ($filterAgama) { $where[] = 'p.agama_id = ?'; $bindings[] = $filterAgama; }
+        if ($search !== '') { $where[] = '(p.nama ILIKE ? OR p.no_ujian ILIKE ?)'; $bindings[] = "%{$search}%"; $bindings[] = "%{$search}%"; }
+        $whereSql = implode(' AND ', $where);
+
+        $orderBy = match ($sort) {
+            'agama' => 'a.nama, p.nama',
+            'nama' => 'p.nama',
+            default => 'gp.name, g.name, p.nama',
+        };
+
+        $perPage = 30;
+        $page = max(1, (int) $request->get('page', 1));
+        $offset = ($page - 1) * $perPage;
+
+        $totalData = $db->selectOne(
+            "SELECT COUNT(*) as total FROM pesertas p
+             LEFT JOIN group_members gm ON gm.student_id = p.id
+             LEFT JOIN groups g ON g.id = gm.group_id
+             LEFT JOIN groups gp ON gp.id = g.parent_id
+             LEFT JOIN agamas a ON a.id = p.agama_id
+             WHERE {$whereSql}",
+            $bindings
+        )->total;
+
+        $pesertaList = collect($db->select(
+            "SELECT p.id, p.no_ujian, p.nama, p.status, p.agama_id, a.nama as agama_nama,
+                    g.id as group_id, g.name as group_name, gp.name as group_parent_name
+             FROM pesertas p
+             LEFT JOIN group_members gm ON gm.student_id = p.id
+             LEFT JOIN groups g ON g.id = gm.group_id
+             LEFT JOIN groups gp ON gp.id = g.parent_id
+             LEFT JOIN agamas a ON a.id = p.agama_id
+             WHERE {$whereSql}
+             ORDER BY {$orderBy}
+             LIMIT {$perPage} OFFSET {$offset}",
+            $bindings
+        ));
+
+        $groupList = collect($db->select(
+            "SELECT g.id, g.name, gp.name as parent_name FROM groups g
+             LEFT JOIN groups gp ON gp.id = g.parent_id
+             WHERE g.parent_id IS NOT NULL ORDER BY gp.name, g.name"
+        ));
+        $agamaList = collect($db->select("SELECT id, nama FROM agamas ORDER BY nama"));
+
+        return view('server-ujian.peserta.index', compact(
+            'pesertaList', 'groupList', 'agamaList', 'filterGroup', 'filterAgama', 'search', 'sort',
+            'totalData', 'perPage', 'page', 'instance'
+        ));
+    }
+
+    public function pesertaEdit(Request $request, string $pesertaId)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $peserta = $db->selectOne("SELECT * FROM pesertas WHERE id = ?", [$pesertaId]);
+        abort_unless($peserta, 404);
+
+        $groupSaatIni = $db->selectOne(
+            "SELECT g.id FROM group_members gm JOIN groups g ON g.id = gm.group_id WHERE gm.student_id = ? LIMIT 1",
+            [$pesertaId]
+        );
+
+        $groupList = collect($db->select(
+            "SELECT g.id, g.name, gp.name as parent_name FROM groups g
+             LEFT JOIN groups gp ON gp.id = g.parent_id
+             WHERE g.parent_id IS NOT NULL ORDER BY gp.name, g.name"
+        ));
+        $agamaList = collect($db->select("SELECT id, nama FROM agamas ORDER BY nama"));
+
+        return view('server-ujian.peserta.edit', compact('peserta', 'groupSaatIni', 'groupList', 'agamaList', 'instance'));
+    }
+
+    public function pesertaUpdate(Request $request, string $pesertaId)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'agama_id' => 'required|string',
+            'group_id' => 'nullable|string',
+            'status' => 'required|in:0,1',
+            'password_baru' => 'nullable|string|min:4|max:50',
+        ]);
+
+        $update = [
+            'nama' => $data['nama'],
+            'agama_id' => $data['agama_id'],
+            'status' => $data['status'],
+            'updated_at' => now(),
+        ];
+        // Kalau diaktifkan lagi via form ini, bersihkan jg alasan/waktu blokirnya
+        if ($data['status'] == 1) {
+            $update['block_reason'] = null;
+            $update['blocked_at'] = null;
+        }
+        if (! empty($data['password_baru'])) {
+            $update['password'] = $data['password_baru'];
+        }
+
+        $db->table('pesertas')->where('id', $pesertaId)->update($update);
+
+        if (! empty($data['group_id'])) {
+            $db->table('group_members')->where('student_id', $pesertaId)->delete();
+            $db->table('group_members')->insert([
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'group_id' => $data['group_id'],
+                'student_id' => $pesertaId,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
+        return redirect()->route('server-ujian.peserta.index')->with('success', 'Data peserta berhasil diperbarui.');
+    }
+
+    public function pesertaDestroy(string $pesertaId)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $db->table('group_members')->where('student_id', $pesertaId)->delete();
+        $db->table('devices')->where('peserta_id', $pesertaId)->delete();
+        $db->table('pesertas')->where('id', $pesertaId)->delete();
+
+        return back()->with('success', 'Peserta berhasil dihapus.');
+    }
+
+    // ── Manajemen Grup (kelas-rombel hasil sinkron) ──
+
+    public function groupIndex()
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $groupList = collect($db->select(
+            "SELECT g.id, g.name, gp.name as parent_name,
+                    (SELECT COUNT(*) FROM group_members gm WHERE gm.group_id = g.id) as jumlah_anggota
+             FROM groups g
+             LEFT JOIN groups gp ON gp.id = g.parent_id
+             WHERE g.parent_id IS NOT NULL
+             ORDER BY gp.name, g.name"
+        ));
+
+        return view('server-ujian.peserta.group', compact('groupList', 'instance'));
+    }
+
+    public function groupUpdate(Request $request, string $groupId)
+    {
+        $instance = $this->instanceSaya();
+        $data = $request->validate(['name' => 'required|string|max:255']);
+
+        $instance->dbConnection()->table('groups')->where('id', $groupId)->update([
+            'name' => $data['name'], 'updated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Nama kelompok berhasil diubah.');
+    }
+
+    public function groupDestroy(string $groupId)
+    {
+        $instance = $this->instanceSaya();
+        $db = $instance->dbConnection();
+
+        $jumlahAnggota = $db->table('group_members')->where('group_id', $groupId)->count();
+        if ($jumlahAnggota > 0) {
+            return back()->with('error', "Kelompok ini masih punya {$jumlahAnggota} anggota - pindahkan/hapus anggotanya dulu sebelum menghapus kelompok.");
+        }
+
+        $db->table('groups')->where('id', $groupId)->delete();
+
+        return back()->with('success', 'Kelompok berhasil dihapus.');
+    }
 }
